@@ -61,6 +61,7 @@ jobs:
         with:
           name: youtube-short
           path: youtube-shorts-bot/output/short.mp4
+          retention-days: 3
 
       - name: Validate YouTube credentials
         shell: bash
@@ -83,6 +84,7 @@ jobs:
         with:
           name: youtube-publish-metadata
           path: youtube-shorts-bot/output/upload_result.json
+          retention-days: 3
 
       - name: Commit successful archive
         shell: bash
