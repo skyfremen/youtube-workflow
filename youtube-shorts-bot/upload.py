@@ -18,10 +18,23 @@ creds = Credentials(
 )
 
 youtube = build('youtube','v3',credentials=creds)
+
+music_credit = (
+    'Music: "Monkeys Spinning Monkeys" by Kevin MacLeod (incompetech.com)\n'
+    'Licensed under Creative Commons: By Attribution 4.0 License\n'
+    'https://creativecommons.org/licenses/by/4.0/'
+)
+
+description = (
+    data.get('description','') + '\n\n' +
+    ' '.join(data.get('hashtags',[])) + '\n\n' +
+    music_credit
+)[:5000]
+
 body = {
   'snippet': {
     'title': data['title'][:100],
-    'description': (data.get('description','') + '\n\n' + ' '.join(data.get('hashtags',[])))[:5000],
+    'description': description,
     'categoryId': '28'
   },
   'status': {
