@@ -1,4 +1,4 @@
-import json, subprocess, urllib.request
+import json, subprocess, urllib.parse
 from pathlib import Path
 
 BASE = Path(__file__).parent
@@ -64,14 +64,50 @@ def ass_time(seconds):
     return f'{h}:{m:02}:{s:02}.{cs:02}'
 
 
-def download(url, target):
+def download(url, target, source_url=None):
+    """Download media with browser-like headers, redirects, and retries.
+
+    Some royalty-free media hosts reject minimal urllib requests from CI runners.
+    curl is used here because it handles redirects/retries reliably and lets us
+    send the same basic headers a normal browser download would include.
+    """
     if not str(url).startswith(('https://', 'http://')):
         raise SystemExit(f'Invalid media URL: {url}')
-    req = urllib.request.Request(url, headers={'User-Agent': 'WackyInsightsShorts/1.0'})
-    with urllib.request.urlopen(req, timeout=120) as src, target.open('wb') as dst:
-        dst.write(src.read())
-    if target.stat().st_size < 10_000:
-        raise SystemExit(f'Downloaded media is suspiciously small: {url}')
+
+    cmd = [
+        'curl', '-L', '--fail-with-body', '--silent', '--show-error',
+        '--retry', '3', '--retry-delay', '2', '--retry-all-errors',
+        '--connect-timeout', '20', '--max-time', '120',
+        '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+              '(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+        '-H', 'Accept: */*',
+        '-H', 'Accept-Language: en-US,en;q=0.9',
+        '-o', str(target),
+    ]
+
+    if source_url and str(source_url).startswith(('https://', 'http://')):
+        cmd += ['-e', str(source_url)]
+    else:
+        parsed = urllib.parse.urlsplit(str(url))
+        if parsed.scheme and parsed.netloc:
+            cmd += ['-H', f'Origin: {parsed.scheme}://{parsed.netloc}']
+
+    cmd.append(str(url))
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or 'unknown download error').strip()
+        raise SystemExit(
+            f'Failed to download media after retries: {url}\n'
+            f'curl exit code {result.returncode}: {detail}\n'
+            'Use a direct downloadable media URL that permits automated access from CI.'
+        )
+
+    if not target.exists() or target.stat().st_size < 10_000:
+        size = target.stat().st_size if target.exists() else 0
+        raise SystemExit(
+            f'Downloaded media is suspiciously small ({size} bytes): {url}. '
+            'The URL may have returned an HTML/error page instead of media.'
+        )
 
 
 def assert_stream(path, stream_type):
@@ -81,9 +117,11 @@ def assert_stream(path, stream_type):
     ], capture_output=True, text=True)
     expected = 'video' if stream_type == 'v' else 'audio'
     if result.returncode != 0 or expected not in result.stdout:
+        probe_error = (result.stderr or '').strip()
         raise SystemExit(
             f'{path.name} is not a valid direct {expected} media file. '
-            'The scheduled selector must provide a direct downloadable asset URL, not a web page.'
+            'The selector must provide a direct downloadable asset URL, not a web page.'
+            + (f' ffprobe: {probe_error}' if probe_error else '')
         )
 
 ass = OUT / 'overlay.ass'
@@ -122,8 +160,8 @@ background = OUT / 'background.asset'
 music = OUT / 'music.asset'
 video = OUT / 'short.mp4'
 
-download(background_url, background)
-download(music_url, music)
+download(background_url, background, data.get('background_source_url'))
+download(music_url, music, data.get('music_source_url'))
 assert_stream(background, 'v')
 assert_stream(music, 'a')
 
