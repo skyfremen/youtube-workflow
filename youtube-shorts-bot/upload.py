@@ -7,6 +7,11 @@ from googleapiclient.http import MediaFileUpload
 BASE = Path(__file__).parent
 with (BASE/'content'/'latest.json').open(encoding='utf-8') as f:
     data = json.load(f)
+with (BASE/'music_catalog.json').open(encoding='utf-8') as f:
+    music_catalog = json.load(f)
+
+music_key = data.get('music', 'monkeys_spinning_monkeys')
+music_info = music_catalog.get(music_key, music_catalog['monkeys_spinning_monkeys'])
 
 creds = Credentials(
     token=None,
@@ -19,17 +24,14 @@ creds = Credentials(
 
 youtube = build('youtube','v3',credentials=creds)
 
-music_credit = (
-    'Music: "Monkeys Spinning Monkeys" by Kevin MacLeod (incompetech.com)\n'
-    'Licensed under Creative Commons: By Attribution 4.0 License\n'
-    'https://creativecommons.org/licenses/by/4.0/'
-)
-
-description = (
-    data.get('description','') + '\n\n' +
-    ' '.join(data.get('hashtags',[])) + '\n\n' +
-    music_credit
-)[:5000]
+parts = [data.get('description','').strip()]
+credit = music_info.get('credit','').strip()
+if credit:
+    parts.append(credit)
+hashtags = ' '.join(data.get('hashtags',[])).strip()
+if hashtags:
+    parts.append(hashtags)
+description = '\n\n'.join(p for p in parts if p)[:5000]
 
 body = {
   'snippet': {
@@ -49,3 +51,4 @@ response = None
 while response is None:
     _, response = request.next_chunk()
 print('Uploaded video ID:', response['id'])
+print('Music:', music_info['title'], '-', music_info['artist'])
