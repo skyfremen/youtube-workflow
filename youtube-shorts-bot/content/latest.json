@@ -1,0 +1,8 @@
+{
+  "topic": "Why APIs return HTTP 429",
+  "hook": "Ever had an API suddenly tell you to slow down?",
+  "script": "Ever had an API suddenly tell you to slow down? HTTP 429 means Too Many Requests. It usually happens when you exceed an API's rate limit. Good clients don't just retry immediately. They check the Retry-After header, wait, and use exponential backoff. Rate limiting protects services from overload and helps keep capacity fair for everyone. That's HTTP 429 in under a minute.",
+  "title": "HTTP 429 Explained in Under 1 Minute #Shorts",
+  "description": "A quick explanation of HTTP 429 Too Many Requests, rate limits, Retry-After and exponential backoff.",
+  "hashtags": ["#Shorts", "#Programming", "#API", "#SoftwareEngineering"]
+}
