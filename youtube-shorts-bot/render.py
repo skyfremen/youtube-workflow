@@ -1,4 +1,4 @@
-import json, subprocess
+import json, subprocess, urllib.request
 from pathlib import Path
 
 BASE = Path(__file__).parent
@@ -12,22 +12,14 @@ with CONTENT.open(encoding='utf-8') as f:
     data = json.load(f)
 
 category = data.get('category', 'TECH').upper()
-setup = data.get('setup') or data.get('hook') or data.get('script', '')
-payoff = data.get('payoff') or data.get('script', '')
+setup = data.get('setup') or data.get('hook') or ''
+payoff = data.get('payoff') or ''
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
-handle = data.get('handle', '@SKYFREMEN').upper()
+handle = '@WACKYINSIGHTS'
 
-# Short, punchy narration: setup then reveal.
-spoken = f"{setup} {payoff}".strip()
-voice_wav = OUT / 'voice.wav'
-subprocess.run(['espeak-ng', '-s', '180', '-w', str(voice_wav), spoken], check=True)
-
-probe = subprocess.check_output([
-    'ffprobe', '-v', 'error', '-show_entries', 'format=duration',
-    '-of', 'default=nw=1:nk=1', str(voice_wav)
-], text=True).strip()
-duration = max(float(probe), 9.0)
-reveal_at = max(duration * 0.48, 4.0)
+# Fixed meme-short pacing: no TTS, music only.
+duration = 12.0
+reveal_at = 6.0
 
 
 def ass_escape(text):
@@ -88,30 +80,38 @@ Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRI
 
 video = OUT / 'short.mp4'
 background = ASSETS / 'background.mp4'
+music = ASSETS / 'music.ogg'
+
+# Default meme/comedy music. A local assets/music.ogg can override this.
+if not music.exists():
+    music_url = 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Monkeys_Spinning_Monkeys_by_Kevin_MacLeod.ogg'
+    req = urllib.request.Request(music_url, headers={'User-Agent': 'WackyInsightsShorts/1.0'})
+    with urllib.request.urlopen(req, timeout=60) as src, music.open('wb') as dst:
+        dst.write(src.read())
 
 if background.exists():
-    # Loop a user-provided royalty-free vertical/horizontal background clip.
     input_args = ['-stream_loop', '-1', '-i', str(background)]
     vf = (
-        "scale=1080:1920:force_original_aspect_ratio=increase,"
-        "crop=1080:1920,eq=brightness=-0.14:saturation=0.8,"
+        'scale=1080:1920:force_original_aspect_ratio=increase,'
+        'crop=1080:1920,eq=brightness=-0.14:saturation=0.8,'
         f"subtitles='{ass.as_posix()}'"
     )
 else:
-    # $0 fallback: moving abstract background generated entirely by FFmpeg.
-    input_args = ['-f', 'lavfi', '-i', f"testsrc2=s=1080x1920:r=30:d={duration}"]
+    input_args = ['-f', 'lavfi', '-i', f'testsrc2=s=1080x1920:r=30:d={duration}']
     vf = (
-        "boxblur=18:8,eq=brightness=-0.30:saturation=0.55,"
+        'boxblur=18:8,eq=brightness=-0.30:saturation=0.55,'
         f"subtitles='{ass.as_posix()}'"
     )
 
 subprocess.run([
     'ffmpeg', '-y', *input_args,
-    '-i', str(voice_wav),
+    '-stream_loop', '-1', '-i', str(music),
     '-vf', vf,
     '-t', str(duration),
     '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-    '-c:a', 'aac', '-b:a', '192k', '-shortest', str(video)
+    '-c:a', 'aac', '-b:a', '192k',
+    '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
+    '-shortest', str(video)
 ], check=True)
 
 print(video)
