@@ -3,19 +3,16 @@ from pathlib import Path
 
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
-MUSIC_CATALOG = BASE / 'music_catalog.json'
-BACKGROUND_CATALOG = BASE / 'background_catalog.json'
 OUT = BASE / 'output'
 OUT.mkdir(exist_ok=True)
 
 with CONTENT.open(encoding='utf-8') as f:
     data = json.load(f)
-with MUSIC_CATALOG.open(encoding='utf-8') as f:
-    music_catalog = json.load(f)
-with BACKGROUND_CATALOG.open(encoding='utf-8') as f:
-    background_catalog = json.load(f)
 
-required = ['category', 'setup', 'payoff', 'title']
+required = [
+    'category', 'setup', 'payoff', 'title',
+    'background_url', 'music_url'
+]
 missing = [k for k in required if not data.get(k)]
 if missing:
     raise SystemExit(f"No active Short content. Missing: {', '.join(missing)}")
@@ -25,16 +22,8 @@ setup = data['setup']
 payoff = data['payoff']
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
 handle = '@WACKYINSIGHTS'
-
-music_key = data.get('music', 'monkeys_spinning_monkeys')
-if music_key not in music_catalog:
-    music_key = 'monkeys_spinning_monkeys'
-music_info = music_catalog[music_key]
-
-background_key = data.get('background', 'phone_scroll')
-if background_key not in background_catalog:
-    background_key = 'phone_scroll'
-background_info = background_catalog[background_key]
+background_url = data['background_url']
+music_url = data['music_url']
 
 # Fixed meme-short pacing: no TTS, music only.
 duration = 12.0
@@ -67,6 +56,29 @@ def ass_time(seconds):
     s, cs = divmod(rem, 100)
     return f'{h}:{m:02}:{s:02}.{cs:02}'
 
+
+def download(url, target):
+    if not str(url).startswith(('https://', 'http://')):
+        raise SystemExit(f'Invalid media URL: {url}')
+    req = urllib.request.Request(url, headers={'User-Agent': 'WackyInsightsShorts/1.0'})
+    with urllib.request.urlopen(req, timeout=120) as src, target.open('wb') as dst:
+        dst.write(src.read())
+    if target.stat().st_size < 10_000:
+        raise SystemExit(f'Downloaded media is suspiciously small: {url}')
+
+
+def assert_stream(path, stream_type):
+    result = subprocess.run([
+        'ffprobe', '-v', 'error', '-select_streams', f'{stream_type}:0',
+        '-show_entries', 'stream=codec_type', '-of', 'default=nw=1:nk=1', str(path)
+    ], capture_output=True, text=True)
+    expected = 'video' if stream_type == 'v' else 'audio'
+    if result.returncode != 0 or expected not in result.stdout:
+        raise SystemExit(
+            f'{path.name} is not a valid direct {expected} media file. '
+            'The scheduled selector must provide a direct downloadable asset URL, not a web page.'
+        )
+
 ass = OUT / 'overlay.ass'
 header = f'DID YOU KNOW?\\N{category} FACT'
 setup_text = wrap(setup, 24)
@@ -97,14 +109,14 @@ Dialogue: 0,0:00:00.00,{ass_time(duration)},Handle,,0,0,0,,{ass_escape(handle)}
 Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRIBE
 ''', encoding='utf-8')
 
-music = OUT / 'music.ogg'
-background = OUT / 'background.mp4'
+background = OUT / 'background.asset'
+music = OUT / 'music.asset'
 video = OUT / 'short.mp4'
 
-for info, target in [(music_info, music), (background_info, background)]:
-    req = urllib.request.Request(info['url'], headers={'User-Agent': 'WackyInsightsShorts/1.0'})
-    with urllib.request.urlopen(req, timeout=120) as src, target.open('wb') as dst:
-        dst.write(src.read())
+download(background_url, background)
+download(music_url, music)
+assert_stream(background, 'v')
+assert_stream(music, 'a')
 
 vf = (
     'scale=1080:1920:force_original_aspect_ratio=increase,'
@@ -117,12 +129,14 @@ subprocess.run([
     '-stream_loop', '-1', '-i', str(music),
     '-vf', vf,
     '-t', str(duration),
+    '-map', '0:v:0', '-map', '1:a:0',
     '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
     '-c:a', 'aac', '-b:a', '192k',
     '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
     '-shortest', str(video)
 ], check=True)
 
-print(f"Background: {background_info['label']}")
-print(f"Music: {music_info['title']} by {music_info['artist']}")
+print('Background source:', data.get('background_source_url', 'not provided'))
+print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
+print('Music source:', data.get('music_source_url', 'not provided'))
 print(video)
