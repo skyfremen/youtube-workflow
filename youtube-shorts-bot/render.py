@@ -11,7 +11,7 @@ with CONTENT.open(encoding='utf-8') as f:
 
 required = [
     'category', 'setup', 'payoff', 'title',
-    'background_url'
+    'background_url', 'music_url'
 ]
 missing = [k for k in required if not data.get(k)]
 if missing:
@@ -23,112 +23,52 @@ payoff = data['payoff']
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
 handle = '@WACKYINSIGHTS'
 background_url = data['background_url']
-music_url = data.get('music_url', '')
+music_url = data['music_url']
 
 duration = 12.0
 reveal_at = 6.0
 
-# Font-safe fallbacks for common emoji/symbols used in Shorts captions.
-# These render reliably with DejaVu Sans in GitHub Actions.
 EMOJI_FALLBACKS = {
-    '💀': '☠',
-    '☠️': '☠',
-    '❤️': '♥',
-    '❤': '♥',
-    '💔': '♥',
-    '⭐': '★',
-    '🌟': '★',
-    '✨': '*',
-    '⚡': '⚡',
-    '🔥': '!!!',
-    '😂': 'LOL',
-    '🤣': 'LOL',
-    '😆': 'LOL',
-    '😅': 'HEH',
-    '😭': ':(',
-    '😢': ':(',
-    '😱': '!!',
-    '😳': '!!',
-    '😬': ':|',
-    '🙃': ':)',
-    '🙂': ':)',
-    '😊': ':)',
-    '😉': ';)',
-    '😍': '♥',
-    '😘': '♥',
-    '🥰': '♥',
-    '😎': 'COOL',
-    '🤔': '?',
-    '🤨': '?',
-    '🫠': '...',
-    '🙄': '...',
-    '👀': 'OO',
-    '👁️': 'O',
-    '👄': '-',
-    '👍': '+1',
-    '👎': '-1',
-    '👏': 'CLAP',
-    '🙏': 'THANKS',
-    '💯': '100%',
-    '✅': '✓',
-    '❌': 'X',
-    '✔️': '✓',
-    '❗': '!',
-    '❓': '?',
-    '🚨': '!!!',
-    '📱': 'PHONE',
-    '💻': 'PC',
-    '⌚': 'WATCH',
-    '⏰': 'ALARM',
-    '🛌': 'BED',
-    '😴': 'ZZZ',
-    '💤': 'ZZZ',
-    '☕': 'COFFEE',
-    '🍕': 'PIZZA',
-    '🍔': 'BURGER',
-    '🍟': 'FRIES',
-    '🍿': 'POPCORN',
-    '🛒': 'CART',
-    '💸': '$$$',
-    '💰': '$$$',
-    '🎉': '!!!',
-    '🎯': 'TARGET',
-    '🚀': 'GO!',
+    '💀': '☠', '☠️': '☠', '❤️': '♥', '❤': '♥', '💔': '♥',
+    '⭐': '★', '🌟': '★', '✨': '*', '⚡': '⚡', '🔥': '!!!',
+    '😂': 'LOL', '🤣': 'LOL', '😆': 'LOL', '😅': 'HEH',
+    '😭': ':(', '😢': ':(', '😱': '!!', '😳': '!!', '😬': ':|',
+    '🙃': ':)', '🙂': ':)', '😊': ':)', '😌': ':)', '😉': ';)',
+    '😍': '♥', '😘': '♥', '🥰': '♥', '😎': 'COOL', '🤔': '?',
+    '🤨': '?', '🫠': '...', '🙄': '...', '👀': 'OO', '👁️': 'O',
+    '👄': '-', '👍': '+1', '👎': '-1', '👏': 'CLAP', '🙏': 'THANKS',
+    '💯': '100%', '✅': '✓', '❌': 'X', '✔️': '✓', '❗': '!',
+    '❓': '?', '🚨': '!!!', '📱': 'PHONE', '💻': 'PC', '⌚': 'WATCH',
+    '⏰': 'ALARM', '🛌': 'BED', '😴': 'ZZZ', '💤': 'ZZZ',
+    '☕': 'COFFEE', '🍕': 'PIZZA', '🍔': 'BURGER', '🍟': 'FRIES',
+    '🍿': 'POPCORN', '🛒': 'CART', '💸': '$$$', '💰': '$$$',
+    '🎉': '!!!', '🎯': 'TARGET', '🚀': 'GO!'
 }
 
 
 def replace_emoji_fallbacks(text):
-    """Replace known emoji with font-safe equivalents before sanitizing."""
     value = str(text)
-    # Longest sequences first so variants such as ❤️ are handled correctly.
     for emoji in sorted(EMOJI_FALLBACKS, key=len, reverse=True):
         value = value.replace(emoji, EMOJI_FALLBACKS[emoji])
     return value
 
 
 def sanitize_overlay_text(text):
-    """Replace common emoji, then remove unsupported glyphs that would show as boxes."""
     text = replace_emoji_fallbacks(text)
     cleaned = []
     for ch in text:
         codepoint = ord(ch)
-        category = unicodedata.category(ch)
-
+        category_code = unicodedata.category(ch)
         if ch == '\u200d' or 0xFE00 <= codepoint <= 0xFE0F:
             continue
-
-        # Preserve a small set of BMP symbols known to render in DejaVu Sans.
         safe_symbols = {'☠', '♥', '★', '⚡', '✓'}
-        if codepoint > 0xFFFF or (category in {'So', 'Sk'} and ch not in safe_symbols):
+        if codepoint > 0xFFFF or (category_code in {'So', 'Sk'} and ch not in safe_symbols):
             continue
-
         cleaned.append(ch)
-
     return ''.join(cleaned).strip()
 
 
 def ass_escape_text(text):
-    """Escape user text only. Do not escape ASS control sequences such as \\N."""
     return (
         sanitize_overlay_text(text)
         .replace('\\', r'\\')
@@ -160,12 +100,9 @@ def ass_time(seconds):
     return f'{h}:{m:02}:{s:02}.{cs:02}'
 
 
-def download(url, target, source_url=None, required=True):
+def download(url, target, source_url=None):
     if not str(url).startswith(('https://', 'http://')):
-        if required:
-            raise SystemExit(f'Invalid media URL: {url}')
-        print(f'WARNING: Optional media URL is invalid; continuing without it: {url}')
-        return False
+        raise SystemExit(f'Invalid required media URL: {url}')
 
     if target.exists():
         target.unlink()
@@ -192,34 +129,18 @@ def download(url, target, source_url=None, required=True):
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         detail = (result.stderr or result.stdout or 'unknown download error').strip()
-        if required:
-            raise SystemExit(
-                f'Failed to download required media after retries: {url}\n'
-                f'curl exit code {result.returncode}: {detail}\n'
-                'Use a direct downloadable media URL that permits automated access from CI.'
-            )
-        print(
-            f'WARNING: Optional music download failed after retries: {url}\n'
+        raise SystemExit(
+            f'Failed to download required media after retries: {url}\n'
             f'curl exit code {result.returncode}: {detail}\n'
-            'Continuing without music.'
+            'Use a direct downloadable media URL that permits automated access from CI.'
         )
-        if target.exists():
-            target.unlink()
-        return False
 
     if not target.exists() or target.stat().st_size < 10_000:
         size = target.stat().st_size if target.exists() else 0
-        if required:
-            raise SystemExit(
-                f'Downloaded required media is suspiciously small ({size} bytes): {url}. '
-                'The URL may have returned an HTML/error page instead of media.'
-            )
-        print(f'WARNING: Optional music is suspiciously small ({size} bytes); continuing without music.')
-        if target.exists():
-            target.unlink()
-        return False
-
-    return True
+        raise SystemExit(
+            f'Downloaded required media is suspiciously small ({size} bytes): {url}. '
+            'The URL may have returned an HTML/error page instead of media.'
+        )
 
 
 def has_stream(path, stream_type):
@@ -276,17 +197,11 @@ background = OUT / 'background.asset'
 music = OUT / 'music.asset'
 video = OUT / 'short.mp4'
 
-download(background_url, background, data.get('background_source_url'), required=True)
+download(background_url, background, data.get('background_source_url'))
 assert_stream(background, 'v')
 
-music_ok = False
-if music_url:
-    music_ok = download(music_url, music, data.get('music_source_url'), required=False)
-    if music_ok and not has_stream(music, 'a'):
-        print('WARNING: Downloaded optional music is not a valid audio stream; continuing without music.')
-        music_ok = False
-        if music.exists():
-            music.unlink()
+download(music_url, music, data.get('music_source_url'))
+assert_stream(music, 'a')
 
 vf = (
     'scale=1080:1920:force_original_aspect_ratio=increase,'
@@ -294,34 +209,21 @@ vf = (
     f"subtitles='{ass.as_posix()}'"
 )
 
-if music_ok:
-    ffmpeg_cmd = [
-        'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
-        '-stream_loop', '-1', '-i', str(music),
-        '-vf', vf,
-        '-t', str(duration),
-        '-map', '0:v:0', '-map', '1:a:0',
-        '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-        '-c:a', 'aac', '-b:a', '192k',
-        '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
-        '-shortest', str(video)
-    ]
-else:
-    ffmpeg_cmd = [
-        'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
-        '-vf', vf,
-        '-t', str(duration),
-        '-map', '0:v:0',
-        '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-        '-an', str(video)
-    ]
+ffmpeg_cmd = [
+    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
+    '-stream_loop', '-1', '-i', str(music),
+    '-vf', vf,
+    '-t', str(duration),
+    '-map', '0:v:0', '-map', '1:a:0',
+    '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac', '-b:a', '192k',
+    '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
+    '-shortest', str(video)
+]
 
 subprocess.run(ffmpeg_cmd, check=True)
 
 print('Background source:', data.get('background_source_url', 'not provided'))
-if music_ok:
-    print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
-    print('Music source:', data.get('music_source_url', 'not provided'))
-else:
-    print('Music: unavailable from CI; rendered without music')
+print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
+print('Music source:', data.get('music_source_url', 'not provided'))
 print(video)
