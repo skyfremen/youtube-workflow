@@ -11,7 +11,7 @@ with CONTENT.open(encoding='utf-8') as f:
 
 required = [
     'category', 'setup', 'payoff', 'title',
-    'background_url', 'music_url'
+    'background_url'
 ]
 missing = [k for k in required if not data.get(k)]
 if missing:
@@ -23,9 +23,10 @@ payoff = data['payoff']
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
 handle = '@WACKYINSIGHTS'
 background_url = data['background_url']
-music_url = data['music_url']
+music_url = data.get('music_url', '')
 
-# Fixed meme-short pacing: no TTS, music only.
+# Fixed meme-short pacing: no TTS. Music is preferred but not allowed to
+# block publishing if a third-party host rejects automated CI downloads.
 duration = 12.0
 reveal_at = 6.0
 
@@ -64,15 +65,20 @@ def ass_time(seconds):
     return f'{h}:{m:02}:{s:02}.{cs:02}'
 
 
-def download(url, target, source_url=None):
-    """Download media with browser-like headers, redirects, and retries.
+def download(url, target, source_url=None, required=True):
+    """Download media using browser-like headers and retries.
 
-    Some royalty-free media hosts reject minimal urllib requests from CI runners.
-    curl is used here because it handles redirects/retries reliably and lets us
-    send the same basic headers a normal browser download would include.
+    Returns True on success. For optional media, returns False rather than
+    stopping the whole render when a third-party CDN blocks GitHub Actions.
     """
     if not str(url).startswith(('https://', 'http://')):
-        raise SystemExit(f'Invalid media URL: {url}')
+        if required:
+            raise SystemExit(f'Invalid media URL: {url}')
+        print(f'WARNING: Optional media URL is invalid; continuing without it: {url}')
+        return False
+
+    if target.exists():
+        target.unlink()
 
     cmd = [
         'curl', '-L', '--fail-with-body', '--silent', '--show-error',
@@ -96,33 +102,53 @@ def download(url, target, source_url=None):
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         detail = (result.stderr or result.stdout or 'unknown download error').strip()
-        raise SystemExit(
-            f'Failed to download media after retries: {url}\n'
+        if required:
+            raise SystemExit(
+                f'Failed to download required media after retries: {url}\n'
+                f'curl exit code {result.returncode}: {detail}\n'
+                'Use a direct downloadable media URL that permits automated access from CI.'
+            )
+        print(
+            f'WARNING: Optional music download failed after retries: {url}\n'
             f'curl exit code {result.returncode}: {detail}\n'
-            'Use a direct downloadable media URL that permits automated access from CI.'
+            'Continuing without music.'
         )
+        if target.exists():
+            target.unlink()
+        return False
 
     if not target.exists() or target.stat().st_size < 10_000:
         size = target.stat().st_size if target.exists() else 0
-        raise SystemExit(
-            f'Downloaded media is suspiciously small ({size} bytes): {url}. '
-            'The URL may have returned an HTML/error page instead of media.'
-        )
+        if required:
+            raise SystemExit(
+                f'Downloaded required media is suspiciously small ({size} bytes): {url}. '
+                'The URL may have returned an HTML/error page instead of media.'
+            )
+        print(f'WARNING: Optional music is suspiciously small ({size} bytes); continuing without music.')
+        if target.exists():
+            target.unlink()
+        return False
+
+    return True
 
 
-def assert_stream(path, stream_type):
+def has_stream(path, stream_type):
     result = subprocess.run([
         'ffprobe', '-v', 'error', '-select_streams', f'{stream_type}:0',
         '-show_entries', 'stream=codec_type', '-of', 'default=nw=1:nk=1', str(path)
     ], capture_output=True, text=True)
     expected = 'video' if stream_type == 'v' else 'audio'
-    if result.returncode != 0 or expected not in result.stdout:
-        probe_error = (result.stderr or '').strip()
-        raise SystemExit(
-            f'{path.name} is not a valid direct {expected} media file. '
-            'The selector must provide a direct downloadable asset URL, not a web page.'
-            + (f' ffprobe: {probe_error}' if probe_error else '')
-        )
+    return result.returncode == 0 and expected in result.stdout
+
+
+def assert_stream(path, stream_type):
+    if has_stream(path, stream_type):
+        return
+    expected = 'video' if stream_type == 'v' else 'audio'
+    raise SystemExit(
+        f'{path.name} is not a valid direct {expected} media file. '
+        'The selector must provide a direct downloadable asset URL, not a web page.'
+    )
 
 ass = OUT / 'overlay.ass'
 header = f'DID YOU KNOW?\\N{ass_escape_text(category)} FACT'
@@ -160,10 +186,17 @@ background = OUT / 'background.asset'
 music = OUT / 'music.asset'
 video = OUT / 'short.mp4'
 
-download(background_url, background, data.get('background_source_url'))
-download(music_url, music, data.get('music_source_url'))
+download(background_url, background, data.get('background_source_url'), required=True)
 assert_stream(background, 'v')
-assert_stream(music, 'a')
+
+music_ok = False
+if music_url:
+    music_ok = download(music_url, music, data.get('music_source_url'), required=False)
+    if music_ok and not has_stream(music, 'a'):
+        print('WARNING: Downloaded optional music is not a valid audio stream; continuing without music.')
+        music_ok = False
+        if music.exists():
+            music.unlink()
 
 vf = (
     'scale=1080:1920:force_original_aspect_ratio=increase,'
@@ -171,19 +204,36 @@ vf = (
     f"subtitles='{ass.as_posix()}'"
 )
 
-subprocess.run([
-    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
-    '-stream_loop', '-1', '-i', str(music),
-    '-vf', vf,
-    '-t', str(duration),
-    '-map', '0:v:0', '-map', '1:a:0',
-    '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-    '-c:a', 'aac', '-b:a', '192k',
-    '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
-    '-shortest', str(video)
-], check=True)
+if music_ok:
+    ffmpeg_cmd = [
+        'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
+        '-stream_loop', '-1', '-i', str(music),
+        '-vf', vf,
+        '-t', str(duration),
+        '-map', '0:v:0', '-map', '1:a:0',
+        '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
+        '-c:a', 'aac', '-b:a', '192k',
+        '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
+        '-shortest', str(video)
+    ]
+else:
+    # A silent fallback is intentional: unreliable third-party music hosting
+    # must never prevent an otherwise valid Short from being published.
+    ffmpeg_cmd = [
+        'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
+        '-vf', vf,
+        '-t', str(duration),
+        '-map', '0:v:0',
+        '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
+        '-an', str(video)
+    ]
+
+subprocess.run(ffmpeg_cmd, check=True)
 
 print('Background source:', data.get('background_source_url', 'not provided'))
-print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
-print('Music source:', data.get('music_source_url', 'not provided'))
+if music_ok:
+    print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
+    print('Music source:', data.get('music_source_url', 'not provided'))
+else:
+    print('Music: unavailable from CI; rendered without music')
 print(video)
