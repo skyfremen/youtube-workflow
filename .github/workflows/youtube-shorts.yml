@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'youtube-shorts-bot/content/latest.json'
+      - 'youtube-shorts-bot/render.py'
+      - '.github/workflows/youtube-shorts.yml'
   workflow_dispatch:
 
 jobs:
@@ -27,7 +29,7 @@ jobs:
       - name: Install system tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          sudo apt-get install -y ffmpeg fonts-dejavu-core curl
 
       - name: Install Python packages
         run: pip install -r youtube-shorts-bot/requirements.txt
