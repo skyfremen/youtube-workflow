@@ -3,26 +3,38 @@ from pathlib import Path
 
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
-CATALOG = BASE / 'music_catalog.json'
+MUSIC_CATALOG = BASE / 'music_catalog.json'
+BACKGROUND_CATALOG = BASE / 'background_catalog.json'
 OUT = BASE / 'output'
-ASSETS = BASE / 'assets'
 OUT.mkdir(exist_ok=True)
-ASSETS.mkdir(exist_ok=True)
 
 with CONTENT.open(encoding='utf-8') as f:
     data = json.load(f)
-with CATALOG.open(encoding='utf-8') as f:
+with MUSIC_CATALOG.open(encoding='utf-8') as f:
     music_catalog = json.load(f)
+with BACKGROUND_CATALOG.open(encoding='utf-8') as f:
+    background_catalog = json.load(f)
 
-category = data.get('category', 'TECH').upper()
-setup = data.get('setup') or data.get('hook') or ''
-payoff = data.get('payoff') or ''
+required = ['category', 'setup', 'payoff', 'title']
+missing = [k for k in required if not data.get(k)]
+if missing:
+    raise SystemExit(f"No active Short content. Missing: {', '.join(missing)}")
+
+category = data['category'].upper()
+setup = data['setup']
+payoff = data['payoff']
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
 handle = '@WACKYINSIGHTS'
+
 music_key = data.get('music', 'monkeys_spinning_monkeys')
 if music_key not in music_catalog:
     music_key = 'monkeys_spinning_monkeys'
 music_info = music_catalog[music_key]
+
+background_key = data.get('background', 'phone_scroll')
+if background_key not in background_catalog:
+    background_key = 'phone_scroll'
+background_info = background_catalog[background_key]
 
 # Fixed meme-short pacing: no TTS, music only.
 duration = 12.0
@@ -85,31 +97,23 @@ Dialogue: 0,0:00:00.00,{ass_time(duration)},Handle,,0,0,0,,{ass_escape(handle)}
 Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRIBE
 ''', encoding='utf-8')
 
-video = OUT / 'short.mp4'
-background = ASSETS / 'background.mp4'
 music = OUT / 'music.ogg'
+background = OUT / 'background.mp4'
+video = OUT / 'short.mp4'
 
-# Download the track chosen in latest.json. The scheduled content generator rotates this key.
-req = urllib.request.Request(music_info['url'], headers={'User-Agent': 'WackyInsightsShorts/1.0'})
-with urllib.request.urlopen(req, timeout=60) as src, music.open('wb') as dst:
-    dst.write(src.read())
+for info, target in [(music_info, music), (background_info, background)]:
+    req = urllib.request.Request(info['url'], headers={'User-Agent': 'WackyInsightsShorts/1.0'})
+    with urllib.request.urlopen(req, timeout=120) as src, target.open('wb') as dst:
+        dst.write(src.read())
 
-if background.exists():
-    input_args = ['-stream_loop', '-1', '-i', str(background)]
-    vf = (
-        'scale=1080:1920:force_original_aspect_ratio=increase,'
-        'crop=1080:1920,eq=brightness=-0.14:saturation=0.8,'
-        f"subtitles='{ass.as_posix()}'"
-    )
-else:
-    input_args = ['-f', 'lavfi', '-i', f'testsrc2=s=1080x1920:r=30:d={duration}']
-    vf = (
-        'boxblur=18:8,eq=brightness=-0.30:saturation=0.55,'
-        f"subtitles='{ass.as_posix()}'"
-    )
+vf = (
+    'scale=1080:1920:force_original_aspect_ratio=increase,'
+    'crop=1080:1920,eq=brightness=-0.14:saturation=0.85,'
+    f"subtitles='{ass.as_posix()}'"
+)
 
 subprocess.run([
-    'ffmpeg', '-y', *input_args,
+    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
     '-stream_loop', '-1', '-i', str(music),
     '-vf', vf,
     '-t', str(duration),
@@ -119,5 +123,6 @@ subprocess.run([
     '-shortest', str(video)
 ], check=True)
 
-print(f"Rendered with music: {music_info['title']} by {music_info['artist']}")
+print(f"Background: {background_info['label']}")
+print(f"Music: {music_info['title']} by {music_info['artist']}")
 print(video)
