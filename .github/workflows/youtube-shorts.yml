@@ -1,0 +1,46 @@
+name: Build and upload YouTube Short
+
+on:
+  push:
+    paths:
+      - 'youtube-shorts-bot/content/latest.json'
+  workflow_dispatch:
+
+jobs:
+  build-upload:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng fonts-dejavu-core
+
+      - name: Install Python packages
+        run: pip install -r youtube-shorts-bot/requirements.txt
+
+      - name: Render Short
+        run: python youtube-shorts-bot/render.py
+
+      - name: Upload video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-short
+          path: youtube-shorts-bot/output/short.mp4
+
+      - name: Upload to YouTube
+        if: ${{ secrets.YOUTUBE_CLIENT_ID != '' && secrets.YOUTUBE_CLIENT_SECRET != '' && secrets.YOUTUBE_REFRESH_TOKEN != '' }}
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_PRIVACY: private
+        run: python youtube-shorts-bot/upload.py
