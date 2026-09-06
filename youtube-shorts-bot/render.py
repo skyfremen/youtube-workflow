@@ -30,12 +30,19 @@ duration = 12.0
 reveal_at = 6.0
 
 
-def ass_escape(text):
-    return str(text).replace('\\', r'\\').replace('{', r'\{').replace('}', r'\}')
+def ass_escape_text(text):
+    """Escape user text only. Do not escape ASS control sequences such as \\N."""
+    return (
+        str(text)
+        .replace('\\', r'\\')
+        .replace('{', r'\{')
+        .replace('}', r'\}')
+    )
 
 
-def wrap(text, width):
-    words = str(text).upper().split()
+def wrap(text, width=18):
+    """Wrap text before inserting ASS newline codes so \\N remains functional."""
+    words = ass_escape_text(str(text).upper()).split()
     lines, current = [], []
     for word in words:
         candidate = ' '.join(current + [word])
@@ -80,9 +87,11 @@ def assert_stream(path, stream_type):
         )
 
 ass = OUT / 'overlay.ass'
-header = f'DID YOU KNOW?\\N{category} FACT'
-setup_text = wrap(setup, 24)
-payoff_text = wrap(payoff, 24)
+header = f'DID YOU KNOW?\\N{ass_escape_text(category)} FACT'
+setup_text = wrap(setup, 18)
+payoff_text = wrap(payoff, 18)
+cta_text = ass_escape_text(cta)
+handle_text = ass_escape_text(handle)
 
 ass.write_text(f'''[Script Info]
 ScriptType: v4.00+
@@ -93,19 +102,19 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
-Style: Header,DejaVu Sans,82,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,3,7,0,8,70,70,220,1
-Style: Main,DejaVu Sans,72,&H00FFFFFF,&H00FFFFFF,&H00101010,&H00000000,-1,0,0,0,100,100,2,0,1,5,2,5,80,80,0,1
-Style: CTA,DejaVu Sans,42,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,8,80,80,525,1
-Style: Handle,DejaVu Sans,52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,3,5,0,2,110,110,300,1
-Style: Subscribe,DejaVu Sans,42,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,2,110,110,235,1
+Style: Header,DejaVu Sans,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,3,7,0,8,100,100,220,1
+Style: Main,DejaVu Sans,64,&H00FFFFFF,&H00FFFFFF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,5,2,5,145,145,0,1
+Style: CTA,DejaVu Sans,40,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,8,130,130,525,1
+Style: Handle,DejaVu Sans,48,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,1,0,3,5,0,2,130,130,300,1
+Style: Subscribe,DejaVu Sans,40,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,2,130,130,235,1
 
 [Events]
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
-Dialogue: 0,0:00:00.00,{ass_time(duration)},Header,,0,0,0,,{ass_escape(header)}
-Dialogue: 0,0:00:00.50,{ass_time(reveal_at)},Main,,0,0,0,,{ass_escape(setup_text)}
-Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Main,,0,0,0,,{ass_escape(payoff_text)}
-Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},CTA,,0,0,0,,{ass_escape(cta)}
-Dialogue: 0,0:00:00.00,{ass_time(duration)},Handle,,0,0,0,,{ass_escape(handle)}
+Dialogue: 0,0:00:00.00,{ass_time(duration)},Header,,0,0,0,,{header}
+Dialogue: 0,0:00:00.50,{ass_time(reveal_at)},Main,,0,0,0,,{setup_text}
+Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Main,,0,0,0,,{payoff_text}
+Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},CTA,,0,0,0,,{cta_text}
+Dialogue: 0,0:00:00.00,{ass_time(duration)},Handle,,0,0,0,,{handle_text}
 Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRIBE
 ''', encoding='utf-8')
 
