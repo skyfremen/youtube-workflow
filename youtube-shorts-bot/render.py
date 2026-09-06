@@ -1,4 +1,4 @@
-import json, subprocess, urllib.parse
+import json, subprocess, urllib.parse, unicodedata
 from pathlib import Path
 
 BASE = Path(__file__).parent
@@ -31,10 +31,35 @@ duration = 12.0
 reveal_at = 6.0
 
 
+def sanitize_overlay_text(text):
+    """Remove emoji/symbol glyphs that DejaVu Sans cannot render reliably in ASS.
+
+    This prevents missing-glyph squares in the final YouTube Short. Normal
+    letters, numbers, punctuation and accented text are preserved.
+    """
+    cleaned = []
+    for ch in str(text):
+        codepoint = ord(ch)
+        category = unicodedata.category(ch)
+
+        # Strip emoji presentation helpers and joiners.
+        if ch == '\u200d' or 0xFE00 <= codepoint <= 0xFE0F:
+            continue
+
+        # Most emoji are supplementary-plane characters or Unicode symbols.
+        # DejaVu Sans in the GitHub runner does not render these consistently.
+        if codepoint > 0xFFFF or category in {'So', 'Sk'}:
+            continue
+
+        cleaned.append(ch)
+
+    return ''.join(cleaned).strip()
+
+
 def ass_escape_text(text):
     """Escape user text only. Do not escape ASS control sequences such as \\N."""
     return (
-        str(text)
+        sanitize_overlay_text(text)
         .replace('\\', r'\\')
         .replace('{', r'\{')
         .replace('}', r'\}')
