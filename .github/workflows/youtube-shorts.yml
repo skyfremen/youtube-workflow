@@ -5,15 +5,25 @@ on:
     paths:
       - 'youtube-shorts-bot/content/latest.json'
       - 'youtube-shorts-bot/render.py'
+      - 'youtube-shorts-bot/upload.py'
+      - 'youtube-shorts-bot/workflow_common.py'
+      - 'youtube-shorts-bot/validate_content.py'
+      - 'youtube-shorts-bot/verify_render.py'
+      - 'youtube-shorts-bot/publish.py'
+      - 'youtube-shorts-bot/finalize.py'
       - '.github/workflows/youtube-shorts.yml'
   workflow_dispatch:
+
+concurrency:
+  group: youtube-short-publish
+  cancel-in-progress: false
 
 jobs:
   build-upload:
     if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip upload]') }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     env:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -21,6 +31,8 @@ jobs:
       YOUTUBE_PRIVACY: public
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,8 +47,14 @@ jobs:
       - name: Install Python packages
         run: pip install -r youtube-shorts-bot/requirements.txt
 
+      - name: Validate content and duplicate protection
+        run: python youtube-shorts-bot/validate_content.py
+
       - name: Render Short
         run: python youtube-shorts-bot/render.py
+
+      - name: Verify rendered video has mandatory music
+        run: python youtube-shorts-bot/verify_render.py
 
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
@@ -44,6 +62,40 @@ jobs:
           name: youtube-short
           path: youtube-shorts-bot/output/short.mp4
 
-      - name: Upload to YouTube
-        if: ${{ env.YOUTUBE_CLIENT_ID != '' && env.YOUTUBE_CLIENT_SECRET != '' && env.YOUTUBE_REFRESH_TOKEN != '' }}
-        run: python youtube-shorts-bot/upload.py
+      - name: Validate YouTube credentials
+        shell: bash
+        run: |
+          for name in YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required GitHub secret: $name"
+              exit 1
+            fi
+          done
+
+      - name: Upload to YouTube and capture video ID
+        run: python youtube-shorts-bot/publish.py
+
+      - name: Archive successful upload
+        run: python youtube-shorts-bot/finalize.py
+
+      - name: Upload publish metadata artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-publish-metadata
+          path: youtube-shorts-bot/output/upload_result.json
+
+      - name: Commit successful archive
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add youtube-shorts-bot/content/archive/
+
+          if git diff --cached --quiet; then
+            echo "Archive already up to date."
+            exit 0
+          fi
+
+          git commit -m "[skip upload] archive successful YouTube Short ${GITHUB_SHA::7}"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
