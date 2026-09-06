@@ -25,30 +25,101 @@ handle = '@WACKYINSIGHTS'
 background_url = data['background_url']
 music_url = data.get('music_url', '')
 
-# Fixed meme-short pacing: no TTS. Music is preferred but not allowed to
-# block publishing if a third-party host rejects automated CI downloads.
 duration = 12.0
 reveal_at = 6.0
 
+# Font-safe fallbacks for common emoji/symbols used in Shorts captions.
+# These render reliably with DejaVu Sans in GitHub Actions.
+EMOJI_FALLBACKS = {
+    '💀': '☠',
+    '☠️': '☠',
+    '❤️': '♥',
+    '❤': '♥',
+    '💔': '♥',
+    '⭐': '★',
+    '🌟': '★',
+    '✨': '*',
+    '⚡': '⚡',
+    '🔥': '!!!',
+    '😂': 'LOL',
+    '🤣': 'LOL',
+    '😆': 'LOL',
+    '😅': 'HEH',
+    '😭': ':(',
+    '😢': ':(',
+    '😱': '!!',
+    '😳': '!!',
+    '😬': ':|',
+    '🙃': ':)',
+    '🙂': ':)',
+    '😊': ':)',
+    '😉': ';)',
+    '😍': '♥',
+    '😘': '♥',
+    '🥰': '♥',
+    '😎': 'COOL',
+    '🤔': '?',
+    '🤨': '?',
+    '🫠': '...',
+    '🙄': '...',
+    '👀': 'OO',
+    '👁️': 'O',
+    '👄': '-',
+    '👍': '+1',
+    '👎': '-1',
+    '👏': 'CLAP',
+    '🙏': 'THANKS',
+    '💯': '100%',
+    '✅': '✓',
+    '❌': 'X',
+    '✔️': '✓',
+    '❗': '!',
+    '❓': '?',
+    '🚨': '!!!',
+    '📱': 'PHONE',
+    '💻': 'PC',
+    '⌚': 'WATCH',
+    '⏰': 'ALARM',
+    '🛌': 'BED',
+    '😴': 'ZZZ',
+    '💤': 'ZZZ',
+    '☕': 'COFFEE',
+    '🍕': 'PIZZA',
+    '🍔': 'BURGER',
+    '🍟': 'FRIES',
+    '🍿': 'POPCORN',
+    '🛒': 'CART',
+    '💸': '$$$',
+    '💰': '$$$',
+    '🎉': '!!!',
+    '🎯': 'TARGET',
+    '🚀': 'GO!',
+}
+
+
+def replace_emoji_fallbacks(text):
+    """Replace known emoji with font-safe equivalents before sanitizing."""
+    value = str(text)
+    # Longest sequences first so variants such as ❤️ are handled correctly.
+    for emoji in sorted(EMOJI_FALLBACKS, key=len, reverse=True):
+        value = value.replace(emoji, EMOJI_FALLBACKS[emoji])
+    return value
+
 
 def sanitize_overlay_text(text):
-    """Remove emoji/symbol glyphs that DejaVu Sans cannot render reliably in ASS.
-
-    This prevents missing-glyph squares in the final YouTube Short. Normal
-    letters, numbers, punctuation and accented text are preserved.
-    """
+    """Replace common emoji, then remove unsupported glyphs that would show as boxes."""
+    text = replace_emoji_fallbacks(text)
     cleaned = []
-    for ch in str(text):
+    for ch in text:
         codepoint = ord(ch)
         category = unicodedata.category(ch)
 
-        # Strip emoji presentation helpers and joiners.
         if ch == '\u200d' or 0xFE00 <= codepoint <= 0xFE0F:
             continue
 
-        # Most emoji are supplementary-plane characters or Unicode symbols.
-        # DejaVu Sans in the GitHub runner does not render these consistently.
-        if codepoint > 0xFFFF or category in {'So', 'Sk'}:
+        # Preserve a small set of BMP symbols known to render in DejaVu Sans.
+        safe_symbols = {'☠', '♥', '★', '⚡', '✓'}
+        if codepoint > 0xFFFF or (category in {'So', 'Sk'} and ch not in safe_symbols):
             continue
 
         cleaned.append(ch)
@@ -67,7 +138,6 @@ def ass_escape_text(text):
 
 
 def wrap(text, width=18):
-    """Wrap text before inserting ASS newline codes so \\N remains functional."""
     words = ass_escape_text(str(text).upper()).split()
     lines, current = [], []
     for word in words:
@@ -91,11 +161,6 @@ def ass_time(seconds):
 
 
 def download(url, target, source_url=None, required=True):
-    """Download media using browser-like headers and retries.
-
-    Returns True on success. For optional media, returns False rather than
-    stopping the whole render when a third-party CDN blocks GitHub Actions.
-    """
     if not str(url).startswith(('https://', 'http://')):
         if required:
             raise SystemExit(f'Invalid media URL: {url}')
@@ -242,8 +307,6 @@ if music_ok:
         '-shortest', str(video)
     ]
 else:
-    # A silent fallback is intentional: unreliable third-party music hosting
-    # must never prevent an otherwise valid Short from being published.
     ffmpeg_cmd = [
         'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
         '-vf', vf,
