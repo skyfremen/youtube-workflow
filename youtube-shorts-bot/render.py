@@ -215,8 +215,8 @@ ffmpeg_cmd = [
     '-vf', vf,
     '-t', str(duration),
     '-map', '0:v:0', '-map', '1:a:0',
-    '-c:v', 'libx264', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-    '-c:a', 'aac', '-b:a', '192k',
+    '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac', '-b:a', '128k',
     '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
     '-shortest', str(video)
 ]
