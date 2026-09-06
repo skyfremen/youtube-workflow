@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_PRIVACY: private
     steps:
       - uses: actions/checkout@v4
 
@@ -37,10 +42,5 @@ jobs:
           path: youtube-shorts-bot/output/short.mp4
 
       - name: Upload to YouTube
-        if: ${{ secrets.YOUTUBE_CLIENT_ID != '' && secrets.YOUTUBE_CLIENT_SECRET != '' && secrets.YOUTUBE_REFRESH_TOKEN != '' }}
-        env:
-          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-          YOUTUBE_PRIVACY: private
+        if: ${{ env.YOUTUBE_CLIENT_ID != '' && env.YOUTUBE_CLIENT_SECRET != '' && env.YOUTUBE_REFRESH_TOKEN != '' }}
         run: python youtube-shorts-bot/upload.py
