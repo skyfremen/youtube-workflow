@@ -3,6 +3,7 @@ from pathlib import Path
 
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
+CATALOG = BASE / 'music_catalog.json'
 OUT = BASE / 'output'
 ASSETS = BASE / 'assets'
 OUT.mkdir(exist_ok=True)
@@ -10,12 +11,18 @@ ASSETS.mkdir(exist_ok=True)
 
 with CONTENT.open(encoding='utf-8') as f:
     data = json.load(f)
+with CATALOG.open(encoding='utf-8') as f:
+    music_catalog = json.load(f)
 
 category = data.get('category', 'TECH').upper()
 setup = data.get('setup') or data.get('hook') or ''
 payoff = data.get('payoff') or ''
 cta = data.get('cta', 'DOUBLE TAP TO AGREE').upper()
 handle = '@WACKYINSIGHTS'
+music_key = data.get('music', 'monkeys_spinning_monkeys')
+if music_key not in music_catalog:
+    music_key = 'monkeys_spinning_monkeys'
+music_info = music_catalog[music_key]
 
 # Fixed meme-short pacing: no TTS, music only.
 duration = 12.0
@@ -80,14 +87,12 @@ Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRI
 
 video = OUT / 'short.mp4'
 background = ASSETS / 'background.mp4'
-music = ASSETS / 'music.ogg'
+music = OUT / 'music.ogg'
 
-# Default meme/comedy music. A local assets/music.ogg can override this.
-if not music.exists():
-    music_url = 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Monkeys_Spinning_Monkeys_by_Kevin_MacLeod.ogg'
-    req = urllib.request.Request(music_url, headers={'User-Agent': 'WackyInsightsShorts/1.0'})
-    with urllib.request.urlopen(req, timeout=60) as src, music.open('wb') as dst:
-        dst.write(src.read())
+# Download the track chosen in latest.json. The scheduled content generator rotates this key.
+req = urllib.request.Request(music_info['url'], headers={'User-Agent': 'WackyInsightsShorts/1.0'})
+with urllib.request.urlopen(req, timeout=60) as src, music.open('wb') as dst:
+    dst.write(src.read())
 
 if background.exists():
     input_args = ['-stream_loop', '-1', '-i', str(background)]
@@ -114,4 +119,5 @@ subprocess.run([
     '-shortest', str(video)
 ], check=True)
 
+print(f"Rendered with music: {music_info['title']} by {music_info['artist']}")
 print(video)
