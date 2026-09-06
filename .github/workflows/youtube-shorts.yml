@@ -10,6 +10,7 @@ on:
 
 jobs:
   build-upload:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip upload]') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
