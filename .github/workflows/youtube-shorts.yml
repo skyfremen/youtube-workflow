@@ -38,14 +38,27 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: youtube-shorts-bot/requirements.txt
 
-      - name: Install system tools
+      - name: Ensure system tools
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core curl
+          need_install=0
+          command -v ffmpeg >/dev/null 2>&1 || need_install=1
+          command -v ffprobe >/dev/null 2>&1 || need_install=1
+          command -v curl >/dev/null 2>&1 || need_install=1
+          fc-list | grep -qi 'DejaVu Sans' || need_install=1
+
+          if [ "$need_install" -eq 1 ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core curl
+          else
+            echo "FFmpeg, curl and DejaVu Sans already available; skipping apt setup."
+          fi
 
       - name: Install Python packages
-        run: pip install -r youtube-shorts-bot/requirements.txt
+        run: pip install --disable-pip-version-check -r youtube-shorts-bot/requirements.txt
 
       - name: Validate content and duplicate protection
         run: python youtube-shorts-bot/validate_content.py
