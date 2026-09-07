@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "design_system": "wacky_insights_v2",
   "visual_policy": {
     "style": "editorial_scene_led_2d_vector_explainer",
@@ -12,168 +12,87 @@
     "max_static_gap_seconds": 1.5,
     "distinct_scene_transitions": true,
     "same_environment_new_scene_minimum_differences": 2,
-    "notes": "Scenes should feel like continuous animated storytelling. A true scene cut should introduce a meaningfully different shot. Near-identical background/framing changes belong inside one scene as camera moves, inserts, reactions or state changes. Avoid title-plus-card layouts, presentation grids and blink-like cuts."
+    "notes": "Scenes should feel like continuous animated storytelling. A true scene cut should introduce a meaningfully different shot. Near-identical background/framing changes belong inside one scene as camera moves, inserts, reactions or state changes. Avoid title-plus-card layouts, presentation grids and blink-like cuts. Production character/environment artwork must come from the curated v2 library or an approved image-generation source, never primitive placeholder SVG art."
   },
   "characters": {
     "adult_everyday_01_v2": {
-      "file": "assets/generated/adult_everyday_01_v2.svg",
-      "description": "Professional rounded editorial 2D everyday adult character with modular limbs and expressive face, designed for home and general explainer scenes.",
-      "tags": [
-        "adult",
-        "character",
-        "everyday",
-        "modular",
-        "expressive"
-      ],
+      "file": "assets/v2/characters/male_01/neutral.webp",
+      "description": "Wacky Insights main adult male character in polished illustrated editorial-cartoon style.",
+      "tags": ["adult", "male", "character", "everyday", "expressive", "main"],
       "style_id": "wacky_insights_v2",
       "quality": "production",
       "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "character_main_v2"
+      "source": "chatgpt_seed",
+      "family": "male_01",
+      "pose": "neutral"
+    },
+    "female_01_v2": {
+      "file": "assets/v2/characters/female_01/neutral.webp",
+      "description": "Reusable adult female character in the same Wacky Insights illustrated style.",
+      "tags": ["adult", "female", "character", "everyday", "expressive"],
+      "style_id": "wacky_insights_v2",
+      "quality": "production",
+      "reusable": true,
+      "source": "chatgpt_seed",
+      "family": "female_01",
+      "pose": "neutral"
     }
   },
   "environments": {
     "living_room_01_v2": {
-      "file": "assets/generated/living_room_01_v2.svg",
-      "description": "Medium-detail modern living room with clear foreground, midground and doorway path for scene-led explainer animation.",
-      "tags": [
-        "living room",
-        "home",
-        "sofa",
-        "doorway",
-        "interior"
-      ],
+      "file": "assets/v2/environments/living_room_01.webp",
+      "description": "Polished illustrated modern living room for home and everyday-life scenes.",
+      "tags": ["living room", "home", "sofa", "interior"],
       "style_id": "wacky_insights_v2",
       "quality": "production",
       "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "living_room_v2"
+      "source": "chatgpt_seed"
+    },
+    "kitchen_01_v2": {
+      "file": "assets/v2/environments/kitchen_01.webp",
+      "description": "Polished illustrated home kitchen for everyday-life explainer scenes.",
+      "tags": ["kitchen", "home", "interior", "counter", "appliance"],
+      "style_id": "wacky_insights_v2",
+      "quality": "production",
+      "reusable": true,
+      "source": "chatgpt_seed"
     },
     "kitchen_02_v2": {
-      "file": "assets/generated/kitchen_02_v2.svg",
-      "description": "Professional editorial 2D home kitchen with medium detail, soft depth and space for character action and integrated labels.",
-      "tags": [
-        "kitchen",
-        "home",
-        "interior",
-        "counter",
-        "appliance"
-      ],
+      "file": "assets/v2/environments/kitchen_01.webp",
+      "description": "Compatibility alias to the curated illustrated kitchen asset.",
+      "tags": ["kitchen", "home", "interior", "counter", "appliance"],
       "style_id": "wacky_insights_v2",
       "quality": "production",
       "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "kitchen_v2"
+      "source": "chatgpt_seed",
+      "alias_of": "kitchen_01_v2"
     },
-    "memory_control_room_01_v2": {
-      "file": "assets/generated/memory_control_room_01_v2.svg",
-      "description": "Reusable editorial explainer control-room environment for cognition metaphors, with modular screens, queue slots and archive areas.",
-      "tags": [
-        "memory",
-        "cognition",
-        "control room",
-        "metaphor",
-        "screens"
-      ],
+    "bedroom_01_v2": {
+      "file": "assets/v2/environments/bedroom_01.webp",
+      "description": "Polished illustrated bedroom for sleep, home and lifestyle scenes.",
+      "tags": ["bedroom", "home", "sleep", "interior"],
       "style_id": "wacky_insights_v2",
       "quality": "production",
       "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "memory_control_room_v2"
-    }
-  },
-  "props": {
-    "mission_note_01_v2": {
-      "file": "assets/generated/mission_note_01_v2.svg",
-      "description": "Reusable task/goal card prop with simple expressive face and modular short text field for cognition and productivity explainers.",
-      "tags": [
-        "task",
-        "goal",
-        "note",
-        "memory",
-        "personification"
-      ],
+      "source": "chatgpt_seed"
+    },
+    "office_01_v2": {
+      "file": "assets/v2/environments/office_01.webp",
+      "description": "Polished illustrated office environment for work and productivity scenes.",
+      "tags": ["office", "work", "desk", "computer", "interior"],
       "style_id": "wacky_insights_v2",
       "quality": "production",
       "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "mission_note_v2"
+      "source": "chatgpt_seed"
     }
   },
-  "infographics": {
-    "event_boundary_overlay_01_v2": {
-      "file": "assets/generated/event_boundary_overlay_01_v2.svg",
-      "description": "Reusable event-segmentation overlay with two context bubbles, boundary marker and animated transfer arrow for embedding inside active scenes.",
-      "tags": [
-        "event boundary",
-        "context",
-        "memory",
-        "overlay",
-        "segmentation"
-      ],
-      "style_id": "wacky_insights_v2",
-      "quality": "production",
-      "reusable": true,
-      "generated_by": "phase7_asset_intelligence",
-      "generated_from_need": "event_boundary_overlay_v2"
-    }
-  },
+  "props": {},
+  "infographics": {},
   "motions": [
-    "fade_in",
-    "slide_in_left",
-    "slow_zoom",
-    "punch_zoom",
-    "pan_left",
-    "pan_right",
-    "pop",
-    "float",
-    "open_prop",
-    "highlight",
-    "walk",
-    "point",
-    "track",
-    "split_reveal",
-    "reframe",
-    "reaction_closeup",
-    "insert_cut",
-    "match_action",
-    "object_wipe",
-    "state_change",
-    "transform",
-    "enter_exit",
-    "cause_effect_chain"
+    "fade_in", "slide_in_left", "slow_zoom", "punch_zoom", "pan_left", "pan_right", "pop", "float", "open_prop", "highlight", "walk", "point", "track", "split_reveal", "reframe", "reaction_closeup", "insert_cut", "match_action", "object_wipe", "state_change", "transform", "enter_exit", "cause_effect_chain"
   ],
-  "scene_types": [
-    "environment_character",
-    "environment_overlay",
-    "behavior_comparison",
-    "character_closeup",
-    "environment_summary"
-  ],
-  "shot_framings": [
-    "wide",
-    "medium",
-    "closeup",
-    "insert",
-    "over_shoulder",
-    "reaction",
-    "split_behavior"
-  ],
-  "camera_angles": [
-    "front",
-    "three_quarter",
-    "side",
-    "over_shoulder",
-    "detail"
-  ],
-  "transition_types": [
-    "cut_to_distinct_environment",
-    "match_action",
-    "push_in",
-    "insert_cut",
-    "reaction_cut",
-    "reframe",
-    "object_wipe",
-    "continuation"
-  ]
+  "scene_types": ["environment_character", "environment_overlay", "behavior_comparison", "character_closeup", "environment_summary"],
+  "shot_framings": ["wide", "medium", "closeup", "insert", "over_shoulder", "reaction", "split_behavior"],
+  "camera_angles": ["front", "three_quarter", "side", "over_shoulder", "detail"],
+  "transition_types": ["cut_to_distinct_environment", "match_action", "push_in", "insert_cut", "reaction_cut", "reframe", "object_wipe", "continuation"]
 }
