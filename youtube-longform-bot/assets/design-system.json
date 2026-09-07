@@ -2,15 +2,32 @@
   "id": "wacky_insights_v1",
   "quality": "production",
   "style": "clean_premium_2d_vector_explainer",
+  "channel_personality": {
+    "core_promise": "educational_value_plus_humour",
+    "target_viewer_reaction": "I actually learned something — and that was funny.",
+    "tone": ["curious", "playful", "clever_not_smug", "relatable", "clear", "energetic"],
+    "avoid": ["dry lecture tone", "generic trivia channel tone", "stand-up comedy without explanation", "corporate presentation tone", "overly childish humour"]
+  },
   "principles": [
     "environment-led storytelling",
     "professional editorial illustration",
+    "educational visuals that explain rather than decorate",
+    "humour integrated into action and explanation",
     "clear silhouettes at 720p",
     "consistent soft depth and lighting",
     "minimal text attached to action",
-    "continuous visual motion",
-    "reusable modular assets"
+    "continuous purposeful visual motion",
+    "reusable modular assets",
+    "visual callbacks and recurring gags where appropriate"
   ],
+  "educational_visuals": {
+    "preferred": ["cause_and_effect_animation", "visual_metaphor", "before_after_or_contrast", "animated_meter", "object_state_change", "moving_arrow_or_trail", "label_attached_to_action", "environment_integrated_diagram", "mini_demonstration"],
+    "rule": "Whenever possible, make the mechanism visible inside the scene instead of replacing the scene with a full-screen information board."
+  },
+  "humour_visuals": {
+    "preferred": ["visual_exaggeration", "object_personification", "unexpected_prop_behavior", "deadpan_label", "recurring_visual_gag", "callback", "escalation", "reaction_animation"],
+    "rule": "Visual jokes should support pacing, relatability or explanation and must not make the educational mechanism unclear."
+  },
   "palette": {
     "ink": "#1F2937",
     "muted": "#667085",
@@ -25,29 +42,53 @@
     "corner_radius": "medium_soft",
     "perspective": "gentle_three_quarter_or_front",
     "shadow": "soft_directional",
-    "detail_level": "medium_high"
+    "detail_level": "medium_high",
+    "composition": "cinematic_scene_first_not_slide_first"
   },
   "animation": {
     "preferred_change_interval_seconds": 1.2,
     "max_static_gap_seconds": 1.5,
-    "camera": ["slow_push", "pan", "follow", "punch_zoom"],
-    "object": ["pop", "float", "track", "highlight", "state_change"]
+    "motion_must_have_purpose": true,
+    "camera": ["slow_push", "pan", "follow", "punch_zoom", "reframe", "reaction_closeup"],
+    "object": ["pop", "float", "track", "highlight", "state_change", "transform", "enter_exit", "cause_effect_chain"]
+  },
+  "text": {
+    "max_caption_words": 7,
+    "prefer_short_object_labels": true,
+    "avoid_repeating_narration_verbatim": true,
+    "paragraphs_on_screen": false,
+    "purpose": "Text should label, punch up, compare or clarify action; it should not carry the whole explanation."
+  },
+  "scene_balance": {
+    "environment_led_target_ratio": 0.75,
+    "fullscreen_infographic_max_ratio": 0.2,
+    "text_only_target_ratio": 0.05,
+    "note": "Ratios are directional. Prefer continuous animated storytelling and integrate infographics into active scenes."
   },
   "forbidden": [
     "PowerPoint slide layouts",
     "title plus static cards",
+    "presentation grids",
+    "static comparison cards",
     "clipart look",
     "childlike doodles",
     "large paragraph text",
     "generic stock-illustration composition",
     "inconsistent character proportions",
-    "flat empty backgrounds without story context"
+    "flat empty backgrounds without story context",
+    "decorative motion that adds no story explanation humour or emphasis",
+    "full-screen text repeating narration",
+    "long static charts disconnected from the environment"
   ],
   "asset_acceptance": {
     "must_have_description": true,
     "must_have_tags": true,
     "must_have_style_id": true,
     "must_be_reusable": true,
-    "must_be_svg_for_generated_phase7_assets": true
+    "must_be_svg_for_generated_phase7_assets": true,
+    "must_look_professionally_art_directed": true,
+    "must_support_intended_actions_or_states": true,
+    "must_be_clear_at_target_resolution": true,
+    "must_not_be_weak_match_reuse": true
   }
 }
