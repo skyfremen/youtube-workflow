@@ -88,7 +88,7 @@ def register_unique(url, label, item_no, seen, errors):
         previous = seen[value]
         errors.append(
             f'item {item_no}: {label} duplicates media already used by {previous}; '
-            'all primary and backup assets in the 20-Short batch must be unique'
+            'all primary and backup assets in the 24-Short batch must be unique'
         )
     else:
         seen[value] = f'item {item_no} {label}'
