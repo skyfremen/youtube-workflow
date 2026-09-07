@@ -83,7 +83,7 @@ def validate_common(asset, idx, kind, seen_ids, seen_direct, seen_source, errors
 
     verified = require_bool(asset, 'verified', label, errors)
     require_bool(asset, 'commercial_use', label, errors)
-    require_bool(asset, 'attribution_required', label, errors)
+    attribution_required = require_bool(asset, 'attribution_required', label, errors)
 
     if verified is True and not nonempty(asset.get('last_verified_at')):
         errors.append(f'{label}: verified=true requires last_verified_at')
@@ -94,14 +94,26 @@ def validate_common(asset, idx, kind, seen_ids, seen_direct, seen_source, errors
     if isinstance(usage_count, bool) or not isinstance(usage_count, int) or usage_count < 0:
         errors.append(f'{label}: usage_count must be an integer >= 0')
 
-    plan_ready = asset.get('plan_ready', False)
-    if not isinstance(plan_ready, bool):
+    explicit_plan_ready = asset.get('plan_ready')
+    if explicit_plan_ready is not None and not isinstance(explicit_plan_ready, bool):
         errors.append(f'{label}: plan_ready must be boolean when present')
-        plan_ready = False
-    if plan_ready and (verified is not True or status != 'active'):
+        explicit_plan_ready = False
+
+    if explicit_plan_ready is True and (verified is not True or status != 'active'):
         errors.append(f'{label}: plan_ready=true requires verified=true and status=active')
 
-    return label, plan_ready
+    return label, verified, status, attribution_required, explicit_plan_ready
+
+
+def common_legacy_ready(asset, verified, status):
+    return (
+        verified is True
+        and status == 'active'
+        and nonempty(asset.get('direct_url'))
+        and nonempty(asset.get('source_page'))
+        and nonempty(asset.get('license'))
+        and nonempty(asset.get('semantic_description'))
+    )
 
 
 def validate_backgrounds(path):
@@ -122,18 +134,25 @@ def validate_backgrounds(path):
         result = validate_common(asset, idx, 'background', seen_ids, seen_direct, seen_source, errors)
         if result is None:
             continue
-        label, plan_ready = result
+        label, verified, status, attribution_required, explicit_plan_ready = result
         for field in ('scene_tags', 'categories', 'actions', 'setting', 'people_context', 'time_context',
                       'visual_tone', 'camera_style', 'usable_for_hooks', 'avoid_for'):
             require_list(asset, field, label, errors)
         if not nonempty(asset.get('semantic_description')):
             errors.append(f'{label}: semantic_description is required')
 
+        legacy_ready = common_legacy_ready(asset, verified, status)
+        if attribution_required is True and not nonempty(asset.get('creator')):
+            legacy_ready = False
+
+        plan_ready = explicit_plan_ready if explicit_plan_ready is not None else legacy_ready
         if plan_ready:
             ready += 1
-            for field in ('creator', 'direct_url', 'source_page', 'license', 'semantic_description'):
+            for field in ('direct_url', 'source_page', 'license', 'semantic_description'):
                 if not nonempty(asset.get(field)):
-                    errors.append(f'{label}: plan_ready=true requires {field}')
+                    errors.append(f'{label}: plan-ready asset requires {field}')
+            if attribution_required is True and not nonempty(asset.get('creator')):
+                errors.append(f'{label}: attribution-required plan-ready asset requires creator')
 
     if errors:
         raise SystemExit('Background media library validation failed:\n- ' + '\n- '.join(errors))
@@ -158,21 +177,26 @@ def validate_music(path):
         result = validate_common(asset, idx, 'music', seen_ids, seen_direct, seen_source, errors)
         if result is None:
             continue
-        label, plan_ready = result
+        label, verified, status, attribution_required, explicit_plan_ready = result
         for field in ('mood_tags', 'suitable_for', 'suitable_for_mechanisms', 'suitable_for_scenes', 'avoid_for'):
             require_list(asset, field, label, errors)
         for field in ('monetization_allowed', 'content_id_safe', 'instrumental', 'has_vocals'):
             require_bool(asset, field, label, errors)
-        if not nonempty(asset.get('artist')):
-            errors.append(f'{label}: artist is required')
         if not nonempty(asset.get('semantic_description')):
             errors.append(f'{label}: semantic_description is required')
 
+        legacy_ready = common_legacy_ready(asset, verified, status)
+        if attribution_required is True and not nonempty(asset.get('artist')):
+            legacy_ready = False
+
+        plan_ready = explicit_plan_ready if explicit_plan_ready is not None else legacy_ready
         if plan_ready:
             ready += 1
-            for field in ('artist', 'direct_url', 'source_page', 'license', 'semantic_description'):
+            for field in ('direct_url', 'source_page', 'license', 'semantic_description'):
                 if not nonempty(asset.get(field)):
-                    errors.append(f'{label}: plan_ready=true requires {field}')
+                    errors.append(f'{label}: plan-ready asset requires {field}')
+            if attribution_required is True and not nonempty(asset.get('artist')):
+                errors.append(f'{label}: attribution-required plan-ready asset requires artist')
 
     if errors:
         raise SystemExit('Music media library validation failed:\n- ' + '\n- '.join(errors))
@@ -183,9 +207,9 @@ def main():
     bg_count, bg_ready = validate_backgrounds(MEDIA_DIR / 'backgrounds.json')
     music_count, music_ready = validate_music(MEDIA_DIR / 'music.json')
     print(
-        f'Media libraries valid: {bg_count} backgrounds ({bg_ready} explicit plan_ready), '
-        f'{music_count} music tracks ({music_ready} explicit plan_ready). '
-        'Assets without plan_ready are conservatively treated as not immediately reusable.'
+        f'Media libraries valid: {bg_count} backgrounds ({bg_ready} explicit-or-derived plan-ready), '
+        f'{music_count} music tracks ({music_ready} explicit-or-derived plan-ready). '
+        'Legacy verified active assets may derive readiness from complete operational metadata.'
     )
 
 
