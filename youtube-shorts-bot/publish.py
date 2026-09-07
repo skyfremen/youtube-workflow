@@ -40,7 +40,7 @@ record = {
     'youtube_video_id': video_id,
     'youtube_url': f'https://www.youtube.com/watch?v={video_id}',
     'content_id': content_id(data),
-    'commit_sha': os.getenv('GITHUB_SHA', ''),
+    'commit_sha': os.getenv('SOURCE_COMMIT_SHA', '').strip() or os.getenv('GITHUB_SHA', ''),
     'workflow_run_id': os.getenv('GITHUB_RUN_ID', ''),
     'uploaded_at': datetime.now(timezone.utc).isoformat(),
 }
