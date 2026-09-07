@@ -5,11 +5,13 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+from schedule_utils import scheduled_publish_at_from_selection
 from workflow_common import content_id
 
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
 OUT = BASE / 'output'
+QUEUE_SELECTION = OUT / 'queue_selection.json'
 OUT.mkdir(exist_ok=True)
 
 with CONTENT.open(encoding='utf-8') as f:
@@ -42,6 +44,11 @@ record = {
     'workflow_run_id': os.getenv('GITHUB_RUN_ID', ''),
     'uploaded_at': datetime.now(timezone.utc).isoformat(),
 }
+
+schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1', 'true', 'yes'}
+if schedule_mode:
+    record['scheduled_publish_at'] = scheduled_publish_at_from_selection(QUEUE_SELECTION)
+    record['youtube_privacy_at_upload'] = 'private'
 
 (OUT / 'upload_result.json').write_text(
     json.dumps(record, ensure_ascii=False, indent=2) + '\n',
