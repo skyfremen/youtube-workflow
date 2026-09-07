@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -7,6 +7,7 @@ SGT = ZoneInfo('Asia/Singapore')
 FIRST_PUBLISH_HOUR = 4
 LAST_PUBLISH_HOUR = 23
 TOTAL_SLOTS = 20
+MIN_SCHEDULE_LEAD = timedelta(minutes=10)
 
 
 def scheduled_publish_at(plan_date, slot):
@@ -36,9 +37,35 @@ def scheduled_publish_at(plan_date, slot):
     return local_dt.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
 
 
-def scheduled_publish_at_from_selection(selection_path):
+def parse_publish_at(value):
+    return datetime.fromisoformat(str(value).replace('Z', '+00:00')).astimezone(timezone.utc)
+
+
+def ensure_publish_at_is_safe(publish_at, now=None, min_lead=MIN_SCHEDULE_LEAD):
+    """Fail closed when a scheduled YouTube release is too close or in the past.
+
+    YouTube can immediately publish a private video when publishAt is in the past.
+    Keeping a lead-time buffer also prevents a long render/upload from crossing the
+    requested release time before the API call completes.
+    """
+    scheduled = parse_publish_at(publish_at)
+    current = now.astimezone(timezone.utc) if now is not None else datetime.now(timezone.utc)
+    earliest_safe = current + min_lead
+    if scheduled <= earliest_safe:
+        raise ValueError(
+            'MISSED_SCHEDULE_WINDOW: requested YouTube publishAt '
+            f'{scheduled.isoformat()} must be more than {int(min_lead.total_seconds() // 60)} '
+            f'minutes after current time {current.isoformat()}.'
+        )
+    return scheduled.isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
+def scheduled_publish_at_from_selection(selection_path, require_safe=False, now=None):
     path = Path(selection_path)
     if not path.exists():
         raise ValueError(f'Queue selection file is missing: {path}')
     selection = json.loads(path.read_text(encoding='utf-8'))
-    return scheduled_publish_at(selection.get('plan_date'), selection.get('slot'))
+    publish_at = scheduled_publish_at(selection.get('plan_date'), selection.get('slot'))
+    if require_safe:
+        return ensure_publish_at_is_safe(publish_at, now=now)
+    return publish_at
