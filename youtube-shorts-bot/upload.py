@@ -7,7 +7,10 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
+from schedule_utils import scheduled_publish_at_from_selection
+
 BASE = Path(__file__).parent
+QUEUE_SELECTION = BASE / 'output' / 'queue_selection.json'
 with (BASE / 'content' / 'latest.json').open(encoding='utf-8') as f:
     data = json.load(f)
 
@@ -52,6 +55,11 @@ if extra_tags:
 
 description = '\n\n'.join(p for p in parts if p)[:5000]
 title = data['title'][:100]
+
+schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1', 'true', 'yes'}
+publish_at = None
+if schedule_mode:
+    publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION)
 
 
 def find_existing_upload():
@@ -102,10 +110,19 @@ existing_video_id = find_existing_upload()
 if existing_video_id:
     print('Duplicate-safe recovery: matching YouTube upload already exists; reusing it.')
     print('Uploaded video ID:', existing_video_id)
+    if publish_at:
+        print('Scheduled publish at:', publish_at)
     print('Background source:', data.get('background_source_url', 'not provided'))
     print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
     print('Music source:', data.get('music_source_url', 'not provided'))
     raise SystemExit(0)
+
+status = {
+    'privacyStatus': 'private' if schedule_mode else os.getenv('YOUTUBE_PRIVACY', 'private'),
+    'selfDeclaredMadeForKids': False,
+}
+if publish_at:
+    status['publishAt'] = publish_at
 
 body = {
     'snippet': {
@@ -113,10 +130,7 @@ body = {
         'description': description,
         'categoryId': '23',
     },
-    'status': {
-        'privacyStatus': os.getenv('YOUTUBE_PRIVACY', 'private'),
-        'selfDeclaredMadeForKids': False,
-    },
+    'status': status,
 }
 
 media = MediaFileUpload(str(BASE / 'output' / 'short.mp4'), mimetype='video/mp4', resumable=True)
@@ -125,6 +139,8 @@ response = None
 while response is None:
     _, response = request.next_chunk()
 print('Uploaded video ID:', response['id'])
+if publish_at:
+    print('Scheduled publish at:', publish_at)
 print('Background source:', data.get('background_source_url', 'not provided'))
 print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
 print('Music source:', data.get('music_source_url', 'not provided'))
