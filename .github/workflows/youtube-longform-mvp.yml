@@ -167,7 +167,7 @@ jobs:
           const p = JSON.parse(fs.readFileSync('content/runtime-plan.json','utf8'));
           const r = JSON.parse(fs.readFileSync('assets/registry.runtime.json','utf8'));
           if (p.timing_mode !== 'measured_kokoro_scene_audio') throw new Error('Narration is not the master timeline.');
-          if (p.scenes.length !== 5) throw new Error('Unexpected scene count.');
+          if (!Array.isArray(p.scenes) || p.scenes.length < 5) throw new Error(`Unexpected scene count: ${p.scenes?.length ?? 'missing'}; Phase 7 requires at least 5 scenes.`);
           for (const s of p.scenes) {
             if (!r.environments[s.environment]) throw new Error(`Missing runtime environment ${s.environment}`);
             if (!r.characters[s.character]) throw new Error(`Missing runtime character ${s.character}`);
@@ -176,7 +176,7 @@ jobs:
             }
             for (const b of s.beats || []) if (!(b.at >= 0 && b.at < s.duration)) throw new Error(`Beat timing outside scene ${s.id}`);
           }
-          console.log(`PASS: Phase 7 runtime is ${p.duration_seconds.toFixed(2)}s and fully asset-resolved.`);
+          console.log(`PASS: Phase 7 runtime is ${p.duration_seconds.toFixed(2)}s with ${p.scenes.length} scenes and is fully asset-resolved.`);
           NODE
 
       - name: Render narration-timed 720p Phase 7
