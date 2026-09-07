@@ -1,38 +1,36 @@
 {
-  "video_id": "fridge-infographic-art-mvp3",
-  "title": "Why Do We Check the Fridge Again? — Art MVP 3",
-  "duration_seconds": 10,
+  "video_id": "fridge-asset-quality-mvp4",
+  "title": "Why Do We Check the Fridge Again? — Asset Quality MVP",
+  "duration_seconds": 8,
   "format": "16:9",
   "scenes": [
     {
       "id": 1,
-      "duration": 5,
+      "duration": 4,
       "type": "setup",
       "caption": "YOU JUST CHECKED.",
-      "narration": "You just checked the fridge. Nothing changed. Five minutes later, you are back.",
+      "narration": "You just checked the fridge. Nothing changed. And yet, you are back.",
       "beats": [
         {"at": 0.2, "action": "walk_in"},
-        {"at": 1.0, "action": "reach_handle"},
-        {"at": 1.5, "action": "open_door"},
-        {"at": 2.2, "action": "look_inside"},
-        {"at": 2.8, "action": "empty_callout"},
-        {"at": 3.5, "action": "clock_jump"},
-        {"at": 4.3, "action": "return_look"}
+        {"at": 0.9, "action": "reach_handle"},
+        {"at": 1.3, "action": "open_door"},
+        {"at": 2.0, "action": "look_inside"},
+        {"at": 2.6, "action": "empty_callout"},
+        {"at": 3.3, "action": "return_look"}
       ]
     },
     {
       "id": 2,
-      "duration": 5,
+      "duration": 4,
       "type": "infographic",
-      "caption": "BORED → CHECK → MAYBE REWARD",
+      "caption": "BORED → CHECK → REWARD?",
       "narration": "It is often a tiny reward loop: boredom, check, maybe reward.",
       "beats": [
         {"at": 0.3, "action": "diagram_node_1"},
-        {"at": 1.1, "action": "diagram_node_2"},
-        {"at": 1.9, "action": "diagram_node_3"},
-        {"at": 2.8, "action": "arrow_flow"},
-        {"at": 3.5, "action": "highlight_reward"},
-        {"at": 4.2, "action": "end_pop"}
+        {"at": 1.0, "action": "diagram_node_2"},
+        {"at": 1.7, "action": "diagram_node_3"},
+        {"at": 2.4, "action": "arrow_flow"},
+        {"at": 3.1, "action": "highlight_reward"}
       ]
     }
   ]
