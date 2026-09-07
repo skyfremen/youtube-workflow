@@ -8,11 +8,10 @@ PLANS = BASE / 'content' / 'plans'
 BACKGROUND_BACKUP_FIELDS = (
     'background_backup_url', 'background_backup_source_url',
     'background_backup_creator', 'background_backup_license',
-    'background_backup_credit',
 )
 MUSIC_BACKUP_FIELDS = (
     'music_backup_url', 'music_backup_source_url', 'music_backup_title',
-    'music_backup_artist', 'music_backup_license', 'music_backup_credit',
+    'music_backup_artist', 'music_backup_license',
 )
 MATCH_FIELDS = (
     'background_scene', 'background_match_reason', 'background_match_score',
@@ -31,6 +30,14 @@ def validate_group(content, fields, label, item_no, errors):
     if missing:
         errors.append(
             f'item {item_no}: incomplete {label} backup metadata; missing: {", ".join(missing)}'
+        )
+
+
+def validate_conditional_credit(content, prefix, label, item_no, errors):
+    attribution_required = content.get(f'{prefix}_attribution_required')
+    if attribution_required is True and not str(content.get(f'{prefix}_credit', '')).strip():
+        errors.append(
+            f'item {item_no}: {label} backup requires attribution but {prefix}_credit is empty'
         )
 
 
@@ -109,6 +116,12 @@ def main():
         content = item.get('content', {}) if isinstance(item, dict) else {}
         validate_group(content, BACKGROUND_BACKUP_FIELDS, 'background', idx, errors)
         validate_group(content, MUSIC_BACKUP_FIELDS, 'music', idx, errors)
+        validate_conditional_credit(
+            content, 'background_backup', 'background', idx, errors
+        )
+        validate_conditional_credit(
+            content, 'music_backup', 'music', idx, errors
+        )
         validate_match_metadata(content, idx, errors)
 
         bg_primary = str(content.get('background_url', '')).strip()
@@ -132,6 +145,7 @@ def main():
     print(
         'Media metadata valid: primary/backup assets include explicit scene/mood matching '
         f'with scores >= {MIN_MATCH_SCORE:g}; all primary+backup URLs are batch-unique; '
+        'backup credits are required only when attribution_required=true; '
         'backup media was not downloaded.'
     )
 
