@@ -1,52 +1,38 @@
 {
-  "video_id": "fridge-animation-mvp2",
-  "title": "Why Do We Keep Checking the Fridge? — Animation MVP 2",
-  "duration_seconds": 15,
+  "video_id": "fridge-infographic-art-mvp3",
+  "title": "Why Do We Check the Fridge Again? — Art MVP 3",
+  "duration_seconds": 10,
   "format": "16:9",
   "scenes": [
     {
       "id": 1,
       "duration": 5,
-      "type": "character",
-      "caption": "YOU JUST CHECKED THE FRIDGE",
-      "narration": "You just checked the fridge. Nothing changed.",
+      "type": "setup",
+      "caption": "YOU JUST CHECKED.",
+      "narration": "You just checked the fridge. Nothing changed. Five minutes later, you are back.",
       "beats": [
-        {"at": 0.0, "action": "character_enter"},
-        {"at": 0.7, "action": "fridge_open"},
-        {"at": 1.5, "action": "character_look"},
-        {"at": 2.2, "action": "pop_text", "text": "STILL NOTHING"},
-        {"at": 3.4, "action": "fridge_close"},
-        {"at": 4.1, "action": "clock_jump", "text": "+5 MIN"}
+        {"at": 0.2, "action": "walk_in"},
+        {"at": 1.0, "action": "reach_handle"},
+        {"at": 1.5, "action": "open_door"},
+        {"at": 2.2, "action": "look_inside"},
+        {"at": 2.8, "action": "empty_callout"},
+        {"at": 3.5, "action": "clock_jump"},
+        {"at": 4.3, "action": "return_look"}
       ]
     },
     {
       "id": 2,
       "duration": 5,
-      "type": "diagram",
-      "caption": "YOUR BRAIN: MAYBE THIS TIME?",
-      "narration": "But your brain still thinks, maybe this time there is a reward.",
+      "type": "infographic",
+      "caption": "BORED → CHECK → MAYBE REWARD",
+      "narration": "It is often a tiny reward loop: boredom, check, maybe reward.",
       "beats": [
-        {"at": 0.0, "action": "camera_pan"},
-        {"at": 0.8, "action": "diagram_step", "text": "BORED"},
-        {"at": 1.7, "action": "diagram_step", "text": "CHECK"},
-        {"at": 2.6, "action": "diagram_step", "text": "REWARD?"},
-        {"at": 3.5, "action": "camera_punch_zoom"},
-        {"at": 4.2, "action": "character_react"}
-      ]
-    },
-    {
-      "id": 3,
-      "duration": 5,
-      "type": "end",
-      "caption": "SO YOU CHECK AGAIN",
-      "narration": "So five minutes later, you open the exact same fridge again.",
-      "beats": [
-        {"at": 0.0, "action": "character_return"},
-        {"at": 0.8, "action": "fridge_open"},
-        {"at": 1.8, "action": "character_shocked"},
-        {"at": 2.6, "action": "pop_text", "text": "NO UPDATE AVAILABLE"},
-        {"at": 3.6, "action": "shake"},
-        {"at": 4.3, "action": "end_punchline", "text": "CHECK AGAIN LATER"}
+        {"at": 0.3, "action": "diagram_node_1"},
+        {"at": 1.1, "action": "diagram_node_2"},
+        {"at": 1.9, "action": "diagram_node_3"},
+        {"at": 2.8, "action": "arrow_flow"},
+        {"at": 3.5, "action": "highlight_reward"},
+        {"at": 4.2, "action": "end_pop"}
       ]
     }
   ]
