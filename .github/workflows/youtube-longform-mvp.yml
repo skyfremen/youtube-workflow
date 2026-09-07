@@ -1,0 +1,92 @@
+name: Wacky Insights longform MVP
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: youtube-longform-mvp
+  cancel-in-progress: false
+
+jobs:
+  render-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Shorts automation isolation
+        shell: bash
+        run: |
+          test -d youtube-shorts-bot
+          test -d youtube-longform-bot
+          if grep -R "youtube-shorts-bot" youtube-longform-bot --exclude=README.md; then
+            echo "Longform code must not depend on the Shorts bot."
+            exit 1
+          fi
+          echo "Longform MVP is isolated from youtube-shorts-bot."
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: youtube-longform-bot/package-lock.json
+
+      - name: Install free local tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+
+      - name: Install longform dependencies
+        working-directory: youtube-longform-bot
+        run: npm install --package-lock-only && npm ci
+
+      - name: Validate 60-second plan
+        working-directory: youtube-longform-bot
+        run: node scripts/validate-plan.mjs content/demo-plan.json
+
+      - name: Generate local narration
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          mkdir -p public output
+          node - <<'NODE'
+          const fs = require('fs');
+          const plan = JSON.parse(fs.readFileSync('content/demo-plan.json', 'utf8'));
+          fs.writeFileSync('output/narration.txt', plan.scenes.map((s) => s.narration).join(' '));
+          NODE
+          espeak-ng -v en-us -s 150 -w public/narration-raw.wav -f output/narration.txt
+          ffmpeg -y -i public/narration-raw.wav -af "apad=pad_dur=60" -t 60 public/narration.wav
+
+      - name: Render 60-second 1080p video
+        working-directory: youtube-longform-bot
+        run: npm run render
+
+      - name: Verify rendered video
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          test -s output/demo.mp4
+          DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 output/demo.mp4)"
+          WIDTH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 output/demo.mp4)"
+          HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 output/demo.mp4)"
+          python3 - <<PY
+          duration = float('${DURATION}')
+          assert 59.5 <= duration <= 60.5, duration
+          assert int('${WIDTH}') == 1920, '${WIDTH}'
+          assert int('${HEIGHT}') == 1080, '${HEIGHT}'
+          print(f'PASS: {duration:.2f}s, ${WIDTH}x${HEIGHT}')
+          PY
+
+      - name: Upload MVP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-longform-mvp-${{ github.run_id }}
+          path: |
+            youtube-longform-bot/output/demo.mp4
+            youtube-longform-bot/content/demo-plan.json
+          retention-days: 3
+
+      - name: Confirm no YouTube publication
+        run: echo 'LONGFORM MVP COMPLETE - render only; no upload or scheduling code executed.'
