@@ -1,6 +1,5 @@
 import argparse
 import json
-from datetime import date
 from pathlib import Path
 
 BASE = Path(__file__).parent
@@ -25,7 +24,6 @@ MATCH_FIELDS = (
 MIN_MATCH_SCORE = 85.0
 MIN_REASON_LENGTH = 24
 MIN_SCENE_LENGTH = 8
-MATCH_RULES_START_DATE = date(2026, 9, 8)
 
 
 def validate_group(content, fields, label, item_no, errors):
@@ -82,24 +80,36 @@ def validate_match_metadata(content, item_no, errors):
         validate_score(content, field, item_no, errors)
 
 
+def register_unique(url, label, item_no, seen, errors):
+    value = str(url or '').strip()
+    if not value:
+        return
+    if value in seen:
+        previous = seen[value]
+        errors.append(
+            f'item {item_no}: {label} duplicates media already used by {previous}; '
+            'all primary and backup assets in the 20-Short batch must be unique'
+        )
+    else:
+        seen[value] = f'item {item_no} {label}'
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', required=True)
     args = parser.parse_args()
 
-    plan_date = date.fromisoformat(args.date)
-    enforce_match_rules = plan_date >= MATCH_RULES_START_DATE
-
     path = PLANS / f'{args.date}.json'
     plan = json.loads(path.read_text(encoding='utf-8'))
     errors = []
+    seen_background_urls = {}
+    seen_music_urls = {}
 
     for idx, item in enumerate(plan.get('items', []), 1):
         content = item.get('content', {}) if isinstance(item, dict) else {}
         validate_group(content, BACKGROUND_BACKUP_FIELDS, 'background', idx, errors)
         validate_group(content, MUSIC_BACKUP_FIELDS, 'music', idx, errors)
-        if enforce_match_rules:
-            validate_match_metadata(content, idx, errors)
+        validate_match_metadata(content, idx, errors)
 
         bg_primary = str(content.get('background_url', '')).strip()
         bg_backup = str(content.get('background_backup_url', '')).strip()
@@ -111,19 +121,19 @@ def main():
         if music_backup and music_backup == music_primary:
             errors.append(f'item {idx}: music backup must differ from primary')
 
+        register_unique(bg_primary, 'background primary', idx, seen_background_urls, errors)
+        register_unique(bg_backup, 'background backup', idx, seen_background_urls, errors)
+        register_unique(music_primary, 'music primary', idx, seen_music_urls, errors)
+        register_unique(music_backup, 'music backup', idx, seen_music_urls, errors)
+
     if errors:
         raise SystemExit('Media metadata validation failed:\n- ' + '\n- '.join(errors))
 
-    if enforce_match_rules:
-        print(
-            'Media metadata valid: primary/backup assets include explicit scene/mood matching '
-            f'with scores >= {MIN_MATCH_SCORE:g}; backup media was not downloaded.'
-        )
-    else:
-        print(
-            f'Media metadata valid under legacy rules for {args.date}; semantic match rules '
-            f'become mandatory from {MATCH_RULES_START_DATE.isoformat()}.'
-        )
+    print(
+        'Media metadata valid: primary/backup assets include explicit scene/mood matching '
+        f'with scores >= {MIN_MATCH_SCORE:g}; all primary+backup URLs are batch-unique; '
+        'backup media was not downloaded.'
+    )
 
 
 if __name__ == '__main__':
