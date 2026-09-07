@@ -1,0 +1,74 @@
+name: Dry run series Short visual
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: youtube-short-series-dry-run
+  cancel-in-progress: true
+
+jobs:
+  render-series-sample:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare isolated Part 1 sample
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('youtube-shorts-series-bot/content/latest.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          data.update({
+              'category': 'COUPLE',
+              'topic': 'Things couples will never agree on',
+              'setup': 'WHEN THEY SAY I AM NOT HUNGRY',
+              'payoff': 'YOUR FRIES BECOME OUR FRIES',
+              'title': 'Things Couples Never Agree On - Part 1 #Shorts',
+              'cta': 'FOLLOW FOR PART 2',
+              'series_id': 'couple-logic-test',
+              'series_title': 'COUPLE LOGIC',
+              'part_number': 1,
+              'part_total': 4,
+              'next_part_slot': 5,
+          })
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print('Prepared isolated visual sample: COUPLE LOGIC • PART 1/4')
+          PY
+
+      - name: Render isolated series Short
+        run: python youtube-shorts-series-bot/render.py
+
+      - name: Verify rendered MP4
+        run: python youtube-shorts-series-bot/verify_render.py
+
+      - name: Verify badge and CTA metadata
+        shell: bash
+        run: |
+          grep -F 'COUPLE LOGIC  •  PART 1/4' youtube-shorts-series-bot/output/overlay.ass
+          grep -F 'FOLLOW FOR PART 2' youtube-shorts-series-bot/output/overlay.ass
+          test -s youtube-shorts-series-bot/output/short.mp4
+          echo 'Series badge and CTA verified. No YouTube upload step exists in this workflow.'
+
+      - name: Upload visual test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: series-short-visual-test-${{ github.run_id }}
+          path: |
+            youtube-shorts-series-bot/output/short.mp4
+            youtube-shorts-series-bot/output/overlay.ass
+          retention-days: 3
+
+      - name: Confirm isolation
+        run: echo 'ISOLATED SERIES VISUAL TEST COMPLETE - no YouTube upload or production queue changes were performed.'
