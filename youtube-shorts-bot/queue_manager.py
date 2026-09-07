@@ -22,6 +22,15 @@ CONTENT_FIELDS = (
     'music_title', 'music_artist', 'music_license', 'music_credit'
 )
 SCORE_FIELDS = ('relatability', 'funny', 'hook', 'originality', 'clarity', 'visual_potential', 'total')
+SCORE_WEIGHTS = {
+    'relatability': 0.30,
+    'funny': 0.25,
+    'hook': 0.15,
+    'originality': 0.15,
+    'clarity': 0.10,
+    'visual_potential': 0.05,
+}
+VALID_STATUSES = {'pending', 'published'}
 
 
 def sg_date():
@@ -49,19 +58,59 @@ def plan_path(date=None):
     return PLANS_DIR / f'{date or sg_date()}.json'
 
 
+def _numeric_score(value, label, errors):
+    if isinstance(value, bool):
+        errors.append(f'{label}: score must be numeric, not boolean')
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        errors.append(f'{label}: score must be numeric')
+        return None
+    if not 0 <= number <= 100:
+        errors.append(f'{label}: score {number:g} must be between 0 and 100')
+        return None
+    return number
+
+
 def validate_plan(path):
     plan = load_plan(path)
     errors = []
     items = plan.get('items')
+
+    expected_date = path.stem
+    if plan.get('plan_date') != expected_date:
+        errors.append(f'plan_date must match filename date {expected_date}')
     if plan.get('target_count') != 20:
         errors.append('target_count must be 20')
+
+    candidates_generated = plan.get('candidates_generated')
+    if isinstance(candidates_generated, bool) or not isinstance(candidates_generated, int) or candidates_generated < 50:
+        errors.append('candidates_generated must be an integer >= 50')
+
     if not isinstance(items, list) or len(items) != 20:
         errors.append('items must contain exactly 20 Shorts')
         items = items if isinstance(items, list) else []
 
-    seen_backgrounds, seen_music = set(), set()
+    seen_slots, seen_backgrounds, seen_music = set(), set(), set()
     for idx, item in enumerate(items, 1):
-        content = item.get('content', {}) if isinstance(item, dict) else {}
+        if not isinstance(item, dict):
+            errors.append(f'item {idx}: must be an object')
+            continue
+
+        slot = item.get('slot')
+        if isinstance(slot, bool) or not isinstance(slot, int) or not 1 <= slot <= 20:
+            errors.append(f'item {idx}: slot must be an integer from 1 to 20')
+        elif slot in seen_slots:
+            errors.append(f'item {idx}: duplicate slot {slot}')
+        else:
+            seen_slots.add(slot)
+
+        status = item.get('status')
+        if status not in VALID_STATUSES:
+            errors.append(f'item {idx}: status must be pending or published')
+
+        content = item.get('content', {})
         missing = [k for k in CONTENT_FIELDS if k not in content or content.get(k) is None]
         if missing:
             errors.append(f'item {idx}: missing content fields: {", ".join(missing)}')
@@ -70,12 +119,22 @@ def validate_plan(path):
             errors.append(f'item {idx}: handle must be @WACKYINSIGHTS')
         if '#Shorts' not in str(content.get('title', '')) or len(str(content.get('title', ''))) > 100:
             errors.append(f'item {idx}: title must include #Shorts and be <=100 chars')
+
         scores = item.get('quality', {})
         missing_scores = [k for k in SCORE_FIELDS if k not in scores]
         if missing_scores:
             errors.append(f'item {idx}: missing quality scores: {", ".join(missing_scores)}')
-        elif float(scores.get('total', 0)) < 75:
-            errors.append(f'item {idx}: quality total below 75')
+        else:
+            parsed = {key: _numeric_score(scores.get(key), f'item {idx} {key}', errors) for key in SCORE_FIELDS}
+            if all(parsed.get(key) is not None for key in SCORE_WEIGHTS) and parsed.get('total') is not None:
+                calculated = sum(parsed[key] * weight for key, weight in SCORE_WEIGHTS.items())
+                if abs(parsed['total'] - calculated) > 0.5:
+                    errors.append(
+                        f'item {idx}: quality total {parsed["total"]:.2f} does not match weighted score {calculated:.2f}'
+                    )
+                if calculated < 75:
+                    errors.append(f'item {idx}: weighted quality score {calculated:.2f} is below 75')
+
         if not str(item.get('comedy_mechanism', '')).strip():
             errors.append(f'item {idx}: comedy_mechanism is required')
         bg = str(content.get('background_url', '')).strip()
@@ -87,17 +146,20 @@ def validate_plan(path):
         seen_backgrounds.add(bg)
         seen_music.add(music)
 
+    if len(seen_slots) != 20 and len(items) == 20:
+        errors.append('slots must be unique and cover 1 through 20 exactly once')
+
     for i in range(len(items)):
-        ci = items[i].get('content', {})
+        ci = items[i].get('content', {}) if isinstance(items[i], dict) else {}
         for j in range(i + 1, len(items)):
-            cj = items[j].get('content', {})
+            cj = items[j].get('content', {}) if isinstance(items[j], dict) else {}
             sim = similarity(ci, cj)
             if sim >= 0.78:
                 errors.append(f'items {i+1} and {j+1}: concepts too similar ({sim:.2f})')
 
     recent = [record for _, record in archive_records(ARCHIVE_DIR)]
     for idx, item in enumerate(items, 1):
-        if item.get('status') == 'published':
+        if not isinstance(item, dict) or item.get('status') == 'published':
             continue
         content = item.get('content', {})
         for old in recent[-100:]:
