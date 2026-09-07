@@ -114,15 +114,18 @@ def validate_plan(path):
 def select_next(path):
     validate_plan(path)
     plan = load_plan(path)
+    selection_path = OUT / 'queue_selection.json'
+    selection_path.unlink(missing_ok=True)
     for idx, item in enumerate(plan['items']):
         if item.get('status', 'pending') == 'pending':
             content = item['content']
             (CONTENT_DIR / 'latest.json').write_text(json.dumps(content, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
             selection = {'plan_path': str(path), 'item_index': idx, 'slot': item.get('slot', idx + 1)}
-            (OUT / 'queue_selection.json').write_text(json.dumps(selection, indent=2) + '\n', encoding='utf-8')
+            selection_path.write_text(json.dumps(selection, indent=2) + '\n', encoding='utf-8')
             print(f'Selected queue slot {selection["slot"]}.')
-            return
-    raise SystemExit('NO_PENDING_SHORTS')
+            return True
+    print('NO_PENDING_SHORTS: daily queue is complete; nothing to publish.')
+    return False
 
 
 def mark_published(path):
@@ -146,5 +149,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     path = plan_path(args.date)
     if not path.exists():
+        if args.command == 'select':
+            (OUT / 'queue_selection.json').unlink(missing_ok=True)
+            print(f'NO_PLAN_FOR_TODAY: {path.name} does not exist; nothing to publish.')
+            raise SystemExit(0)
         raise SystemExit(f'Plan not found: {path}')
     {'validate': validate_plan, 'select': select_next, 'mark': mark_published}[args.command](path)
