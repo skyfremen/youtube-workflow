@@ -1,3 +1,4 @@
+# CI validator for the reusable Wacky Insights media cache.
 import json
 from pathlib import Path
 from urllib.parse import urlparse
