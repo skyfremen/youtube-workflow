@@ -1,42 +1,87 @@
-# Wacky Insights Daily Planner Instructions
+# Wacky Insights Series Shorts Planner Instructions
 
-These instructions are the canonical policy for the Wacky Insights daily 24-Short planner.
+This file is the canonical policy for the isolated `youtube-shorts-series-bot` experiment. It is intentionally separate from `youtube-shorts-bot` and MUST NOT modify, publish from, or write state into the existing production Shorts bot.
 
-## Scope and plan date
+## Isolation
 
-This is a DAILY PLANNING job, not a publishing job. The planner runs at 20:00 Asia/Singapore and MUST create the plan for the NEXT Singapore calendar day, not the current day.
+All reads/writes for this experiment stay under `youtube-shorts-series-bot/` unless explicitly stated otherwise.
 
 The planner may write only:
 
-- `youtube-shorts-bot/content/plans/YYYY-MM-DD.json`
-- `youtube-shorts-bot/media-library/backgrounds.json` when adding or updating verified background assets
-- `youtube-shorts-bot/media-library/music.json` when adding or updating verified music assets
+- `youtube-shorts-series-bot/content/plans/YYYY-MM-DD.json`
+- `youtube-shorts-series-bot/media-library/backgrounds.json` when adding/updating verified background assets
+- `youtube-shorts-series-bot/media-library/music.json` when adding/updating verified music assets
 
-The planner must NOT modify `youtube-shorts-bot/content/latest.json`, archive files, publishing workflows, rendering code, queue state, or YouTube itself. Never upload a video, never use `force_reupload`, and never publish directly.
+Do not modify `youtube-shorts-bot/`, its plans, archives, workflows, queue state, analytics or YouTube publishing state. Existing production workflows continue to target only `youtube-shorts-bot`.
 
-## Inputs to read first
+## Goal
 
-Before generating ideas, read:
+Optimize toward subscriber growth, especially subscribers per 1,000 views, while preserving relatability, humor and watchability.
 
-1. Recent files under `youtube-shorts-bot/content/archive/`.
-2. Latest existing plan files under `youtube-shorts-bot/content/plans/` when present.
-3. `youtube-shorts-bot/analytics/latest.json` when present.
-4. `youtube-shorts-bot/media-library/backgrounds.json`.
-5. `youtube-shorts-bot/media-library/music.json`.
+Generate at least 60 distinct relatable-humor candidates and select exactly 24 Shorts. Use broad categories such as COUPLE, DATING, MARRIAGE, FRIENDS, PARENTS, KIDS, MEN, WOMEN, FOOD, SLEEP, WORK, SCHOOL, SHOPPING, PHONE, PETS, TRAVEL, EVERYDAY LIFE and HUMAN BEHAVIOR.
 
-Use analytics as directional evidence, especially subscribers per 1,000 views, views, average view duration, likes and shares. Do not overfit weak or sparse analytics. Preserve exploration and category diversity.
+Every Short must still contain a complete joke. Never withhold the punchline merely to force a viewer to watch the next part.
 
-## Content goal
+## Series-first experiment
 
-Optimize toward the first 1,000 subscribers.
+Target 12 to 16 of the 24 Shorts as genuine multi-part series content and keep the remaining 8 to 12 as standalone controls.
 
-Generate at least 60 distinct relatable-humor candidates spanning broad everyday categories such as COUPLE, DATING, MARRIAGE, FRIENDS, PARENTS, KIDS, MEN, WOMEN, FOOD, SLEEP, WORK, SCHOOL, SHOPPING, PHONE, PETS, TRAVEL, EVERYDAY LIFE and HUMAN BEHAVIOR.
+A series is eligible only when the core premise naturally supports at least 3 genuinely different episodes. Good examples include:
 
-Every selected Short must be immediately relatable, easy to understand, and funny. Target roughly 10-15 seconds with a concise setup and punchline/reveal.
+- Things couples never agree on
+- Things every office worker understands
+- Things parents always say
+- Things people do when their phone hits 1%
+- Things that happen every time you travel
 
-Avoid repeating recent topics, scenarios, punchline patterns, mechanisms, categories, background assets and music assets.
+Do not create a series when Part 2 would merely repeat the same joke with slightly different wording.
 
-Score candidates using:
+Each series item must include these fields inside `content`:
+
+- `series_id`: stable slug shared by every part in the same series
+- `series_title`: human-readable recurring series name
+- `part_number`: integer starting at 1
+- `part_total`: integer >= 3
+- `next_part_slot`: slot number of the next part, or null for the final part
+- `series_role`: `series` or `standalone`
+
+Standalone Shorts must use:
+
+- `series_id: null`
+- `series_title: null`
+- `part_number: null`
+- `part_total: null`
+- `next_part_slot: null`
+- `series_role: "standalone"`
+
+## CTA rules
+
+For a non-final series part, CTA must be exactly:
+
+`FOLLOW FOR PART N`
+
+where N is the next part number. Example: Part 1 uses `FOLLOW FOR PART 2`; Part 2 uses `FOLLOW FOR PART 3`.
+
+For the final part of a series, CTA must be one of:
+
+- `FOLLOW FOR MORE`
+- `DOUBLE TAP TO AGREE`
+
+For standalone Shorts, CTA remains:
+
+`DOUBLE TAP TO AGREE`
+
+Never use `FOLLOW FOR PART N` unless that next part exists in the same 24-item plan and `next_part_slot` points to it.
+
+## Series spacing
+
+Do not place consecutive parts back-to-back. Prefer roughly 4 to 8 hours between parts so viewers have a reason to return later in the day.
+
+Each part must independently make sense to a viewer who did not see the earlier part. Mention the series premise naturally in the setup/title when needed.
+
+## Candidate scoring
+
+Keep the normal quality score:
 
 - relatability: 30%
 - funny: 25%
@@ -45,121 +90,76 @@ Score candidates using:
 - clarity: 10%
 - visual potential: 5%
 
-Reject candidates with weighted total below 75. Select exactly 24 final Shorts with meaningful diversity.
+Reject weighted total below 75.
 
-## Publishing-slot intent
+Additionally score `series_potential` from 0 to 100 for candidate grouping. Prefer series candidates >=80. Series potential considers:
 
-The resulting plan contains slots 1 through 24. The queue publisher maps them to the plan date in Asia/Singapore as follows:
+- ability to support at least 3 distinct episodes
+- recognisable recurring premise
+- natural curiosity for another part
+- low risk of repetitive punchlines
+- broad subscriber appeal
 
-- slot 1 = 00:00
-- slot 2 = 01:00
-- continue hourly
-- slot 24 = 23:00
+`series_potential` is experimental metadata and does not replace the normal quality total.
 
-The planner must not attempt to schedule YouTube itself; it only creates the validated plan.
+## Analytics use
+
+Read `youtube-shorts-series-bot/analytics/latest.json` when present. Compare subscriber conversion between:
+
+- series parts using `FOLLOW FOR PART N`
+- final series parts
+- standalone controls using `DOUBLE TAP TO AGREE`
+
+Prioritise `subscribers_per_1000_views` as the primary experiment metric, with views, average view duration, likes and shares as supporting signals. Do not overfit sparse samples.
+
+## Inputs
+
+Before planning, read:
+
+1. Recent files under `youtube-shorts-series-bot/content/archive/`
+2. Latest plans under `youtube-shorts-series-bot/content/plans/`
+3. `youtube-shorts-series-bot/analytics/latest.json` when present
+4. `youtube-shorts-series-bot/media-library/backgrounds.json`
+5. `youtube-shorts-series-bot/media-library/music.json`
+
+Avoid repeating recent topics, scenarios, punchline patterns, series premises, background assets and music assets.
+
+## Slots
+
+Create exactly 24 items with slots 1 through 24. Slot 1 maps to 00:00 Asia/Singapore, slot 2 to 01:00, through slot 24 at 23:00.
+
+The planner itself does not upload or schedule YouTube videos.
 
 ## Cache-first media sourcing
 
-The media library is the first source for BOTH background video and music.
+Use the copied media cache first for both background video and music. Every primary and backup background/music choice must independently match the exact joke at >=85.
 
-For every Short, derive a structured semantic requirement from the actual joke, including scenario, actions, setting, people count/context, time context, visual tone, humor mechanism, mood, energy, required visual cues and incompatible/avoid conditions.
+Primary and backup URLs for the same Short must differ. Across all 24 Shorts, all primary and backup background URLs must be unique and all primary and backup music URLs must be unique, requiring 48 distinct background URLs and 48 distinct music URLs.
 
-Search active cached assets using tags plus semantic descriptions. Do not select an asset merely because its broad category matches.
+Any explicit `avoid_for` conflict disqualifies an asset regardless of score.
 
-A cached background is eligible only if the planner calculates a background match score >= 85 for that exact Short. A cached music track is eligible only if the planner calculates a music match score >= 85 for that exact Short.
+Use the existing verified/plan-ready rules from the copied media library. Background creator is mandatory only when attribution is required. Do not invent missing metadata.
 
-Recommended background scoring:
+Search fresh only when the cache cannot provide a sufficiently strong verified primary or backup. Current approved sources remain Pexels for video and Free Safe Music for music. Do not use Mixkit/assets.mixkit.co.
 
-- exact scenario: 35%
-- action match: 25%
-- setting/people context: 15%
-- visual requirements: 15%
-- tone/context: 10%
-
-Recommended music scoring:
-
-- humor mechanism: 30%
-- mood: 30%
-- energy/intensity: 15%
-- scenario suitability: 15%
-- conflict/avoid check: 10%
-
-Any explicit `avoid_for` conflict disqualifies the asset regardless of score.
-
-## Plan-ready assets and variety
-
-`verified` and `plan_ready` mean different things:
-
-- `verified=true` means the source/license is verified.
-- `plan_ready=true` means the asset is verified, active, and all metadata required for immediate use in a valid plan is already known.
-- For legacy cache entries where `plan_ready` is missing, the planner MUST derive readiness from the verified metadata instead of automatically rejecting the asset. A legacy asset is implicitly plan-ready only when it is `verified=true`, `status="active"`, has non-empty direct URL, source page, license and semantic description, and has no missing attribution identity that is actually required by the license.
-
-For backgrounds, explicit or implicit plan readiness requires a non-empty direct URL, source page, license and semantic description. `creator` is required only when `attribution_required=true`; otherwise a verified `creator=null` does not block planning.
-
-For music, explicit or implicit plan readiness requires a non-empty artist, direct URL, source page, license and semantic description. If a provider/license genuinely does not expose an artist and attribution is not required, a verified null artist may be accepted only when the source page itself has been rechecked during that run; never invent an artist.
-
-Prefer explicitly `plan_ready=true` assets, then implicitly plan-ready legacy assets, then never-used assets, least recently used assets, lower usage count, and stronger semantic match. Do not sacrifice semantic fit for novelty or plan readiness.
-
-A verified asset that is not explicitly or implicitly plan-ready may still be used, but the planner must revisit the source page and fill the missing required metadata before placing it in the daily plan. Never invent missing metadata.
-
-Primary and backup assets for the same Short must be different URLs and independently score >=85.
-
-Across the entire 24-Short plan, ALL primary and backup background URLs must be unique. ALL primary and backup music URLs must also be unique. A backup used for one Short cannot be a primary or backup for another Short in the same batch. This means the plan requires 48 distinct video URLs and 48 distinct music URLs.
-
-## Fresh web sourcing
-
-Search the public web fresh only when the media cache cannot provide a sufficiently strong primary or backup match, when the best cache match is not plan-ready and required metadata cannot be verified, or when cached assets are stale/inactive/dead.
-
-Use reputable copyright-safe sources. Current approved sources include Pexels for video and Free Safe Music for music. Do not use Mixkit/assets.mixkit.co. Do not use vintage/classical/ragtime/Wikimedia recordings merely because they are public domain.
-
-Verify the source/license before adding an asset. For music, verify monetized/commercial use and Content ID safety where the provider states it. For video, verify that the source permits free/commercial creator use.
-
-For primary media, prefer exact direct-download URLs that resolve to the expected media type. Backup media uses the repository's lazy runtime preflight/failover behavior.
-
-## Growing the media library
-
-Whenever a daily planner web search discovers a NEW verified source asset that is usable for Wacky Insights, add it to the appropriate media-library JSON during the same planning run.
-
-Rules:
-
-- Deduplicate by `id`, canonical source page and direct URL.
-- Never overwrite a different asset with the same title.
-- Populate the semantic schema as completely as evidence allows.
-- Never invent creator, duration, orientation, BPM or other metadata. Use `null` when not verified.
-- Set `verified=true` only after source/license verification.
-- Set `last_verified_at` to the verification timestamp.
-- Set `status="active"` only when the asset is currently usable.
-- Set `plan_ready=true` when the asset meets the explicit readiness rules above; otherwise set it to `false`. Legacy entries without the field may be treated as implicitly ready only under the legacy derivation rule above.
-- New assets start with `usage_count=0` and null usage fields unless selected in the same plan.
-- If selected, update `usage_count`, `last_used_at` and `last_used_short_id`.
-- If a URL/license check fails, mark the asset `status="inactive"` or `verified=false`; do not select it.
-- Do not add web-search results that were not actually verified.
-- After changing either media JSON, ensure it passes `youtube-shorts-bot/validate_media_library.py`.
-
-The library may grow without an item cap.
-
-## Schema expectations
-
-Background entries should preserve the existing expanded schema including id, type, title, description, direct/source URLs, source, creator, license/commercial flags, semantic tags/actions/settings/context, visual metadata, semantic description, verification metadata, `plan_ready` when newly added or updated, usage metadata and status.
-
-Music entries should preserve the existing expanded schema including id, type, title, artist, direct/source URLs, source, license/commercial/monetization/Content-ID flags, semantic mood/suitability fields, energy/tempo/intensity/comedy style, vocal flags, semantic description, verification metadata, `plan_ready` when newly added or updated, usage metadata and status.
-
-Do NOT store a permanent per-Short `match_score` in the media library. Match score must be recalculated against each new Short.
+When new verified media is discovered, add it only to the isolated media-library JSON files under `youtube-shorts-series-bot/`.
 
 ## Final plan requirements
 
-Create exactly 24 final items with slots 1 through 24 and `target_count: 24`. `candidates_generated` must be at least 60. Preserve all fields required by the repository's current daily-plan validators, including semantic match fields for primary and backup background/music assets.
+- `plan_date` matches the target date
+- `target_count: 24`
+- `candidates_generated >= 60`
+- exactly 24 slots numbered 1 through 24
+- 12 to 16 series parts total
+- at least 3 distinct series
+- each series contains at least 3 parts
+- each non-final part has a valid next part in the same plan
+- all titles include `#Shorts` and are <=100 characters
+- channel handle remains `@WACKYINSIGHTS`
+- preserve all existing media metadata and semantic match fields required by the copied validators
 
-Channel handle: `@WACKYINSIGHTS`.
+## Validation and safety
 
-CTA: `DOUBLE TAP TO AGREE`.
+Use only the validators inside `youtube-shorts-series-bot` for this experiment. Do not trigger the existing `Validate daily Shorts plan` or `Publish daily Shorts queue` production workflows for this folder.
 
-Every title must contain `#Shorts` and be <=100 characters.
-
-Commit exactly one daily plan file for the intended NEXT-DAY plan date per planner commit. The same commit may also include media-library additions or usage updates. Do not change multiple plan dates in one planner commit.
-
-## Validation
-
-After committing, verify the exact `Validate daily Shorts plan` GitHub Actions run for that commit. The validation workflow resolves the plan date from the exact changed plan file, not from wall-clock date.
-
-If validation fails due to content/plan/media metadata, correct and retry up to 3 times. Stop and report rather than repeatedly retrying infrastructure, permission, credential, or GitHub service failures.
+No automatic publishing workflow is enabled for `youtube-shorts-series-bot` yet. This is deliberate so the experiment remains isolated until its plan/output has been reviewed.
