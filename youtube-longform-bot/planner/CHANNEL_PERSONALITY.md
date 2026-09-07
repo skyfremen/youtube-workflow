@@ -1,6 +1,6 @@
 # Wacky Insights Long-form — Channel Personality
 
-This file defines the editorial personality for every Wacky Insights long-form video. It is a hard planning requirement, not optional flavour.
+This file defines the editorial personality for every Wacky Insights long-form video. It is a hard planning requirement.
 
 ## Core promise
 
@@ -11,13 +11,13 @@ Every video must deliver BOTH:
 
 A video that is funny but teaches almost nothing is off-brand. A video that is informative but dry, lecture-like, or humourless is also off-brand.
 
-The target reaction is:
+Target reaction:
 
 > “I actually learned something — and that was funny.”
 
 ## Editorial identity
 
-Wacky Insights explains familiar everyday behaviour, science, psychology, technology, habits, social situations, and odd human experiences in a way that is easy to understand and fun to watch.
+Wacky Insights explains familiar everyday behaviour, science, psychology, technology, habits, social situations, household routines and odd human experiences in a way that is easy to understand and fun to watch.
 
 The channel should feel:
 
@@ -27,9 +27,9 @@ The channel should feel:
 - relatable
 - visually energetic
 - concise
-- easy for a broad audience to follow
+- broad-audience friendly
 - grounded in real explanations
-- comfortable using absurd comparisons or exaggeration for comedy
+- comfortable using absurd comparisons and exaggeration for comedy
 
 It should NOT feel:
 
@@ -38,7 +38,7 @@ It should NOT feel:
 - like a generic facts channel
 - like a list of trivia with no story
 - like stand-up comedy with no explanation
-- sarcastic in a mean-spirited way
+- mean-spirited
 - overly childish
 - corporate
 - clickbait with no payoff
@@ -46,12 +46,6 @@ It should NOT feel:
 ## Educational value standard
 
 Every planned video must have one clear **learning promise** that can be written in one sentence.
-
-Examples:
-
-- “You will understand why waiting feels slower when you watch the clock.”
-- “You will understand why habits can make you check the fridge even when you are not hungry.”
-- “You will understand why unfinished tasks stay mentally active.”
 
 A long-form plan should normally contain:
 
@@ -61,9 +55,9 @@ A long-form plan should normally contain:
 - at least one visual analogy, comparison, mini-demonstration, or cause-and-effect explanation
 - a clear takeaway near the end
 
-Prefer explanation over trivia. Facts should support the story rather than interrupt it.
+Prefer WHY/HOW explanation over trivia. Facts should support the story rather than interrupt it.
 
-When factual claims are uncertain, nuanced, disputed, medical, scientific, historical, financial, or otherwise accuracy-sensitive, the planner should research/verify before presenting them as fact. Avoid overstating correlation as causation or turning a simplified explanation into a false absolute.
+When factual claims are uncertain, nuanced, disputed, medical, scientific, historical, financial, numerical, or otherwise accuracy-sensitive, research/verify before presenting them strongly. Avoid inventing mechanisms, overstating correlation as causation, or turning a useful simplification into a false absolute.
 
 ## Humour standard
 
@@ -79,8 +73,9 @@ Preferred humour:
 - deadpan labels
 - visual irony
 - escalation
+- reaction comedy
 - small punchlines attached to educational points
-- final payoff that rewards the viewer for watching
+- a final payoff that rewards the viewer for watching
 
 Avoid:
 
@@ -92,11 +87,11 @@ Avoid:
 - forcing a joke into every sentence
 - jokes that obscure or contradict the educational point
 
-A useful rhythm is approximately one humour beat every 10–20 seconds in a mature long-form video, with lighter visual humour in between. Humour density may be higher in short MVP tests.
+For mature long-form videos, a useful rhythm is roughly one meaningful humour beat every 10–20 seconds, with lighter visual humour between those beats. MVP tests may be denser.
 
 ## Story structure
 
-Do not write the video like a textbook chapter or bullet list. Build a story.
+Do not write the video like a textbook chapter, listicle or bullet deck. Build a story.
 
 Preferred structure:
 
@@ -109,11 +104,11 @@ Preferred structure:
 7. **Callback / punchline** — return to the opening situation with new understanding.
 8. **Takeaway** — viewer leaves knowing the answer.
 
-For longer 8–10 minute videos, use multiple mini-arcs rather than one uninterrupted lecture. Each section should have its own visual question, explanation, and small payoff while advancing the main story.
+For future 8–10 minute videos, use multiple mini-arcs rather than one uninterrupted lecture. Each section should have its own small question, explanation, visual demonstration and mini-payoff while advancing the main story.
 
 ## Narration voice
 
-Narration should sound conversational and confident, as though an intelligent friend is explaining something interesting.
+Narration should sound conversational and confident, as though a smart, funny friend is explaining something interesting.
 
 Prefer:
 
@@ -128,18 +123,23 @@ Prefer:
 Avoid:
 
 - “Today we are going to discuss…”
-- “In conclusion…” unless used jokingly
+- school-essay intros
 - jargon without immediate explanation
 - long definitions
 - excessive qualifiers that make narration cumbersome
 - fake certainty
-- repeating the same idea in different words just to extend runtime
+- repeating the same idea just to extend runtime
+- lecture-like phrasing
 
-## Visual personality
+## Wacky Insights v2 visual personality
 
-Educational content should be shown, not merely narrated.
+The active design system is `wacky_insights_v2`.
 
-Use:
+The target visual feel is an **original, professional editorial 2D explainer style**: clean vector characters, diverse real environments, readable props, integrated information graphics, medium detail, soft depth, purposeful motion and broad topic flexibility.
+
+Use professional explainer-animation principles such as clarity, modularity, visual hierarchy, environment variety and information embedded into scenes. Do not copy another channel's branding, characters, proprietary assets, exact compositions or distinctive visual identity.
+
+Most runtime should show:
 
 - characters acting out the idea
 - environments that establish context
@@ -147,13 +147,66 @@ Use:
 - cause-and-effect animations
 - visual metaphors
 - diagrams integrated into the physical scene
+- screens, boards and charts that exist inside the world
 - labels attached to objects
-- counters, meters, arrows, trails, timelines, and highlights that animate with the narration
-- comedic visual exaggerations
+- counters, meters, arrows, trails, timelines and highlights that animate with narration
+- comedic visual exaggerations and reactions
 
-The humour can happen visually even when the narration is explaining a serious point.
+The humour can happen visually even while narration explains a serious point.
 
-Never turn the video into a sequence of slides. Full-screen text, title cards, infographic boards, charts, or comparisons should be rare and brief. Prefer making educational graphics exist inside the animated world.
+Never turn the video into a sequence of slides. Full-screen text, title cards, infographic boards, charts or comparisons should be rare and brief. Prefer making educational graphics exist inside the animated world.
+
+## Scene and transition philosophy
+
+Scenes should flow seamlessly, but a true scene boundary must feel intentionally different.
+
+### Core rule
+
+If two consecutive shots use nearly the same background, framing and focal action, they should usually **not** be separate scenes.
+
+Keep them inside one scene and create progression with:
+
+- a camera push or pan
+- a reframe
+- an insert shot
+- a reaction close-up
+- a new focal object
+- a prop/state change
+- an overlay beat
+- character movement
+
+### When to use a true scene cut
+
+A true scene change should introduce meaningful visual progression through a distinctly new environment or a strongly different shot. If the same environment is retained across a scene boundary, change at least two dimensions such as:
+
+- framing
+- camera angle
+- focal subject
+- subject grouping
+- prop state
+- action emphasis
+- story emphasis
+
+Avoid cuts where the next frame looks almost identical to the previous one. Those read as a blink or accidental flicker instead of storytelling.
+
+Preferred transitions include motivated pans, match-action cuts, push-ins, inserts, reaction shots, object wipes, reframes and cuts to clearly different environments.
+
+The viewer should always feel **progression, not blinking**.
+
+## Shot variety
+
+Across a video, deliberately vary shot grammar:
+
+- wide establishing shot
+- medium character/action shot
+- close-up
+- insert/object shot
+- over-shoulder shot where useful
+- reaction shot
+- split-behaviour comparison
+- diagram or data integrated into an environment
+
+Do not repeatedly show the same character, same environment and same scale. If the location remains the same, either keep it as one continuous scene or reframe it strongly enough to create a clearly new shot.
 
 ## Quality check before committing a plan
 
@@ -163,10 +216,13 @@ Before writing `phase7-plan.json`, verify:
 - Does the viewer learn at least 2 meaningful things rather than just hear trivia?
 - Is the explanation understandable without specialist knowledge?
 - Is humour present throughout rather than only at the end?
-- Does every joke support pacing, relatability, or explanation?
+- Does every joke support pacing, relatability or explanation?
 - Is there a clear hook and final payoff/callback?
 - Are the visuals actively explaining the concept?
-- Would the video still be interesting if the on-screen captions were removed?
+- Would the video still be interesting if on-screen captions were removed?
 - Does it avoid PowerPoint-style presentation scenes?
+- Are scene boundaries visually distinct enough to avoid blink-like cuts?
+- If a background repeats, is it treated as continuity or strongly reframed?
+- Do the planned assets look consistent with `wacky_insights_v2`?
 
 If any answer is no, revise the plan before committing it.
