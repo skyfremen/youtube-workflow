@@ -28,24 +28,161 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create temporary 20-Short queue plan
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          base = Path('youtube-shorts-bot')
+          plans = base / 'content' / 'plans'
+          plans.mkdir(parents=True, exist_ok=True)
+          date = datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat()
+
+          concepts = [
+              ('PHONE', 'Checking the time and instantly forgetting it', 'ME: OPENS PHONE TO CHECK THE TIME.', 'ALSO ME: CLOSES IT WITHOUT CHECKING THE TIME.'),
+              ('WORK', 'Writing one quick email that becomes an essay', 'THIS EMAIL WILL TAKE TWO MINUTES.', 'FORTY MINUTES LATER: KIND REGARDS.'),
+              ('SLEEP', 'Turning the pillow over for the cold side', 'BEDTIME PROBLEM: PILLOW TOO WARM.', 'SOLUTION: FLIP IT LIKE A PROFESSIONAL CHEF.'),
+              ('FOOD', 'Opening a snack just to have one piece', 'ME: JUST ONE CHIP.', 'THE BAG: SEE YOU AT THE BOTTOM.'),
+              ('SHOPPING', 'Going in for one item and leaving with a basket', 'MISSION: BUY TOOTHPASTE.', 'CHECKOUT: WHY DO I OWN A LAMP?'),
+              ('FRIENDS', 'Saying goodbye but continuing the conversation', 'OKAY BYE, I REALLY HAVE TO GO.', 'TWENTY MINUTES LATER: ANYWAY...'),
+              ('TRAVEL', 'Packing early but forgetting the obvious item', 'PACKED THREE DAYS EARLY.', 'FORGOT THE PHONE CHARGER.'),
+              ('SCHOOL', 'Understanding everything until the test starts', 'STUDYING: I KNOW THIS.', 'EXAM PAPER: HAVE WE MET?'),
+              ('PARENTS', 'Parents calling from another room instead of texting', 'PHONE EXISTS.', 'PARENT: SHOUTS MY NAME FROM THREE ROOMS AWAY.'),
+              ('PETS', 'Pet ignores expensive toy for the box', 'NEW TOY: EXPENSIVE.', 'PET: THIS CARDBOARD BOX IS ART.'),
+              ('DATING', 'Re-reading a simple text for hidden meaning', 'TEXT: OKAY.', 'MY BRAIN: LET US ANALYZE THIS FOR SIX HOURS.'),
+              ('COUPLE', 'Asking where to eat and rejecting every option', 'WHAT DO YOU WANT TO EAT?', 'ANYTHING. EXCEPT EVERYTHING YOU SUGGEST.'),
+              ('EVERYDAY LIFE', 'Walking into a room and forgetting why', 'WALKS INTO THE ROOM WITH PURPOSE.', 'PURPOSE HAS LEFT THE CHAT.'),
+              ('HUMAN BEHAVIOR', 'Pressing the elevator button more than once', 'BUTTON IS ALREADY LIT.', 'ME: MAYBE IT NEEDS ENCOURAGEMENT.'),
+              ('MARRIAGE', 'One person asks where an item is without looking', 'WHERE IS THE SCISSORS?', 'SAME PLACE IT HAS BEEN FOR FIVE YEARS.'),
+              ('KIDS', 'Child rejects dinner then asks for a snack', 'DINNER: NO THANK YOU.', 'TWO MINUTES LATER: DO WE HAVE SNACKS?'),
+              ('MEN', 'Carrying every grocery bag in one trip', 'TWO TRIPS WOULD BE EASY.', 'PRIDE SAYS ONE TRIP.'),
+              ('WOMEN', 'Finding something in a bag after someone else cannot', 'I CHECKED YOUR BAG. IT IS NOT THERE.', 'HER: FINDS IT IN THREE SECONDS.'),
+              ('CHORES', 'Cleaning one thing and accidentally starting five tasks', 'I WILL JUST WIPE THIS TABLE.', 'NOW I AM REORGANIZING THE ENTIRE HOUSE.'),
+              ('SOCIAL HABITS', 'Practicing what to say before a phone call', 'PHONE CALL STARTS IN TEN SECONDS.', 'ME: REHEARSES HELLO LIKE AN ACTOR.'),
+          ]
+
+          items = []
+          for i, (category, topic, setup, payoff) in enumerate(concepts, 1):
+              if i == 1:
+                  bg = 'https://upload.wikimedia.org/wikipedia/commons/9/90/Wringer_washer.webm'
+                  bg_source = 'https://commons.wikimedia.org/wiki/File:Wringer_washer.webm'
+                  music = 'https://cdn.freesafemusic.com/audio/pqhu.mp3'
+                  music_source = 'https://freesafemusic.com/tracks/toot-tonic/'
+              else:
+                  bg = f'https://example.invalid/dry-run-video-{i}.mp4'
+                  bg_source = f'https://example.invalid/source-video-{i}'
+                  music = f'https://example.invalid/dry-run-music-{i}.mp3'
+                  music_source = f'https://example.invalid/source-music-{i}'
+              content = {
+                  'topic': topic,
+                  'category': category,
+                  'setup': setup,
+                  'payoff': payoff,
+                  'cta': 'DOUBLE TAP TO AGREE',
+                  'handle': '@WACKYINSIGHTS',
+                  'title': f'{topic} 😂 #Shorts',
+                  'description': f'{topic}. A queue-only dry-run test item. #funny #relatable #shorts #wackyinsights #humor',
+                  'hashtags': ['#shorts', '#funny', '#relatable', '#humor', '#wackyinsights'],
+                  'background_url': bg,
+                  'background_source_url': bg_source,
+                  'background_creator': 'Dry Run Test Asset',
+                  'background_license': 'Dry run only',
+                  'background_credit': 'Dry run technical test only.',
+                  'music_url': music,
+                  'music_source_url': music_source,
+                  'music_title': 'Toot Tonic' if i == 1 else f'Dry Run Track {i}',
+                  'music_artist': 'Freedom Motif' if i == 1 else 'Dry Run Artist',
+                  'music_license': 'Free Safe Music License' if i == 1 else 'Dry run only',
+                  'music_credit': '',
+              }
+              items.append({
+                  'slot': i,
+                  'status': 'pending',
+                  'comedy_mechanism': ['misdirection','escalation','inner monologue','expectation-vs-reality','instant regret'][i % 5],
+                  'quality': {
+                      'relatability': 90,
+                      'funny': 90,
+                      'hook': 90,
+                      'originality': 90,
+                      'clarity': 90,
+                      'visual_potential': 90,
+                      'total': 90,
+                  },
+                  'content': content,
+              })
+
+          plan = {
+              'plan_date': date,
+              'target_count': 20,
+              'candidates_generated': 50,
+              'strategy_notes': 'Temporary synthetic queue plan for CI dry-run only; never committed or published.',
+              'items': items,
+          }
+          path = plans / f'{date}.json'
+          path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(f'Created temporary dry-run plan: {path}')
+          PY
+
+      - name: Validate full 20-Short plan
+        run: python youtube-shorts-bot/queue_manager.py validate
+
+      - name: Select queue slot 1
+        run: python youtube-shorts-bot/queue_manager.py select
+
+      - name: Verify queue selection
+        shell: bash
+        run: |
+          test -f youtube-shorts-bot/output/queue_selection.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
+          assert selection['slot'] == 1, selection
+          assert selection.get('plan_date'), selection
+          assert selection.get('plan_path'), selection
+          print('Queue selection verified:', selection)
+          PY
+
       - name: Real YouTube OAuth preflight
         run: python youtube-shorts-bot/auth_check.py
 
-      - name: Preflight media URLs
+      - name: Preflight selected media URLs
         run: python youtube-shorts-bot/media_preflight.py
 
-      - name: Render Short
+      - name: Validate selected content and duplicate protection
+        run: python youtube-shorts-bot/validate_content.py
+
+      - name: Render selected Short
         run: python youtube-shorts-bot/render.py
 
       - name: Verify rendered video and audio
         run: python youtube-shorts-bot/verify_render.py
 
+      - name: Verify queue was not mutated
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
+          plan = json.loads(Path(selection['plan_path']).read_text())
+          assert all(item.get('status') == 'pending' for item in plan['items'])
+          assert not Path('youtube-shorts-bot/output/upload_result.json').exists()
+          print('Queue remains untouched: all 20 items are still pending and no upload result exists.')
+          PY
+
       - name: Upload dry-run artifact
         uses: actions/upload-artifact@v4
         with:
-          name: youtube-short-dry-run-${{ github.run_id }}
-          path: youtube-shorts-bot/output/short.mp4
+          name: youtube-queue-dry-run-${{ github.run_id }}
+          path: |
+            youtube-shorts-bot/output/short.mp4
+            youtube-shorts-bot/output/queue_selection.json
           retention-days: 3
 
       - name: Confirm no publication
-        run: echo 'DRY RUN PASSED - no YouTube upload, archive update, or queue state change was performed.'
+        run: echo 'STRONG DRY RUN PASSED - 20-item plan validation, queue selection, OAuth, media preflight, duplicate check, render, and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
