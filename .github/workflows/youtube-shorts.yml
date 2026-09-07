@@ -1,7 +1,12 @@
-name: Build and upload YouTube Short
+name: LEGACY manual single-Short upload (private only)
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RUN_PRIVATE_LEGACY_UPLOAD to continue. Prefer the daily queue publisher for normal operation.'
+        required: true
+        type: string
 
 concurrency:
   group: youtube-short-publish
@@ -9,6 +14,7 @@ concurrency:
 
 jobs:
   build-upload:
+    if: ${{ github.event.inputs.confirm == 'RUN_PRIVATE_LEGACY_UPLOAD' }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/skyfremen/youtube-shorts-runner:latest
@@ -22,11 +28,16 @@ jobs:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-      YOUTUBE_PRIVACY: public
+      YOUTUBE_PRIVACY: private
+      YOUTUBE_SCHEDULED_UPLOAD: 'false'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Warn about legacy path
+        run: |
+          echo "::warning::This is the legacy emergency single-Short workflow. It uploads content/latest.json as PRIVATE only. Normal publishing must use the validated daily queue."
 
       - name: Validate YouTube credentials and OAuth
         run: python youtube-shorts-bot/auth_check.py
@@ -50,7 +61,7 @@ jobs:
           path: youtube-shorts-bot/output/short.mp4
           retention-days: 3
 
-      - name: Upload to YouTube and capture video ID
+      - name: Upload PRIVATE video to YouTube and capture video ID
         run: python youtube-shorts-bot/publish.py
 
       - name: Archive successful upload
