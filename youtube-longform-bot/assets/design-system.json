@@ -1,0 +1,53 @@
+{
+  "id": "wacky_insights_v1",
+  "quality": "production",
+  "style": "clean_premium_2d_vector_explainer",
+  "principles": [
+    "environment-led storytelling",
+    "professional editorial illustration",
+    "clear silhouettes at 720p",
+    "consistent soft depth and lighting",
+    "minimal text attached to action",
+    "continuous visual motion",
+    "reusable modular assets"
+  ],
+  "palette": {
+    "ink": "#1F2937",
+    "muted": "#667085",
+    "red": "#F05A47",
+    "blue": "#4F7CFF",
+    "green": "#22A06B",
+    "yellow": "#F7C948",
+    "warm_white": "#F8FAFC"
+  },
+  "geometry": {
+    "stroke_px_1080p": 4,
+    "corner_radius": "medium_soft",
+    "perspective": "gentle_three_quarter_or_front",
+    "shadow": "soft_directional",
+    "detail_level": "medium_high"
+  },
+  "animation": {
+    "preferred_change_interval_seconds": 1.2,
+    "max_static_gap_seconds": 1.5,
+    "camera": ["slow_push", "pan", "follow", "punch_zoom"],
+    "object": ["pop", "float", "track", "highlight", "state_change"]
+  },
+  "forbidden": [
+    "PowerPoint slide layouts",
+    "title plus static cards",
+    "clipart look",
+    "childlike doodles",
+    "large paragraph text",
+    "generic stock-illustration composition",
+    "inconsistent character proportions",
+    "flat empty backgrounds without story context"
+  ],
+  "asset_acceptance": {
+    "must_have_description": true,
+    "must_have_tags": true,
+    "must_have_style_id": true,
+    "must_be_reusable": true,
+    "must_be_svg_for_generated_phase7_assets": true
+  }
+}
