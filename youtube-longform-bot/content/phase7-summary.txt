@@ -1,35 +1,52 @@
-Working title: Why Does Laundry Never Feel Finished?
+WORKING TITLE
+Why Do You Forget What You Wanted After Walking Into a Room?
 
-Approximate intended length: 30–45 seconds
+APPROXIMATE INTENDED DURATION
+About 75 seconds for the current MVP long-form test.
 
-Story overview:
-Laundry feels endless because it is not really a one-time task. The moment one load is done, more clothes are already being worn, towels are being used, and another pile starts forming. The video explains this as a continuous system rather than a finishable chore, then turns the missing-sock problem into the comic payoff.
+LEARNING PROMISE
+The viewer will understand how changes in context can act as event boundaries that reorganize memory, why this can make the previous goal temporarily harder to retrieve, and why the effect is not a magical property of doors.
 
-Scene 1 — The false finish:
-We open in a laundry room just after a load is finished. The character thinks the job is done, but another laundry basket appears and immediately destroys that feeling of victory.
+STORY OVERVIEW
+A character notices their phone is at 2% and launches a simple mission from the sofa: get the charger. They walk into the kitchen and instantly forget why they are there. Instead of treating this as a magical “doorway wipes your brain” fact, the story zooms into a playful memory-control-room metaphor. The viewer sees how the brain can divide continuous experience into events, how a context change can update what is currently most accessible, and why information from the previous event can become harder to retrieve. The explanation then adds the important nuance that event boundaries can both hurt and help memory depending on the task, and that a literal doorway is not required. The character walks back to the sofa, remembers the charger, and immediately creates a new problem by forgetting why they came back.
 
-Scene 2 — Why the cycle restarts:
-The washing machine keeps running while the character is still wearing clothes. Simple animated labels show wear → wash → repeat, making the point that laundry keeps producing new work while old work is being completed.
+SCENE-BY-SCENE STORYLINE
+1. Living room — The phone shows 2% battery. The character gets up with one clear mission: get the charger. A tiny personified mission note follows them toward the doorway.
 
-Scene 3 — Empty basket versus reality:
-The basket finally looks empty and the character gets a brief success moment. A few moments later, another towel or random item appears, followed by one mysterious sock.
+2. Kitchen — The character crosses into a visually distinct room, stops, and looks completely lost. The narrator kills the “memory-erasing force field” joke and introduces the real idea: a major context change can mark a new event.
 
-Scene 4 — The missing sock returns:
-The character has already accepted that the missing sock is gone forever. The sock suddenly comes back with an exaggerated “I'M BACK” moment, giving the middle of the story a visual joke.
+3. Memory control room — We move into an obviously metaphorical control room. The active event model changes from “sofa + dying phone + charger mission” to the new kitchen context. The charger mission is not destroyed; it simply slides away from the most immediately accessible slot.
 
-Scene 5 — Final explanation and punchline:
-We return to the full laundry-room scene. The takeaway is that laundry is a system, not a finish line. The final joke is that laundry is basically a subscription service your clothes signed you up for without asking.
+4. Memory control room, strongly reframed — A split-behaviour demonstration shows the nuance. Boundaries can make details across events harder to connect, but they can also organize experience into useful chunks. The mission note is shuffled between the two lanes like an exhausted office worker.
 
-Main punchline/payoff:
-Laundry is not something you finish — it is a subscription service your clothes enrolled you in forever.
+5. Kitchen, over-the-shoulder — The doorway is shown as a strong context cue rather than a magical device. The narrator explains that event segmentation can happen without a physical doorway; the door is simply very good at announcing “new scene.”
 
-Existing assets expected to be reused:
-- Existing Wacky Insights male explainer character (`male_01`)
+6. Living room callback — The character walks back, sees the original context, and remembers the charger mission. Then they pause because they have forgotten why they returned to the sofa. The tiny mission note finally gives up and files for annual leave.
 
-New assets expected to be needed/generated:
-- Professional modern laundry-room environment
-- Front-loading washing machine
-- Laundry basket with clothes
-- Mismatched sock pair
+MAIN EDUCATIONAL POINTS
+- The brain segments continuous experience into events, and context changes can help create event boundaries.
+- Updating the current event can make information associated with the previous event temporarily less accessible.
+- Event boundaries are not simply memory destroyers: research finds both costs and organizational benefits depending on the task and memory measure.
+- A literal doorway is not required; context and event structure are the more important idea.
+
+HUMOUR APPROACH / RECURRING GAG
+Relatable “why am I here?” confusion is combined with a personified mission note. The note behaves like an employee being transferred between departments every time the context changes. The visual metaphor makes the memory explanation easier to follow without pretending the control room is literal brain anatomy.
+
+FINAL PUNCHLINE / PAYOFF
+The original context helps the character remember the charger — but now they have forgotten why they came back to the sofa. The mission note requests annual leave.
+
+SCENE / LOCATION VARIETY AT A GLANCE
+Living room wide action -> distinct kitchen medium reaction -> metaphorical memory control room wide -> strongly reframed split-behaviour control-room demonstration -> kitchen over-the-shoulder context shot -> living-room reaction callback. Repeated locations are either separated by a clearly different environment or returned to with different framing and story emphasis.
+
+EXISTING ASSETS EXPECTED TO BE REUSED
+No current registry asset is a strong enough v2 match to force into this story. The registry currently contains useful legacy v1 assets, but the plan intentionally avoids weak semantic-only reuse.
+
+NEW ASSETS EXPECTED TO BE GENERATED
+- Professional reusable v2 everyday adult character with modular poses
+- v2 living-room environment with a usable doorway path
+- v2 kitchen environment with distinct composition
+- reusable cognition/memory control-room environment
+- personified reusable mission-note/task-card prop
+- reusable integrated event-boundary/context-change overlay
 
 STATUS: AWAITING APPROVAL — no video has been rendered.
