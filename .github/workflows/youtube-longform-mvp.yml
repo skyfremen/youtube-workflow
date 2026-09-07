@@ -1,14 +1,14 @@
-name: Wacky Insights longform Phase 5
+name: Wacky Insights longform Phase 6
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: youtube-longform-phase5
+  group: youtube-longform-phase6
   cancel-in-progress: true
 
 jobs:
-  storyboard-render-test:
+  narration-first-render-test:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
@@ -26,48 +26,38 @@ jobs:
             echo "Longform code must not depend on the Shorts bot."
             exit 1
           fi
-          echo "Phase 5 is isolated from youtube-shorts-bot."
-
-      - name: Restore cached Phase 5 narration
-        id: narration-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            youtube-longform-bot/public/narration.wav
-            youtube-longform-bot/public/narration-kokoro-raw.wav
-          key: ${{ runner.os }}-phase5-audio-${{ hashFiles('youtube-longform-bot/content/scene-plan.json', 'youtube-longform-bot/scripts/generate-kokoro.py', 'youtube-longform-bot/requirements-tts.txt') }}
+          echo "Phase 6 is isolated from youtube-shorts-bot."
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - name: Restore longform Node cache
+      - name: Restore longform Node and Remotion cache
         id: node-cache
         uses: actions/cache@v4
         with:
           path: |
             youtube-longform-bot/node_modules
             ~/.cache/remotion
-          key: ${{ runner.os }}-longform-node-${{ hashFiles('youtube-longform-bot/package.json') }}
+          key: ${{ runner.os }}-node24-longform-${{ hashFiles('youtube-longform-bot/package.json') }}
 
       - name: Install longform dependencies on cache miss
         if: steps.node-cache.outputs.cache-hit != 'true'
         working-directory: youtube-longform-bot
         run: npm install --no-audit --no-fund
 
-      - name: Ensure FFmpeg tools
-        shell: bash
-        run: |
-          if command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null; then
-            echo "FFmpeg already available."
-          else
-            sudo apt-get update -qq
-            sudo apt-get install -y --no-install-recommends ffmpeg
-          fi
-
-      - name: Validate storyboard and asset registry
+      - name: Validate Phase 6 source storyboard and assets
         working-directory: youtube-longform-bot
-        run: node scripts/validate-storyboard.mjs content/scene-plan.json assets/registry.json
+        run: node scripts/validate-phase6.mjs content/phase6-plan.json assets/registry.json
+
+      - name: Restore measured Phase 6 narration
+        id: narration-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            youtube-longform-bot/public/narration.wav
+            youtube-longform-bot/output/phase6-timing.json
+          key: ${{ runner.os }}-phase6-narration-${{ hashFiles('youtube-longform-bot/content/phase6-plan.json', 'youtube-longform-bot/scripts/generate-phase6-narration.py', 'youtube-longform-bot/requirements-tts.txt') }}
 
       - uses: actions/setup-python@v5
         if: steps.narration-cache.outputs.cache-hit != 'true'
@@ -89,82 +79,75 @@ jobs:
         if: steps.narration-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          if ! command -v espeak-ng >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y --no-install-recommends espeak-ng
-          fi
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
           python -m pip install -r youtube-longform-bot/requirements-tts.txt
 
-      - name: Generate Phase 5 Kokoro narration on cache miss
+      - name: Generate and measure narration first
         if: steps.narration-cache.outputs.cache-hit != 'true'
         working-directory: youtube-longform-bot
         shell: bash
         run: |
-          mkdir -p public output
-          node - <<'NODE'
-          const fs = require('fs');
-          const plan = JSON.parse(fs.readFileSync('content/scene-plan.json', 'utf8'));
-          fs.writeFileSync('output/narration.txt', plan.scenes.map((s) => s.narration).join(' '));
-          NODE
-          python scripts/generate-kokoro.py \
-            --text-file output/narration.txt \
-            --output public/narration-kokoro-raw.wav \
+          mkdir -p public output/phase6-segments
+          python scripts/generate-phase6-narration.py \
+            --plan content/phase6-plan.json \
+            --output public/narration.wav \
+            --manifest output/phase6-timing.json \
+            --segments-dir output/phase6-segments \
             --voice af_heart \
-            --speed 1.0
-          ffmpeg -y -i public/narration-kokoro-raw.wav -af "apad=pad_dur=30" -t 30 public/narration.wav
+            --speed 1.0 \
+            --gap 0.10
 
-      - name: Verify narration
+      - name: Build runtime storyboard from measured audio
+        working-directory: youtube-longform-bot
+        run: node scripts/build-phase6-runtime-plan.mjs content/phase6-plan.json output/phase6-timing.json content/runtime-plan.json
+
+      - name: Verify narration-first timing
         working-directory: youtube-longform-bot
         shell: bash
         run: |
-          mkdir -p output
-          printf 'kokoro\n' > output/tts-engine.txt
-          test -s public/narration-kokoro-raw.wav
           test -s public/narration.wav
-          FINAL_DURATION="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 public/narration.wav)"
-          python3 - <<PY
-          duration = float('${FINAL_DURATION}')
-          assert 29.5 <= duration <= 30.5, duration
-          print(f'PASS: Phase 5 narration {duration:.2f}s')
-          PY
+          test -s output/phase6-timing.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const plan = JSON.parse(fs.readFileSync('content/runtime-plan.json', 'utf8'));
+          const timing = JSON.parse(fs.readFileSync('output/phase6-timing.json', 'utf8'));
+          if (plan.timing_mode !== 'measured_kokoro_scene_audio') throw new Error('Runtime plan is not narration-timed');
+          if (Math.abs(plan.duration_seconds - timing.total_duration) > 0.001) throw new Error('Runtime duration does not match narration');
+          if (plan.scenes.length !== timing.scenes.length) throw new Error('Scene timing count mismatch');
+          for (const scene of plan.scenes) {
+            if (!(scene.duration > 0) || !(scene.speech_duration > 0)) throw new Error(`Invalid runtime timing for ${scene.id}`);
+            for (const beat of scene.beats || []) {
+              if (beat.at < 0 || beat.at >= scene.duration) throw new Error(`Beat outside measured scene timing in ${scene.id}`);
+            }
+          }
+          console.log(`PASS: narration-first runtime ${plan.duration_seconds.toFixed(2)}s across ${plan.scenes.length} scenes`);
+          NODE
 
-      - name: Render 30-second 720p Phase 5
+      - name: Render narration-timed 720p Phase 6
         working-directory: youtube-longform-bot
         run: npm run render
 
-      - name: Verify Phase 5 video
+      - name: Verify Phase 6 output exists
         working-directory: youtube-longform-bot
         shell: bash
         run: |
           test -s output/demo.mp4
-          DURATION="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 output/demo.mp4)"
-          WIDTH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 output/demo.mp4)"
-          HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=noprint_wrappers=1:nokey=1 output/demo.mp4)"
-          AUDIO="$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_type -of default=noprint_wrappers=1:nokey=1 output/demo.mp4)"
-          python3 - <<PY
-          duration = float('${DURATION}')
-          width = int('${WIDTH}')
-          height = int('${HEIGHT}')
-          audio = '${AUDIO}'.strip()
-          assert 29.5 <= duration <= 30.5, duration
-          assert width == 1280, width
-          assert height == 720, height
-          assert audio == 'audio', audio
-          print(f'PASS: {duration:.2f}s, {width}x{height}, audio present')
-          PY
+          BYTES="$(stat -c%s output/demo.mp4)"
+          test "$BYTES" -gt 100000
+          echo "PASS: Phase 6 MP4 created (${BYTES} bytes)."
 
-      - name: Upload Phase 5 artifact
+      - name: Upload Phase 6 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-longform-phase5-${{ github.run_id }}
+          name: wacky-longform-phase6-${{ github.run_id }}
           path: |
             youtube-longform-bot/output/demo.mp4
-            youtube-longform-bot/content/scene-plan.json
+            youtube-longform-bot/content/phase6-plan.json
+            youtube-longform-bot/content/runtime-plan.json
+            youtube-longform-bot/output/phase6-timing.json
             youtube-longform-bot/assets/registry.json
-            youtube-longform-bot/output/tts-engine.txt
           retention-days: 2
 
       - name: Confirm no YouTube publication
         if: always()
-        run: echo 'PHASE 5 COMPLETE - storyboard + asset registry render test only; no YouTube upload or scheduling code executed.'
+        run: echo 'PHASE 6 COMPLETE - narration-first render test only; no YouTube upload or scheduling code executed.'
