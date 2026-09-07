@@ -127,25 +127,25 @@ jobs:
           print(f'Created temporary dry-run plan: {path}')
           PY
 
-      - name: Validate full 20-Short plan
+      - name: Validate full 20-Short plan once
         run: python youtube-shorts-bot/queue_manager.py validate
 
-      - name: Select queue slot 1 by explicit slot
-        run: python youtube-shorts-bot/queue_manager.py select --slot 1
+      - name: Select queue slot 1 without repeating full validation
+        run: python youtube-shorts-bot/queue_manager.py select --slot 1 --skip-validation
 
-      - name: Verify queue selection and schedule mapping
+      - name: Verify queue selection, schedule mapping and fail-closed timing
         shell: bash
         run: |
           test -f youtube-shorts-bot/output/queue_selection.json
           python - <<'PY'
           import json
-          from datetime import datetime
+          from datetime import datetime, timedelta, timezone
           from pathlib import Path
           from zoneinfo import ZoneInfo
           import sys
 
           sys.path.insert(0, 'youtube-shorts-bot')
-          from schedule_utils import scheduled_publish_at
+          from schedule_utils import ensure_publish_at_is_safe, scheduled_publish_at
 
           selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
           assert selection['slot'] == 1, selection
@@ -154,14 +154,27 @@ jobs:
 
           first = scheduled_publish_at(selection['plan_date'], 1)
           last = scheduled_publish_at(selection['plan_date'], 20)
-          first_sgt = datetime.fromisoformat(first.replace('Z', '+00:00')).astimezone(ZoneInfo('Asia/Singapore'))
-          last_sgt = datetime.fromisoformat(last.replace('Z', '+00:00')).astimezone(ZoneInfo('Asia/Singapore'))
+          first_dt = datetime.fromisoformat(first.replace('Z', '+00:00'))
+          last_dt = datetime.fromisoformat(last.replace('Z', '+00:00'))
+          first_sgt = first_dt.astimezone(ZoneInfo('Asia/Singapore'))
+          last_sgt = last_dt.astimezone(ZoneInfo('Asia/Singapore'))
           assert first_sgt.hour == 4 and first_sgt.minute == 0, first_sgt
           assert last_sgt.hour == 23 and last_sgt.minute == 0, last_sgt
           assert first_sgt.date().isoformat() == selection['plan_date'], first_sgt
           assert last_sgt.date().isoformat() == selection['plan_date'], last_sgt
+
+          safe_now = first_dt - timedelta(minutes=60)
+          assert ensure_publish_at_is_safe(first, now=safe_now) == first
+          try:
+              ensure_publish_at_is_safe(first, now=first_dt - timedelta(minutes=5))
+          except ValueError as exc:
+              assert 'MISSED_SCHEDULE_WINDOW' in str(exc), exc
+          else:
+              raise AssertionError('Expected the 10-minute lead-time gate to reject a near/past schedule.')
+
           print('Queue selection verified:', selection)
           print('Scheduled release mapping verified:', first, 'through', last)
+          print('Fail-closed schedule lead-time gate verified.')
           PY
 
       - name: Real YouTube OAuth preflight
@@ -202,4 +215,4 @@ jobs:
           retention-days: 3
 
       - name: Confirm no publication
-        run: echo 'STRONG DRY RUN PASSED - 20-item plan validation, explicit slot selection, schedule mapping, OAuth, media preflight, duplicate check, render, and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
+        run: echo 'STRONG DRY RUN PASSED - plan-once validation, explicit slot selection, schedule mapping, fail-closed timing, OAuth, media preflight, duplicate check, render, and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
