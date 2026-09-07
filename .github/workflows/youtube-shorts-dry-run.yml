@@ -281,3 +281,5 @@ jobs:
 
       - name: Confirm no publication
         run: echo 'STRONG DRY RUN PASSED - backup metadata validation, lazy media failover, schedule guard, OAuth, render and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
+
+# Manual trigger marker: 2026-09-07 strict-media check
