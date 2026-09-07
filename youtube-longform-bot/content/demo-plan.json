@@ -1,16 +1,53 @@
 {
-  "video_id": "fridge-checking-test",
-  "title": "Why Do We Keep Checking the Fridge?",
-  "duration_seconds": 60,
+  "video_id": "fridge-animation-mvp2",
+  "title": "Why Do We Keep Checking the Fridge? — Animation MVP 2",
+  "duration_seconds": 15,
   "format": "16:9",
   "scenes": [
-    {"id":1,"duration":8,"type":"hook","caption":"WHY DO WE KEEP CHECKING THE FRIDGE?","narration":"You already checked the fridge. Nothing changed. So why are you opening it again five minutes later?"},
-    {"id":2,"duration":7,"type":"character","caption":"YOUR BRAIN EXPECTS A REWARD","narration":"Part of the answer is simple. Your brain likes the possibility of a reward, even when the odds are terrible."},
-    {"id":3,"duration":8,"type":"diagram","caption":"BOREDOM → CHECK → MAYBE FOOD","narration":"When you are bored, stressed, or procrastinating, checking the fridge becomes a tiny habit loop."},
-    {"id":4,"duration":7,"type":"character","caption":"NOT ALWAYS HUNGER","narration":"And sometimes you are not actually hungry. You just want stimulation, comfort, or something to do."},
-    {"id":5,"duration":8,"type":"comparison","caption":"HUNGER vs HABIT","narration":"Real hunger usually builds gradually. Habit checking can appear suddenly, especially when you walk past the kitchen."},
-    {"id":6,"duration":7,"type":"diagram","caption":"CUE → ROUTINE → REWARD","narration":"The kitchen is the cue. Opening the fridge is the routine. Finding something tasty is the possible reward."},
-    {"id":7,"duration":8,"type":"character","caption":"YOUR FRIDGE DID NOT UPDATE","narration":"So yes, your brain can treat the fridge like a social media feed that might somehow have new content."},
-    {"id":8,"duration":7,"type":"end","caption":"YOU WILL STILL CHECK AGAIN","narration":"Now that you know this, you will definitely stop checking the fridge for no reason. Probably. Maybe. Check again later."}
+    {
+      "id": 1,
+      "duration": 5,
+      "type": "character",
+      "caption": "YOU JUST CHECKED THE FRIDGE",
+      "narration": "You just checked the fridge. Nothing changed.",
+      "beats": [
+        {"at": 0.0, "action": "character_enter"},
+        {"at": 0.7, "action": "fridge_open"},
+        {"at": 1.5, "action": "character_look"},
+        {"at": 2.2, "action": "pop_text", "text": "STILL NOTHING"},
+        {"at": 3.4, "action": "fridge_close"},
+        {"at": 4.1, "action": "clock_jump", "text": "+5 MIN"}
+      ]
+    },
+    {
+      "id": 2,
+      "duration": 5,
+      "type": "diagram",
+      "caption": "YOUR BRAIN: MAYBE THIS TIME?",
+      "narration": "But your brain still thinks, maybe this time there is a reward.",
+      "beats": [
+        {"at": 0.0, "action": "camera_pan"},
+        {"at": 0.8, "action": "diagram_step", "text": "BORED"},
+        {"at": 1.7, "action": "diagram_step", "text": "CHECK"},
+        {"at": 2.6, "action": "diagram_step", "text": "REWARD?"},
+        {"at": 3.5, "action": "camera_punch_zoom"},
+        {"at": 4.2, "action": "character_react"}
+      ]
+    },
+    {
+      "id": 3,
+      "duration": 5,
+      "type": "end",
+      "caption": "SO YOU CHECK AGAIN",
+      "narration": "So five minutes later, you open the exact same fridge again.",
+      "beats": [
+        {"at": 0.0, "action": "character_return"},
+        {"at": 0.8, "action": "fridge_open"},
+        {"at": 1.8, "action": "character_shocked"},
+        {"at": 2.6, "action": "pop_text", "text": "NO UPDATE AVAILABLE"},
+        {"at": 3.6, "action": "shake"},
+        {"at": 4.3, "action": "end_punchline", "text": "CHECK AGAIN LATER"}
+      ]
+    }
   ]
 }
