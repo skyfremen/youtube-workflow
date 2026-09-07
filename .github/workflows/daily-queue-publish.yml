@@ -61,11 +61,12 @@ jobs:
           echo "plan_date=${resolved_date}" >> "$GITHUB_OUTPUT"
           echo "Processing Singapore plan date ${resolved_date}."
           python youtube-shorts-bot/queue_manager.py validate --date "${resolved_date}"
+          python youtube-shorts-bot/validate_backup_metadata.py --date "${resolved_date}"
 
       - name: Validate YouTube credentials and OAuth once
         run: python youtube-shorts-bot/auth_check.py
 
-      - name: Render, verify, upload, verify schedule, and queue all 20 Shorts
+      - name: Process all 20 Shorts with early schedule guard and smart retries
         id: batch
         shell: bash
         env:
@@ -77,63 +78,157 @@ jobs:
           failures=0
           scheduled=0
           skipped=0
+          missed=0
 
           process_slot() {
             slot="$1"
+            uploaded=0
             echo "========== Processing queue slot ${slot} =========="
 
-            rm -f \
-              youtube-shorts-bot/output/queue_selection.json \
-              youtube-shorts-bot/output/upload_result.json \
-              youtube-shorts-bot/output/content_id.txt \
-              youtube-shorts-bot/output/short.mp4
+            for attempt in 1 2 3; do
+              echo "---- Slot ${slot} attempt ${attempt}/3 ----"
 
-            python youtube-shorts-bot/queue_manager.py select \
-              --date "${RESOLVED_PLAN_DATE}" \
-              --slot "${slot}" \
-              --skip-validation || return 1
+              # Only gate work that could cause a new upload. If an upload already
+              # succeeded, continue recovery even if the release time passes later.
+              if [ "${uploaded}" -eq 0 ]; then
+                if python youtube-shorts-bot/schedule_guard.py \
+                  --date "${RESOLVED_PLAN_DATE}" --slot "${slot}"; then
+                  :
+                else
+                  guard_rc=$?
+                  if [ "${guard_rc}" -eq 20 ]; then
+                    echo "::warning::Queue slot ${slot} missed its safe publish window; skipping before media download/render."
+                    return 20
+                  fi
+                  echo "::error::Queue slot ${slot} schedule guard failed unexpectedly."
+                  return 1
+                fi
 
-            if [ ! -f youtube-shorts-bot/output/queue_selection.json ]; then
-              echo "Slot ${slot} is already complete or unavailable; skipping."
-              skipped=$((skipped + 1))
+                rm -f \
+                  youtube-shorts-bot/output/queue_selection.json \
+                  youtube-shorts-bot/output/upload_result.json \
+                  youtube-shorts-bot/output/content_id.txt \
+                  youtube-shorts-bot/output/short.mp4 \
+                  youtube-shorts-bot/output/background.asset \
+                  youtube-shorts-bot/output/music.asset
+
+                if ! python youtube-shorts-bot/queue_manager.py select \
+                  --date "${RESOLVED_PLAN_DATE}" \
+                  --slot "${slot}" \
+                  --skip-validation; then
+                  echo "::error::Queue slot ${slot} selection failed."
+                  return 1
+                fi
+
+                if [ ! -f youtube-shorts-bot/output/queue_selection.json ]; then
+                  echo "Slot ${slot} is already complete or unavailable; skipping."
+                  return 10
+                fi
+
+                # Lazy failover: backup media is touched only if its primary fails.
+                if ! python youtube-shorts-bot/media_failover.py; then
+                  echo "::warning::Slot ${slot} media preparation failed on attempt ${attempt}."
+                  if [ "${attempt}" -lt 3 ]; then
+                    sleep $((attempt * 2))
+                    continue
+                  fi
+                  return 1
+                fi
+
+                if ! python youtube-shorts-bot/validate_content.py; then
+                  echo "::error::Slot ${slot} content validation is a permanent failure; not retrying blindly."
+                  return 1
+                fi
+
+                if ! python youtube-shorts-bot/render.py; then
+                  echo "::warning::Slot ${slot} render failed on attempt ${attempt}; clean render retry will be attempted if time remains."
+                  if [ "${attempt}" -lt 3 ]; then
+                    sleep $((attempt * 2))
+                    continue
+                  fi
+                  return 1
+                fi
+
+                if ! python youtube-shorts-bot/verify_render.py; then
+                  echo "::warning::Slot ${slot} render verification failed on attempt ${attempt}; rerendering if time remains."
+                  if [ "${attempt}" -lt 3 ]; then
+                    sleep $((attempt * 2))
+                    continue
+                  fi
+                  return 1
+                fi
+
+                # Upload failures are not blindly retried because an ambiguous API
+                # failure could have created a video without returning its ID.
+                if ! python youtube-shorts-bot/publish.py; then
+                  echo "::error::Slot ${slot} upload failed without a confirmed reusable video ID; refusing blind re-upload to avoid duplicates."
+                  return 1
+                fi
+
+                uploaded=1
+                cp youtube-shorts-bot/output/upload_result.json \
+                  "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || true
+                echo "Slot ${slot} upload checkpoint saved; all further retries will reuse this YouTube video ID."
+              fi
+
+              # Post-upload retries resume here and never call publish.py again.
+              if ! python youtube-shorts-bot/verify_youtube_schedule.py; then
+                echo "::warning::Slot ${slot} YouTube schedule verification failed on attempt ${attempt}; retrying existing video only."
+                if [ "${attempt}" -lt 3 ]; then
+                  sleep $((attempt * 2))
+                  continue
+                fi
+                return 1
+              fi
+
+              if ! python youtube-shorts-bot/finalize.py; then
+                echo "::warning::Slot ${slot} finalization failed on attempt ${attempt}; retrying existing video only."
+                if [ "${attempt}" -lt 3 ]; then
+                  sleep $((attempt * 2))
+                  continue
+                fi
+                return 1
+              fi
+
+              if ! python youtube-shorts-bot/queue_manager.py mark; then
+                echo "::warning::Slot ${slot} queue-state mark failed on attempt ${attempt}; retrying state recovery only."
+                if [ "${attempt}" -lt 3 ]; then
+                  sleep $((attempt * 2))
+                  continue
+                fi
+                return 1
+              fi
+
+              cp youtube-shorts-bot/output/upload_result.json \
+                "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || true
+              echo "Slot ${slot} successfully uploaded, YouTube-verified, finalized, and scheduled."
               return 0
-            fi
+            done
 
-            python youtube-shorts-bot/media_preflight.py || return 1
-            python youtube-shorts-bot/validate_content.py || return 1
-            python youtube-shorts-bot/render.py || return 1
-            python youtube-shorts-bot/verify_render.py || return 1
-            python youtube-shorts-bot/publish.py || return 1
-
-            # Preserve the YouTube video ID immediately. If verification/finalization
-            # fails later, the artifact still contains the exact upload to recover.
-            cp \
-              youtube-shorts-bot/output/upload_result.json \
-              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || return 1
-
-            python youtube-shorts-bot/verify_youtube_schedule.py || return 1
-            python youtube-shorts-bot/finalize.py || return 1
-            python youtube-shorts-bot/queue_manager.py mark || return 1
-
-            # Overwrite the attempt record with fully verified scheduling metadata.
-            cp \
-              youtube-shorts-bot/output/upload_result.json \
-              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || return 1
-            scheduled=$((scheduled + 1))
-            echo "Slot ${slot} successfully uploaded, YouTube-verified, and scheduled."
+            return 1
           }
 
           for slot in $(seq 1 20); do
-            if ! process_slot "${slot}"; then
-              failures=$((failures + 1))
-              echo "::error::Queue slot ${slot} failed. Later slots will continue processing."
+            if process_slot "${slot}"; then
+              scheduled=$((scheduled + 1))
+            else
+              rc=$?
+              if [ "${rc}" -eq 10 ]; then
+                skipped=$((skipped + 1))
+              elif [ "${rc}" -eq 20 ]; then
+                missed=$((missed + 1))
+              else
+                failures=$((failures + 1))
+                echo "::error::Queue slot ${slot} failed after safe recovery attempts. Later slots will continue processing."
+              fi
             fi
           done
 
           echo "scheduled=${scheduled}" >> "$GITHUB_OUTPUT"
           echo "skipped=${skipped}" >> "$GITHUB_OUTPUT"
+          echo "missed=${missed}" >> "$GITHUB_OUTPUT"
           echo "failures=${failures}" >> "$GITHUB_OUTPUT"
-          echo "Batch result: ${scheduled} scheduled, ${skipped} already complete, ${failures} failed."
+          echo "Batch result: ${scheduled} scheduled, ${skipped} already complete, ${missed} missed-window warnings, ${failures} genuine failures."
 
       - name: Upload batch publish metadata artifact
         if: always()
@@ -152,11 +247,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # queue_manager uses latest.json as an ephemeral working copy. Never persist
-          # it, and restore it before pull --rebase so an unstaged tracked-file change
-          # cannot block state persistence after successful YouTube scheduling.
           git restore youtube-shorts-bot/content/latest.json || true
-
           git add youtube-shorts-bot/content/plans/ youtube-shorts-bot/content/archive/
 
           if git diff --cached --quiet; then
@@ -176,8 +267,13 @@ jobs:
           echo "Failed to persist queue/archive state after 5 attempts."
           exit 1
 
-      - name: Fail batch if any slot failed
+      - name: Report missed schedule windows
+        if: ${{ always() && steps.batch.outputs.missed != '0' }}
+        run: |
+          echo "::warning::${{ steps.batch.outputs.missed }} queue slot(s) were already outside the safe scheduling window and were skipped before expensive media/render work."
+
+      - name: Fail batch only for genuine unresolved failures
         if: ${{ always() && steps.batch.outputs.failures != '0' }}
         run: |
-          echo "${{ steps.batch.outputs.failures }} queue slot(s) failed. Successful slots were preserved and scheduled; rerun this workflow with the same plan_date to retry pending slots."
+          echo "${{ steps.batch.outputs.failures }} queue slot(s) still failed after safe recovery attempts. Successful slots were preserved; missed schedule windows are warnings only."
           exit 1
