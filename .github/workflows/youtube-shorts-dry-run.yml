@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/youtube-shorts-dry-run.yml'
       - '.github/workflows/daily-plan-validate.yml'
+      - '.github/workflows/daily-queue-publish.yml'
       - 'youtube-shorts-bot/queue_manager.py'
       - 'youtube-shorts-bot/schedule_utils.py'
       - 'youtube-shorts-bot/schedule_guard.py'
@@ -47,6 +48,27 @@ jobs:
       - name: Mark repository safe for container Git
         shell: bash
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Verify production workflows configure Git safety before Git inspection
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          checks = [
+              (Path('.github/workflows/daily-plan-validate.yml'), 'Resolve exact plan date from triggering change'),
+              (Path('.github/workflows/daily-queue-publish.yml'), 'Resolve and validate exact daily plan once'),
+          ]
+          marker = 'Mark repository safe for container Git'
+          for path, resolver in checks:
+              text = path.read_text(encoding='utf-8')
+              marker_pos = text.find(marker)
+              resolver_pos = text.find(resolver)
+              assert marker_pos >= 0, f'{path}: missing Git safe-directory step'
+              assert resolver_pos >= 0, f'{path}: missing resolver step'
+              assert marker_pos < resolver_pos, f'{path}: Git safety must be configured before resolver Git commands'
+          print('Production validation and publisher workflows both configure container Git safety before Git inspection.')
+          PY
 
       - name: Verify production-style Git inspection works in container
         shell: bash
@@ -343,4 +365,4 @@ jobs:
           retention-days: 3
 
       - name: Confirm no publication
-        run: echo 'STRONG 24-HOUR DRY RUN PASSED - production-style Git inspection, validation policy parity, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
+        run: echo 'STRONG 24-HOUR DRY RUN PASSED - production workflow Git-safety parity, production-style Git inspection, validation policy parity, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
