@@ -6,7 +6,19 @@ on:
       - '.github/workflows/youtube-shorts-dry-run.yml'
       - 'youtube-shorts-bot/queue_manager.py'
       - 'youtube-shorts-bot/schedule_utils.py'
+      - 'youtube-shorts-bot/schedule_guard.py'
       - 'youtube-shorts-bot/validate_backup_metadata.py'
+      - 'youtube-shorts-bot/validate_media_library.py'
+      - 'youtube-shorts-bot/media_failover.py'
+      - 'youtube-shorts-bot/media_preflight.py'
+      - 'youtube-shorts-bot/validate_content.py'
+      - 'youtube-shorts-bot/render.py'
+      - 'youtube-shorts-bot/verify_render.py'
+      - 'youtube-shorts-bot/auth_check.py'
+      - 'youtube-shorts-bot/upload.py'
+      - 'youtube-shorts-bot/publish.py'
+      - 'youtube-shorts-bot/verify_youtube_schedule.py'
+      - 'youtube-shorts-bot/finalize.py'
   workflow_dispatch:
 
 concurrency:
@@ -24,22 +36,36 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compile queue and scheduling helpers
+      - name: Compile production pipeline helpers
         run: |
           python -m py_compile \
             youtube-shorts-bot/queue_manager.py \
             youtube-shorts-bot/schedule_utils.py \
             youtube-shorts-bot/schedule_guard.py \
             youtube-shorts-bot/validate_backup_metadata.py \
-            youtube-shorts-bot/validate_media_library.py
+            youtube-shorts-bot/validate_media_library.py \
+            youtube-shorts-bot/media_failover.py \
+            youtube-shorts-bot/media_preflight.py \
+            youtube-shorts-bot/validate_content.py \
+            youtube-shorts-bot/render.py \
+            youtube-shorts-bot/verify_render.py \
+            youtube-shorts-bot/auth_check.py \
+            youtube-shorts-bot/upload.py \
+            youtube-shorts-bot/publish.py \
+            youtube-shorts-bot/verify_youtube_schedule.py \
+            youtube-shorts-bot/finalize.py
 
       - name: Validate reusable media cache
         run: python youtube-shorts-bot/validate_media_library.py
 
-      - name: Create temporary 24-Short plan
+      - name: Create temporary 24-Short plan with real slot-1 backups
         shell: bash
         run: |
           python - <<'PY'
@@ -82,6 +108,27 @@ jobs:
           items = []
 
           for i, (category, topic, setup, payoff) in enumerate(concepts, 1):
+              bg_backup = f'https://backup.example.invalid/video-{i}.mp4'
+              bg_backup_source = f'https://backup.example.invalid/video-source-{i}'
+              bg_backup_creator = f'Dry Run Backup Creator {i}'
+              bg_backup_license = 'Synthetic dry-run backup license'
+              music_backup = f'https://backup.example.invalid/music-{i}.mp3'
+              music_backup_source = f'https://backup.example.invalid/music-source-{i}'
+              music_backup_title = f'Dry Run Backup Track {i}'
+              music_backup_artist = f'Dry Run Backup Artist {i}'
+              music_backup_license = 'Synthetic dry-run backup music license'
+
+              if i == 1:
+                  bg_backup = 'https://www.pexels.com/download/video/4747218/'
+                  bg_backup_source = 'https://www.pexels.com/video/4747218/'
+                  bg_backup_creator = 'Pexels creator'
+                  bg_backup_license = 'Pexels License'
+                  music_backup = 'https://cdn.freesafemusic.com/audio/whjc.mp3'
+                  music_backup_source = 'https://freesafemusic.com/'
+                  music_backup_title = 'Soft Vinyl Dreams'
+                  music_backup_artist = 'Freedom Motif'
+                  music_backup_license = 'Free Safe Music License'
+
               content = {
                   'topic': topic,
                   'category': category,
@@ -97,28 +144,28 @@ jobs:
                   'background_creator': f'Dry Run Creator {i}',
                   'background_license': 'Synthetic dry-run license',
                   'background_credit': 'Synthetic dry-run asset.',
-                  'background_backup_url': f'https://backup.example.invalid/video-{i}.mp4',
-                  'background_backup_source_url': f'https://backup.example.invalid/video-source-{i}',
-                  'background_backup_creator': f'Dry Run Backup Creator {i}',
-                  'background_backup_license': 'Synthetic dry-run backup license',
-                  'background_backup_credit': 'Synthetic dry-run backup asset.',
+                  'background_backup_url': bg_backup,
+                  'background_backup_source_url': bg_backup_source,
+                  'background_backup_creator': bg_backup_creator,
+                  'background_backup_license': bg_backup_license,
+                  'background_backup_credit': 'Dry-run fallback asset.',
                   'music_url': f'https://primary.example.invalid/music-{i}.mp3',
                   'music_source_url': f'https://primary.example.invalid/music-source-{i}',
                   'music_title': f'Dry Run Track {i}',
                   'music_artist': f'Dry Run Artist {i}',
                   'music_license': 'Synthetic dry-run music license',
                   'music_credit': 'Synthetic dry-run music.',
-                  'music_backup_url': f'https://backup.example.invalid/music-{i}.mp3',
-                  'music_backup_source_url': f'https://backup.example.invalid/music-source-{i}',
-                  'music_backup_title': f'Dry Run Backup Track {i}',
-                  'music_backup_artist': f'Dry Run Backup Artist {i}',
-                  'music_backup_license': 'Synthetic dry-run backup music license',
-                  'music_backup_credit': 'Synthetic dry-run backup music.',
+                  'music_backup_url': music_backup,
+                  'music_backup_source_url': music_backup_source,
+                  'music_backup_title': music_backup_title,
+                  'music_backup_artist': music_backup_artist,
+                  'music_backup_license': music_backup_license,
+                  'music_backup_credit': 'Dry-run fallback music.',
                   'background_scene': f'Exact synthetic visual scene for topic {topic}',
                   'background_match_reason': f'The primary visual directly depicts the distinct dry-run scenario for {topic} and its main action.',
                   'background_match_score': 95,
-                  'background_backup_scene': f'Alternate synthetic visual scene for topic {topic}',
-                  'background_backup_match_reason': f'The backup visual independently depicts the same dry-run scenario for {topic} without reusing the primary.',
+                  'background_backup_scene': f'Alternate visual scene for topic {topic}',
+                  'background_backup_match_reason': f'The backup visual independently supports the same dry-run scenario for {topic} without reusing the primary.',
                   'background_backup_match_score': 91,
                   'music_mood': f'Quirky light comedic mood tailored to {topic}',
                   'music_match_reason': f'The primary track supports the timing and light comedic mechanism of {topic} without overpowering the joke.',
@@ -143,7 +190,7 @@ jobs:
               'target_count': 24,
               'candidates_generated': 60,
               'media_backups_required': True,
-              'strategy_notes': 'Synthetic CI plan used only to test 24-slot validation and scheduling.',
+              'strategy_notes': 'Synthetic CI plan used only to test the complete non-publishing 24-slot pipeline.',
               'items': items,
           }
           path = plans / f'{plan_date}.json'
@@ -160,7 +207,7 @@ jobs:
           python youtube-shorts-bot/queue_manager.py validate --date "${PLAN_DATE}"
           python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"
 
-      - name: Verify all 24 hourly release mappings
+      - name: Verify all 24 hourly release mappings and schedule guard
         shell: bash
         run: |
           python - <<'PY'
@@ -180,7 +227,6 @@ jobs:
               assert dt.hour == slot - 1 and dt.minute == 0, (slot, dt)
 
           first = scheduled_publish_at(plan_date, 1)
-          last = scheduled_publish_at(plan_date, 24)
           first_dt = datetime.fromisoformat(first.replace('Z', '+00:00'))
           assert ensure_publish_at_is_safe(first, now=first_dt - timedelta(hours=2)) == first
           try:
@@ -193,22 +239,71 @@ jobs:
           print('24 hourly mappings verified: slot 1 = 00:00 SGT through slot 24 = 23:00 SGT.')
           PY
 
-      - name: Verify slot selection without publication
+      - name: Real YouTube OAuth and channel preflight
+        run: python youtube-shorts-bot/auth_check.py
+
+      - name: Select slot 1 for full non-publishing production-path test
         shell: bash
         run: |
           PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
-          python youtube-shorts-bot/queue_manager.py select --date "${PLAN_DATE}" --slot 24 --skip-validation
+          python youtube-shorts-bot/queue_manager.py select --date "${PLAN_DATE}" --slot 1 --skip-validation
+          test -f youtube-shorts-bot/output/queue_selection.json
+
+      - name: Exercise lazy primary-to-backup media failover
+        run: python youtube-shorts-bot/media_failover.py
+
+      - name: Verify real backups were activated
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('youtube-shorts-bot/content/latest.json').read_text())
+          assert data.get('background_used_backup') is True, data
+          assert data.get('music_used_backup') is True, data
+          assert 'pexels.com/download/video/4747218' in data['background_url'], data['background_url']
+          assert 'freesafemusic.com/audio/whjc.mp3' in data['music_url'], data['music_url']
+          print('Lazy media failover verified with real backup video and music URLs.')
+          PY
+
+      - name: Preflight active media after failover
+        run: python youtube-shorts-bot/media_preflight.py
+
+      - name: Validate selected content
+        run: python youtube-shorts-bot/validate_content.py
+
+      - name: Render selected Short
+        run: python youtube-shorts-bot/render.py
+
+      - name: Verify rendered video and audio
+        run: python youtube-shorts-bot/verify_render.py
+
+      - name: Verify upload/schedule code is present but never executed
+        shell: bash
+        run: |
+          test -f youtube-shorts-bot/upload.py
+          test -f youtube-shorts-bot/publish.py
+          test -f youtube-shorts-bot/verify_youtube_schedule.py
+          test -f youtube-shorts-bot/finalize.py
+          test ! -f youtube-shorts-bot/output/upload_result.json
           python - <<'PY'
           import json
           from pathlib import Path
           selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
-          assert selection['slot'] == 24, selection
           plan = json.loads(Path(selection['plan_path']).read_text())
           assert len(plan['items']) == 24
           assert all(item['status'] == 'pending' for item in plan['items'])
-          assert not Path('youtube-shorts-bot/output/upload_result.json').exists()
-          print('Slot 24 selection verified; no upload, queue mark, archive change or publication occurred.')
+          print('No upload occurred; all 24 queue items remain pending.')
           PY
 
+      - name: Upload rendered dry-run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-24-hour-dry-run-${{ github.run_id }}
+          path: |
+            youtube-shorts-bot/output/short.mp4
+            youtube-shorts-bot/output/queue_selection.json
+          retention-days: 3
+
       - name: Confirm no publication
-        run: echo '24-HOUR DRY RUN PASSED - 24 plan items, 60 candidates, strict semantic backups, unique media, 00:00-23:00 mapping and fail-closed timing verified. No YouTube upload occurred.'
+        run: echo 'STRONG 24-HOUR DRY RUN PASSED - validation, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
