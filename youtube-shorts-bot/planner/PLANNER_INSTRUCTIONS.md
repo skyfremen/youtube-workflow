@@ -93,22 +93,37 @@ Recommended music scoring dimensions:
 
 Any explicit `avoid_for` conflict disqualifies the asset regardless of score.
 
-### Step 2 - Prefer variety inside the eligible cache
+### Step 2 - Prefer plan-ready assets, then variety
 
-Among assets scoring >= 85, prefer:
+`verified` and `plan_ready` mean different things:
 
-1. never-used assets,
-2. least recently used assets,
-3. lower usage count,
-4. stronger semantic match.
+- `verified=true` means the source/license is verified.
+- `plan_ready=true` means the asset is verified, active, and all metadata required for immediate use in a valid plan is already known.
+- A missing `plan_ready` field MUST be treated as `false`.
 
-Do not sacrifice semantic fit for novelty. Exact content match remains the highest priority.
+For backgrounds, `plan_ready=true` requires at minimum a non-empty creator, direct URL, source page, license and semantic description.
+
+For music, `plan_ready=true` requires at minimum a non-empty artist, direct URL, source page, license and semantic description.
+
+Prefer `plan_ready=true` assets because they can be reused without revisiting the source page. A `verified=true` but `plan_ready=false` asset may still be used, but the planner must revisit the source page and fill the missing required metadata before placing it in the daily plan. Never invent missing metadata.
+
+Among eligible assets scoring >= 85, prefer:
+
+1. plan-ready assets,
+2. never-used assets,
+3. least recently used assets,
+4. lower usage count,
+5. stronger semantic match.
+
+Do not sacrifice semantic fit for novelty or plan readiness. Exact content match remains the highest priority.
 
 Primary and backup assets for the same Short must be different URLs and independently score >= 85.
 
+Across the entire 20-Short plan, ALL primary and backup background URLs must be unique. ALL primary and backup music URLs must also be unique. A backup used for one Short cannot be a primary or backup for another Short in the same batch.
+
 ### Step 3 - Search the public web only when needed
 
-Search the public web fresh only when the media cache cannot provide a sufficiently strong primary or backup match, or when cached assets are stale/inactive/dead.
+Search the public web fresh only when the media cache cannot provide a sufficiently strong primary or backup match, when the best cache match is not plan-ready and required metadata cannot be verified, or when cached assets are stale/inactive/dead.
 
 Use reputable copyright-safe sources. Current approved sources include Pexels for video and Free Safe Music for music. Do not use Mixkit/assets.mixkit.co. Do not use vintage/classical/ragtime/Wikimedia recordings merely because they are public domain.
 
@@ -120,7 +135,7 @@ For primary media, prefer exact direct-download URLs that resolve to the expecte
 
 Whenever a daily planner web search discovers a NEW verified source asset that is usable for Wacky Insights, add it to the appropriate media-library JSON during the same planning run.
 
-Rules for additions:
+Rules for additions and updates:
 
 - Deduplicate by `id`, canonical source page and direct URL.
 - Never overwrite a different asset with the same title.
@@ -129,13 +144,15 @@ Rules for additions:
 - Set `verified=true` only after source/license verification.
 - Set `last_verified_at` to the verification timestamp.
 - Set `status="active"` only when the asset is currently usable.
+- Set `plan_ready=true` only when the asset has all metadata needed for immediate daily-plan use; otherwise set it to `false`.
 - New assets start with `usage_count=0` and null usage fields unless selected in the same plan.
 - If selected in the same plan, increment `usage_count` and update `last_used_at` and `last_used_short_id`.
 - If an existing cached asset is selected, update its usage metadata.
 - If a URL/license check fails, mark the asset `status="inactive"` or `verified=false`; do not select it.
 - Do not add web-search results that were not actually verified.
+- After changing either media JSON, ensure it passes `youtube-shorts-bot/validate_media_library.py`.
 
-The library is allowed to grow beyond the initial seed of 50 backgrounds and 50 music tracks. There is no 50-item cap.
+The library is allowed to grow beyond the initial seed. There is no item cap.
 
 ## Background schema expectations
 
@@ -168,6 +185,7 @@ Each background entry should contain, where known:
 - `duration_seconds`
 - `verified`
 - `last_verified_at`
+- `plan_ready`
 - `usage_count`
 - `last_used_at`
 - `last_used_short_id`
@@ -204,6 +222,7 @@ Each music entry should contain, where known:
 - `duration_seconds`
 - `verified`
 - `last_verified_at`
+- `plan_ready`
 - `usage_count`
 - `last_used_at`
 - `last_used_short_id`
@@ -221,10 +240,10 @@ CTA: `DOUBLE TAP TO AGREE`.
 
 Every title must contain `#Shorts` and be <= 100 characters.
 
-Commit the daily plan and any media-library additions/usage updates to `main`. A planning run that finds no new sources may still update usage metadata for assets selected from cache.
+Commit exactly one daily plan file for the intended plan date per planner commit. The same commit may also include media-library additions or usage updates. Do not change multiple plan dates in one planner commit.
 
 ## Validation
 
-After committing, verify the exact `Validate daily Shorts plan` GitHub Actions run for that commit.
+After committing, verify the exact `Validate daily Shorts plan` GitHub Actions run for that commit. The validation workflow resolves the plan date from the exact changed plan file, not from the wall-clock date.
 
 If validation fails due to content/plan/media metadata, correct and retry up to 3 times. Stop and report rather than repeatedly retrying infrastructure, permission, credential, or GitHub service failures.
