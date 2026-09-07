@@ -1,0 +1,84 @@
+{
+  "video_id": "phase6-microwave-time-perception",
+  "title": "Why Does Waiting for a Microwave Feel So Long?",
+  "fps": 24,
+  "format": "16:9",
+  "timing_mode": "narration_first",
+  "scenes": [
+    {
+      "id": "s01",
+      "type": "environment_character",
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["microwave_01"],
+      "caption": "WHY SO SLOW?",
+      "narration": "Thirty seconds on a microwave can feel strangely long, especially when you stand there watching every number change.",
+      "beats": [
+        {"at_pct": 0.05, "motion": "walk", "target": "male_01"},
+        {"at_pct": 0.25, "motion": "highlight", "target": "microwave_01"},
+        {"at_pct": 0.48, "motion": "pop", "target": "timer"},
+        {"at_pct": 0.72, "motion": "slow_zoom", "target": "microwave_01"}
+      ]
+    },
+    {
+      "id": "s02",
+      "type": "environment_overlay",
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["microwave_01"],
+      "caption": "YOU NOTICE EVERY SECOND",
+      "narration": "The timer is not actually slower. Your attention is locked onto time, so every single second gets noticed.",
+      "beats": [
+        {"at_pct": 0.05, "motion": "fade_in", "target": "attention_overlay"},
+        {"at_pct": 0.28, "motion": "track", "target": "timer"},
+        {"at_pct": 0.52, "motion": "pop", "target": "second_markers"},
+        {"at_pct": 0.76, "motion": "punch_zoom", "target": "timer"}
+      ]
+    },
+    {
+      "id": "s03",
+      "type": "behavior_comparison",
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["microwave_01"],
+      "caption": "WATCHING vs DISTRACTED",
+      "narration": "Compare that with scrolling your phone. Your attention keeps jumping, and half a minute can disappear before you notice.",
+      "beats": [
+        {"at_pct": 0.05, "motion": "split_reveal", "target": "comparison"},
+        {"at_pct": 0.28, "motion": "highlight", "target": "timer_side"},
+        {"at_pct": 0.52, "motion": "float", "target": "phone_side"},
+        {"at_pct": 0.78, "motion": "pan_right", "target": "phone_side"}
+      ]
+    },
+    {
+      "id": "s04",
+      "type": "character_closeup",
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["microwave_01"],
+      "caption": "THE REWARD IS COMING",
+      "narration": "Waiting also removes uncertainty. You know exactly when the reward is coming, which makes the countdown hard to ignore.",
+      "beats": [
+        {"at_pct": 0.05, "motion": "slow_zoom", "target": "male_01"},
+        {"at_pct": 0.30, "motion": "pop", "target": "reward_label"},
+        {"at_pct": 0.55, "motion": "track", "target": "timer"},
+        {"at_pct": 0.78, "motion": "highlight", "target": "microwave_01"}
+      ]
+    },
+    {
+      "id": "s05",
+      "type": "environment_summary",
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["microwave_01"],
+      "caption": "STOP WATCHING THE TIMER",
+      "narration": "So if thirty seconds feels eternal, stop staring at the timer. Apparently, watched microwaves age in dog years.",
+      "beats": [
+        {"at_pct": 0.05, "motion": "pan_left", "target": "male_01"},
+        {"at_pct": 0.28, "motion": "pop", "target": "look_away"},
+        {"at_pct": 0.55, "motion": "highlight", "target": "timer"},
+        {"at_pct": 0.80, "motion": "punch_zoom", "target": "punchline"}
+      ]
+    }
+  ]
+}
