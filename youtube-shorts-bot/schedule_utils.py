@@ -4,16 +4,16 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 SGT = ZoneInfo('Asia/Singapore')
-FIRST_PUBLISH_HOUR = 4
+FIRST_PUBLISH_HOUR = 0
 LAST_PUBLISH_HOUR = 23
-TOTAL_SLOTS = 20
+TOTAL_SLOTS = 24
 MIN_SCHEDULE_LEAD = timedelta(minutes=10)
 
 
 def scheduled_publish_at(plan_date, slot):
     """Return the UTC ISO-8601 publishAt timestamp for a Singapore queue slot.
 
-    Slot 1 publishes at 04:00 SGT, slot 20 at 23:00 SGT on plan_date.
+    Slot 1 publishes at 00:00 SGT, slot 24 at 23:00 SGT on plan_date.
     """
     try:
         plan_day = date.fromisoformat(str(plan_date))
@@ -21,7 +21,7 @@ def scheduled_publish_at(plan_date, slot):
         raise ValueError(f'Invalid plan_date for scheduled publishing: {plan_date!r}') from exc
 
     if isinstance(slot, bool):
-        raise ValueError('Queue slot must be an integer from 1 to 20.')
+        raise ValueError('Queue slot must be an integer from 1 to 24.')
     try:
         slot_number = int(slot)
     except (TypeError, ValueError) as exc:
