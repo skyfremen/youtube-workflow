@@ -59,7 +59,9 @@ title = data['title'][:100]
 schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1', 'true', 'yes'}
 publish_at = None
 if schedule_mode:
-    publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION)
+    # Re-check immediately before the API call. This deliberately fails closed if
+    # render/upload preparation ran so long that the slot is now too close or past.
+    publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION, require_safe=True)
 
 
 def find_existing_upload():
@@ -95,23 +97,26 @@ def find_existing_upload():
         return None
 
     videos = youtube.videos().list(
-        part='snippet',
+        part='snippet,status',
         id=','.join(video_ids),
         maxResults=50,
     ).execute()
     for item in videos.get('items', []) or []:
         snippet = item.get('snippet', {})
         if snippet.get('title', '') == title and snippet.get('description', '') == description:
-            return item.get('id')
+            return item
     return None
 
 
-existing_video_id = find_existing_upload()
-if existing_video_id:
+existing_video = find_existing_upload()
+if existing_video:
+    existing_video_id = existing_video.get('id')
     print('Duplicate-safe recovery: matching YouTube upload already exists; reusing it.')
     print('Uploaded video ID:', existing_video_id)
     if publish_at:
-        print('Scheduled publish at:', publish_at)
+        existing_status = existing_video.get('status', {})
+        print('Expected scheduled publish at:', publish_at)
+        print('Existing YouTube publishAt:', existing_status.get('publishAt', 'not returned'))
     print('Background source:', data.get('background_source_url', 'not provided'))
     print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
     print('Music source:', data.get('music_source_url', 'not provided'))
