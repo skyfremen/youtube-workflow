@@ -28,6 +28,25 @@ jobs:
           fi
           echo "Phase 7 is isolated from youtube-shorts-bot."
 
+      - name: Require explicit human approval before rendering
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const plan = JSON.parse(fs.readFileSync('content/phase7-plan.json', 'utf8'));
+          const approval = plan.approval || {};
+          if (approval.status !== 'approved') {
+            console.error(`PLAN NOT APPROVED: status=${approval.status || 'missing'}`);
+            console.error('Review content/phase7-summary.txt first. Render only after explicit user approval.');
+            process.exit(1);
+          }
+          if (approval.approved_by !== 'user' || !approval.approved_at) {
+            throw new Error('Approved plan must record approved_by=user and approved_at timestamp.');
+          }
+          console.log(`PASS: user approval recorded at ${approval.approved_at}`);
+          NODE
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -196,6 +215,7 @@ jobs:
           path: |
             youtube-longform-bot/output/demo.mp4
             youtube-longform-bot/content/phase7-plan.json
+            youtube-longform-bot/content/phase7-summary.txt
             youtube-longform-bot/content/phase7-resolved-plan.json
             youtube-longform-bot/content/runtime-plan.json
             youtube-longform-bot/output/phase7-timing.json
