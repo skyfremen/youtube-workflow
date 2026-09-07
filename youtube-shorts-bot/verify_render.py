@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -44,13 +45,40 @@ except (TypeError, ValueError):
 if not 10 <= duration <= 15.5:
     raise SystemExit(f'Render verification failed: duration {duration:.2f}s is outside the 10–15s target.')
 
-frame_check = subprocess.run([
-    'ffmpeg', '-v', 'error', '-ss', '6', '-i', str(VIDEO), '-frames:v', '1',
-    '-vf', 'blackframe=amount=98:threshold=16', '-f', 'null', '-'
-], capture_output=True, text=True)
-if frame_check.returncode != 0:
-    raise SystemExit('Render verification failed: ffmpeg could not decode a midpoint frame.')
-if 'pblack:100' in (frame_check.stderr or ''):
-    raise SystemExit('Render verification failed: midpoint frame appears fully black.')
+# Decode multiple points so a corrupt or empty middle section cannot slip through.
+for fraction in (0.25, 0.50, 0.75):
+    timestamp = max(0.1, duration * fraction)
+    frame_check = subprocess.run([
+        'ffmpeg', '-v', 'error', '-ss', f'{timestamp:.3f}', '-i', str(VIDEO),
+        '-frames:v', '1', '-f', 'null', '-'
+    ], capture_output=True, text=True)
+    if frame_check.returncode != 0:
+        raise SystemExit(
+            f'Render verification failed: ffmpeg could not decode frame at {timestamp:.2f}s.\n'
+            + (frame_check.stderr or '')
+        )
 
-print(f'Render verified: {duration:.2f}s, 1080x1920, video + audio, decodable midpoint frame.')
+# Scan the complete video for sustained near-black sections. blackdetect logs at info level,
+# so using -v error here would silently disable the useful detection output.
+black_scan = subprocess.run([
+    'ffmpeg', '-hide_banner', '-v', 'info', '-i', str(VIDEO),
+    '-vf', 'blackdetect=d=0.50:pic_th=0.98:pix_th=0.10',
+    '-an', '-f', 'null', '-'
+], capture_output=True, text=True)
+if black_scan.returncode != 0:
+    raise SystemExit('Render verification failed: ffmpeg black-frame scan failed.\n' + (black_scan.stderr or ''))
+
+black_durations = [
+    float(value)
+    for value in re.findall(r'black_duration:([0-9]+(?:\.[0-9]+)?)', black_scan.stderr or '')
+]
+longest_black = max(black_durations, default=0.0)
+if longest_black >= 0.75:
+    raise SystemExit(
+        f'Render verification failed: detected a sustained near-black section of {longest_black:.2f}s.'
+    )
+
+print(
+    f'Render verified: {duration:.2f}s, 1080x1920, video + audio, '
+    f'3 sampled frames decodable, longest near-black section {longest_black:.2f}s.'
+)
