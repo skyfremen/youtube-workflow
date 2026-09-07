@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "render": "remotion render src/index.jsx WackyLongformTest output/demo.mp4 --codec=h264"
+    "render": "remotion render src/index.jsx WackyLongformTest output/demo.mp4 --codec=h264 --scale=0.6666666667 --concurrency=2"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
