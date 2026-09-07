@@ -64,14 +64,6 @@ jobs:
         if: steps.select.outputs.has_short == 'true'
         run: python youtube-shorts-bot/verify_render.py
 
-      - name: Upload video artifact
-        if: steps.select.outputs.has_short == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: youtube-short-${{ github.run_id }}
-          path: youtube-shorts-bot/output/short.mp4
-          retention-days: 3
-
       - name: Upload to YouTube and capture video ID
         if: steps.select.outputs.has_short == 'true'
         run: python youtube-shorts-bot/publish.py
