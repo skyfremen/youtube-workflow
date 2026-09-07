@@ -79,10 +79,16 @@ else:
         'workflow_run_id': str(upload.get('workflow_run_id', '')).strip(),
         'uploaded_at': upload.get('uploaded_at', ''),
     })
-    if upload.get('scheduled_publish_at'):
-        record['scheduled_publish_at'] = upload['scheduled_publish_at']
-    if upload.get('youtube_privacy_at_upload'):
-        record['youtube_privacy_at_upload'] = upload['youtube_privacy_at_upload']
+    for key in (
+        'scheduled_publish_at',
+        'youtube_verified_at',
+        'youtube_upload_status',
+        'youtube_privacy_at_upload',
+        'youtube_privacy_at_verification',
+        'recovered_after_scheduled_release',
+    ):
+        if upload.get(key) not in (None, ''):
+            record[key] = upload[key]
     shorts.append(record)
     print(f'Archived YouTube video {video_id} with content_id={cid}.')
 
