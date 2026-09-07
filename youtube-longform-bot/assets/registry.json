@@ -1,16 +1,23 @@
 {
-  "version": 4,
-  "design_system": "wacky_insights_v1",
+  "version": 5,
+  "design_system": "wacky_insights_v2",
+  "legacy_asset_policy": {
+    "active_style": "wacky_insights_v2",
+    "legacy_style": "wacky_insights_v1",
+    "rule": "Legacy v1 assets may be reused only when they visually fit the v2 scene well enough. Do not force reuse solely because the semantic category matches; request a v2 replacement when quality, viewpoint, context or visual language is weak."
+  },
   "visual_policy": {
-    "style": "animated_explainer",
+    "style": "editorial_scene_led_2d_vector_explainer",
     "forbid_powerpoint_layouts": true,
     "environment_first": true,
-    "max_fullscreen_infographic_ratio": 0.2,
+    "max_fullscreen_infographic_ratio": 0.15,
     "prefer_infographic_overlays": true,
     "prefer_object_labels": true,
     "max_caption_words": 7,
     "max_static_gap_seconds": 1.5,
-    "notes": "Scenes should feel like continuous animated storytelling. Avoid title-plus-card layouts, static comparison cards, presentation-style grids, and large text blocks. Infographics should usually appear as overlays attached to active characters, props, or environments."
+    "distinct_scene_transitions": true,
+    "same_environment_new_scene_minimum_differences": 2,
+    "notes": "Scenes should feel like continuous animated storytelling. A true scene cut should introduce a meaningfully different shot. Near-identical background/framing changes belong inside one scene as camera moves, inserts, reactions or state changes. Avoid title-plus-card layouts, presentation grids and blink-like cuts."
   },
   "characters": {
     "male_01": {
@@ -21,7 +28,8 @@
       "poses": ["idle", "curious", "surprised", "thinking"],
       "style_id": "wacky_insights_v1",
       "quality": "production",
-      "reusable": true
+      "reusable": true,
+      "legacy": true
     }
   },
   "environments": {
@@ -31,7 +39,8 @@
       "tags": ["kitchen", "home", "interior", "food", "appliance"],
       "style_id": "wacky_insights_v1",
       "quality": "production",
-      "reusable": true
+      "reusable": true,
+      "legacy": true
     }
   },
   "props": {
@@ -43,7 +52,8 @@
       "actions": ["closed", "open"],
       "style_id": "wacky_insights_v1",
       "quality": "production",
-      "reusable": true
+      "reusable": true,
+      "legacy": true
     },
     "microwave_01": {
       "file": "assets/asset-mvp/microwave.svg",
@@ -52,7 +62,8 @@
       "actions": ["idle", "countdown", "beep"],
       "style_id": "wacky_insights_v1",
       "quality": "production",
-      "reusable": true
+      "reusable": true,
+      "legacy": true
     }
   },
   "infographics": {
@@ -63,7 +74,8 @@
       "default_mode": "overlay",
       "style_id": "wacky_insights_v1",
       "quality": "production",
-      "reusable": true
+      "reusable": true,
+      "legacy": true
     }
   },
   "motions": [
@@ -80,7 +92,16 @@
     "walk",
     "point",
     "track",
-    "split_reveal"
+    "split_reveal",
+    "reframe",
+    "reaction_closeup",
+    "insert_cut",
+    "match_action",
+    "object_wipe",
+    "state_change",
+    "transform",
+    "enter_exit",
+    "cause_effect_chain"
   ],
   "scene_types": [
     "environment_character",
@@ -88,5 +109,8 @@
     "behavior_comparison",
     "character_closeup",
     "environment_summary"
-  ]
+  ],
+  "shot_framings": ["wide", "medium", "closeup", "insert", "over_shoulder", "reaction", "split_behavior"],
+  "camera_angles": ["front", "three_quarter", "side", "over_shoulder", "detail"],
+  "transition_types": ["cut_to_distinct_environment", "match_action", "push_in", "insert_cut", "reaction_cut", "reframe", "object_wipe", "continuation"]
 }
