@@ -25,6 +25,13 @@ handle = '@WACKYINSIGHTS'
 background_url = data['background_url']
 music_url = data['music_url']
 
+# Series metadata is optional. Standalone Shorts render exactly as before.
+series_id = str(data.get('series_id', '') or '').strip()
+series_title = str(data.get('series_title', '') or '').strip()
+part_number = data.get('part_number')
+part_total = data.get('part_total')
+is_series = bool(series_id and series_title and part_number and part_total)
+
 duration = 12.0
 reveal_at = 6.0
 
@@ -103,44 +110,29 @@ def ass_time(seconds):
 def download(url, target, source_url=None):
     if not str(url).startswith(('https://', 'http://')):
         raise SystemExit(f'Invalid required media URL: {url}')
-
     if target.exists():
         target.unlink()
-
     cmd = [
         'curl', '-L', '--fail-with-body', '--silent', '--show-error',
         '--retry', '3', '--retry-delay', '2', '--retry-all-errors',
         '--connect-timeout', '20', '--max-time', '120',
-        '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-              '(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
-        '-H', 'Accept: */*',
-        '-H', 'Accept-Language: en-US,en;q=0.9',
-        '-o', str(target),
+        '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+        '-H', 'Accept: */*', '-H', 'Accept-Language: en-US,en;q=0.9', '-o', str(target),
     ]
-
     if source_url and str(source_url).startswith(('https://', 'http://')):
         cmd += ['-e', str(source_url)]
     else:
         parsed = urllib.parse.urlsplit(str(url))
         if parsed.scheme and parsed.netloc:
             cmd += ['-H', f'Origin: {parsed.scheme}://{parsed.netloc}']
-
     cmd.append(str(url))
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         detail = (result.stderr or result.stdout or 'unknown download error').strip()
-        raise SystemExit(
-            f'Failed to download required media after retries: {url}\n'
-            f'curl exit code {result.returncode}: {detail}\n'
-            'Use a direct downloadable media URL that permits automated access from CI.'
-        )
-
+        raise SystemExit(f'Failed to download required media after retries: {url}\ncurl exit code {result.returncode}: {detail}')
     if not target.exists() or target.stat().st_size < 10_000:
         size = target.stat().st_size if target.exists() else 0
-        raise SystemExit(
-            f'Downloaded required media is suspiciously small ({size} bytes): {url}. '
-            'The URL may have returned an HTML/error page instead of media.'
-        )
+        raise SystemExit(f'Downloaded required media is suspiciously small ({size} bytes): {url}.')
 
 
 def has_stream(path, stream_type):
@@ -156,10 +148,7 @@ def assert_stream(path, stream_type):
     if has_stream(path, stream_type):
         return
     expected = 'video' if stream_type == 'v' else 'audio'
-    raise SystemExit(
-        f'{path.name} is not a valid direct {expected} media file. '
-        'The selector must provide a direct downloadable asset URL, not a web page.'
-    )
+    raise SystemExit(f'{path.name} is not a valid direct {expected} media file.')
 
 ass = OUT / 'overlay.ass'
 header = f'DID YOU KNOW?\\N{ass_escape_text(category)} FACT'
@@ -167,6 +156,17 @@ setup_text = wrap(setup, 18)
 payoff_text = wrap(payoff, 18)
 cta_text = ass_escape_text(cta)
 handle_text = ass_escape_text(handle)
+series_badge = ''
+if is_series:
+    badge_title = ass_escape_text(series_title.upper())
+    # Keep the badge compact so long series names do not cover the main hook.
+    if len(badge_title) > 30:
+        badge_title = badge_title[:27].rstrip() + '...'
+    series_badge = f'{badge_title}  •  PART {int(part_number)}/{int(part_total)}'
+
+badge_event = ''
+if series_badge:
+    badge_event = f'Dialogue: 2,0:00:00.00,{ass_time(duration)},SeriesBadge,,0,0,0,,{series_badge}\n'
 
 ass.write_text(f'''[Script Info]
 ScriptType: v4.00+
@@ -177,6 +177,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: SeriesBadge,DejaVu Sans,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,1,0,3,4,0,8,110,110,90,1
 Style: Header,DejaVu Sans,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,3,7,0,8,100,100,220,1
 Style: Main,DejaVu Sans,64,&H00FFFFFF,&H00FFFFFF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,5,2,5,145,145,0,1
 Style: CTA,DejaVu Sans,40,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,8,130,130,525,1
@@ -185,7 +186,7 @@ Style: Subscribe,DejaVu Sans,40,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0
 
 [Events]
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
-Dialogue: 0,0:00:00.00,{ass_time(duration)},Header,,0,0,0,,{header}
+{badge_event}Dialogue: 0,0:00:00.00,{ass_time(duration)},Header,,0,0,0,,{header}
 Dialogue: 0,0:00:00.50,{ass_time(reveal_at)},Main,,0,0,0,,{setup_text}
 Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Main,,0,0,0,,{payoff_text}
 Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},CTA,,0,0,0,,{cta_text}
@@ -196,33 +197,18 @@ Dialogue: 0,{ass_time(reveal_at)},{ass_time(duration)},Subscribe,,0,0,0,,SUBSCRI
 background = OUT / 'background.asset'
 music = OUT / 'music.asset'
 video = OUT / 'short.mp4'
-
 download(background_url, background, data.get('background_source_url'))
 assert_stream(background, 'v')
-
 download(music_url, music, data.get('music_source_url'))
 assert_stream(music, 'a')
-
-vf = (
-    'scale=1080:1920:force_original_aspect_ratio=increase,'
-    'crop=1080:1920,eq=brightness=-0.14:saturation=0.85,'
-    f"subtitles='{ass.as_posix()}'"
-)
-
+vf = ('scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=brightness=-0.14:saturation=0.85,' f"subtitles='{ass.as_posix()}'")
 ffmpeg_cmd = [
-    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background),
-    '-stream_loop', '-1', '-i', str(music),
-    '-vf', vf,
-    '-t', str(duration),
-    '-map', '0:v:0', '-map', '1:a:0',
-    '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
-    '-c:a', 'aac', '-b:a', '128k',
-    '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6',
-    '-shortest', str(video)
+    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background), '-stream_loop', '-1', '-i', str(music),
+    '-vf', vf, '-t', str(duration), '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'libx264', '-preset', 'veryfast',
+    '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-af', 'volume=0.28,afade=t=in:st=0:d=0.4,afade=t=out:st=11.4:d=0.6', '-shortest', str(video)
 ]
-
 subprocess.run(ffmpeg_cmd, check=True)
-
+print('Series badge:', series_badge or 'standalone Short - no badge')
 print('Background source:', data.get('background_source_url', 'not provided'))
 print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
 print('Music source:', data.get('music_source_url', 'not provided'))
