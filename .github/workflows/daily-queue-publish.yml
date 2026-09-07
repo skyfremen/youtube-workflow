@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   publish-batch:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && !contains(github.event.workflow_run.head_commit.message, '[skip upload]')) }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/skyfremen/youtube-shorts-runner:latest
@@ -104,13 +104,21 @@ jobs:
             python youtube-shorts-bot/render.py || return 1
             python youtube-shorts-bot/verify_render.py || return 1
             python youtube-shorts-bot/publish.py || return 1
+
+            # Preserve the YouTube video ID immediately. If verification/finalization
+            # fails later, the artifact still contains the exact upload to recover.
+            cp \
+              youtube-shorts-bot/output/upload_result.json \
+              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || return 1
+
             python youtube-shorts-bot/verify_youtube_schedule.py || return 1
             python youtube-shorts-bot/finalize.py || return 1
             python youtube-shorts-bot/queue_manager.py mark || return 1
 
+            # Overwrite the attempt record with fully verified scheduling metadata.
             cp \
               youtube-shorts-bot/output/upload_result.json \
-              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json"
+              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json" || return 1
             scheduled=$((scheduled + 1))
             echo "Slot ${slot} successfully uploaded, YouTube-verified, and scheduled."
           }
