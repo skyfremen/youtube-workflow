@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       plan_date:
-        description: 'Singapore plan date to process (YYYY-MM-DD). Leave blank for today.'
+        description: 'Singapore plan date to process (YYYY-MM-DD). Leave blank for tomorrow.'
         required: false
         type: string
 
@@ -60,9 +60,9 @@ jobs:
             resolved_date="$(basename "${changed_plans[0]}" .json)"
           else
             resolved_date="$(python - <<'PY'
-          from datetime import datetime
+          from datetime import datetime, timedelta
           from zoneinfo import ZoneInfo
-          print(datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat())
+          print((datetime.now(ZoneInfo('Asia/Singapore')).date() + timedelta(days=1)).isoformat())
           PY
           )"
           fi
