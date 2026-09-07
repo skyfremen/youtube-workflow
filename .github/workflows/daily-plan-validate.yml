@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - 'youtube-shorts-bot/content/plans/*.json'
-      - 'youtube-shorts-bot/queue_manager.py'
-      - '.github/workflows/daily-plan-validate.yml'
   workflow_dispatch:
 
 jobs:
