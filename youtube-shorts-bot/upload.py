@@ -8,9 +8,11 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 from schedule_utils import ensure_publish_at_is_safe, scheduled_publish_at_from_selection
+from workflow_common import recoverable_archive_match
 
 BASE = Path(__file__).parent
 QUEUE_SELECTION = BASE / 'output' / 'queue_selection.json'
+ARCHIVE = BASE / 'content' / 'archive'
 with (BASE / 'content' / 'latest.json').open(encoding='utf-8') as f:
     data = json.load(f)
 
@@ -60,6 +62,30 @@ schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1
 publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION) if schedule_mode else None
 
 
+def print_reused_upload(video_id, reason, status=None):
+    print(f'Duplicate-safe recovery: {reason}; reusing it.')
+    print('Uploaded video ID:', video_id)
+    if publish_at:
+        status = status or {}
+        print('Expected scheduled publish at:', publish_at)
+        print('Existing YouTube publishAt:', status.get('publishAt', 'not returned'))
+        print('Existing YouTube privacy:', status.get('privacyStatus', 'not returned'))
+    print('Background source:', data.get('background_source_url', 'not provided'))
+    print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
+    print('Music source:', data.get('music_source_url', 'not provided'))
+
+
+# Primary recovery source: the archive already contains the exact content/video ID
+# while this exact selected queue item is still pending. This works even when the
+# upload is older than the recent YouTube playlist window.
+archive_recovery = recoverable_archive_match(ARCHIVE, QUEUE_SELECTION, data)
+if archive_recovery:
+    archive_path, archived_record = archive_recovery
+    existing_video_id = str(archived_record.get('youtube_video_id', '')).strip()
+    print_reused_upload(existing_video_id, f'exact archived queue state exists in {archive_path.name}')
+    raise SystemExit(0)
+
+
 def find_existing_upload():
     """Return a recent exact-match upload so retries cannot create duplicates.
 
@@ -107,16 +133,7 @@ def find_existing_upload():
 existing_video = find_existing_upload()
 if existing_video:
     existing_video_id = existing_video.get('id')
-    print('Duplicate-safe recovery: matching YouTube upload already exists; reusing it.')
-    print('Uploaded video ID:', existing_video_id)
-    if publish_at:
-        existing_status = existing_video.get('status', {})
-        print('Expected scheduled publish at:', publish_at)
-        print('Existing YouTube publishAt:', existing_status.get('publishAt', 'not returned'))
-        print('Existing YouTube privacy:', existing_status.get('privacyStatus', 'not returned'))
-    print('Background source:', data.get('background_source_url', 'not provided'))
-    print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
-    print('Music source:', data.get('music_source_url', 'not provided'))
+    print_reused_upload(existing_video_id, 'matching recent YouTube upload already exists', existing_video.get('status', {}))
     raise SystemExit(0)
 
 if publish_at:
