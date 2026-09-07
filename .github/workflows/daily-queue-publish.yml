@@ -44,12 +44,20 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Resolve and validate daily plan once
+      - name: Resolve and validate exact daily plan once
         id: plan
         shell: bash
         run: |
           if [ -n "${PLAN_DATE}" ]; then
             resolved_date="${PLAN_DATE}"
+          elif [ "${{ github.event_name }}" = "workflow_run" ]; then
+            mapfile -t changed_plans < <(git show --pretty='' --name-only "${SOURCE_COMMIT_SHA}" -- 'youtube-shorts-bot/content/plans/*.json' | sed '/^$/d')
+            if [ "${#changed_plans[@]}" -ne 1 ]; then
+              echo "::error::Validated source commit must contain exactly one changed plan; found ${#changed_plans[@]}."
+              printf '%s\n' "${changed_plans[@]}"
+              exit 1
+            fi
+            resolved_date="$(basename "${changed_plans[0]}" .json)"
           else
             resolved_date="$(python - <<'PY'
           from datetime import datetime
@@ -58,10 +66,17 @@ jobs:
           PY
           )"
           fi
+
+          if [[ ! "${resolved_date}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::Resolved invalid plan date: ${resolved_date}"
+            exit 1
+          fi
+
           echo "plan_date=${resolved_date}" >> "$GITHUB_OUTPUT"
-          echo "Processing Singapore plan date ${resolved_date}."
+          echo "Processing exact Singapore plan date ${resolved_date} from source commit ${SOURCE_COMMIT_SHA}."
           python youtube-shorts-bot/queue_manager.py validate --date "${resolved_date}"
           python youtube-shorts-bot/validate_backup_metadata.py --date "${resolved_date}"
+          python youtube-shorts-bot/validate_media_library.py
 
       - name: Validate YouTube credentials and OAuth once
         run: python youtube-shorts-bot/auth_check.py
