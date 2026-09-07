@@ -92,13 +92,15 @@ Any explicit `avoid_for` conflict disqualifies the asset regardless of score.
 
 - `verified=true` means the source/license is verified.
 - `plan_ready=true` means the asset is verified, active, and all metadata required for immediate use in a valid plan is already known.
-- A missing `plan_ready` field MUST be treated as `false`.
+- For legacy cache entries where `plan_ready` is missing, the planner MUST derive readiness from the verified metadata instead of automatically rejecting the asset. A legacy asset is implicitly plan-ready only when it is `verified=true`, `status="active"`, has non-empty direct URL, source page, license and semantic description, and has no missing attribution identity that is actually required by the license.
 
-For backgrounds, `plan_ready=true` requires at minimum a non-empty creator, direct URL, source page, license and semantic description. For music, it requires at minimum a non-empty artist, direct URL, source page, license and semantic description.
+For backgrounds, explicit or implicit plan readiness requires a non-empty direct URL, source page, license and semantic description. `creator` is required only when `attribution_required=true`; otherwise a verified `creator=null` does not block planning.
 
-Prefer `plan_ready=true` assets because they can be reused without revisiting the source page. A `verified=true` but `plan_ready=false` asset may still be used, but the planner must revisit the source page and fill the missing required metadata before placing it in the daily plan. Never invent missing metadata.
+For music, explicit or implicit plan readiness requires a non-empty artist, direct URL, source page, license and semantic description. If a provider/license genuinely does not expose an artist and attribution is not required, a verified null artist may be accepted only when the source page itself has been rechecked during that run; never invent an artist.
 
-Among assets scoring >=85, prefer plan-ready assets, then never-used assets, least recently used assets, lower usage count, and stronger semantic match. Do not sacrifice semantic fit for novelty or plan readiness.
+Prefer explicitly `plan_ready=true` assets, then implicitly plan-ready legacy assets, then never-used assets, least recently used assets, lower usage count, and stronger semantic match. Do not sacrifice semantic fit for novelty or plan readiness.
+
+A verified asset that is not explicitly or implicitly plan-ready may still be used, but the planner must revisit the source page and fill the missing required metadata before placing it in the daily plan. Never invent missing metadata.
 
 Primary and backup assets for the same Short must be different URLs and independently score >=85.
 
@@ -127,7 +129,7 @@ Rules:
 - Set `verified=true` only after source/license verification.
 - Set `last_verified_at` to the verification timestamp.
 - Set `status="active"` only when the asset is currently usable.
-- Set `plan_ready=true` only when the asset has all metadata needed for immediate daily-plan use; otherwise set it to `false`.
+- Set `plan_ready=true` when the asset meets the explicit readiness rules above; otherwise set it to `false`. Legacy entries without the field may be treated as implicitly ready only under the legacy derivation rule above.
 - New assets start with `usage_count=0` and null usage fields unless selected in the same plan.
 - If selected, update `usage_count`, `last_used_at` and `last_used_short_id`.
 - If a URL/license check fails, mark the asset `status="inactive"` or `verified=false`; do not select it.
@@ -138,9 +140,9 @@ The library may grow without an item cap.
 
 ## Schema expectations
 
-Background entries should preserve the existing expanded schema including id, type, title, description, direct/source URLs, source, creator, license/commercial flags, semantic tags/actions/settings/context, visual metadata, semantic description, verification metadata, `plan_ready`, usage metadata and status.
+Background entries should preserve the existing expanded schema including id, type, title, description, direct/source URLs, source, creator, license/commercial flags, semantic tags/actions/settings/context, visual metadata, semantic description, verification metadata, `plan_ready` when newly added or updated, usage metadata and status.
 
-Music entries should preserve the existing expanded schema including id, type, title, artist, direct/source URLs, source, license/commercial/monetization/Content-ID flags, semantic mood/suitability fields, energy/tempo/intensity/comedy style, vocal flags, semantic description, verification metadata, `plan_ready`, usage metadata and status.
+Music entries should preserve the existing expanded schema including id, type, title, artist, direct/source URLs, source, license/commercial/monetization/Content-ID flags, semantic mood/suitability fields, energy/tempo/intensity/comedy style, vocal flags, semantic description, verification metadata, `plan_ready` when newly added or updated, usage metadata and status.
 
 Do NOT store a permanent per-Short `match_score` in the media library. Match score must be recalculated against each new Short.
 
