@@ -1,79 +1,145 @@
 {
-  "video_id": "phase7-laundry-never-finished",
-  "title": "Why Does Laundry Never Feel Finished?",
+  "video_id": "phase7-doorway-memory-reset",
+  "title": "Why Do You Forget What You Wanted After Walking Into a Room?",
+  "style_id": "wacky_insights_v2",
   "fps": 24,
   "format": "16:9",
   "timing_mode": "narration_first",
+  "intended_duration_seconds": 75,
+  "channel_personality": {
+    "educational": true,
+    "humorous": true,
+    "tone": "curious_playful_relatable"
+  },
+  "learning_promise": "The viewer will understand how changes in context can act as event boundaries that reorganize memory, why this can make the previous goal temporarily harder to retrieve, and why the effect is not a magical property of doors.",
+  "central_question": "Why can a simple move into another room make the thing you were about to do suddenly feel missing?",
+  "educational_points": [
+    "The brain segments continuous experience into events, and changes in context such as moving between spaces can help mark an event boundary.",
+    "Information tied to the just-finished event can become less immediately accessible after a boundary because the active event representation is being updated.",
+    "The effect is context-dependent rather than a universal doorway curse: research finds both memory costs and benefits around event boundaries, and physical doorways are not always necessary for segmentation."
+  ],
+  "accuracy_notes": [
+    "Use cautious wording: doorway/event-boundary effects are supported in laboratory and virtual-environment studies, but results vary by task and memory measure.",
+    "Do not claim that a doorway literally clears, wipes, flushes, or resets the brain; those are visual metaphors only.",
+    "Event boundaries can sometimes improve organization or later memory, so present the mechanism as memory reorganization/context updating rather than simple forgetting."
+  ],
+  "research_basis": [
+    "Event-boundary research shows that spatial and perceptual boundaries can structure episodic memory and alter accessibility across events.",
+    "Recent work continues to find doorway-related memory effects while also showing that boundary effects can carry both costs and benefits depending on what is measured."
+  ],
+  "humour_strategy": {
+    "style": ["relatable_observation", "visual_exaggeration", "object_personification", "deadpan_label", "callback"],
+    "recurring_gag": "The viewer's tiny 'mission note' behaves like an employee repeatedly being transferred to the wrong department whenever the context changes.",
+    "final_payoff": "The character returns through the doorway, instantly remembers the mission, then forgets why they came back — while the mission note requests annual leave."
+  },
+  "shot_transition_strategy": "Treat the opening walk from sofa to doorway as continuous action, then use the doorway itself as a motivated object wipe into a distinctly framed kitchen. Move inside the imagined memory-control-room with a strong scale and environment change. Use inserts and close-ups within environments rather than creating near-identical scene cuts. Return to the home at the end with a reverse match-action callback and a clearly different framing.",
+  "planner": {
+    "generated_by": "ChatGPT",
+    "design_system": "wacky_insights_v2",
+    "asset_match_threshold": 0.7,
+    "require_professional_assets": true,
+    "prefer_reuse": true,
+    "generate_when_no_strong_match": true
+  },
   "approval": {
     "status": "review_required",
     "approved_by": null,
     "approved_at": null
   },
-  "planner": {
-    "generated_by": "ChatGPT",
-    "design_system": "wacky_insights_v1",
-    "asset_match_threshold": 0.55,
-    "require_professional_assets": true,
-    "prefer_reuse": true,
-    "generate_when_no_strong_match": true
-  },
   "asset_needs": [
     {
-      "need_id": "character_main",
+      "need_id": "character_main_v2",
       "category": "character",
-      "description": "Adult male explainer character suitable for relatable everyday-home scenes",
-      "tags": ["adult", "male", "person", "character", "everyday"],
-      "generation": null
+      "description": "Relatable adult home character with clear readable expressions and modular poses for sitting, walking, confused thinking, pointing and sudden realization.",
+      "tags": ["adult", "character", "home", "confused", "walking", "thinking"],
+      "reuse": null,
+      "generation": {
+        "asset_id": "adult_everyday_01_v2",
+        "template": "professional_vector_character",
+        "description": "Professional rounded editorial 2D everyday adult character with modular limbs and expressive face, designed for home and general explainer scenes.",
+        "tags": ["adult", "character", "everyday", "modular", "expressive"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["sitting", "walking", "holding_object", "confused", "thinking", "realization", "turning"],
+        "reusable": true
+      }
     },
     {
-      "need_id": "environment_laundry",
+      "need_id": "living_room_v2",
       "category": "environment",
-      "description": "Modern compact home laundry utility room with cabinetry, counter, shelves and warm practical lighting",
-      "tags": ["laundry", "utility room", "home", "washing", "interior"],
+      "description": "Warm modern living room with sofa, side table, phone, doorway sightline and enough depth for a walk toward the exit.",
+      "tags": ["living room", "home", "sofa", "doorway", "interior"],
+      "reuse": null,
       "generation": {
-        "asset_id": "laundry_room_01",
-        "template": "laundry_room",
-        "description": "Professional modern laundry utility room, clean premium 2D vector environment",
-        "tags": ["laundry", "utility room", "home", "washing", "interior"],
+        "asset_id": "living_room_01_v2",
+        "template": "professional_vector_environment",
+        "description": "Medium-detail modern living room with clear foreground, midground and doorway path for scene-led explainer animation.",
+        "tags": ["living room", "home", "sofa", "doorway", "interior"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["walk_through", "sit", "turn_back"],
         "reusable": true
       }
     },
     {
-      "need_id": "washing_machine",
-      "category": "prop",
-      "description": "Modern front-loading washing machine with visible round door and control panel",
-      "tags": ["washing machine", "laundry", "appliance", "washer"],
+      "need_id": "kitchen_v2",
+      "category": "environment",
+      "description": "Distinct modern kitchen seen from a three-quarter angle, with counter and fridge but composition different from the legacy kitchen asset.",
+      "tags": ["kitchen", "home", "counter", "fridge", "interior"],
+      "reuse": null,
       "generation": {
-        "asset_id": "washing_machine_01",
-        "template": "washing_machine",
-        "description": "Modern front-load washing machine with control panel and drum window",
-        "tags": ["washing machine", "laundry", "appliance", "washer"],
+        "asset_id": "kitchen_02_v2",
+        "template": "professional_vector_environment",
+        "description": "Professional editorial 2D home kitchen with medium detail, soft depth and space for character action and integrated labels.",
+        "tags": ["kitchen", "home", "interior", "counter", "appliance"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["enter", "pause", "look_around", "turn_back"],
         "reusable": true
       }
     },
     {
-      "need_id": "laundry_basket",
-      "category": "prop",
-      "description": "Fabric laundry basket filled with folded and unfolded clothes",
-      "tags": ["laundry basket", "clothes", "laundry", "basket"],
+      "need_id": "memory_control_room_v2",
+      "category": "environment",
+      "description": "Playful metaphorical memory control room with event-context panels, active mission queue, archive shelves and moving status lights; clearly a visual analogy, not literal anatomy.",
+      "tags": ["memory", "brain metaphor", "control room", "context", "event boundary"],
+      "reuse": null,
       "generation": {
-        "asset_id": "laundry_basket_01",
-        "template": "laundry_basket",
-        "description": "Soft fabric laundry basket with visible clothing shapes",
-        "tags": ["laundry basket", "clothes", "laundry", "basket"],
+        "asset_id": "memory_control_room_01_v2",
+        "template": "professional_vector_environment",
+        "description": "Reusable editorial explainer control-room environment for cognition metaphors, with modular screens, queue slots and archive areas.",
+        "tags": ["memory", "cognition", "control room", "metaphor", "screens"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["context_switch", "queue_update", "archive", "retrieve"],
         "reusable": true
       }
     },
     {
-      "need_id": "socks",
+      "need_id": "mission_note_v2",
       "category": "prop",
-      "description": "Mismatched pair of everyday socks used as a humorous laundry prop",
-      "tags": ["socks", "clothes", "laundry", "mismatched"],
+      "description": "Small anthropomorphic mission note/card that can read 'GET CHARGER', move between context slots, hide behind files and react comedically.",
+      "tags": ["note", "task", "goal", "memory", "callback"],
+      "reuse": null,
       "generation": {
-        "asset_id": "sock_pair_01",
-        "template": "socks",
-        "description": "Mismatched sock pair in the Wacky Insights vector style",
-        "tags": ["socks", "clothes", "laundry", "mismatched"],
+        "asset_id": "mission_note_01_v2",
+        "template": "professional_vector_prop",
+        "description": "Reusable task/goal card prop with simple expressive face and modular short text field for cognition and productivity explainers.",
+        "tags": ["task", "goal", "note", "memory", "personification"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["pop_in", "slide", "hide", "wave", "request_leave"],
+        "reusable": true
+      }
+    },
+    {
+      "need_id": "event_boundary_overlay_v2",
+      "category": "infographic",
+      "description": "Integrated context-change overlay showing one event bubble closing and another opening, with short labels attached to the active environment rather than a full-screen diagram.",
+      "tags": ["event boundary", "context", "memory", "transition", "overlay"],
+      "reuse": null,
+      "generation": {
+        "asset_id": "event_boundary_overlay_01_v2",
+        "template": "professional_vector_infographic_overlay",
+        "description": "Reusable event-segmentation overlay with two context bubbles, boundary marker and animated transfer arrow for embedding inside active scenes.",
+        "tags": ["event boundary", "context", "memory", "overlay", "segmentation"],
+        "style_id": "wacky_insights_v2",
+        "actions": ["segment", "transfer", "highlight", "fade"],
         "reusable": true
       }
     }
@@ -82,113 +148,165 @@
     {
       "id": "s01",
       "type": "environment_character",
-      "environment": "$environment_laundry",
-      "character": "$character_main",
-      "caption": "LAUNDRY IS NEVER DONE",
-      "narration": "Laundry has a strange talent. The moment you finish one load, another pile quietly appears somewhere in the house.",
+      "environment": "$living_room_v2",
+      "character": "$character_main_v2",
+      "caption": "MISSION: GET THE CHARGER",
+      "narration": "You are on the sofa. Your phone is dying. You stand up with one heroic mission: get the charger. Ten seconds later, you enter the kitchen and your brain goes... why am I here?",
+      "shot": {
+        "framing": "wide",
+        "camera_angle": "three_quarter",
+        "focal_subject": "character leaving sofa with phone",
+        "transition_in": "cut_to_distinct_environment"
+      },
       "visuals": [
-        {"ref": "$character_main", "x": 380, "y": 320, "scale": 0.95},
-        {"ref": "$washing_machine", "x": 1160, "y": 365, "scale": 0.82},
-        {"ref": "$laundry_basket", "x": 830, "y": 650, "scale": 0.85}
+        {"ref": "$character_main_v2", "x": 500, "y": 410, "scale": 0.95},
+        {"ref": "$mission_note_v2", "x": 790, "y": 245, "scale": 0.65}
       ],
       "overlays": [
-        {"id": "new_pile", "text": "another pile?!", "x": 920, "y": 220, "accent": "red"}
+        {"id": "battery", "text": "2% battery", "x": 430, "y": 250, "accent": "red"}
       ],
       "beats": [
-        {"at_pct": 0.05, "motion": "walk", "target": "$character_main"},
-        {"at_pct": 0.28, "motion": "highlight", "target": "$washing_machine"},
-        {"at_pct": 0.50, "motion": "pop", "target": "$laundry_basket"},
-        {"at_pct": 0.74, "motion": "punch_zoom", "target": "new_pile"}
+        {"at_pct": 0.05, "motion": "highlight", "target": "battery"},
+        {"at_pct": 0.28, "motion": "pop", "target": "$mission_note_v2"},
+        {"at_pct": 0.52, "motion": "walk", "target": "$character_main_v2"},
+        {"at_pct": 0.78, "motion": "object_wipe", "target": "doorway"}
       ]
     },
     {
       "id": "s02",
-      "type": "environment_overlay",
-      "environment": "$environment_laundry",
-      "character": "$character_main",
-      "caption": "THE CYCLE RESTARTS",
-      "narration": "That is because laundry is a moving system, not a task. Clothes keep being worn while other clothes are being washed.",
+      "type": "environment_character",
+      "environment": "$kitchen_v2",
+      "character": "$character_main_v2",
+      "caption": "NEW ROOM. NEW CONTEXT.",
+      "narration": "This is not proof that your kitchen has a memory-erasing force field. A better explanation is that your brain continuously groups experience into events, and a big context change can help mark: new event starting here.",
+      "shot": {
+        "framing": "medium",
+        "camera_angle": "front",
+        "focal_subject": "confused character after crossing boundary",
+        "transition_in": "object_wipe"
+      },
       "visuals": [
-        {"ref": "$character_main", "x": 430, "y": 315, "scale": 0.94},
-        {"ref": "$washing_machine", "x": 1160, "y": 365, "scale": 0.82},
-        {"ref": "$laundry_basket", "x": 780, "y": 660, "scale": 0.8}
+        {"ref": "$character_main_v2", "x": 760, "y": 350, "scale": 1.0},
+        {"ref": "$event_boundary_overlay_v2", "x": 1120, "y": 280, "scale": 0.8}
       ],
       "overlays": [
-        {"id": "wear", "text": "wear", "x": 690, "y": 210, "accent": "blue"},
-        {"id": "wash", "text": "wash", "x": 1000, "y": 205, "accent": "green"},
-        {"id": "repeat", "text": "repeat", "x": 1320, "y": 230, "accent": "red"}
+        {"id": "not_magic", "text": "not doorway magic", "x": 1110, "y": 170, "accent": "blue"}
       ],
       "beats": [
-        {"at_pct": 0.05, "motion": "fade_in", "target": "wear"},
-        {"at_pct": 0.28, "motion": "pop", "target": "wash"},
-        {"at_pct": 0.52, "motion": "track", "target": "$washing_machine"},
-        {"at_pct": 0.76, "motion": "punch_zoom", "target": "repeat"}
+        {"at_pct": 0.05, "motion": "reaction_closeup", "target": "$character_main_v2"},
+        {"at_pct": 0.28, "motion": "pop", "target": "not_magic"},
+        {"at_pct": 0.50, "motion": "highlight", "target": "$event_boundary_overlay_v2"},
+        {"at_pct": 0.76, "motion": "transform", "target": "$event_boundary_overlay_v2"}
       ]
     },
     {
       "id": "s03",
-      "type": "behavior_comparison",
-      "environment": "$environment_laundry",
-      "character": "$character_main",
-      "caption": "EMPTY BASKET vs REALITY",
-      "narration": "An empty basket feels like success for about five minutes. Then somebody changes clothes, finds a towel, or discovers one mysterious sock.",
+      "type": "environment_overlay",
+      "environment": "$memory_control_room_v2",
+      "character": "$character_main_v2",
+      "caption": "THE ACTIVE EVENT UPDATES",
+      "narration": "Think of your current situation as a working event model: where you are, what is happening, and what matters right now. When the context changes, that model gets updated. The old mission may still exist, but it can become less immediately accessible.",
+      "shot": {
+        "framing": "wide",
+        "camera_angle": "three_quarter",
+        "focal_subject": "mission note moving from active context toward archive",
+        "transition_in": "match_action"
+      },
       "visuals": [
-        {"ref": "$laundry_basket", "x": 580, "y": 650, "scale": 0.92},
-        {"ref": "$socks", "x": 1260, "y": 620, "scale": 0.9},
-        {"ref": "$character_main", "x": 850, "y": 320, "scale": 0.9}
+        {"ref": "$mission_note_v2", "x": 850, "y": 420, "scale": 0.8},
+        {"ref": "$event_boundary_overlay_v2", "x": 1180, "y": 270, "scale": 0.75}
       ],
       "overlays": [
-        {"id": "success", "text": "success!", "x": 500, "y": 260, "accent": "green"},
-        {"id": "five_minutes", "text": "5 minutes later...", "x": 1120, "y": 250, "accent": "red"}
+        {"id": "active_event", "text": "active event", "x": 600, "y": 210, "accent": "green"},
+        {"id": "previous_event", "text": "previous event", "x": 1240, "y": 210, "accent": "muted"}
       ],
       "beats": [
-        {"at_pct": 0.05, "motion": "split_reveal", "target": "success"},
-        {"at_pct": 0.30, "motion": "highlight", "target": "$laundry_basket"},
-        {"at_pct": 0.56, "motion": "pop", "target": "five_minutes"},
-        {"at_pct": 0.78, "motion": "float", "target": "$socks"}
+        {"at_pct": 0.05, "motion": "highlight", "target": "active_event"},
+        {"at_pct": 0.28, "motion": "track", "target": "$mission_note_v2"},
+        {"at_pct": 0.53, "motion": "state_change", "target": "$event_boundary_overlay_v2"},
+        {"at_pct": 0.78, "motion": "pop", "target": "previous_event"}
       ]
     },
     {
       "id": "s04",
-      "type": "character_closeup",
-      "environment": "$environment_laundry",
-      "character": "$character_main",
-      "caption": "THE MISSING SOCK RETURNS",
-      "narration": "And somehow the missing sock always returns after you have already accepted that it has started a new life somewhere else.",
+      "type": "behavior_comparison",
+      "environment": "$memory_control_room_v2",
+      "character": "$character_main_v2",
+      "caption": "BOUNDARIES CAN HELP OR HURT",
+      "narration": "And here is the important bit: event boundaries are not simply bad for memory. They can make information across a boundary harder to connect, but they can also help organize experience into separate chunks. Researchers see both costs and benefits depending on the task.",
+      "shot": {
+        "framing": "split_behavior",
+        "camera_angle": "front",
+        "focal_subject": "two integrated memory lanes showing separation versus organization",
+        "transition_in": "reframe"
+      },
       "visuals": [
-        {"ref": "$character_main", "x": 560, "y": 250, "scale": 1.25},
-        {"ref": "$socks", "x": 1240, "y": 470, "scale": 1.15}
+        {"ref": "$event_boundary_overlay_v2", "x": 960, "y": 380, "scale": 1.0},
+        {"ref": "$mission_note_v2", "x": 650, "y": 500, "scale": 0.65}
       ],
       "overlays": [
-        {"id": "returned", "text": "I'M BACK", "x": 1260, "y": 300, "accent": "blue"}
+        {"id": "cost", "text": "harder to connect", "x": 540, "y": 190, "accent": "red"},
+        {"id": "benefit", "text": "easier to organize", "x": 1240, "y": 190, "accent": "green"}
       ],
       "beats": [
-        {"at_pct": 0.05, "motion": "slow_zoom", "target": "$character_main"},
-        {"at_pct": 0.32, "motion": "float", "target": "$socks"},
-        {"at_pct": 0.58, "motion": "pop", "target": "returned"},
-        {"at_pct": 0.80, "motion": "punch_zoom", "target": "$socks"}
+        {"at_pct": 0.05, "motion": "split_reveal", "target": "$event_boundary_overlay_v2"},
+        {"at_pct": 0.28, "motion": "highlight", "target": "cost"},
+        {"at_pct": 0.53, "motion": "highlight", "target": "benefit"},
+        {"at_pct": 0.80, "motion": "track", "target": "$mission_note_v2"}
       ]
     },
     {
       "id": "s05",
-      "type": "environment_summary",
-      "environment": "$environment_laundry",
-      "character": "$character_main",
-      "caption": "A SYSTEM, NOT A FINISH LINE",
-      "narration": "So laundry is not really something you finish. It is a subscription service your clothes signed you up for without asking.",
+      "type": "environment_character",
+      "environment": "$kitchen_v2",
+      "character": "$character_main_v2",
+      "caption": "CONTEXT IS THE CLUE",
+      "narration": "That is also why blaming the physical door is too simple. Experiments suggest that changes in context and event structure matter, and segmentation can happen without a literal doorway. The door is just extremely good at announcing: congratulations, new scene.",
+      "shot": {
+        "framing": "over_shoulder",
+        "camera_angle": "over_shoulder",
+        "focal_subject": "doorway and context-change overlay from character viewpoint",
+        "transition_in": "cut_to_distinct_environment"
+      },
       "visuals": [
-        {"ref": "$character_main", "x": 420, "y": 320, "scale": 0.94},
-        {"ref": "$washing_machine", "x": 1160, "y": 365, "scale": 0.82},
-        {"ref": "$laundry_basket", "x": 820, "y": 660, "scale": 0.82}
+        {"ref": "$character_main_v2", "x": 430, "y": 430, "scale": 0.9},
+        {"ref": "$event_boundary_overlay_v2", "x": 1130, "y": 320, "scale": 0.75}
       ],
       "overlays": [
-        {"id": "subscription", "text": "monthly plan: FOREVER", "x": 930, "y": 230, "accent": "red"}
+        {"id": "new_scene", "text": "NEW SCENE!", "x": 1180, "y": 170, "accent": "yellow"}
       ],
       "beats": [
-        {"at_pct": 0.05, "motion": "pan_left", "target": "$character_main"},
-        {"at_pct": 0.28, "motion": "highlight", "target": "$washing_machine"},
-        {"at_pct": 0.56, "motion": "pop", "target": "$laundry_basket"},
-        {"at_pct": 0.80, "motion": "punch_zoom", "target": "subscription"}
+        {"at_pct": 0.05, "motion": "slow_zoom", "target": "doorway"},
+        {"at_pct": 0.30, "motion": "highlight", "target": "$event_boundary_overlay_v2"},
+        {"at_pct": 0.56, "motion": "pop", "target": "new_scene"},
+        {"at_pct": 0.80, "motion": "turn", "target": "$character_main_v2"}
+      ]
+    },
+    {
+      "id": "s06",
+      "type": "environment_summary",
+      "environment": "$living_room_v2",
+      "character": "$character_main_v2",
+      "caption": "YOUR GOAL WASN'T DELETED",
+      "narration": "So when you walk back and suddenly remember the charger, your goal was not deleted. The old context may simply have made it easier to retrieve. Of course, now you are back on the sofa wondering why you returned. Your mission note has requested annual leave.",
+      "shot": {
+        "framing": "reaction",
+        "camera_angle": "side",
+        "focal_subject": "character remembering beside sofa as mission note gives up",
+        "transition_in": "match_action"
+      },
+      "visuals": [
+        {"ref": "$character_main_v2", "x": 650, "y": 360, "scale": 1.0},
+        {"ref": "$mission_note_v2", "x": 1100, "y": 360, "scale": 0.8}
+      ],
+      "overlays": [
+        {"id": "leave", "text": "annual leave approved", "x": 1130, "y": 210, "accent": "red"}
+      ],
+      "beats": [
+        {"at_pct": 0.05, "motion": "match_action", "target": "$character_main_v2"},
+        {"at_pct": 0.28, "motion": "reaction_closeup", "target": "$character_main_v2"},
+        {"at_pct": 0.54, "motion": "pop", "target": "$mission_note_v2"},
+        {"at_pct": 0.80, "motion": "punch_zoom", "target": "leave"}
       ]
     }
   ]
