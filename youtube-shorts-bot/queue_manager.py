@@ -15,6 +15,9 @@ ARCHIVE_DIR = CONTENT_DIR / 'archive'
 OUT = BASE / 'output'
 OUT.mkdir(exist_ok=True)
 
+TOTAL_SLOTS = 24
+MIN_CANDIDATES = 60
+
 CONTENT_FIELDS = (
     'topic', 'category', 'setup', 'payoff', 'cta', 'handle', 'title', 'description',
     'hashtags', 'background_url', 'background_source_url', 'background_creator',
@@ -88,15 +91,15 @@ def validate_plan(path):
     expected_date = path.stem
     if plan.get('plan_date') != expected_date:
         errors.append(f'plan_date must match filename date {expected_date}')
-    if plan.get('target_count') != 20:
-        errors.append('target_count must be 20')
+    if plan.get('target_count') != TOTAL_SLOTS:
+        errors.append(f'target_count must be {TOTAL_SLOTS}')
 
     candidates_generated = plan.get('candidates_generated')
-    if isinstance(candidates_generated, bool) or not isinstance(candidates_generated, int) or candidates_generated < 50:
-        errors.append('candidates_generated must be an integer >= 50')
+    if isinstance(candidates_generated, bool) or not isinstance(candidates_generated, int) or candidates_generated < MIN_CANDIDATES:
+        errors.append(f'candidates_generated must be an integer >= {MIN_CANDIDATES}')
 
-    if not isinstance(items, list) or len(items) != 20:
-        errors.append('items must contain exactly 20 Shorts')
+    if not isinstance(items, list) or len(items) != TOTAL_SLOTS:
+        errors.append(f'items must contain exactly {TOTAL_SLOTS} Shorts')
         items = items if isinstance(items, list) else []
 
     seen_slots, seen_backgrounds, seen_music = set(), set(), set()
@@ -106,8 +109,8 @@ def validate_plan(path):
             continue
 
         slot = item.get('slot')
-        if isinstance(slot, bool) or not isinstance(slot, int) or not 1 <= slot <= 20:
-            errors.append(f'item {idx}: slot must be an integer from 1 to 20')
+        if isinstance(slot, bool) or not isinstance(slot, int) or not 1 <= slot <= TOTAL_SLOTS:
+            errors.append(f'item {idx}: slot must be an integer from 1 to {TOTAL_SLOTS}')
         elif slot in seen_slots:
             errors.append(f'item {idx}: duplicate slot {slot}')
         else:
@@ -172,8 +175,8 @@ def validate_plan(path):
                 errors.append(f'item {idx}: duplicate music_url in batch')
             seen_music.add(music)
 
-    if len(seen_slots) != 20 and len(items) == 20:
-        errors.append('slots must be unique and cover 1 through 20 exactly once')
+    if len(seen_slots) != TOTAL_SLOTS and len(items) == TOTAL_SLOTS:
+        errors.append(f'slots must be unique and cover 1 through {TOTAL_SLOTS} exactly once')
 
     for i in range(len(items)):
         ci = items[i].get('content', {}) if isinstance(items[i], dict) and isinstance(items[i].get('content'), dict) else {}
@@ -190,9 +193,6 @@ def validate_plan(path):
         content = item.get('content', {}) if isinstance(item.get('content'), dict) else {}
         current_cid = content_id(content)
         for old in recent[-100:]:
-            # Exact content already in the archive can happen when YouTube/finalize
-            # succeeded but queue state failed to persist. Treat that as a recoverable
-            # state-repair case rather than blocking the entire batch validation.
             if str(old.get('content_id', '')).strip() == current_cid:
                 continue
             sim = similarity(content, old)
@@ -202,7 +202,7 @@ def validate_plan(path):
 
     if errors:
         raise SystemExit('Daily plan validation failed:\n- ' + '\n- '.join(errors))
-    print(f'Daily plan valid: {path.name}, 20 quality-gated Shorts.')
+    print(f'Daily plan valid: {path.name}, {TOTAL_SLOTS} quality-gated Shorts.')
 
 
 def select_next(path, requested_slot=None, validate=True):
@@ -214,13 +214,13 @@ def select_next(path, requested_slot=None, validate=True):
 
     if requested_slot is not None:
         if isinstance(requested_slot, bool):
-            raise SystemExit('Queue slot must be an integer from 1 to 20.')
+            raise SystemExit(f'Queue slot must be an integer from 1 to {TOTAL_SLOTS}.')
         try:
             requested_slot = int(requested_slot)
         except (TypeError, ValueError):
-            raise SystemExit('Queue slot must be an integer from 1 to 20.')
-        if not 1 <= requested_slot <= 20:
-            raise SystemExit('Queue slot must be an integer from 1 to 20.')
+            raise SystemExit(f'Queue slot must be an integer from 1 to {TOTAL_SLOTS}.')
+        if not 1 <= requested_slot <= TOTAL_SLOTS:
+            raise SystemExit(f'Queue slot must be an integer from 1 to {TOTAL_SLOTS}.')
 
     for idx, item in enumerate(plan['items']):
         slot = item.get('slot', idx + 1)
