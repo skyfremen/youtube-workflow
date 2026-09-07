@@ -21,6 +21,11 @@ CONTENT_FIELDS = (
     'background_license', 'background_credit', 'music_url', 'music_source_url',
     'music_title', 'music_artist', 'music_license', 'music_credit'
 )
+NONEMPTY_CONTENT_FIELDS = (
+    'topic', 'category', 'setup', 'payoff', 'cta', 'handle', 'title', 'description',
+    'background_url', 'background_source_url', 'background_creator', 'background_license',
+    'music_url', 'music_source_url', 'music_title', 'music_artist', 'music_license'
+)
 SCORE_FIELDS = ('relatability', 'funny', 'hook', 'originality', 'clarity', 'visual_potential', 'total')
 SCORE_WEIGHTS = {
     'relatability': 0.30,
@@ -76,8 +81,10 @@ def _numeric_score(value, label, errors):
 def validate_plan(path):
     plan = load_plan(path)
     errors = []
-    items = plan.get('items')
+    if not isinstance(plan, dict):
+        raise SystemExit('Daily plan validation failed:\n- plan root must be a JSON object')
 
+    items = plan.get('items')
     expected_date = path.stem
     if plan.get('plan_date') != expected_date:
         errors.append(f'plan_date must match filename date {expected_date}')
@@ -110,49 +117,68 @@ def validate_plan(path):
         if status not in VALID_STATUSES:
             errors.append(f'item {idx}: status must be pending or published')
 
-        content = item.get('content', {})
+        content = item.get('content')
+        if not isinstance(content, dict):
+            errors.append(f'item {idx}: content must be an object')
+            continue
+
         missing = [k for k in CONTENT_FIELDS if k not in content or content.get(k) is None]
         if missing:
             errors.append(f'item {idx}: missing content fields: {", ".join(missing)}')
             continue
+
+        empty = [k for k in NONEMPTY_CONTENT_FIELDS if not str(content.get(k, '')).strip()]
+        if empty:
+            errors.append(f'item {idx}: content fields must not be empty: {", ".join(empty)}')
+
+        hashtags = content.get('hashtags')
+        if not isinstance(hashtags, list) or not 4 <= len(hashtags) <= 6 or any(not str(tag).strip() for tag in hashtags):
+            errors.append(f'item {idx}: hashtags must be a non-empty list of 4 to 6 tags')
+
         if content.get('handle') != '@WACKYINSIGHTS':
             errors.append(f'item {idx}: handle must be @WACKYINSIGHTS')
         if '#Shorts' not in str(content.get('title', '')) or len(str(content.get('title', ''))) > 100:
             errors.append(f'item {idx}: title must include #Shorts and be <=100 chars')
 
-        scores = item.get('quality', {})
-        missing_scores = [k for k in SCORE_FIELDS if k not in scores]
-        if missing_scores:
-            errors.append(f'item {idx}: missing quality scores: {", ".join(missing_scores)}')
+        scores = item.get('quality')
+        if not isinstance(scores, dict):
+            errors.append(f'item {idx}: quality must be an object')
         else:
-            parsed = {key: _numeric_score(scores.get(key), f'item {idx} {key}', errors) for key in SCORE_FIELDS}
-            if all(parsed.get(key) is not None for key in SCORE_WEIGHTS) and parsed.get('total') is not None:
-                calculated = sum(parsed[key] * weight for key, weight in SCORE_WEIGHTS.items())
-                if abs(parsed['total'] - calculated) > 0.5:
-                    errors.append(
-                        f'item {idx}: quality total {parsed["total"]:.2f} does not match weighted score {calculated:.2f}'
-                    )
-                if calculated < 75:
-                    errors.append(f'item {idx}: weighted quality score {calculated:.2f} is below 75')
+            missing_scores = [k for k in SCORE_FIELDS if k not in scores]
+            if missing_scores:
+                errors.append(f'item {idx}: missing quality scores: {", ".join(missing_scores)}')
+            else:
+                parsed = {key: _numeric_score(scores.get(key), f'item {idx} {key}', errors) for key in SCORE_FIELDS}
+                if all(parsed.get(key) is not None for key in SCORE_WEIGHTS) and parsed.get('total') is not None:
+                    calculated = sum(parsed[key] * weight for key, weight in SCORE_WEIGHTS.items())
+                    if abs(parsed['total'] - calculated) > 0.5:
+                        errors.append(
+                            f'item {idx}: quality total {parsed["total"]:.2f} does not match weighted score {calculated:.2f}'
+                        )
+                    if calculated < 75:
+                        errors.append(f'item {idx}: weighted quality score {calculated:.2f} is below 75')
 
         if not str(item.get('comedy_mechanism', '')).strip():
             errors.append(f'item {idx}: comedy_mechanism is required')
+
         bg = str(content.get('background_url', '')).strip()
         music = str(content.get('music_url', '')).strip()
-        if bg in seen_backgrounds:
-            errors.append(f'item {idx}: duplicate background_url in batch')
-        if music in seen_music:
-            errors.append(f'item {idx}: duplicate music_url in batch')
-        seen_backgrounds.add(bg)
-        seen_music.add(music)
+        if bg:
+            if bg in seen_backgrounds:
+                errors.append(f'item {idx}: duplicate background_url in batch')
+            seen_backgrounds.add(bg)
+        if music:
+            if music in seen_music:
+                errors.append(f'item {idx}: duplicate music_url in batch')
+            seen_music.add(music)
 
     if len(seen_slots) != 20 and len(items) == 20:
         errors.append('slots must be unique and cover 1 through 20 exactly once')
 
     for i in range(len(items)):
-        ci = items[i].get('content', {}) if isinstance(items[i], dict) else {}
+        ci = items[i].get('content', {}) if isinstance(items[i], dict) and isinstance(items[i].get('content'), dict) else {}
         for j in range(i + 1, len(items)):
-            cj = items[j].get('content', {}) if isinstance(items[j], dict) else {}
+            cj = items[j].get('content', {}) if isinstance(items[j], dict) and isinstance(items[j].get('content'), dict) else {}
             sim = similarity(ci, cj)
             if sim >= 0.78:
                 errors.append(f'items {i+1} and {j+1}: concepts too similar ({sim:.2f})')
@@ -161,7 +187,7 @@ def validate_plan(path):
     for idx, item in enumerate(items, 1):
         if not isinstance(item, dict) or item.get('status') == 'published':
             continue
-        content = item.get('content', {})
+        content = item.get('content', {}) if isinstance(item.get('content'), dict) else {}
         for old in recent[-100:]:
             sim = similarity(content, old)
             if sim >= 0.82:
@@ -182,26 +208,59 @@ def select_next(path):
         if item.get('status', 'pending') == 'pending':
             content = item['content']
             (CONTENT_DIR / 'latest.json').write_text(json.dumps(content, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-            selection = {'plan_path': str(path), 'item_index': idx, 'slot': item.get('slot', idx + 1)}
+            selection = {
+                'plan_path': str(path),
+                'plan_date': path.stem,
+                'item_index': idx,
+                'slot': item.get('slot', idx + 1),
+            }
             selection_path.write_text(json.dumps(selection, indent=2) + '\n', encoding='utf-8')
-            print(f'Selected queue slot {selection["slot"]}.')
+            print(f'Selected queue slot {selection["slot"]} from plan {selection["plan_date"]}.')
             return True
     print('NO_PENDING_SHORTS: daily queue is complete; nothing to publish.')
     return False
 
 
-def mark_published(path):
-    plan = load_plan(path)
-    selection = json.loads((OUT / 'queue_selection.json').read_text(encoding='utf-8'))
+def selected_plan_path():
+    selection_path = OUT / 'queue_selection.json'
+    if not selection_path.exists():
+        raise SystemExit('Queue state error: queue_selection.json is missing.')
+    selection = json.loads(selection_path.read_text(encoding='utf-8'))
+    raw_path = str(selection.get('plan_path', '')).strip()
+    if not raw_path:
+        raise SystemExit('Queue state error: queue_selection.json has no plan_path.')
+    path = Path(raw_path)
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    return path.resolve(), selection
+
+
+def mark_published(path=None):
+    selected_path, selection = selected_plan_path()
+    if path is not None and Path(path).resolve() != selected_path:
+        raise SystemExit(f'Queue state error: selected plan {selected_path} does not match requested plan {Path(path).resolve()}.')
+    if not selected_path.exists():
+        raise SystemExit(f'Queue state error: selected plan no longer exists: {selected_path}')
+
+    plan = load_plan(selected_path)
     upload = json.loads((OUT / 'upload_result.json').read_text(encoding='utf-8'))
     idx = int(selection['item_index'])
+    if not 0 <= idx < len(plan.get('items', [])):
+        raise SystemExit(f'Queue state error: selected item_index {idx} is out of range.')
+
     item = plan['items'][idx]
+    expected_slot = selection.get('slot')
+    if item.get('slot') != expected_slot:
+        raise SystemExit(
+            f'Queue state error: selected slot {expected_slot} no longer matches plan item slot {item.get("slot")}.'
+        )
+
     item['status'] = 'published'
     item['youtube_video_id'] = upload['youtube_video_id']
     item['youtube_url'] = upload['youtube_url']
     item['uploaded_at'] = upload.get('uploaded_at', '')
-    path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'Marked queue slot {item.get("slot", idx + 1)} published.')
+    selected_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    print(f'Marked queue slot {item.get("slot", idx + 1)} published in {selected_path.name}.')
 
 
 if __name__ == '__main__':
@@ -209,6 +268,11 @@ if __name__ == '__main__':
     parser.add_argument('command', choices=('validate', 'select', 'mark'))
     parser.add_argument('--date')
     args = parser.parse_args()
+
+    if args.command == 'mark':
+        mark_published()
+        raise SystemExit(0)
+
     path = plan_path(args.date)
     if not path.exists():
         if args.command == 'select':
@@ -216,4 +280,5 @@ if __name__ == '__main__':
             print(f'NO_PLAN_FOR_TODAY: {path.name} does not exist; nothing to publish.')
             raise SystemExit(0)
         raise SystemExit(f'Plan not found: {path}')
-    {'validate': validate_plan, 'select': select_next, 'mark': mark_published}[args.command](path)
+
+    {'validate': validate_plan, 'select': select_next}[args.command](path)
