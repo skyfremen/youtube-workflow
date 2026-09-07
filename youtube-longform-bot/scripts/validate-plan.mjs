@@ -9,8 +9,8 @@ if (!Array.isArray(plan.scenes) || plan.scenes.length === 0) {
 
 const allowedTypes = new Set(['setup', 'infographic']);
 const allowedActions = new Set([
-  'walk_in','reach_handle','open_door','look_inside','empty_callout','clock_jump','return_look',
-  'diagram_node_1','diagram_node_2','diagram_node_3','arrow_flow','highlight_reward','end_pop'
+  'walk_in','reach_handle','open_door','look_inside','empty_callout','return_look',
+  'diagram_node_1','diagram_node_2','diagram_node_3','arrow_flow','highlight_reward'
 ]);
 
 let total = 0;
@@ -50,11 +50,11 @@ for (const [index, scene] of plan.scenes.entries()) {
 if (Math.abs(total - plan.duration_seconds) > 0.001) {
   throw new Error(`Scene durations total ${total}s but plan says ${plan.duration_seconds}s.`);
 }
-if (plan.duration_seconds !== 10) {
-  throw new Error(`Art MVP 3 must be exactly 10 seconds; got ${plan.duration_seconds}.`);
+if (plan.duration_seconds !== 8) {
+  throw new Error(`Asset Quality MVP must be exactly 8 seconds; got ${plan.duration_seconds}.`);
 }
 if (beatCount < 10) {
-  throw new Error(`Art MVP 3 requires at least 10 visual beats; got ${beatCount}.`);
+  throw new Error(`Asset Quality MVP requires at least 10 visual beats; got ${beatCount}.`);
 }
 
 console.log(`Plan valid: ${plan.scenes.length} scenes, ${beatCount} visual beats, ${total}s total.`);
