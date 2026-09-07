@@ -85,7 +85,7 @@ jobs:
             ~/.cache/kokoro
           key: ${{ runner.os }}-kokoro-model-${{ hashFiles('youtube-longform-bot/requirements-tts.txt') }}
 
-      - name: Install Kokoro only when narration is not cached
+      - name: Install Kokoro CPU-only only when narration is not cached
         if: steps.narration-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
@@ -93,6 +93,7 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y --no-install-recommends espeak-ng
           fi
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
           python -m pip install -r youtube-longform-bot/requirements-tts.txt
 
       - name: Generate Kokoro narration only on cache miss
@@ -164,4 +165,5 @@ jobs:
           retention-days: 2
 
       - name: Confirm no YouTube publication
+        if: always()
         run: echo 'ASSET QUALITY MVP COMPLETE - 8-second render only; no YouTube upload or scheduling code executed.'
