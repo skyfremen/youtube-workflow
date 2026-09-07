@@ -8,6 +8,7 @@ from workflow_common import content_id
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
 UPLOAD_RESULT = BASE / 'output' / 'upload_result.json'
+QUEUE_SELECTION = BASE / 'output' / 'queue_selection.json'
 ARCHIVE_DIR = BASE / 'content' / 'archive'
 ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -20,13 +21,26 @@ video_id = str(upload.get('youtube_video_id', '')).strip()
 if not video_id:
     raise SystemExit('Finalize failed: upload_result.json has no YouTube video ID.')
 
-sg_date = datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat()
-archive_path = ARCHIVE_DIR / f'{sg_date}.json'
+# Queue publishing must stay attached to the plan date selected at the beginning of
+# the run, even if a delayed GitHub job crosses midnight Singapore time. The legacy
+# single-Short workflow has no queue selection, so it keeps current-date behavior.
+if QUEUE_SELECTION.exists():
+    selection = json.loads(QUEUE_SELECTION.read_text(encoding='utf-8'))
+    archive_date = str(selection.get('plan_date', '')).strip()
+    if not archive_date:
+        plan_path = str(selection.get('plan_path', '')).strip()
+        archive_date = Path(plan_path).stem if plan_path else ''
+    if not archive_date:
+        raise SystemExit('Finalize failed: queue selection has no plan date.')
+else:
+    archive_date = datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat()
+
+archive_path = ARCHIVE_DIR / f'{archive_date}.json'
 
 if archive_path.exists():
     existing = json.loads(archive_path.read_text(encoding='utf-8'))
 else:
-    existing = {'date': sg_date, 'count': 0, 'shorts': []}
+    existing = {'date': archive_date, 'count': 0, 'shorts': []}
 
 if isinstance(existing, dict) and isinstance(existing.get('shorts'), list):
     shorts = existing['shorts']
@@ -69,7 +83,7 @@ else:
     print(f'Archived YouTube video {video_id} with content_id={cid}.')
 
 payload = {
-    'date': sg_date,
+    'date': archive_date,
     'count': len(shorts),
     'shorts': shorts,
 }
