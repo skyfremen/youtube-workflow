@@ -56,12 +56,15 @@ jobs:
             resolved_date="${PLAN_DATE}"
           elif [ "${{ github.event_name }}" = "workflow_run" ]; then
             mapfile -t changed_plans < <(git show --pretty='' --name-only "${SOURCE_COMMIT_SHA}" -- 'youtube-shorts-bot/content/plans/*.json' | sed '/^$/d')
-            if [ "${#changed_plans[@]}" -ne 1 ]; then
-              echo "::error::Validated source commit must contain exactly one changed plan; found ${#changed_plans[@]}."
-              printf '%s\n' "${changed_plans[@]}"
+            mapfile -t validation_triggers < <(git show --pretty='' --name-only "${SOURCE_COMMIT_SHA}" -- 'youtube-shorts-bot/content/validation-triggers/*.txt' | sed '/^$/d')
+            if [ "${#changed_plans[@]}" -eq 1 ] && [ "${#validation_triggers[@]}" -eq 0 ]; then
+              resolved_date="$(basename "${changed_plans[0]}" .json)"
+            elif [ "${#changed_plans[@]}" -eq 0 ] && [ "${#validation_triggers[@]}" -eq 1 ]; then
+              resolved_date="$(basename "${validation_triggers[0]}" .txt)"
+            else
+              echo "::error::Validated source commit must contain exactly one changed plan or one validation trigger; found ${#changed_plans[@]} plan files and ${#validation_triggers[@]} triggers."
               exit 1
             fi
-            resolved_date="$(basename "${changed_plans[0]}" .json)"
           else
             resolved_date="$(python - <<'PY'
           from datetime import datetime, timedelta
