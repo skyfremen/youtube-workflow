@@ -7,6 +7,11 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      plan_date:
+        description: 'Singapore plan date to process (YYYY-MM-DD). Leave blank for today.'
+        required: false
+        type: string
 
 concurrency:
   group: youtube-short-publish
@@ -31,21 +36,39 @@ jobs:
       YOUTUBE_PRIVACY: private
       YOUTUBE_SCHEDULED_UPLOAD: 'true'
       TARGET_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+      PLAN_DATE: ${{ github.event.inputs.plan_date || '' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Validate daily plan
-        run: python youtube-shorts-bot/queue_manager.py validate
+      - name: Resolve and validate daily plan once
+        id: plan
+        shell: bash
+        run: |
+          if [ -n "${PLAN_DATE}" ]; then
+            resolved_date="${PLAN_DATE}"
+          else
+            resolved_date="$(python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          print(datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat())
+          PY
+          )"
+          fi
+          echo "plan_date=${resolved_date}" >> "$GITHUB_OUTPUT"
+          echo "Processing Singapore plan date ${resolved_date}."
+          python youtube-shorts-bot/queue_manager.py validate --date "${resolved_date}"
 
       - name: Validate YouTube credentials and OAuth once
         run: python youtube-shorts-bot/auth_check.py
 
-      - name: Render, verify, upload, and schedule all 20 Shorts
+      - name: Render, verify, upload, verify schedule, and queue all 20 Shorts
         id: batch
         shell: bash
+        env:
+          RESOLVED_PLAN_DATE: ${{ steps.plan.outputs.plan_date }}
         run: |
           mkdir -p youtube-shorts-bot/output/batch-metadata
           rm -f youtube-shorts-bot/output/batch-metadata/*.json
@@ -64,10 +87,13 @@ jobs:
               youtube-shorts-bot/output/content_id.txt \
               youtube-shorts-bot/output/short.mp4
 
-            python youtube-shorts-bot/queue_manager.py select --slot "${slot}" || return 1
+            python youtube-shorts-bot/queue_manager.py select \
+              --date "${RESOLVED_PLAN_DATE}" \
+              --slot "${slot}" \
+              --skip-validation || return 1
 
             if [ ! -f youtube-shorts-bot/output/queue_selection.json ]; then
-              echo "Slot ${slot} has no pending item; skipping."
+              echo "Slot ${slot} is already complete or unavailable; skipping."
               skipped=$((skipped + 1))
               return 0
             fi
@@ -77,6 +103,7 @@ jobs:
             python youtube-shorts-bot/render.py || return 1
             python youtube-shorts-bot/verify_render.py || return 1
             python youtube-shorts-bot/publish.py || return 1
+            python youtube-shorts-bot/verify_youtube_schedule.py || return 1
             python youtube-shorts-bot/finalize.py || return 1
             python youtube-shorts-bot/queue_manager.py mark || return 1
 
@@ -84,7 +111,7 @@ jobs:
               youtube-shorts-bot/output/upload_result.json \
               "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json"
             scheduled=$((scheduled + 1))
-            echo "Slot ${slot} successfully uploaded and scheduled."
+            echo "Slot ${slot} successfully uploaded, YouTube-verified, and scheduled."
           }
 
           for slot in $(seq 1 20); do
@@ -137,5 +164,5 @@ jobs:
       - name: Fail batch if any slot failed
         if: ${{ always() && steps.batch.outputs.failures != '0' }}
         run: |
-          echo "${{ steps.batch.outputs.failures }} queue slot(s) failed. Successful slots were preserved and scheduled; rerun this workflow to retry only pending slots."
+          echo "${{ steps.batch.outputs.failures }} queue slot(s) failed. Successful slots were preserved and scheduled; rerun this workflow with the same plan_date to retry pending slots."
           exit 1
