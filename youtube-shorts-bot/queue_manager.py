@@ -97,6 +97,8 @@ def validate_plan(path):
 
     recent = [record for _, record in archive_records(ARCHIVE_DIR)]
     for idx, item in enumerate(items, 1):
+        if item.get('status') == 'published':
+            continue
         content = item.get('content', {})
         for old in recent[-100:]:
             sim = similarity(content, old)
