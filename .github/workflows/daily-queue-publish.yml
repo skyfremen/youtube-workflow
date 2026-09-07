@@ -44,6 +44,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
+      - name: Mark repository safe for container Git
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Resolve and validate exact daily plan once
         id: plan
         shell: bash
