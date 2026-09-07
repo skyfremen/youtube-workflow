@@ -88,9 +88,7 @@
   },
   "props": {},
   "infographics": {},
-  "motions": [
-    "fade_in", "slide_in_left", "slow_zoom", "punch_zoom", "pan_left", "pan_right", "pop", "float", "open_prop", "highlight", "walk", "point", "track", "split_reveal", "reframe", "reaction_closeup", "insert_cut", "match_action", "object_wipe", "state_change", "transform", "enter_exit", "cause_effect_chain"
-  ],
+  "motions": ["fade_in", "slide_in_left", "slow_zoom", "punch_zoom", "pan_left", "pan_right", "pop", "float", "open_prop", "highlight", "walk", "point", "track", "split_reveal", "reframe", "reaction_closeup", "insert_cut", "match_action", "object_wipe", "state_change", "transform", "enter_exit", "cause_effect_chain"],
   "scene_types": ["environment_character", "environment_overlay", "behavior_comparison", "character_closeup", "environment_summary"],
   "shot_framings": ["wide", "medium", "closeup", "insert", "over_shoulder", "reaction", "split_behavior"],
   "camera_angles": ["front", "three_quarter", "side", "over_shoulder", "detail"],
