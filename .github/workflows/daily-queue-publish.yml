@@ -1,9 +1,11 @@
 name: Publish daily Shorts queue
 
 on:
-  schedule:
-    - cron: '0 0-15 * * *'
-    - cron: '0 20-23 * * *'
+  workflow_run:
+    workflows:
+      - 'Validate daily Shorts plan'
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -11,7 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish-next:
+  publish-batch:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/skyfremen/youtube-shorts-runner:latest
@@ -25,85 +28,114 @@ jobs:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-      YOUTUBE_PRIVACY: public
+      YOUTUBE_PRIVACY: private
+      YOUTUBE_SCHEDULED_UPLOAD: 'true'
+      TARGET_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Select next approved Short
-        id: select
-        shell: bash
-        run: |
-          rm -f youtube-shorts-bot/output/queue_selection.json
-          python youtube-shorts-bot/queue_manager.py select
-          if [ -f youtube-shorts-bot/output/queue_selection.json ]; then
-            echo "has_short=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_short=false" >> "$GITHUB_OUTPUT"
-            echo "No Short selected; publisher exits successfully without rendering or uploading."
-          fi
+      - name: Validate daily plan
+        run: python youtube-shorts-bot/queue_manager.py validate
 
-      - name: Validate YouTube credentials and OAuth
-        if: steps.select.outputs.has_short == 'true'
+      - name: Validate YouTube credentials and OAuth once
         run: python youtube-shorts-bot/auth_check.py
 
-      - name: Preflight media URLs
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/media_preflight.py
+      - name: Render, verify, upload, and schedule all 20 Shorts
+        id: batch
+        shell: bash
+        run: |
+          mkdir -p youtube-shorts-bot/output/batch-metadata
+          rm -f youtube-shorts-bot/output/batch-metadata/*.json
 
-      - name: Validate content and duplicate protection
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/validate_content.py
+          failures=0
+          scheduled=0
+          skipped=0
 
-      - name: Render Short
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/render.py
+          process_slot() {
+            slot="$1"
+            echo "========== Processing queue slot ${slot} =========="
 
-      - name: Verify rendered video and audio
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/verify_render.py
+            rm -f \
+              youtube-shorts-bot/output/queue_selection.json \
+              youtube-shorts-bot/output/upload_result.json \
+              youtube-shorts-bot/output/content_id.txt \
+              youtube-shorts-bot/output/short.mp4
 
-      - name: Upload to YouTube and capture video ID
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/publish.py
+            python youtube-shorts-bot/queue_manager.py select --slot "${slot}" || return 1
 
-      - name: Archive successful upload
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/finalize.py
+            if [ ! -f youtube-shorts-bot/output/queue_selection.json ]; then
+              echo "Slot ${slot} has no pending item; skipping."
+              skipped=$((skipped + 1))
+              return 0
+            fi
 
-      - name: Mark queue item published
-        if: steps.select.outputs.has_short == 'true'
-        run: python youtube-shorts-bot/queue_manager.py mark
+            python youtube-shorts-bot/media_preflight.py || return 1
+            python youtube-shorts-bot/validate_content.py || return 1
+            python youtube-shorts-bot/render.py || return 1
+            python youtube-shorts-bot/verify_render.py || return 1
+            python youtube-shorts-bot/publish.py || return 1
+            python youtube-shorts-bot/finalize.py || return 1
+            python youtube-shorts-bot/queue_manager.py mark || return 1
 
-      - name: Upload publish metadata artifact
-        if: steps.select.outputs.has_short == 'true'
+            cp \
+              youtube-shorts-bot/output/upload_result.json \
+              "youtube-shorts-bot/output/batch-metadata/slot-${slot}.json"
+            scheduled=$((scheduled + 1))
+            echo "Slot ${slot} successfully uploaded and scheduled."
+          }
+
+          for slot in $(seq 1 20); do
+            if ! process_slot "${slot}"; then
+              failures=$((failures + 1))
+              echo "::error::Queue slot ${slot} failed. Later slots will continue processing."
+            fi
+          done
+
+          echo "scheduled=${scheduled}" >> "$GITHUB_OUTPUT"
+          echo "skipped=${skipped}" >> "$GITHUB_OUTPUT"
+          echo "failures=${failures}" >> "$GITHUB_OUTPUT"
+          echo "Batch result: ${scheduled} scheduled, ${skipped} already complete, ${failures} failed."
+
+      - name: Upload batch publish metadata artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: youtube-publish-metadata-${{ github.run_id }}
-          path: youtube-shorts-bot/output/upload_result.json
+          path: youtube-shorts-bot/output/batch-metadata/
+          if-no-files-found: ignore
           retention-days: 3
 
-      - name: Commit queue state and archive
-        if: steps.select.outputs.has_short == 'true'
+      - name: Commit queue state and archive once
+        if: always()
         shell: bash
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add youtube-shorts-bot/content/plans/ youtube-shorts-bot/content/archive/
+
           if git diff --cached --quiet; then
             echo "Nothing to commit."
             exit 0
           fi
-          git commit -m "[skip upload] publish next daily Short"
+
+          git commit -m "[skip upload] persist scheduled daily Shorts batch"
           for attempt in 1 2 3 4 5; do
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+            git pull --rebase origin "${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
               exit 0
             fi
             echo "Push attempt ${attempt} failed; retrying after rebase..."
             sleep $((attempt * 2))
           done
           echo "Failed to persist queue/archive state after 5 attempts."
+          exit 1
+
+      - name: Fail batch if any slot failed
+        if: ${{ always() && steps.batch.outputs.failures != '0' }}
+        run: |
+          echo "${{ steps.batch.outputs.failures }} queue slot(s) failed. Successful slots were preserved and scheduled; rerun this workflow to retry only pending slots."
           exit 1
