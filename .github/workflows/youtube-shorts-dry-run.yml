@@ -130,21 +130,38 @@ jobs:
       - name: Validate full 20-Short plan
         run: python youtube-shorts-bot/queue_manager.py validate
 
-      - name: Select queue slot 1
-        run: python youtube-shorts-bot/queue_manager.py select
+      - name: Select queue slot 1 by explicit slot
+        run: python youtube-shorts-bot/queue_manager.py select --slot 1
 
-      - name: Verify queue selection
+      - name: Verify queue selection and schedule mapping
         shell: bash
         run: |
           test -f youtube-shorts-bot/output/queue_selection.json
           python - <<'PY'
           import json
+          from datetime import datetime
           from pathlib import Path
+          from zoneinfo import ZoneInfo
+          import sys
+
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from schedule_utils import scheduled_publish_at
+
           selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
           assert selection['slot'] == 1, selection
           assert selection.get('plan_date'), selection
           assert selection.get('plan_path'), selection
+
+          first = scheduled_publish_at(selection['plan_date'], 1)
+          last = scheduled_publish_at(selection['plan_date'], 20)
+          first_sgt = datetime.fromisoformat(first.replace('Z', '+00:00')).astimezone(ZoneInfo('Asia/Singapore'))
+          last_sgt = datetime.fromisoformat(last.replace('Z', '+00:00')).astimezone(ZoneInfo('Asia/Singapore'))
+          assert first_sgt.hour == 4 and first_sgt.minute == 0, first_sgt
+          assert last_sgt.hour == 23 and last_sgt.minute == 0, last_sgt
+          assert first_sgt.date().isoformat() == selection['plan_date'], first_sgt
+          assert last_sgt.date().isoformat() == selection['plan_date'], last_sgt
           print('Queue selection verified:', selection)
+          print('Scheduled release mapping verified:', first, 'through', last)
           PY
 
       - name: Real YouTube OAuth preflight
@@ -185,4 +202,4 @@ jobs:
           retention-days: 3
 
       - name: Confirm no publication
-        run: echo 'STRONG DRY RUN PASSED - 20-item plan validation, queue selection, OAuth, media preflight, duplicate check, render, and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
+        run: echo 'STRONG DRY RUN PASSED - 20-item plan validation, explicit slot selection, schedule mapping, OAuth, media preflight, duplicate check, render, and QA all passed. No YouTube upload, archive update, queue mark, or Git persistence was performed.'
