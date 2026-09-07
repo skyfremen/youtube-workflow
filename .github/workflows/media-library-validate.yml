@@ -1,0 +1,18 @@
+name: Validate media library
+
+on:
+  push:
+    paths:
+      - 'youtube-shorts-bot/media-library/*.json'
+      - 'youtube-shorts-bot/validate_media_library.py'
+  workflow_dispatch:
+
+jobs:
+  validate-media-library:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate reusable media cache
+        run: python youtube-shorts-bot/validate_media_library.py
