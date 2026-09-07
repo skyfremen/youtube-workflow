@@ -6,15 +6,26 @@ Use this file as the entry point for an ad-hoc or scheduled ChatGPT planning run
 
 Create one new Wacky Insights long-form explainer plan for **human review only**.
 
-The channel personality is non-negotiable:
+The channel promise is non-negotiable:
 
 **Every video must combine meaningful educational value with humour.**
 
-The viewer should leave thinking:
+Target reaction:
 
 > “I actually learned something — and that was funny.”
 
-Do not create a video that is merely funny, merely informative, or merely trivia-driven.
+The active visual system is **`wacky_insights_v2`**.
+
+The visual direction is also non-negotiable:
+
+- original professional editorial 2D explainer art
+- scene-first, not slide-first
+- environment-led storytelling
+- rounded readable characters and reusable props
+- integrated educational graphics rather than detached presentation boards
+- purposeful motion
+- seamless but visually distinct scene transitions
+- no blink-like cuts between nearly identical shots
 
 ## Read these files first
 
@@ -24,7 +35,7 @@ Read and follow, in this exact order:
 2. `youtube-longform-bot/planner/PHASE7_PLANNER.md`
 3. `youtube-longform-bot/assets/design-system.json`
 4. `youtube-longform-bot/assets/registry.json`
-5. Recent long-form plan/summary files under `youtube-longform-bot/content/` when useful for avoiding repetition
+5. recent long-form plan/summary files under `youtube-longform-bot/content/` when useful for avoiding repetition
 
 Do not rely on chat memory when the repo instructions or asset registry can answer the question.
 
@@ -34,23 +45,25 @@ If the user supplied a topic, use it unless it cannot support a useful, accurate
 
 If no topic was supplied, choose one original, broadly relatable everyday explainer topic with:
 
-- an immediate “why does this happen?” hook
+- an immediate “why/how does this happen?” hook
 - real explanatory depth
 - clear visual storytelling opportunities
 - natural humour
 - a memorable payoff
 
-Avoid repeating recent topics, central mechanisms, punchlines, visual structures, or the same environment/character combination when better alternatives exist.
+Avoid repeating recent topics, central mechanisms, punchlines, visual structures, shot grammar, or the same environment/character combination when better alternatives exist.
 
 ## Before writing the script
 
-Define internally and then include in the JSON:
+Define and include in the JSON:
 
-1. **Learning promise:** one sentence describing what the viewer will understand.
-2. **Central question:** the mystery being answered.
-3. **Educational points:** normally 2–4 meaningful ideas that explain the answer.
-4. **Humour strategy:** the comedic devices that fit naturally, including any recurring gag/callback.
-5. **Final payoff:** the closing joke/callback plus the clear takeaway.
+1. `style_id`: `wacky_insights_v2`
+2. **Learning promise** — one sentence describing what the viewer will understand.
+3. **Central question** — the mystery being answered.
+4. **Educational points** — normally 2–4 meaningful ideas that explain the answer.
+5. **Humour strategy** — devices that fit naturally, including any recurring gag/callback.
+6. **Final payoff** — closing joke/callback plus clear takeaway.
+7. **Shot/transition strategy** — how scenes remain seamless while true scene cuts are visually distinct.
 
 If the topic does not have at least two meaningful educational points, choose a stronger angle/topic rather than padding with trivia.
 
@@ -62,7 +75,7 @@ Prefer this arc:
 
 - hook with a familiar or weird situation
 - humorous escalation
-- clearly establish the question
+- establish the question
 - explain the mechanism step by step
 - use examples/contrasts/mini-demonstrations
 - reveal a surprising implication
@@ -75,9 +88,7 @@ Avoid dry lecture language, filler, repeated explanations, jargon without explan
 
 ## Educational standard
 
-The video must teach something real.
-
-Prefer WHY/HOW explanations over isolated facts.
+The video must teach something real. Prefer WHY/HOW explanations over isolated facts.
 
 For scientific, psychological, medical, historical, financial, numerical, disputed, or other accuracy-sensitive claims, verify before presenting them strongly. Preserve uncertainty where appropriate. Do not invent causal mechanisms or overstate correlations.
 
@@ -85,16 +96,7 @@ For scientific, psychological, medical, historical, financial, numerical, disput
 
 Humour should appear throughout the story, not just in the last line.
 
-Prefer:
-
-- relatable observations
-- visual exaggeration
-- absurd comparisons
-- object/personification gags
-- escalation
-- deadpan labels
-- callbacks
-- visual irony
+Prefer relatable observations, visual exaggeration, absurd comparisons, object/personification gags, escalation, deadpan labels, callbacks, reactions and visual irony.
 
 Avoid mean-spirited humour, overly childish jokes, stale meme dependence, obscure references, or jokes that damage the educational point.
 
@@ -102,23 +104,47 @@ Avoid mean-spirited humour, overly childish jokes, stale meme dependence, obscur
 
 Do not create PowerPoint-like scenes.
 
-Educational graphics should usually live **inside an active environment** as animated overlays, meters, arrows, labels, cause-and-effect motion, visual metaphors or object transformations.
+Educational graphics should usually live **inside an active environment** as animated overlays, meters, arrows, labels, cause-and-effect motion, screens, boards, visual metaphors or object transformations.
 
-Most scenes should contain active characters/props/environments. The visual should help explain the idea rather than merely decorate narration.
+Most scenes should contain active characters, props and environments. The visual should help explain the idea rather than merely decorate narration.
 
 Aim for a meaningful visual change roughly every 1.0–1.5 seconds in MVP content.
+
+## Scene transition standard — HARD RULE
+
+Transitions must feel seamless, but a true scene change must look intentionally different.
+
+If the next shot has nearly the same background, framing and focal action as the previous shot, it should usually remain part of the same scene.
+
+Use same-scene continuity techniques instead:
+
+- camera push/pan/follow
+- reframe
+- close-up
+- insert/object shot
+- reaction shot
+- new focal object
+- prop-state change
+- overlay beat
+- character movement
+
+If a new scene keeps the same environment, change at least two of: framing, camera angle, focal subject, subject grouping, prop state, action emphasis, story emphasis.
+
+Avoid cuts that look like the video blinked.
+
+Prefer meaningful cuts to clearly different environments, strong reframes, match-action cuts, insert cuts, reaction cuts, object wipes and motivated camera changes.
 
 ## Asset intelligence
 
 For every visual need:
 
-1. Describe the required subject, purpose, context, viewpoint and actions.
+1. Describe subject, purpose, context, viewpoint and required actions/states.
 2. Search `assets/registry.json` conceptually for a strong fit.
-3. Prefer reuse when the fit is genuinely appropriate.
-4. Do not reuse a weak asset merely because the category matches.
-5. If no strong fit exists, add an `asset_needs[].generation` specification for a **professional reusable asset** following the design system.
+3. Prefer reuse only when genuinely appropriate.
+4. Do not force weak v1 assets into a v2 scene merely because the category matches.
+5. If no strong fit exists, add an `asset_needs[].generation` specification for a **professional reusable `wacky_insights_v2` asset**.
 
-Generated assets must be designed for future reuse where practical and must not look like clipart, crude procedural drawing, or generic presentation art.
+Generated assets must be reusable, contextually appropriate, professionally art-directed and clearly readable. They must not look like clipart, crude procedural drawings, childish doodles or generic presentation art.
 
 ## Required review artifacts
 
@@ -129,11 +155,14 @@ Generate and commit exactly these review artifacts:
 
 The JSON must contain:
 
+- `style_id: wacky_insights_v2`
 - complete narration
 - storyboard/scenes
+- per-scene `shot` metadata
 - visual beats
 - asset needs
 - `learning_promise`
+- `central_question`
 - `educational_points`
 - `channel_personality` metadata
 - `humour_strategy`
@@ -163,6 +192,7 @@ Include:
 - main educational points
 - humour approach / recurring gag
 - final punchline/payoff
+- scene/location variety at a glance
 - existing assets expected to be reused
 - new assets expected to be generated
 - final line exactly:
@@ -182,7 +212,10 @@ Do not commit until all are true:
 - there is a clear payoff/callback
 - visuals actively explain the topic
 - scenes do not resemble PowerPoint slides
-- assets are appropriate and professional
+- scene transitions do not create blink-like cuts
+- repeated environments are treated as continuity or strongly reframed
+- shot scale and framing vary enough to feel visually alive
+- assets are appropriate, reusable and professional
 - the script contains no runtime-padding filler
 
 If any condition fails, revise first.
