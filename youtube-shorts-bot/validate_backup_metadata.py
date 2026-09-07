@@ -14,6 +14,16 @@ MUSIC_BACKUP_FIELDS = (
     'music_backup_url', 'music_backup_source_url', 'music_backup_title',
     'music_backup_artist', 'music_backup_license', 'music_backup_credit',
 )
+MATCH_FIELDS = (
+    'background_scene', 'background_match_reason', 'background_match_score',
+    'background_backup_scene', 'background_backup_match_reason', 'background_backup_match_score',
+    'music_mood', 'music_match_reason', 'music_match_score',
+    'music_backup_mood', 'music_backup_match_reason', 'music_backup_match_score',
+)
+
+MIN_MATCH_SCORE = 85.0
+MIN_REASON_LENGTH = 24
+MIN_SCENE_LENGTH = 8
 
 
 def validate_group(content, fields, label, item_no, errors):
@@ -22,6 +32,52 @@ def validate_group(content, fields, label, item_no, errors):
         errors.append(
             f'item {item_no}: incomplete {label} backup metadata; missing: {", ".join(missing)}'
         )
+
+
+def validate_score(content, field, item_no, errors):
+    value = content.get(field)
+    if isinstance(value, bool):
+        errors.append(f'item {item_no}: {field} must be numeric')
+        return
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        errors.append(f'item {item_no}: {field} must be numeric')
+        return
+    if not 0 <= score <= 100:
+        errors.append(f'item {item_no}: {field} must be between 0 and 100')
+    elif score < MIN_MATCH_SCORE:
+        errors.append(
+            f'item {item_no}: {field} is {score:g}; media-content match must be >= {MIN_MATCH_SCORE:g}'
+        )
+
+
+def validate_match_metadata(content, item_no, errors):
+    missing = [field for field in MATCH_FIELDS if field not in content or content.get(field) is None]
+    if missing:
+        errors.append(
+            f'item {item_no}: missing semantic media-match fields: {", ".join(missing)}'
+        )
+        return
+
+    for field in ('background_scene', 'background_backup_scene', 'music_mood', 'music_backup_mood'):
+        if len(str(content.get(field, '')).strip()) < MIN_SCENE_LENGTH:
+            errors.append(f'item {item_no}: {field} is too vague; describe the actual scene/mood')
+
+    for field in (
+        'background_match_reason', 'background_backup_match_reason',
+        'music_match_reason', 'music_backup_match_reason',
+    ):
+        if len(str(content.get(field, '')).strip()) < MIN_REASON_LENGTH:
+            errors.append(
+                f'item {item_no}: {field} is too vague; explain specifically why the asset fits this joke'
+            )
+
+    for field in (
+        'background_match_score', 'background_backup_match_score',
+        'music_match_score', 'music_backup_match_score',
+    ):
+        validate_score(content, field, item_no, errors)
 
 
 def main():
@@ -37,6 +93,7 @@ def main():
         content = item.get('content', {}) if isinstance(item, dict) else {}
         validate_group(content, BACKGROUND_BACKUP_FIELDS, 'background', idx, errors)
         validate_group(content, MUSIC_BACKUP_FIELDS, 'music', idx, errors)
+        validate_match_metadata(content, idx, errors)
 
         bg_primary = str(content.get('background_url', '')).strip()
         bg_backup = str(content.get('background_backup_url', '')).strip()
@@ -49,9 +106,12 @@ def main():
             errors.append(f'item {idx}: music backup must differ from primary')
 
     if errors:
-        raise SystemExit('Backup media metadata validation failed:\n- ' + '\n- '.join(errors))
+        raise SystemExit('Media metadata validation failed:\n- ' + '\n- '.join(errors))
 
-    print('Backup media metadata valid; no backup media was downloaded.')
+    print(
+        'Media metadata valid: primary/backup assets include explicit scene/mood matching '
+        f'with scores >= {MIN_MATCH_SCORE:g}; backup media was not downloaded.'
+    )
 
 
 if __name__ == '__main__':
