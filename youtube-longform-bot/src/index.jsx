@@ -3,94 +3,142 @@ import {AbsoluteFill, Audio, Composition, Img, interpolate, registerRoot, static
 import plan from '../content/scene-plan.json';
 import registry from '../assets/registry.json';
 
-const FPS = plan.fps || 30;
+const FPS = plan.fps || 24;
 const totalFrames = Math.round(plan.duration_seconds * FPS);
-const C = {ink:'#1F2937',muted:'#667085',red:'#F05A47',blue:'#4F7CFF',green:'#22A06B',yellow:'#F7C948',panel:'#FFFFFF',border:'#D9E2EC',shadow:'rgba(30,45,70,.14)',bg:'#F5F8FC'};
+const C = {ink:'#1F2937',muted:'#667085',red:'#F05A47',blue:'#4F7CFF',green:'#22A06B',yellow:'#F7C948',white:'#FFFFFF',shadow:'rgba(30,45,70,.16)'};
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const ease=(v)=>1-Math.pow(1-clamp(v),3);
-
-const Card=({children,x,y,w,h,opacity=1,scale=1})=><div style={{position:'absolute',left:x,top:y,width:w,height:h,background:C.panel,border:`2px solid ${C.border}`,borderRadius:28,boxShadow:`0 18px 42px ${C.shadow}`,opacity,transform:`scale(${scale})`,transformOrigin:'center'}}>{children}</div>;
 const Asset=({path,style})=><Img src={staticFile(path)} style={style}/>;
 
 const timeline=[];
 let cursor=0;
-for(const scene of plan.scenes){
-  const frames=Math.round(scene.duration*FPS);
-  timeline.push({...scene,start:cursor,end:cursor+frames,frames});
-  cursor+=frames;
-}
+for(const scene of plan.scenes){const frames=Math.round(scene.duration*FPS);timeline.push({...scene,start:cursor,end:cursor+frames,frames});cursor+=frames;}
+
+const FloatingLabel=({text,x,y,opacity=1,accent=C.red,scale=1})=><div style={{position:'absolute',left:x,top:y,padding:'11px 18px',borderRadius:999,background:'rgba(255,255,255,.94)',boxShadow:`0 10px 28px ${C.shadow}`,fontSize:28,fontWeight:900,color:C.ink,opacity,transform:`scale(${scale})`,transformOrigin:'center',border:`3px solid ${accent}`}}>{text}</div>;
 
 const Caption=({scene,local})=>{
-  const p=interpolate(local,[0,10,scene.frames-12,scene.frames-2],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <div style={{position:'absolute',left:88,top:72,padding:'16px 24px',borderRadius:18,background:'rgba(255,255,255,.94)',border:`2px solid ${C.border}`,boxShadow:`0 12px 30px ${C.shadow}`,fontSize:44,fontWeight:950,color:C.ink,opacity:p,maxWidth:800}}>{scene.caption}</div>;
+  const p=interpolate(local,[6,16,scene.frames-20,scene.frames-8],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <div style={{position:'absolute',left:96,bottom:92,fontSize:34,fontWeight:950,color:C.ink,opacity:p,textShadow:'0 2px 10px rgba(255,255,255,.9)'}}>{scene.caption}</div>;
 };
 
-const Character=({id,local,closeup=false})=>{
+const Character=({id,local,x=500,y=310,scale=1,mirror=false})=>{
   const a=registry.characters[id];
-  const enter=ease(local/18);
-  const bob=Math.sin(local/6)*2;
-  const scale=closeup?1.35:1;
-  return <div style={{position:'absolute',left:closeup?670:500-260*(1-enter),top:(closeup?235:310)+bob,width:360,height:520,transform:`scale(${scale})`,transformOrigin:'top left'}}>
+  const walk=ease(local/24);
+  const bob=Math.sin(local/4)*4;
+  const sway=Math.sin(local/5)*2;
+  return <div style={{position:'absolute',left:x-220*(1-walk),top:y+bob,width:360,height:520,transform:`scale(${mirror?-scale:scale},${scale}) rotate(${sway*.35}deg)`,transformOrigin:'top left'}}>
     <Asset path={a.body} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
-    <Asset path={a.head} style={{position:'absolute',left:72,top:10,width:220,height:220}}/>
+    <Asset path={a.head} style={{position:'absolute',left:72,top:10,width:220,height:220,transform:`translateX(${Math.sin(local/9)*3}px)`}}/>
   </div>;
 };
 
-const Fridge=({id,local})=>{
+const Fridge=({id,local,x=1170,y=250,scale=1,openAt=38})=>{
   const a=registry.props[id];
-  const open=interpolate(local,[28,45,120],[0,1,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <div style={{position:'absolute',left:1170,top:250,width:360,height:620}}>
+  const open=interpolate(local,[openAt,openAt+16],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <div style={{position:'absolute',left:x,top:y,width:360,height:620,transform:`scale(${scale})`,transformOrigin:'top left'}}>
     <Asset path={a.base} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
     <Asset path={a.door} style={{position:'absolute',inset:0,width:'100%',height:'100%',transform:`perspective(900px) rotateY(${-58*open}deg)`,transformOrigin:'13% 50%'}}/>
   </div>;
 };
 
-const EnvironmentCharacter=({scene,local})=>{
-  const env=registry.environments[scene.environment];
-  const zoom=interpolate(local,[0,scene.frames-1],[1,1.035],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <div style={{position:'absolute',inset:0,transform:`scale(${zoom})`,transformOrigin:'center'}}>
+const Kitchen=({local,children,pan=0,zoom=1})=>{
+  const env=registry.environments.kitchen_01;
+  return <div style={{position:'absolute',inset:0,transform:`translateX(${pan}px) scale(${zoom})`,transformOrigin:'center'}}>
     <Asset path={env.file} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}/>
+    {children}
+  </div>;
+};
+
+const RewardOverlay=({local,x=790,y=225,scale=.68})=>{
+  const a=registry.infographics.reward_loop_01;
+  const reveal=interpolate(local,[8,28],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const float=Math.sin(local/8)*5;
+  return <div style={{position:'absolute',left:x,top:y+float,width:900,height:350,opacity:reveal,transform:`scale(${scale})`,transformOrigin:'top left',filter:'drop-shadow(0 12px 24px rgba(30,45,70,.18))'}}>
+    <Asset path={a.file} style={{width:'100%',height:'100%'}}/>
+  </div>;
+};
+
+const EnvironmentCharacter=({scene,local})=>{
+  const zoom=interpolate(local,[0,scene.frames-1],[1,1.06],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const pan=interpolate(local,[20,80],[0,-55],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const empty=interpolate(local,[88,108],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <Kitchen local={local} pan={pan} zoom={zoom}>
     <Character id={scene.character} local={local}/>
-    {(scene.props||[]).includes('fridge_01')&&<Fridge id="fridge_01" local={local}/>}    
-    <div style={{position:'absolute',left:1170,top:730,padding:'14px 24px',borderRadius:999,background:C.red,color:'#fff',fontSize:28,fontWeight:900,opacity:interpolate(local,[80,98],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'})}}>STILL NOTHING NEW</div>
-  </div>;
+    <Fridge id="fridge_01" local={local} openAt={42}/>
+    <FloatingLabel text="still empty" x={1260} y={220} opacity={empty} accent={C.red} scale={.9+.1*empty}/>
+  </Kitchen>;
 };
 
-const Infographic=({scene,local,summary=false})=>{
-  const a=registry.infographics[scene.infographic];
-  const reveal=interpolate(local,[6,26],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  const zoom=interpolate(local,[0,scene.frames-1],[1,summary?1.08:1.04],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,#F8FAFD 0%,#EEF3F8 100%)'}}>
-    <div style={{position:'absolute',left:180,top:250,width:1200,height:480,opacity:reveal,transform:`scale(${zoom})`,transformOrigin:'center'}}><Asset path={a.file} style={{width:'100%',height:'100%'}}/></div>
-    <Card x={1420} y={300} w={390} h={330} opacity={reveal}><div style={{padding:30}}><div style={{fontSize:18,fontWeight:900,color:C.muted}}>{summary?'TAKEAWAY':'WHAT IS HAPPENING'}</div><div style={{marginTop:24,fontSize:31,fontWeight:900,lineHeight:1.28}}>{summary?'The fridge stayed the same. The reward loop brought you back.':'Your brain checks whether a small reward might appear.'}</div></div></Card>
-  </div>;
+const EnvironmentOverlay=({scene,local})=>{
+  const pan=interpolate(local,[0,scene.frames-1],[-30,-95],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const zoom=interpolate(local,[0,scene.frames-1],[1.04,1.09],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const brain=interpolate(local,[45,65],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <Kitchen local={local} pan={pan} zoom={zoom}>
+    <Character id={scene.character} local={local} x={420}/>
+    <Fridge id="fridge_01" local={local} x={1260} openAt={0}/>
+    <RewardOverlay local={local}/>
+    <FloatingLabel text="tiny reward?" x={920} y={610} opacity={brain} accent={C.green} scale={.9+.1*brain}/>
+  </Kitchen>;
 };
 
-const Comparison=({scene,local})=>{
-  const left=interpolate(local,[8,28],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  const right=interpolate(local,[35,58],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  const pulse=1+0.035*Math.max(0,Math.sin((local-75)/8));
-  return <div style={{position:'absolute',inset:0,background:C.bg}}>
-    <Card x={220} y={300} w={620} h={380} opacity={left} scale={.94+.06*left}><div style={{padding:42}}><div style={{fontSize:25,fontWeight:900,color:C.blue}}>GRADUAL SIGNAL</div><div style={{fontSize:64,fontWeight:950,marginTop:18}}>{scene.left_label}</div><div style={{fontSize:29,lineHeight:1.35,marginTop:28,color:C.muted,fontWeight:750}}>Builds over time and usually survives a change of scenery.</div></div></Card>
-    <Card x={1080} y={300} w={620} h={380} opacity={right} scale={(.94+.06*right)*pulse}><div style={{padding:42}}><div style={{fontSize:25,fontWeight:900,color:C.red}}>INSTANT CUE</div><div style={{fontSize:64,fontWeight:950,marginTop:18}}>{scene.right_label}</div><div style={{fontSize:29,lineHeight:1.35,marginTop:28,color:C.muted,fontWeight:750}}>Can appear from boredom, routine, or simply seeing the kitchen.</div></div></Card>
+const BehaviorComparison=({scene,local})=>{
+  const reveal=interpolate(local,[4,22],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const hunger=interpolate(local,[30,105],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const trigger=interpolate(local,[68,82],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <div style={{position:'absolute',inset:0,background:'#F4F7FB'}}>
+    <div style={{position:'absolute',left:0,top:0,width:'50%',height:'100%',overflow:'hidden',opacity:reveal}}>
+      <Kitchen local={local} pan={80} zoom={1.12}>
+        <Character id={scene.character} local={local} x={340} y={330} scale={.92}/>
+      </Kitchen>
+      <div style={{position:'absolute',left:110,top:180,width:520,height:24,borderRadius:999,background:'rgba(79,124,255,.15)'}}><div style={{width:`${18+72*hunger}%`,height:'100%',borderRadius:999,background:C.blue}}/></div>
+      <FloatingLabel text="hunger builds" x={150} y={225} opacity={reveal} accent={C.blue}/>
+    </div>
+    <div style={{position:'absolute',right:0,top:0,width:'50%',height:'100%',overflow:'hidden',opacity:reveal}}>
+      <Kitchen local={local} pan={-920} zoom={1.12}>
+        <Fridge id="fridge_01" local={local} x={1210} y={260} scale={.92} openAt={84}/>
+        <Character id={scene.character} local={local} x={1540} y={330} scale={.92} mirror/>
+      </Kitchen>
+      <FloatingLabel text="instant cue!" x={220} y={220} opacity={trigger} accent={C.red} scale={.88+.12*trigger}/>
+      <div style={{position:'absolute',left:400,top:320,fontSize:92,fontWeight:950,color:C.red,opacity:trigger,transform:`scale(${.7+.3*trigger})`}}>!</div>
+    </div>
+    <div style={{position:'absolute',left:'50%',top:90,bottom:90,width:4,background:'rgba(31,41,55,.14)'}}/>
   </div>;
 };
 
 const CharacterCloseup=({scene,local})=>{
-  const bubble=interpolate(local,[55,78],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  const zoom=interpolate(local,[0,scene.frames-1],[1,1.055],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#EEF3FF,#F9FBFD)',transform:`scale(${zoom})`,transformOrigin:'center'}}>
-    <Character id={scene.character} local={local} closeup/>
-    <Card x={1120} y={300} w={520} h={250} opacity={bubble} scale={.9+.1*bubble}><div style={{padding:38,fontSize:48,fontWeight:950,lineHeight:1.15}}>“Maybe this time?”</div></Card>
-  </div>;
+  const zoom=interpolate(local,[0,scene.frames-1],[1.08,1.18],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const thought=interpolate(local,[42,62],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const eye=interpolate(local,[72,96],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <Kitchen local={local} pan={-160} zoom={zoom}>
+    <Character id={scene.character} local={local} x={640} y={220} scale={1.34}/>
+    <Fridge id="fridge_01" local={local} x={1320} y={280} scale={.78} openAt={120}/>
+    <div style={{position:'absolute',left:1060,top:170,opacity:thought,transform:`translateY(${(1-thought)*20}px) scale(${.85+.15*thought})`}}>
+      <div style={{padding:'22px 30px',borderRadius:38,background:'rgba(255,255,255,.96)',boxShadow:`0 14px 34px ${C.shadow}`,fontSize:40,fontWeight:950}}>maybe this time?</div>
+      <div style={{marginLeft:30,width:24,height:24,borderRadius:'50%',background:C.white,boxShadow:`0 6px 15px ${C.shadow}`}}/>
+    </div>
+    <div style={{position:'absolute',left:915,top:330,width:130,height:8,borderRadius:999,background:C.yellow,opacity:eye}}/>
+  </Kitchen>;
+};
+
+const EnvironmentSummary=({scene,local})=>{
+  const loop=interpolate(local,[44,66],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const punch=interpolate(local,[92,118],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const zoom=interpolate(local,[0,scene.frames-1],[1.02,1.1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <Kitchen local={local} pan={-40} zoom={zoom}>
+    <Character id={scene.character} local={local} x={470}/>
+    <Fridge id="fridge_01" local={local} openAt={10}/>
+    <div style={{opacity:loop}}><RewardOverlay local={local} x={710} y={190} scale={.58}/></div>
+    <FloatingLabel text="fridge: unchanged" x={1210} y={710} opacity={punch} accent={C.red}/>
+    <FloatingLabel text="brain: check again" x={760} y={650} opacity={punch} accent={C.blue}/>
+  </Kitchen>;
 };
 
 const SceneView=({scene,local})=>{
   if(scene.type==='environment_character') return <EnvironmentCharacter scene={scene} local={local}/>;
-  if(scene.type==='infographic') return <Infographic scene={scene} local={local}/>;
-  if(scene.type==='comparison') return <Comparison scene={scene} local={local}/>;
+  if(scene.type==='environment_overlay') return <EnvironmentOverlay scene={scene} local={local}/>;
+  if(scene.type==='behavior_comparison') return <BehaviorComparison scene={scene} local={local}/>;
   if(scene.type==='character_closeup') return <CharacterCloseup scene={scene} local={local}/>;
-  if(scene.type==='summary') return <Infographic scene={scene} local={local} summary/>;
+  if(scene.type==='environment_summary') return <EnvironmentSummary scene={scene} local={local}/>;
   return null;
 };
 
@@ -98,11 +146,10 @@ const Video=()=>{
   const frame=useCurrentFrame();
   const scene=timeline.find(s=>frame>=s.start&&frame<s.end)||timeline[timeline.length-1];
   const local=frame-scene.start;
-  const fade=interpolate(local,[0,6,scene.frames-8,scene.frames-1],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  return <AbsoluteFill style={{fontFamily:'Arial, Helvetica, sans-serif',color:C.ink,overflow:'hidden'}}>
+  const fade=interpolate(local,[0,5,scene.frames-6,scene.frames-1],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <AbsoluteFill style={{fontFamily:'Arial, Helvetica, sans-serif',color:C.ink,overflow:'hidden',background:'#F4F7FB'}}>
     <Audio src={staticFile('narration.wav')} volume={0.96}/>
     <div style={{opacity:fade}}><SceneView scene={scene} local={local}/><Caption scene={scene} local={local}/></div>
-    <div style={{position:'absolute',left:88,right:88,bottom:22,height:9,borderRadius:999,background:'rgba(31,41,55,.08)'}}><div style={{height:'100%',width:`${Math.min(100,frame/totalFrames*100)}%`,borderRadius:999,background:`linear-gradient(90deg,${C.red},${C.blue})`}}/></div>
   </AbsoluteFill>;
 };
 
