@@ -1,18 +1,18 @@
-name: Wacky Insights longform Phase 6
+name: Wacky Insights longform Phase 7
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: youtube-longform-phase6
+  group: youtube-longform-phase7
   cancel-in-progress: true
 
 jobs:
-  narration-first-render-test:
+  ai-planner-asset-intelligence-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
             echo "Longform code must not depend on the Shorts bot."
             exit 1
           fi
-          echo "Phase 6 is isolated from youtube-shorts-bot."
+          echo "Phase 7 is isolated from youtube-shorts-bot."
 
       - uses: actions/setup-node@v4
         with:
@@ -46,18 +46,57 @@ jobs:
         working-directory: youtube-longform-bot
         run: npm install --no-audit --no-fund
 
-      - name: Validate Phase 6 source storyboard and assets
+      - name: Validate ChatGPT Phase 7 source plan
         working-directory: youtube-longform-bot
-        run: node scripts/validate-phase6.mjs content/phase6-plan.json assets/registry.json
+        run: node scripts/validate-phase7.mjs content/phase7-plan.json assets/registry.json assets/design-system.json
 
-      - name: Restore measured Phase 6 narration
+      - name: Resolve library assets and generate missing professional SVGs
+        id: assets
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          mkdir -p output
+          node scripts/resolve-phase7-assets.mjs \
+            content/phase7-plan.json \
+            assets/registry.json \
+            content/phase7-resolved-plan.json \
+            assets/registry.runtime.json
+          CREATED="$(node -e "const x=require('./output/phase7-asset-resolution.json');process.stdout.write(String(x.created.length))")"
+          echo "created_count=$CREATED" >> "$GITHUB_OUTPUT"
+          echo "Phase 7 created $CREATED new asset(s)."
+
+      - name: Validate generated asset quality contract
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const design = JSON.parse(fs.readFileSync('assets/design-system.json','utf8'));
+          const registry = JSON.parse(fs.readFileSync('assets/registry.runtime.json','utf8'));
+          const resolution = JSON.parse(fs.readFileSync('output/phase7-asset-resolution.json','utf8'));
+          for (const item of resolution.created) {
+            const bucket = item.category === 'environment' ? registry.environments : item.category === 'prop' ? registry.props : item.category === 'character' ? registry.characters : registry.infographics;
+            const asset = bucket[item.id];
+            if (!asset) throw new Error(`Generated asset not registered: ${item.id}`);
+            if (asset.style_id !== design.id || asset.quality !== 'production' || asset.reusable !== true) throw new Error(`Quality metadata failed: ${item.id}`);
+            if (!asset.description || !Array.isArray(asset.tags) || asset.tags.length < 3) throw new Error(`Asset metadata incomplete: ${item.id}`);
+            if (!asset.file?.endsWith('.svg')) throw new Error(`Generated asset must be SVG: ${item.id}`);
+            const file = `public/${asset.file}`;
+            const svg = fs.readFileSync(file,'utf8');
+            if (!svg.includes('<svg') || svg.length < 400) throw new Error(`Generated SVG looks invalid: ${item.id}`);
+            if (/powerpoint|clipart/i.test(svg)) throw new Error(`Forbidden style marker in ${item.id}`);
+          }
+          console.log(`PASS: ${resolution.created.length} generated assets satisfy Phase 7 quality contract.`);
+          NODE
+
+      - name: Restore measured Phase 7 narration
         id: narration-cache
         uses: actions/cache@v4
         with:
           path: |
             youtube-longform-bot/public/narration.wav
-            youtube-longform-bot/output/phase6-timing.json
-          key: ${{ runner.os }}-phase6-narration-${{ hashFiles('youtube-longform-bot/content/phase6-plan.json', 'youtube-longform-bot/scripts/generate-phase6-narration.py', 'youtube-longform-bot/requirements-tts.txt') }}
+            youtube-longform-bot/output/phase7-timing.json
+          key: ${{ runner.os }}-phase7-narration-${{ hashFiles('youtube-longform-bot/content/phase7-plan.json', 'youtube-longform-bot/scripts/generate-phase6-narration.py', 'youtube-longform-bot/requirements-tts.txt') }}
 
       - uses: actions/setup-python@v5
         if: steps.narration-cache.outputs.cache-hit != 'true'
@@ -82,72 +121,88 @@ jobs:
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
           python -m pip install -r youtube-longform-bot/requirements-tts.txt
 
-      - name: Generate and measure narration first
+      - name: Generate and measure Phase 7 narration first
         if: steps.narration-cache.outputs.cache-hit != 'true'
         working-directory: youtube-longform-bot
         shell: bash
         run: |
-          mkdir -p public output/phase6-segments
+          mkdir -p public output/phase7-segments
           python scripts/generate-phase6-narration.py \
-            --plan content/phase6-plan.json \
+            --plan content/phase7-resolved-plan.json \
             --output public/narration.wav \
-            --manifest output/phase6-timing.json \
-            --segments-dir output/phase6-segments \
+            --manifest output/phase7-timing.json \
+            --segments-dir output/phase7-segments \
             --voice af_heart \
             --speed 1.0 \
             --gap 0.10
 
       - name: Build runtime storyboard from measured audio
         working-directory: youtube-longform-bot
-        run: node scripts/build-phase6-runtime-plan.mjs content/phase6-plan.json output/phase6-timing.json content/runtime-plan.json
+        run: node scripts/build-phase6-runtime-plan.mjs content/phase7-resolved-plan.json output/phase7-timing.json content/runtime-plan.json
 
-      - name: Verify narration-first timing
+      - name: Verify Phase 7 narration-first plan
         working-directory: youtube-longform-bot
-        shell: bash
         run: |
-          test -s public/narration.wav
-          test -s output/phase6-timing.json
           node - <<'NODE'
           const fs = require('fs');
-          const plan = JSON.parse(fs.readFileSync('content/runtime-plan.json', 'utf8'));
-          const timing = JSON.parse(fs.readFileSync('output/phase6-timing.json', 'utf8'));
-          if (plan.timing_mode !== 'measured_kokoro_scene_audio') throw new Error('Runtime plan is not narration-timed');
-          if (Math.abs(plan.duration_seconds - timing.total_duration) > 0.001) throw new Error('Runtime duration does not match narration');
-          if (plan.scenes.length !== timing.scenes.length) throw new Error('Scene timing count mismatch');
-          for (const scene of plan.scenes) {
-            if (!(scene.duration > 0) || !(scene.speech_duration > 0)) throw new Error(`Invalid runtime timing for ${scene.id}`);
-            for (const beat of scene.beats || []) {
-              if (beat.at < 0 || beat.at >= scene.duration) throw new Error(`Beat outside measured scene timing in ${scene.id}`);
+          const p = JSON.parse(fs.readFileSync('content/runtime-plan.json','utf8'));
+          const r = JSON.parse(fs.readFileSync('assets/registry.runtime.json','utf8'));
+          if (p.timing_mode !== 'measured_kokoro_scene_audio') throw new Error('Narration is not the master timeline.');
+          if (p.scenes.length !== 5) throw new Error('Unexpected scene count.');
+          for (const s of p.scenes) {
+            if (!r.environments[s.environment]) throw new Error(`Missing runtime environment ${s.environment}`);
+            if (!r.characters[s.character]) throw new Error(`Missing runtime character ${s.character}`);
+            for (const v of s.visuals || []) {
+              if (!r.characters[v.ref] && !r.props[v.ref] && !r.infographics[v.ref]) throw new Error(`Missing runtime visual ${v.ref}`);
             }
+            for (const b of s.beats || []) if (!(b.at >= 0 && b.at < s.duration)) throw new Error(`Beat timing outside scene ${s.id}`);
           }
-          console.log(`PASS: narration-first runtime ${plan.duration_seconds.toFixed(2)}s across ${plan.scenes.length} scenes`);
+          console.log(`PASS: Phase 7 runtime is ${p.duration_seconds.toFixed(2)}s and fully asset-resolved.`);
           NODE
 
-      - name: Render narration-timed 720p Phase 6
+      - name: Render narration-timed 720p Phase 7
         working-directory: youtube-longform-bot
         run: npm run render
 
-      - name: Verify Phase 6 output exists
+      - name: Verify Phase 7 MP4
         working-directory: youtube-longform-bot
         shell: bash
         run: |
           test -s output/demo.mp4
           BYTES="$(stat -c%s output/demo.mp4)"
           test "$BYTES" -gt 100000
-          echo "PASS: Phase 6 MP4 created (${BYTES} bytes)."
+          echo "PASS: Phase 7 MP4 created (${BYTES} bytes)."
 
-      - name: Upload Phase 6 artifact
+      - name: Persist newly generated assets only after successful render
+        if: steps.assets.outputs.created_count != '0'
+        working-directory: youtube-longform-bot
+        shell: bash
+        run: |
+          cp assets/registry.runtime.json assets/registry.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/registry.json public/assets/generated/
+          if git diff --cached --quiet; then
+            echo "No new library assets to commit."
+          else
+            git commit -m "chore(longform): persist Phase 7 generated assets"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Upload Phase 7 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-longform-phase6-${{ github.run_id }}
+          name: wacky-longform-phase7-${{ github.run_id }}
           path: |
             youtube-longform-bot/output/demo.mp4
-            youtube-longform-bot/content/phase6-plan.json
+            youtube-longform-bot/content/phase7-plan.json
+            youtube-longform-bot/content/phase7-resolved-plan.json
             youtube-longform-bot/content/runtime-plan.json
-            youtube-longform-bot/output/phase6-timing.json
-            youtube-longform-bot/assets/registry.json
+            youtube-longform-bot/output/phase7-timing.json
+            youtube-longform-bot/output/phase7-asset-resolution.json
+            youtube-longform-bot/assets/design-system.json
           retention-days: 2
 
       - name: Confirm no YouTube publication
         if: always()
-        run: echo 'PHASE 6 COMPLETE - narration-first render test only; no YouTube upload or scheduling code executed.'
+        run: echo 'PHASE 7 COMPLETE - AI planner + asset intelligence render test only; no YouTube upload or scheduling code executed.'
