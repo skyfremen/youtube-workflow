@@ -32,28 +32,20 @@ jobs:
           fetch-depth: 0
 
       - name: Select next approved Short
-        run: python youtube-shorts-bot/queue_manager.py select
-
-      - name: Preflight media URLs
-        run: python youtube-shorts-bot/media_preflight.py
-
-      - name: Validate content and duplicate protection
-        run: python youtube-shorts-bot/validate_content.py
-
-      - name: Render Short
-        run: python youtube-shorts-bot/render.py
-
-      - name: Verify rendered video and audio
-        run: python youtube-shorts-bot/verify_render.py
-
-      - name: Upload video artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: youtube-short-${{ github.run_id }}
-          path: youtube-shorts-bot/output/short.mp4
-          retention-days: 3
+        id: select
+        shell: bash
+        run: |
+          rm -f youtube-shorts-bot/output/queue_selection.json
+          python youtube-shorts-bot/queue_manager.py select
+          if [ -f youtube-shorts-bot/output/queue_selection.json ]; then
+            echo "has_short=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_short=false" >> "$GITHUB_OUTPUT"
+            echo "No Short selected; publisher exits successfully without rendering or uploading."
+          fi
 
       - name: Validate YouTube credentials
+        if: steps.select.outputs.has_short == 'true'
         shell: bash
         run: |
           for name in YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN; do
@@ -63,16 +55,44 @@ jobs:
             fi
           done
 
+      - name: Preflight media URLs
+        if: steps.select.outputs.has_short == 'true'
+        run: python youtube-shorts-bot/media_preflight.py
+
+      - name: Validate content and duplicate protection
+        if: steps.select.outputs.has_short == 'true'
+        run: python youtube-shorts-bot/validate_content.py
+
+      - name: Render Short
+        if: steps.select.outputs.has_short == 'true'
+        run: python youtube-shorts-bot/render.py
+
+      - name: Verify rendered video and audio
+        if: steps.select.outputs.has_short == 'true'
+        run: python youtube-shorts-bot/verify_render.py
+
+      - name: Upload video artifact
+        if: steps.select.outputs.has_short == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-short-${{ github.run_id }}
+          path: youtube-shorts-bot/output/short.mp4
+          retention-days: 3
+
       - name: Upload to YouTube and capture video ID
+        if: steps.select.outputs.has_short == 'true'
         run: python youtube-shorts-bot/publish.py
 
       - name: Archive successful upload
+        if: steps.select.outputs.has_short == 'true'
         run: python youtube-shorts-bot/finalize.py
 
       - name: Mark queue item published
+        if: steps.select.outputs.has_short == 'true'
         run: python youtube-shorts-bot/queue_manager.py mark
 
       - name: Upload publish metadata artifact
+        if: steps.select.outputs.has_short == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: youtube-publish-metadata-${{ github.run_id }}
@@ -80,6 +100,7 @@ jobs:
           retention-days: 3
 
       - name: Commit queue state and archive
+        if: steps.select.outputs.has_short == 'true'
         shell: bash
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
@@ -91,5 +112,13 @@ jobs:
             exit 0
           fi
           git commit -m "[skip upload] publish next daily Short"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying after rebase..."
+            sleep $((attempt * 2))
+          done
+          echo "Failed to persist queue/archive state after 5 attempts."
+          exit 1
