@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "characters": {
+    "male_01": {
+      "body": "assets/asset-mvp/character-body.svg",
+      "head": "assets/asset-mvp/character-head.svg",
+      "poses": ["idle", "curious", "surprised", "thinking"]
+    }
+  },
+  "environments": {
+    "kitchen_01": {
+      "file": "assets/asset-mvp/kitchen-bg.svg"
+    }
+  },
+  "props": {
+    "fridge_01": {
+      "base": "assets/asset-mvp/fridge-base.svg",
+      "door": "assets/asset-mvp/fridge-door.svg",
+      "actions": ["closed", "open"]
+    }
+  },
+  "infographics": {
+    "reward_loop_01": {
+      "file": "assets/asset-mvp/reward-loop.svg"
+    }
+  },
+  "motions": [
+    "fade_in",
+    "slide_in_left",
+    "slow_zoom",
+    "punch_zoom",
+    "pan_left",
+    "pop",
+    "float",
+    "open_prop",
+    "highlight"
+  ],
+  "scene_types": [
+    "environment_character",
+    "infographic",
+    "comparison",
+    "character_closeup",
+    "summary"
+  ]
+}
