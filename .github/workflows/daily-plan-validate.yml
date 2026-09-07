@@ -74,6 +74,7 @@ jobs:
         run: |
           python youtube-shorts-bot/queue_manager.py validate --date "${{ steps.plan.outputs.plan_date }}"
           python youtube-shorts-bot/validate_backup_metadata.py --date "${{ steps.plan.outputs.plan_date }}"
+          python youtube-shorts-bot/validate_series_plan.py --date "${{ steps.plan.outputs.plan_date }}"
 
       - name: Validate reusable media cache
         run: python youtube-shorts-bot/validate_media_library.py
