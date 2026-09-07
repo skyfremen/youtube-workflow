@@ -7,7 +7,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-from schedule_utils import scheduled_publish_at_from_selection
+from schedule_utils import ensure_publish_at_is_safe, scheduled_publish_at_from_selection
 
 BASE = Path(__file__).parent
 QUEUE_SELECTION = BASE / 'output' / 'queue_selection.json'
@@ -57,11 +57,7 @@ description = '\n\n'.join(p for p in parts if p)[:5000]
 title = data['title'][:100]
 
 schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1', 'true', 'yes'}
-publish_at = None
-if schedule_mode:
-    # Re-check immediately before the API call. This deliberately fails closed if
-    # render/upload preparation ran so long that the slot is now too close or past.
-    publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION, require_safe=True)
+publish_at = scheduled_publish_at_from_selection(QUEUE_SELECTION) if schedule_mode else None
 
 
 def find_existing_upload():
@@ -117,10 +113,16 @@ if existing_video:
         existing_status = existing_video.get('status', {})
         print('Expected scheduled publish at:', publish_at)
         print('Existing YouTube publishAt:', existing_status.get('publishAt', 'not returned'))
+        print('Existing YouTube privacy:', existing_status.get('privacyStatus', 'not returned'))
     print('Background source:', data.get('background_source_url', 'not provided'))
     print('Music:', data.get('music_title', 'selected track'), '-', data.get('music_artist', 'unknown artist'))
     print('Music source:', data.get('music_source_url', 'not provided'))
     raise SystemExit(0)
+
+if publish_at:
+    # Only NEW uploads are subject to the lead-time gate. Duplicate recovery is safe
+    # even after the release time because it does not create or publish a new video.
+    publish_at = ensure_publish_at_is_safe(publish_at)
 
 status = {
     'privacyStatus': 'private' if schedule_mode else os.getenv('YOUTUBE_PRIVACY', 'private'),
