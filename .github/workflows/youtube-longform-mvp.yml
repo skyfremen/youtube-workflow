@@ -2,6 +2,11 @@ name: Wacky Insights longform Phase 7
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - youtube-longform-bot/content/phase7-plan.json
 
 concurrency:
   group: youtube-longform-phase7
@@ -9,6 +14,7 @@ concurrency:
 
 jobs:
   ai-planner-asset-intelligence-test:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'approve(longform):')
     runs-on: ubuntu-latest
     timeout-minutes: 14
     permissions:
