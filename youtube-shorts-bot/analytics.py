@@ -3,6 +3,7 @@ import os
 from datetime import date, timedelta
 from pathlib import Path
 
+from google.auth.exceptions import RefreshError
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -55,6 +56,9 @@ try:
         headers = [h['name'] for h in result.get('columnHeaders', [])]
         for row in result.get('rows', []) or []:
             rows.append(dict(zip(headers, row)))
+except RefreshError:
+    print('ANALYTICS_AUTHORIZATION_REQUIRED: refresh token needs yt-analytics.readonly scope.')
+    raise SystemExit(0)
 except HttpError as exc:
     status = getattr(exc.resp, 'status', None)
     if status in (401, 403):
