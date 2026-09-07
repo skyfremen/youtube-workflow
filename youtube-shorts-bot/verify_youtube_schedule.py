@@ -53,6 +53,7 @@ for attempt in range(1, 6):
         actual_publish_at = str(status.get('publishAt', '')).strip()
         failure_reason = str(status.get('failureReason', '')).strip()
         rejection_reason = str(status.get('rejectionReason', '')).strip()
+        now = datetime.now(timezone.utc)
 
         if upload_status in {'failed', 'rejected', 'deleted'} or failure_reason or rejection_reason:
             raise SystemExit(
@@ -62,8 +63,17 @@ for attempt in range(1, 6):
                 f'rejectionReason={rejection_reason or "none"}.'
             )
 
-        if privacy != 'private':
-            last_error = f'privacyStatus={privacy or "missing"}, expected private'
+        verified = False
+        recovered_after_release = False
+
+        if expected_dt <= now and privacy == 'public':
+            # A retry may be repairing GitHub state after YouTube already released a
+            # previously scheduled upload. Reusing that existing public video is safe
+            # because no new upload occurs.
+            verified = True
+            recovered_after_release = True
+        elif privacy != 'private':
+            last_error = f'privacyStatus={privacy or "missing"}, expected private before release'
         elif not actual_publish_at:
             last_error = 'publishAt was not returned by YouTube'
         else:
@@ -79,20 +89,28 @@ for attempt in range(1, 6):
                         f'YouTube returned {actual_publish_at}'
                     )
                 else:
-                    upload['youtube_verified_at'] = datetime.now(timezone.utc).isoformat()
-                    upload['youtube_upload_status'] = upload_status or 'unknown'
-                    upload['youtube_privacy_at_upload'] = privacy
-                    upload['scheduled_publish_at'] = expected_publish_at
-                    UPLOAD_RESULT.write_text(
-                        json.dumps(upload, ensure_ascii=False, indent=2) + '\n',
-                        encoding='utf-8',
-                    )
-                    print(
-                        'YouTube schedule verified:', video_id,
-                        f'privacy={privacy}, uploadStatus={upload_status or "unknown"},',
-                        f'publishAt={actual_publish_at}'
-                    )
-                    raise SystemExit(0)
+                    verified = True
+
+        if verified:
+            upload['youtube_verified_at'] = now.isoformat()
+            upload['youtube_upload_status'] = upload_status or 'unknown'
+            upload['youtube_privacy_at_verification'] = privacy
+            upload['scheduled_publish_at'] = expected_publish_at
+            if recovered_after_release:
+                upload['recovered_after_scheduled_release'] = True
+            else:
+                upload['youtube_privacy_at_upload'] = 'private'
+            UPLOAD_RESULT.write_text(
+                json.dumps(upload, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            print(
+                'YouTube schedule verified:', video_id,
+                f'privacy={privacy}, uploadStatus={upload_status or "unknown"},',
+                f'expectedPublishAt={expected_publish_at},',
+                f'recoveredAfterRelease={recovered_after_release}'
+            )
+            raise SystemExit(0)
 
     if attempt < 5:
         print(f'YouTube schedule verification attempt {attempt} incomplete: {last_error}; retrying...')
