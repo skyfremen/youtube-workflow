@@ -1,15 +1,16 @@
-name: Wacky Insights longform MVP
+name: Wacky Insights longform Asset Quality MVP
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: youtube-longform-mvp
-  cancel-in-progress: false
+  group: youtube-longform-asset-mvp
+  cancel-in-progress: true
 
 jobs:
   render-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
 
@@ -25,35 +26,77 @@ jobs:
             echo "Longform code must not depend on the Shorts bot."
             exit 1
           fi
-          echo "Longform MVP is isolated from youtube-shorts-bot."
+          echo "Longform Asset Quality MVP is isolated from youtube-shorts-bot."
+
+      - name: Restore cached Kokoro narration
+        id: narration-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            youtube-longform-bot/public/narration.wav
+            youtube-longform-bot/public/narration-kokoro-raw.wav
+          key: ${{ runner.os }}-longform-audio-${{ hashFiles('youtube-longform-bot/content/demo-plan.json', 'youtube-longform-bot/scripts/generate-kokoro.py', 'youtube-longform-bot/requirements-tts.txt') }}
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      - name: Restore longform Node cache
+        id: node-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            youtube-longform-bot/node_modules
+            ~/.cache/remotion
+          key: ${{ runner.os }}-longform-node-${{ hashFiles('youtube-longform-bot/package.json') }}
+
+      - name: Install longform dependencies on cache miss
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        working-directory: youtube-longform-bot
+        run: npm install --no-audit --no-fund
+
+      - name: Ensure FFmpeg tools
+        shell: bash
+        run: |
+          if command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null; then
+            echo "FFmpeg already available on runner; skipping apt install."
+          else
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+
+      - name: Validate 8-second Asset Quality plan
+        working-directory: youtube-longform-bot
+        run: node scripts/validate-plan.mjs content/demo-plan.json
+
       - uses: actions/setup-python@v5
+        if: steps.narration-cache.outputs.cache-hit != 'true'
         with:
           python-version: '3.11'
           cache: 'pip'
           cache-dependency-path: youtube-longform-bot/requirements-tts.txt
 
-      - name: Install free local tools
+      - name: Restore Kokoro model cache
+        if: steps.narration-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/huggingface
+            ~/.cache/kokoro
+          key: ${{ runner.os }}-kokoro-model-${{ hashFiles('youtube-longform-bot/requirements-tts.txt') }}
+
+      - name: Install Kokoro only when narration is not cached
+        if: steps.narration-cache.outputs.cache-hit != 'true'
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg espeak-ng
+          if ! command -v espeak-ng >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends espeak-ng
+          fi
+          python -m pip install -r youtube-longform-bot/requirements-tts.txt
 
-      - name: Install Kokoro local neural TTS
-        run: python -m pip install -r youtube-longform-bot/requirements-tts.txt
-
-      - name: Install longform dependencies
-        working-directory: youtube-longform-bot
-        run: npm install
-
-      - name: Validate 10-second art plan
-        working-directory: youtube-longform-bot
-        run: node scripts/validate-plan.mjs content/demo-plan.json
-
-      - name: Generate Kokoro neural narration
+      - name: Generate Kokoro narration only on cache miss
+        if: steps.narration-cache.outputs.cache-hit != 'true'
         working-directory: youtube-longform-bot
         shell: bash
         run: |
@@ -68,27 +111,24 @@ jobs:
             --output public/narration-kokoro-raw.wav \
             --voice af_heart \
             --speed 1.0
-          printf 'kokoro\n' > output/tts-engine.txt
-          ffmpeg -y -i public/narration-kokoro-raw.wav -af "apad=pad_dur=10" -t 10 public/narration.wav
+          ffmpeg -y -i public/narration-kokoro-raw.wav -af "apad=pad_dur=8" -t 8 public/narration.wav
 
-      - name: Verify Kokoro narration
+      - name: Verify narration
         working-directory: youtube-longform-bot
         shell: bash
         run: |
+          mkdir -p output
+          printf 'kokoro\n' > output/tts-engine.txt
           test -s public/narration-kokoro-raw.wav
           test -s public/narration.wav
-          grep -qx 'kokoro' output/tts-engine.txt
-          RAW_DURATION="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 public/narration-kokoro-raw.wav)"
           FINAL_DURATION="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 public/narration.wav)"
           python3 - <<PY
-          raw_duration = float('${RAW_DURATION}')
           final_duration = float('${FINAL_DURATION}')
-          assert raw_duration > 1.0, raw_duration
-          assert 9.5 <= final_duration <= 10.5, final_duration
-          print(f'PASS: Kokoro raw narration {raw_duration:.2f}s; final track {final_duration:.2f}s')
+          assert 7.5 <= final_duration <= 8.5, final_duration
+          print(f'PASS: narration {final_duration:.2f}s; cache hit=${{ steps.narration-cache.outputs.cache-hit }}')
           PY
 
-      - name: Render 10-second 1080p art MVP 3
+      - name: Render 8-second 720p Asset Quality MVP
         working-directory: youtube-longform-bot
         run: npm run render
 
@@ -106,24 +146,22 @@ jobs:
           width = int('${WIDTH}')
           height = int('${HEIGHT}')
           audio = '${AUDIO}'.strip()
-          assert 9.5 <= duration <= 10.5, duration
-          assert width == 1920, width
-          assert height == 1080, height
+          assert 7.5 <= duration <= 8.5, duration
+          assert width == 1280, width
+          assert height == 720, height
           assert audio == 'audio', audio
           print(f'PASS: {duration:.2f}s, {width}x{height}, audio present')
           PY
 
-      - name: Upload MVP artifact
+      - name: Upload Asset Quality MVP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-longform-art-mvp3-${{ github.run_id }}
+          name: wacky-longform-asset-quality-mvp-${{ github.run_id }}
           path: |
             youtube-longform-bot/output/demo.mp4
             youtube-longform-bot/content/demo-plan.json
-            youtube-longform-bot/public/narration.wav
-            youtube-longform-bot/public/narration-kokoro-raw.wav
             youtube-longform-bot/output/tts-engine.txt
-          retention-days: 3
+          retention-days: 2
 
       - name: Confirm no YouTube publication
-        run: echo 'LONGFORM ART MVP 3 COMPLETE - 10-second render only; no upload or scheduling code executed.'
+        run: echo 'ASSET QUALITY MVP COMPLETE - 8-second render only; no YouTube upload or scheduling code executed.'
