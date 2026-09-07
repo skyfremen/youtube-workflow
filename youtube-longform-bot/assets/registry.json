@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "visual_policy": {
     "style": "animated_explainer",
     "forbid_powerpoint_layouts": true,
@@ -28,6 +28,10 @@
       "base": "assets/asset-mvp/fridge-base.svg",
       "door": "assets/asset-mvp/fridge-door.svg",
       "actions": ["closed", "open"]
+    },
+    "microwave_01": {
+      "file": "assets/asset-mvp/microwave.svg",
+      "actions": ["idle", "countdown", "beep"]
     }
   },
   "infographics": {
