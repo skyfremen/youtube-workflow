@@ -1,0 +1,25 @@
+name: Validate daily Shorts plan
+
+on:
+  push:
+    paths:
+      - 'youtube-shorts-bot/content/plans/*.json'
+      - 'youtube-shorts-bot/queue_manager.py'
+      - '.github/workflows/daily-plan-validate.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-plan:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Singapore-date plan
+        run: python youtube-shorts-bot/queue_manager.py validate
