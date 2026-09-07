@@ -55,3 +55,5 @@ else:
     print(f'Content is new. content_id={cid}.')
 
 (OUT / 'content_id.txt').write_text(cid + '\n', encoding='utf-8')
+
+# Dry-run trigger only: no functional change.
