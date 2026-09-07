@@ -29,3 +29,55 @@ def archive_records(archive_dir):
                     yield path, record
         elif isinstance(payload, dict):
             yield path, payload
+
+
+def recoverable_archive_match(archive_dir, selection_path, current_content):
+    """Return an exact archived upload only for a still-pending selected queue item.
+
+    This is intentionally narrow. It repairs the failure window where YouTube upload
+    and archive persistence succeeded but the queue item remained pending. It must
+    never turn a normal duplicate into a reusable upload.
+    """
+    selection_path = Path(selection_path)
+    if not selection_path.exists():
+        return None
+
+    try:
+        selection = json.loads(selection_path.read_text(encoding='utf-8'))
+        raw_plan_path = str(selection.get('plan_path', '')).strip()
+        item_index = int(selection.get('item_index'))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+
+    if not raw_plan_path:
+        return None
+    plan_path = Path(raw_plan_path)
+    if not plan_path.is_absolute():
+        plan_path = Path.cwd() / plan_path
+
+    try:
+        plan = json.loads(plan_path.read_text(encoding='utf-8'))
+        item = plan['items'][item_index]
+    except (OSError, json.JSONDecodeError, KeyError, IndexError, TypeError):
+        return None
+
+    if not isinstance(item, dict) or item.get('status', 'pending') != 'pending':
+        return None
+    selected_content = item.get('content')
+    if not isinstance(selected_content, dict):
+        return None
+
+    current_cid = content_id(current_content)
+    if content_id(selected_content) != current_cid:
+        return None
+
+    matches = []
+    for path, record in archive_records(archive_dir):
+        archived_cid = str(record.get('content_id', '')).strip() or content_id(record)
+        video_id = str(record.get('youtube_video_id', '')).strip()
+        if archived_cid == current_cid and video_id:
+            matches.append((path, record))
+
+    if len(matches) != 1:
+        return None
+    return matches[0]
