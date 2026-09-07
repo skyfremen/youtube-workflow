@@ -6,7 +6,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from workflow_common import archive_records
+from workflow_common import archive_records, content_id
 
 BASE = Path(__file__).parent
 CONTENT_DIR = BASE / 'content'
@@ -35,7 +35,7 @@ SCORE_WEIGHTS = {
     'clarity': 0.10,
     'visual_potential': 0.05,
 }
-VALID_STATUSES = {'pending', 'published'}
+VALID_STATUSES = {'pending', 'scheduled', 'published'}
 
 
 def sg_date():
@@ -115,7 +115,7 @@ def validate_plan(path):
 
         status = item.get('status')
         if status not in VALID_STATUSES:
-            errors.append(f'item {idx}: status must be pending or published')
+            errors.append(f'item {idx}: status must be pending, scheduled or published')
 
         content = item.get('content')
         if not isinstance(content, dict):
@@ -185,10 +185,16 @@ def validate_plan(path):
 
     recent = [record for _, record in archive_records(ARCHIVE_DIR)]
     for idx, item in enumerate(items, 1):
-        if not isinstance(item, dict) or item.get('status') == 'published':
+        if not isinstance(item, dict) or item.get('status') != 'pending':
             continue
         content = item.get('content', {}) if isinstance(item.get('content'), dict) else {}
+        current_cid = content_id(content)
         for old in recent[-100:]:
+            # Exact content already in the archive can happen when YouTube/finalize
+            # succeeded but queue state failed to persist. Treat that as a recoverable
+            # state-repair case rather than blocking the entire batch validation.
+            if str(old.get('content_id', '')).strip() == current_cid:
+                continue
             sim = similarity(content, old)
             if sim >= 0.82:
                 errors.append(f'item {idx}: too similar to archived concept ({sim:.2f})')
@@ -199,16 +205,22 @@ def validate_plan(path):
     print(f'Daily plan valid: {path.name}, 20 quality-gated Shorts.')
 
 
-def select_next(path, requested_slot=None):
-    validate_plan(path)
+def select_next(path, requested_slot=None, validate=True):
+    if validate:
+        validate_plan(path)
     plan = load_plan(path)
     selection_path = OUT / 'queue_selection.json'
     selection_path.unlink(missing_ok=True)
 
     if requested_slot is not None:
-        if isinstance(requested_slot, bool) or not 1 <= int(requested_slot) <= 20:
+        if isinstance(requested_slot, bool):
             raise SystemExit('Queue slot must be an integer from 1 to 20.')
-        requested_slot = int(requested_slot)
+        try:
+            requested_slot = int(requested_slot)
+        except (TypeError, ValueError):
+            raise SystemExit('Queue slot must be an integer from 1 to 20.')
+        if not 1 <= requested_slot <= 20:
+            raise SystemExit('Queue slot must be an integer from 1 to 20.')
 
     for idx, item in enumerate(plan['items']):
         slot = item.get('slot', idx + 1)
@@ -216,7 +228,7 @@ def select_next(path, requested_slot=None):
             continue
         if item.get('status', 'pending') != 'pending':
             if requested_slot is not None:
-                print(f'QUEUE_SLOT_ALREADY_COMPLETE: slot {requested_slot} is already published.')
+                print(f'QUEUE_SLOT_ALREADY_COMPLETE: slot {requested_slot} is already {item.get("status")}.' )
                 return False
             continue
 
@@ -253,7 +265,7 @@ def selected_plan_path():
     return path.resolve(), selection
 
 
-def mark_published(path=None):
+def mark_scheduled(path=None):
     selected_path, selection = selected_plan_path()
     if path is not None and Path(path).resolve() != selected_path:
         raise SystemExit(f'Queue state error: selected plan {selected_path} does not match requested plan {Path(path).resolve()}.')
@@ -273,14 +285,18 @@ def mark_published(path=None):
             f'Queue state error: selected slot {expected_slot} no longer matches plan item slot {item.get("slot")}.'
         )
 
-    item['status'] = 'published'
+    item['status'] = 'scheduled'
     item['youtube_video_id'] = upload['youtube_video_id']
     item['youtube_url'] = upload['youtube_url']
     item['uploaded_at'] = upload.get('uploaded_at', '')
     if upload.get('scheduled_publish_at'):
         item['scheduled_publish_at'] = upload['scheduled_publish_at']
+    if upload.get('youtube_verified_at'):
+        item['youtube_verified_at'] = upload['youtube_verified_at']
+    if upload.get('recovered_after_scheduled_release'):
+        item['recovered_after_scheduled_release'] = True
     selected_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'Marked queue slot {item.get("slot", idx + 1)} published in {selected_path.name}.')
+    print(f'Marked queue slot {item.get("slot", idx + 1)} scheduled in {selected_path.name}.')
 
 
 if __name__ == '__main__':
@@ -288,26 +304,27 @@ if __name__ == '__main__':
     parser.add_argument('command', choices=('validate', 'select', 'mark'))
     parser.add_argument('--date')
     parser.add_argument('--slot', type=int)
+    parser.add_argument('--skip-validation', action='store_true')
     args = parser.parse_args()
 
     if args.command == 'mark':
-        if args.slot is not None:
-            raise SystemExit('--slot is only valid with the select command.')
-        mark_published()
+        if args.slot is not None or args.skip_validation:
+            raise SystemExit('--slot and --skip-validation are only valid with the select command.')
+        mark_scheduled()
         raise SystemExit(0)
 
-    if args.command == 'validate' and args.slot is not None:
-        raise SystemExit('--slot is only valid with the select command.')
+    if args.command == 'validate' and (args.slot is not None or args.skip_validation):
+        raise SystemExit('--slot and --skip-validation are only valid with the select command.')
 
     path = plan_path(args.date)
     if not path.exists():
         if args.command == 'select':
             (OUT / 'queue_selection.json').unlink(missing_ok=True)
-            print(f'NO_PLAN_FOR_TODAY: {path.name} does not exist; nothing to publish.')
+            print(f'NO_PLAN_FOR_DATE: {path.name} does not exist; nothing to publish.')
             raise SystemExit(0)
         raise SystemExit(f'Plan not found: {path}')
 
     if args.command == 'validate':
         validate_plan(path)
     else:
-        select_next(path, requested_slot=args.slot)
+        select_next(path, requested_slot=args.slot, validate=not args.skip_validation)
