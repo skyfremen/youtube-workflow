@@ -16,10 +16,7 @@ MUSIC_BACKUP_FIELDS = (
 )
 
 
-def validate_group(content, fields, label, item_no, required, errors):
-    present = [field for field in fields if str(content.get(field, '')).strip()]
-    if not present and not required:
-        return
+def validate_group(content, fields, label, item_no, errors):
     missing = [field for field in fields if not str(content.get(field, '')).strip()]
     if missing:
         errors.append(
@@ -34,13 +31,12 @@ def main():
 
     path = PLANS / f'{args.date}.json'
     plan = json.loads(path.read_text(encoding='utf-8'))
-    required = plan.get('media_backups_required') is True
     errors = []
 
     for idx, item in enumerate(plan.get('items', []), 1):
         content = item.get('content', {}) if isinstance(item, dict) else {}
-        validate_group(content, BACKGROUND_BACKUP_FIELDS, 'background', idx, required, errors)
-        validate_group(content, MUSIC_BACKUP_FIELDS, 'music', idx, required, errors)
+        validate_group(content, BACKGROUND_BACKUP_FIELDS, 'background', idx, errors)
+        validate_group(content, MUSIC_BACKUP_FIELDS, 'music', idx, errors)
 
         bg_primary = str(content.get('background_url', '')).strip()
         bg_backup = str(content.get('background_backup_url', '')).strip()
@@ -55,8 +51,7 @@ def main():
     if errors:
         raise SystemExit('Backup media metadata validation failed:\n- ' + '\n- '.join(errors))
 
-    mode = 'required' if required else 'optional/backward-compatible'
-    print(f'Backup media metadata valid ({mode}); no backup media was downloaded.')
+    print('Backup media metadata valid; no backup media was downloaded.')
 
 
 if __name__ == '__main__':
