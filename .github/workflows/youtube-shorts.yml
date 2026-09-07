@@ -1,19 +1,6 @@
 name: Build and upload YouTube Short
 
 on:
-  push:
-    paths:
-      - 'youtube-shorts-bot/content/latest.json'
-      - 'youtube-shorts-bot/render.py'
-      - 'youtube-shorts-bot/upload.py'
-      - 'youtube-shorts-bot/workflow_common.py'
-      - 'youtube-shorts-bot/validate_content.py'
-      - 'youtube-shorts-bot/verify_render.py'
-      - 'youtube-shorts-bot/publish.py'
-      - 'youtube-shorts-bot/finalize.py'
-      - 'youtube-shorts-bot/media_preflight.py'
-      - 'youtube-shorts-bot/auth_check.py'
-      - '.github/workflows/youtube-shorts.yml'
   workflow_dispatch:
 
 concurrency:
@@ -22,7 +9,6 @@ concurrency:
 
 jobs:
   build-upload:
-    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip upload]') }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/skyfremen/youtube-shorts-runner:latest
