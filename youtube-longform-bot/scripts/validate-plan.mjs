@@ -7,11 +7,10 @@ if (!Array.isArray(plan.scenes) || plan.scenes.length === 0) {
   throw new Error('Plan must contain at least one scene.');
 }
 
-const allowedTypes = new Set(['hook','character','diagram','comparison','end']);
+const allowedTypes = new Set(['setup', 'infographic']);
 const allowedActions = new Set([
-  'character_enter','character_look','character_react','character_return','character_shocked',
-  'fridge_open','fridge_close','pop_text','clock_jump','camera_pan','camera_punch_zoom',
-  'diagram_step','shake','end_punchline'
+  'walk_in','reach_handle','open_door','look_inside','empty_callout','clock_jump','return_look',
+  'diagram_node_1','diagram_node_2','diagram_node_3','arrow_flow','highlight_reward','end_pop'
 ]);
 
 let total = 0;
@@ -26,9 +25,10 @@ for (const [index, scene] of plan.scenes.entries()) {
   if (!scene.caption || !scene.narration) {
     throw new Error(`Scene ${index + 1} requires caption and narration.`);
   }
-  if (!Array.isArray(scene.beats) || scene.beats.length < 4) {
-    throw new Error(`Scene ${index + 1} requires at least 4 animation beats.`);
+  if (!Array.isArray(scene.beats) || scene.beats.length < 5) {
+    throw new Error(`Scene ${index + 1} requires at least 5 animation beats.`);
   }
+
   let previousAt = -1;
   for (const [beatIndex, beat] of scene.beats.entries()) {
     if (!Number.isFinite(beat.at) || beat.at < 0 || beat.at >= scene.duration) {
@@ -43,17 +43,18 @@ for (const [index, scene] of plan.scenes.entries()) {
     previousAt = beat.at;
     beatCount += 1;
   }
+
   total += scene.duration;
 }
 
 if (Math.abs(total - plan.duration_seconds) > 0.001) {
   throw new Error(`Scene durations total ${total}s but plan says ${plan.duration_seconds}s.`);
 }
-if (plan.duration_seconds !== 15) {
-  throw new Error(`Animation MVP 2 must be exactly 15 seconds; got ${plan.duration_seconds}.`);
+if (plan.duration_seconds !== 10) {
+  throw new Error(`Art MVP 3 must be exactly 10 seconds; got ${plan.duration_seconds}.`);
 }
-if (beatCount < 15) {
-  throw new Error(`Animation MVP 2 requires at least 15 visual beats; got ${beatCount}.`);
+if (beatCount < 10) {
+  throw new Error(`Art MVP 3 requires at least 10 visual beats; got ${beatCount}.`);
 }
 
 console.log(`Plan valid: ${plan.scenes.length} scenes, ${beatCount} visual beats, ${total}s total.`);
