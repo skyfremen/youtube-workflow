@@ -199,25 +199,43 @@ def validate_plan(path):
     print(f'Daily plan valid: {path.name}, 20 quality-gated Shorts.')
 
 
-def select_next(path):
+def select_next(path, requested_slot=None):
     validate_plan(path)
     plan = load_plan(path)
     selection_path = OUT / 'queue_selection.json'
     selection_path.unlink(missing_ok=True)
+
+    if requested_slot is not None:
+        if isinstance(requested_slot, bool) or not 1 <= int(requested_slot) <= 20:
+            raise SystemExit('Queue slot must be an integer from 1 to 20.')
+        requested_slot = int(requested_slot)
+
     for idx, item in enumerate(plan['items']):
-        if item.get('status', 'pending') == 'pending':
-            content = item['content']
-            (CONTENT_DIR / 'latest.json').write_text(json.dumps(content, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-            selection = {
-                'plan_path': str(path),
-                'plan_date': path.stem,
-                'item_index': idx,
-                'slot': item.get('slot', idx + 1),
-            }
-            selection_path.write_text(json.dumps(selection, indent=2) + '\n', encoding='utf-8')
-            print(f'Selected queue slot {selection["slot"]} from plan {selection["plan_date"]}.')
-            return True
-    print('NO_PENDING_SHORTS: daily queue is complete; nothing to publish.')
+        slot = item.get('slot', idx + 1)
+        if requested_slot is not None and slot != requested_slot:
+            continue
+        if item.get('status', 'pending') != 'pending':
+            if requested_slot is not None:
+                print(f'QUEUE_SLOT_ALREADY_COMPLETE: slot {requested_slot} is already published.')
+                return False
+            continue
+
+        content = item['content']
+        (CONTENT_DIR / 'latest.json').write_text(json.dumps(content, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        selection = {
+            'plan_path': str(path),
+            'plan_date': path.stem,
+            'item_index': idx,
+            'slot': slot,
+        }
+        selection_path.write_text(json.dumps(selection, indent=2) + '\n', encoding='utf-8')
+        print(f'Selected queue slot {selection["slot"]} from plan {selection["plan_date"]}.')
+        return True
+
+    if requested_slot is not None:
+        print(f'QUEUE_SLOT_NOT_FOUND: slot {requested_slot} is not available for publishing.')
+    else:
+        print('NO_PENDING_SHORTS: daily queue is complete; nothing to publish.')
     return False
 
 
@@ -259,6 +277,8 @@ def mark_published(path=None):
     item['youtube_video_id'] = upload['youtube_video_id']
     item['youtube_url'] = upload['youtube_url']
     item['uploaded_at'] = upload.get('uploaded_at', '')
+    if upload.get('scheduled_publish_at'):
+        item['scheduled_publish_at'] = upload['scheduled_publish_at']
     selected_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(f'Marked queue slot {item.get("slot", idx + 1)} published in {selected_path.name}.')
 
@@ -267,11 +287,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('command', choices=('validate', 'select', 'mark'))
     parser.add_argument('--date')
+    parser.add_argument('--slot', type=int)
     args = parser.parse_args()
 
     if args.command == 'mark':
+        if args.slot is not None:
+            raise SystemExit('--slot is only valid with the select command.')
         mark_published()
         raise SystemExit(0)
+
+    if args.command == 'validate' and args.slot is not None:
+        raise SystemExit('--slot is only valid with the select command.')
 
     path = plan_path(args.date)
     if not path.exists():
@@ -281,4 +307,7 @@ if __name__ == '__main__':
             raise SystemExit(0)
         raise SystemExit(f'Plan not found: {path}')
 
-    {'validate': validate_plan, 'select': select_next}[args.command](path)
+    if args.command == 'validate':
+        validate_plan(path)
+    else:
+        select_next(path, requested_slot=args.slot)
