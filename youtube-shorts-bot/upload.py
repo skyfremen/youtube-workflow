@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pathlib import Path
 
 from google.oauth2.credentials import Credentials
@@ -32,9 +33,22 @@ for key in ('background_credit', 'music_credit'):
     if credit:
         parts.append(credit)
 
-hashtags = ' '.join(data.get('hashtags', [])).strip()
-if hashtags:
-    parts.append(hashtags)
+# The planner may already include hashtags in description. Append only tags that are
+# not already present so YouTube metadata remains clean instead of duplicating them.
+base_description = '\n\n'.join(p for p in parts if p)
+existing_tags = {tag.lower() for tag in re.findall(r'(?<!\w)#[A-Za-z0-9_]+', base_description)}
+extra_tags = []
+for tag in data.get('hashtags', []) or []:
+    tag = str(tag).strip()
+    if not tag:
+        continue
+    normalized = tag if tag.startswith('#') else f'#{tag}'
+    if normalized.lower() not in existing_tags:
+        extra_tags.append(normalized)
+        existing_tags.add(normalized.lower())
+
+if extra_tags:
+    parts.append(' '.join(extra_tags))
 
 description = '\n\n'.join(p for p in parts if p)[:5000]
 title = data['title'][:100]
