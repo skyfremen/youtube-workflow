@@ -1,0 +1,51 @@
+name: Dry run YouTube Short pipeline
+
+on:
+  push:
+    paths:
+      - '.github/workflows/youtube-shorts-dry-run.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: youtube-short-dry-run
+  cancel-in-progress: false
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: read
+      packages: read
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Real YouTube OAuth preflight
+        run: python youtube-shorts-bot/auth_check.py
+
+      - name: Preflight media URLs
+        run: python youtube-shorts-bot/media_preflight.py
+
+      - name: Render Short
+        run: python youtube-shorts-bot/render.py
+
+      - name: Verify rendered video and audio
+        run: python youtube-shorts-bot/verify_render.py
+
+      - name: Upload dry-run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-short-dry-run-${{ github.run_id }}
+          path: youtube-shorts-bot/output/short.mp4
+          retention-days: 3
+
+      - name: Confirm no publication
+        run: echo 'DRY RUN PASSED - no YouTube upload, archive update, or queue state change was performed.'
