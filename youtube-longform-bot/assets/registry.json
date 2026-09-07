@@ -1,5 +1,6 @@
 {
-  "version": 3,
+  "version": 4,
+  "design_system": "wacky_insights_v1",
   "visual_policy": {
     "style": "animated_explainer",
     "forbid_powerpoint_layouts": true,
@@ -15,29 +16,54 @@
     "male_01": {
       "body": "assets/asset-mvp/character-body.svg",
       "head": "assets/asset-mvp/character-head.svg",
-      "poses": ["idle", "curious", "surprised", "thinking"]
+      "description": "Adult male everyday explainer character with friendly neutral styling",
+      "tags": ["adult", "male", "person", "character", "everyday", "home"],
+      "poses": ["idle", "curious", "surprised", "thinking"],
+      "style_id": "wacky_insights_v1",
+      "quality": "production",
+      "reusable": true
     }
   },
   "environments": {
     "kitchen_01": {
-      "file": "assets/asset-mvp/kitchen-bg.svg"
+      "file": "assets/asset-mvp/kitchen-bg.svg",
+      "description": "Modern home kitchen environment for relatable everyday scenes",
+      "tags": ["kitchen", "home", "interior", "food", "appliance"],
+      "style_id": "wacky_insights_v1",
+      "quality": "production",
+      "reusable": true
     }
   },
   "props": {
     "fridge_01": {
       "base": "assets/asset-mvp/fridge-base.svg",
       "door": "assets/asset-mvp/fridge-door.svg",
-      "actions": ["closed", "open"]
+      "description": "Modern refrigerator with independently animated door",
+      "tags": ["fridge", "refrigerator", "kitchen", "appliance", "food"],
+      "actions": ["closed", "open"],
+      "style_id": "wacky_insights_v1",
+      "quality": "production",
+      "reusable": true
     },
     "microwave_01": {
       "file": "assets/asset-mvp/microwave.svg",
-      "actions": ["idle", "countdown", "beep"]
+      "description": "Modern countertop microwave with digital timer display",
+      "tags": ["microwave", "kitchen", "appliance", "timer", "countdown"],
+      "actions": ["idle", "countdown", "beep"],
+      "style_id": "wacky_insights_v1",
+      "quality": "production",
+      "reusable": true
     }
   },
   "infographics": {
     "reward_loop_01": {
       "file": "assets/asset-mvp/reward-loop.svg",
-      "default_mode": "overlay"
+      "description": "Reward-loop diagram for boredom, checking and possible reward",
+      "tags": ["reward loop", "habit", "behavior", "brain", "cycle"],
+      "default_mode": "overlay",
+      "style_id": "wacky_insights_v1",
+      "quality": "production",
+      "reusable": true
     }
   },
   "motions": [
