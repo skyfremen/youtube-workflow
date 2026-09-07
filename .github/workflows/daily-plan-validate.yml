@@ -5,6 +5,11 @@ on:
     paths:
       - 'youtube-shorts-bot/content/plans/*.json'
   workflow_dispatch:
+    inputs:
+      plan_date:
+        description: 'Singapore plan date to validate (YYYY-MM-DD). Leave blank for today.'
+        required: false
+        type: string
 
 jobs:
   validate-plan:
@@ -20,13 +25,46 @@ jobs:
       packages: read
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Singapore-date plan
+        with:
+          fetch-depth: 2
+
+      - name: Resolve exact plan date from triggering change
+        id: plan
+        shell: bash
         run: |
-          plan_date="$(python - <<'PY'
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ github.event.inputs.plan_date }}" ]; then
+              plan_date="${{ github.event.inputs.plan_date }}"
+            else
+              plan_date="$(python - <<'PY'
           from datetime import datetime
           from zoneinfo import ZoneInfo
           print(datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat())
           PY
           )"
-          python youtube-shorts-bot/queue_manager.py validate --date "${plan_date}"
-          python youtube-shorts-bot/validate_backup_metadata.py --date "${plan_date}"
+            fi
+          else
+            mapfile -t changed_plans < <(git show --pretty='' --name-only "${GITHUB_SHA}" -- 'youtube-shorts-bot/content/plans/*.json' | sed '/^$/d')
+            if [ "${#changed_plans[@]}" -ne 1 ]; then
+              echo "::error::Expected exactly one changed daily plan in this commit; found ${#changed_plans[@]}."
+              printf '%s\n' "${changed_plans[@]}"
+              exit 1
+            fi
+            plan_file="${changed_plans[0]}"
+            plan_date="$(basename "${plan_file}" .json)"
+          fi
+
+          if [[ ! "${plan_date}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::Resolved invalid plan date: ${plan_date}"
+            exit 1
+          fi
+          echo "plan_date=${plan_date}" >> "$GITHUB_OUTPUT"
+          echo "Validating exact Singapore plan date ${plan_date}."
+
+      - name: Validate exact daily plan
+        run: |
+          python youtube-shorts-bot/queue_manager.py validate --date "${{ steps.plan.outputs.plan_date }}"
+          python youtube-shorts-bot/validate_backup_metadata.py --date "${{ steps.plan.outputs.plan_date }}"
+
+      - name: Validate reusable media cache
+        run: python youtube-shorts-bot/validate_media_library.py
