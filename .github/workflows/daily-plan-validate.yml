@@ -21,4 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate Singapore-date plan
-        run: python youtube-shorts-bot/queue_manager.py validate
+        run: |
+          plan_date="$(python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          print(datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat())
+          PY
+          )"
+          python youtube-shorts-bot/queue_manager.py validate --date "${plan_date}"
+          python youtube-shorts-bot/validate_backup_metadata.py --date "${plan_date}"
