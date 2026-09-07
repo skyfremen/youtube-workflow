@@ -1,5 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
+  "visual_policy": {
+    "style": "animated_explainer",
+    "forbid_powerpoint_layouts": true,
+    "environment_first": true,
+    "max_fullscreen_infographic_ratio": 0.2,
+    "prefer_infographic_overlays": true,
+    "prefer_object_labels": true,
+    "max_caption_words": 7,
+    "max_static_gap_seconds": 1.5,
+    "notes": "Scenes should feel like continuous animated storytelling. Avoid title-plus-card layouts, static comparison cards, presentation-style grids, and large text blocks. Infographics should usually appear as overlays attached to active characters, props, or environments."
+  },
   "characters": {
     "male_01": {
       "body": "assets/asset-mvp/character-body.svg",
@@ -21,7 +32,8 @@
   },
   "infographics": {
     "reward_loop_01": {
-      "file": "assets/asset-mvp/reward-loop.svg"
+      "file": "assets/asset-mvp/reward-loop.svg",
+      "default_mode": "overlay"
     }
   },
   "motions": [
@@ -30,16 +42,21 @@
     "slow_zoom",
     "punch_zoom",
     "pan_left",
+    "pan_right",
     "pop",
     "float",
     "open_prop",
-    "highlight"
+    "highlight",
+    "walk",
+    "point",
+    "track",
+    "split_reveal"
   ],
   "scene_types": [
     "environment_character",
-    "infographic",
-    "comparison",
+    "environment_overlay",
+    "behavior_comparison",
     "character_closeup",
-    "summary"
+    "environment_summary"
   ]
 }
