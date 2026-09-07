@@ -44,16 +44,9 @@ jobs:
             echo "No Short selected; publisher exits successfully without rendering or uploading."
           fi
 
-      - name: Validate YouTube credentials
+      - name: Validate YouTube credentials and OAuth
         if: steps.select.outputs.has_short == 'true'
-        shell: bash
-        run: |
-          for name in YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN; do
-            if [ -z "${!name:-}" ]; then
-              echo "Missing required GitHub secret: $name"
-              exit 1
-            fi
-          done
+        run: python youtube-shorts-bot/auth_check.py
 
       - name: Preflight media URLs
         if: steps.select.outputs.has_short == 'true'
