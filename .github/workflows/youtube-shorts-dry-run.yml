@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/youtube-shorts-dry-run.yml'
+      - '.github/workflows/daily-plan-validate.yml'
       - 'youtube-shorts-bot/queue_manager.py'
       - 'youtube-shorts-bot/schedule_utils.py'
       - 'youtube-shorts-bot/schedule_guard.py'
@@ -42,6 +43,17 @@ jobs:
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Mark repository safe for container Git
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Verify production-style Git inspection works in container
+        shell: bash
+        run: |
+          git rev-parse --verify "$GITHUB_SHA"
+          git show --pretty='' --name-only "$GITHUB_SHA" >/dev/null
+          echo 'Container Git inspection works without dubious-ownership errors.'
 
       - name: Compile production pipeline helpers
         run: |
@@ -143,24 +155,26 @@ jobs:
                   'background_source_url': f'https://primary.example.invalid/video-source-{i}',
                   'background_creator': f'Dry Run Creator {i}',
                   'background_license': 'Synthetic dry-run license',
-                  'background_credit': 'Synthetic dry-run asset.',
+                  'background_credit': '',
                   'background_backup_url': bg_backup,
                   'background_backup_source_url': bg_backup_source,
                   'background_backup_creator': bg_backup_creator,
                   'background_backup_license': bg_backup_license,
-                  'background_backup_credit': 'Dry-run fallback asset.',
+                  'background_backup_credit': '',
+                  'background_backup_attribution_required': False,
                   'music_url': f'https://primary.example.invalid/music-{i}.mp3',
                   'music_source_url': f'https://primary.example.invalid/music-source-{i}',
                   'music_title': f'Dry Run Track {i}',
                   'music_artist': f'Dry Run Artist {i}',
                   'music_license': 'Synthetic dry-run music license',
-                  'music_credit': 'Synthetic dry-run music.',
+                  'music_credit': '',
                   'music_backup_url': music_backup,
                   'music_backup_source_url': music_backup_source,
                   'music_backup_title': music_backup_title,
                   'music_backup_artist': music_backup_artist,
                   'music_backup_license': music_backup_license,
-                  'music_backup_credit': 'Dry-run fallback music.',
+                  'music_backup_credit': '',
+                  'music_backup_attribution_required': False,
                   'background_scene': f'Exact synthetic visual scene for topic {topic}',
                   'background_match_reason': f'The primary visual directly depicts the distinct dry-run scenario for {topic} and its main action.',
                   'background_match_score': 95,
@@ -205,6 +219,29 @@ jobs:
         run: |
           PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
           python youtube-shorts-bot/queue_manager.py validate --date "${PLAN_DATE}"
+          python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"
+
+      - name: Verify attribution-required backups fail without credit
+        shell: bash
+        run: |
+          PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
+          PLAN_PATH="youtube-shorts-bot/content/plans/${PLAN_DATE}.json"
+          cp "$PLAN_PATH" "${PLAN_PATH}.bak"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          plan_date = Path('youtube-shorts-bot/output/dry_run_plan_date.txt').read_text().strip()
+          path = Path(f'youtube-shorts-bot/content/plans/{plan_date}.json')
+          data = json.loads(path.read_text())
+          data['items'][0]['content']['background_backup_attribution_required'] = True
+          data['items'][0]['content']['background_backup_credit'] = ''
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+          PY
+          if python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"; then
+            echo 'Expected attribution-required empty credit to fail validation.' >&2
+            exit 1
+          fi
+          mv "${PLAN_PATH}.bak" "$PLAN_PATH"
           python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"
 
       - name: Verify all 24 hourly release mappings and schedule guard
@@ -306,4 +343,4 @@ jobs:
           retention-days: 3
 
       - name: Confirm no publication
-        run: echo 'STRONG 24-HOUR DRY RUN PASSED - validation, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
+        run: echo 'STRONG 24-HOUR DRY RUN PASSED - production-style Git inspection, validation policy parity, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
