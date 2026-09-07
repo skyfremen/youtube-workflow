@@ -9,7 +9,11 @@ const C = {ink:'#1F2937',muted:'#667085',red:'#F05A47',blue:'#4F7CFF',green:'#22
 const accent = {red:C.red,blue:C.blue,green:C.green,yellow:C.yellow};
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const ease=(v)=>1-Math.pow(1-clamp(v),3);
-const Asset=({path,style})=><Img src={staticFile(path)} style={style}/>;
+
+const Asset=({path,style,label='asset'})=>{
+  if(!path) throw new Error(`Missing file path for ${label}`);
+  return <Img src={staticFile(path)} style={style}/>;
+};
 
 const timeline=[];
 let cursor=0;
@@ -26,33 +30,51 @@ const Caption=({scene,local})=>{
 };
 
 const Character=({id,local,x,y,scale=1,scene})=>{
-  const a=registry.characters[id];
+  const a=registry.characters?.[id];
+  if(!a) throw new Error(`Missing character registry entry: ${id}`);
   const start=beatFrame(scene,id,.05);
   const enter=ease((local-start)/16);
   const bob=Math.sin(local/5)*3;
   const sway=Math.sin(local/8)*1.4;
-  return <div style={{position:'absolute',left:x-180*(1-enter),top:y+bob,width:360,height:520,opacity:enter,transform:`scale(${scale}) rotate(${sway}deg)`,transformOrigin:'top left'}}>
-    <Asset path={a.body} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
-    <Asset path={a.head} style={{position:'absolute',left:72,top:10,width:220,height:220,transform:`rotate(${Math.sin(local/11)*2}deg)`,transformOrigin:'50% 75%'}}/>
-  </div>;
+  const wrapperStyle={position:'absolute',left:x-180*(1-enter),top:y+bob,width:360,height:520,opacity:enter,transform:`scale(${scale}) rotate(${sway}deg)`,transformOrigin:'top left'};
+  if(a.file){
+    return <div style={wrapperStyle}><Asset path={a.file} label={`character ${id}`} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'contain'}}/></div>;
+  }
+  if(a.body&&a.head){
+    return <div style={wrapperStyle}>
+      <Asset path={a.body} label={`character body ${id}`} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
+      <Asset path={a.head} label={`character head ${id}`} style={{position:'absolute',left:72,top:10,width:220,height:220,transform:`rotate(${Math.sin(local/11)*2}deg)`,transformOrigin:'50% 75%'}}/>
+    </div>;
+  }
+  throw new Error(`Character ${id} has no renderable file definition`);
 };
 
 const Prop=({id,local,x,y,scale=1,scene})=>{
-  const a=registry.props[id];
+  const a=registry.props?.[id];
+  if(!a) throw new Error(`Missing prop registry entry: ${id}`);
   const start=beatFrame(scene,id,.35);
   const reveal=interpolate(local,[start,start+12],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
   const float=(scene.beats||[]).some((b)=>b.target===id&&b.motion==='float')?Math.sin((local-start)/5)*8:0;
   const pulse=(scene.beats||[]).some((b)=>b.target===id&&['highlight','punch_zoom','pop'].includes(b.motion))?1+.035*Math.max(0,Math.sin((local-start)/6)):1;
   const transform=`translateY(${(1-reveal)*18+float}px) scale(${scale*reveal*pulse})`;
-  if(a.file) return <div style={{position:'absolute',left:x,top:y,width:600,height:600,opacity:reveal,transform,transformOrigin:'top left'}}><Asset path={a.file} style={{width:'100%',height:'100%',objectFit:'contain'}}/></div>;
-  if(a.base&&a.door) return <div style={{position:'absolute',left:x,top:y,width:360,height:620,opacity:reveal,transform,transformOrigin:'top left'}}><Asset path={a.base} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/><Asset path={a.door} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/></div>;
-  return null;
+  if(a.file) return <div style={{position:'absolute',left:x,top:y,width:600,height:600,opacity:reveal,transform,transformOrigin:'top left'}}><Asset path={a.file} label={`prop ${id}`} style={{width:'100%',height:'100%',objectFit:'contain'}}/></div>;
+  if(a.base&&a.door) return <div style={{position:'absolute',left:x,top:y,width:360,height:620,opacity:reveal,transform,transformOrigin:'top left'}}><Asset path={a.base} label={`prop base ${id}`} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/><Asset path={a.door} label={`prop door ${id}`} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/></div>;
+  throw new Error(`Prop ${id} has no renderable file definition`);
+};
+
+const Infographic=({id,local,x,y,scale=1,scene})=>{
+  const a=registry.infographics?.[id];
+  if(!a) throw new Error(`Missing infographic registry entry: ${id}`);
+  const start=beatFrame(scene,id,.45);
+  const reveal=interpolate(local,[start,start+10],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  return <div style={{position:'absolute',left:x,top:y,width:700,height:500,opacity:reveal,transform:`translateY(${(1-reveal)*14}px) scale(${scale*reveal})`,transformOrigin:'top left'}}><Asset path={a.file} label={`infographic ${id}`} style={{width:'100%',height:'100%',objectFit:'contain'}}/></div>;
 };
 
 const Visual=({visual,scene,local})=>{
   if(registry.characters?.[visual.ref]) return <Character id={visual.ref} local={local} x={visual.x} y={visual.y} scale={visual.scale||1} scene={scene}/>;
   if(registry.props?.[visual.ref]) return <Prop id={visual.ref} local={local} x={visual.x} y={visual.y} scale={visual.scale||1} scene={scene}/>;
-  return null;
+  if(registry.infographics?.[visual.ref]) return <Infographic id={visual.ref} local={local} x={visual.x} y={visual.y} scale={visual.scale||1} scene={scene}/>;
+  throw new Error(`Visual ${visual.ref} has no registry entry`);
 };
 
 const Overlay=({item,scene,local})=>{
@@ -64,11 +86,12 @@ const Overlay=({item,scene,local})=>{
 
 const Scene=({scene,local})=>{
   const env=registry.environments?.[scene.environment];
-  if(!env) return null;
+  if(!env) throw new Error(`Missing environment registry entry: ${scene.environment}`);
+  if(!env.file) throw new Error(`Environment ${scene.environment} has no renderable file`);
   const push=interpolate(local,[0,scene.frames-1],[1.02,1.08],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
   const pan=(scene.type==='behavior_comparison'?interpolate(local,[0,scene.frames-1],[-18,18],{extrapolateLeft:'clamp',extrapolateRight:'clamp'}):0);
   return <div style={{position:'absolute',inset:0,transform:`translateX(${pan}px) scale(${push})`,transformOrigin:'center'}}>
-    <Asset path={env.file} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}/>
+    <Asset path={env.file} label={`environment ${scene.environment}`} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}/>
     <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(255,255,255,.02),rgba(31,41,55,.04))'}}/>
     {(scene.visuals||[]).map((v,i)=><Visual key={`${v.ref}-${i}`} visual={v} scene={scene} local={local}/>)}
     {(scene.overlays||[]).map((o)=><Overlay key={o.id} item={o} scene={scene} local={local}/>)}
