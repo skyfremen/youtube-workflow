@@ -159,7 +159,6 @@ handle_text = ass_escape_text(handle)
 series_badge = ''
 if is_series:
     badge_title = ass_escape_text(series_title.upper())
-    # Keep the badge compact so long series names do not cover the main hook.
     if len(badge_title) > 30:
         badge_title = badge_title[:27].rstrip() + '...'
     series_badge = f'{badge_title}  •  PART {int(part_number)}/{int(part_total)}'
@@ -177,8 +176,8 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
-Style: SeriesBadge,DejaVu Sans,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,1,0,3,4,0,8,110,110,90,1
-Style: Header,DejaVu Sans,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,3,7,0,8,100,100,220,1
+Style: SeriesBadge,DejaVu Sans,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,1,0,3,4,0,8,110,110,165,1
+Style: Header,DejaVu Sans,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,3,7,0,8,100,100,215,1
 Style: Main,DejaVu Sans,64,&H00FFFFFF,&H00FFFFFF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,5,2,5,145,145,0,1
 Style: CTA,DejaVu Sans,40,&H0000D7FF,&H0000D7FF,&H00101010,&H00000000,-1,0,0,0,100,100,1,0,1,4,1,8,130,130,525,1
 Style: Handle,DejaVu Sans,48,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,1,0,3,5,0,2,130,130,520,1
