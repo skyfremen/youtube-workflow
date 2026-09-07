@@ -36,6 +36,7 @@ jobs:
       YOUTUBE_PRIVACY: private
       YOUTUBE_SCHEDULED_UPLOAD: 'true'
       TARGET_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+      SOURCE_COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       PLAN_DATE: ${{ github.event.inputs.plan_date || '' }}
     steps:
       - uses: actions/checkout@v4
