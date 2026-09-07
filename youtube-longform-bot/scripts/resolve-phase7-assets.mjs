@@ -11,6 +11,9 @@ const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
 const threshold = plan.planner?.asset_match_threshold ?? 0.55;
 const styleId = plan.planner?.design_system || 'wacky_insights_v1';
 const publicRoot = 'public';
+fs.mkdirSync('output', {recursive:true});
+fs.mkdirSync(path.dirname(resolvedPlanPath), {recursive:true});
+fs.mkdirSync(path.dirname(runtimeRegistryPath), {recursive:true});
 
 const normalize = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const tokens = (value) => new Set(normalize(Array.isArray(value) ? value.join(' ') : value).split(/\s+/).filter(Boolean));
@@ -24,8 +27,6 @@ const score = (need, assetId, asset) => {
   const reusableBonus = asset.reusable === true ? 0.04 : 0;
   return Math.min(1, lexical + styleBonus + reusableBonus);
 };
-
-const escapeXml = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 
 const templates = {
   laundry_room: () => `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
