@@ -1,0 +1,82 @@
+{
+  "video_id": "phase5-storyboard-asset-registry-mvp",
+  "title": "Why Do We Keep Checking the Fridge? — Phase 5",
+  "duration_seconds": 30,
+  "fps": 30,
+  "format": "16:9",
+  "scenes": [
+    {
+      "id": "s01",
+      "type": "environment_character",
+      "duration": 6,
+      "environment": "kitchen_01",
+      "character": "male_01",
+      "props": ["fridge_01"],
+      "caption": "YOU JUST CHECKED.",
+      "narration": "You checked the fridge already. Nothing changed, but somehow you are opening it again.",
+      "beats": [
+        {"at": 0.2, "motion": "slide_in_left", "target": "male_01"},
+        {"at": 1.4, "motion": "open_prop", "target": "fridge_01"},
+        {"at": 2.8, "motion": "slow_zoom", "target": "fridge_01"},
+        {"at": 4.2, "motion": "pop", "target": "caption"}
+      ]
+    },
+    {
+      "id": "s02",
+      "type": "infographic",
+      "duration": 6,
+      "infographic": "reward_loop_01",
+      "caption": "BORED → CHECK → REWARD?",
+      "narration": "Often it is not hunger. Your brain is checking whether a tiny reward might appear.",
+      "beats": [
+        {"at": 0.2, "motion": "fade_in", "target": "reward_loop_01"},
+        {"at": 1.6, "motion": "highlight", "target": "reward_loop_01"},
+        {"at": 3.0, "motion": "pan_left", "target": "reward_loop_01"},
+        {"at": 4.5, "motion": "punch_zoom", "target": "reward_loop_01"}
+      ]
+    },
+    {
+      "id": "s03",
+      "type": "comparison",
+      "duration": 6,
+      "caption": "HUNGER vs HABIT",
+      "narration": "Real hunger builds gradually. Habit can arrive instantly from boredom, routine, or simply seeing the kitchen.",
+      "left_label": "HUNGER",
+      "right_label": "HABIT",
+      "beats": [
+        {"at": 0.3, "motion": "slide_in_left", "target": "left_panel"},
+        {"at": 1.3, "motion": "fade_in", "target": "right_panel"},
+        {"at": 2.8, "motion": "highlight", "target": "right_panel"},
+        {"at": 4.4, "motion": "slow_zoom", "target": "comparison"}
+      ]
+    },
+    {
+      "id": "s04",
+      "type": "character_closeup",
+      "duration": 6,
+      "character": "male_01",
+      "caption": "MAYBE THIS TIME?",
+      "narration": "That little maybe is enough to make checking feel worth doing, even when you know better.",
+      "beats": [
+        {"at": 0.2, "motion": "fade_in", "target": "male_01"},
+        {"at": 1.7, "motion": "float", "target": "male_01"},
+        {"at": 3.0, "motion": "pop", "target": "caption"},
+        {"at": 4.5, "motion": "punch_zoom", "target": "male_01"}
+      ]
+    },
+    {
+      "id": "s05",
+      "type": "summary",
+      "duration": 6,
+      "infographic": "reward_loop_01",
+      "caption": "YOUR FRIDGE DIDN'T UPDATE.",
+      "narration": "So next time you check again, remember: the fridge did not update. Your reward loop did.",
+      "beats": [
+        {"at": 0.2, "motion": "fade_in", "target": "reward_loop_01"},
+        {"at": 1.8, "motion": "highlight", "target": "reward_loop_01"},
+        {"at": 3.3, "motion": "pop", "target": "caption"},
+        {"at": 4.6, "motion": "slow_zoom", "target": "summary"}
+      ]
+    }
+  ]
+}
