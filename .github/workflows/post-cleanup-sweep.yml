@@ -1,4 +1,4 @@
-name: One-time post-cleanup sweep
+name: One-time migration branch prune
 
 on:
   push:
@@ -10,90 +10,13 @@ permissions:
   contents: write
 
 jobs:
-  cleanup:
+  prune:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Apply final repository cleanup
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          python - <<'PY'
-          from pathlib import Path
-
-          prod = Path('.github/workflows/adhoc-story-private.yml')
-          text = prod.read_text(encoding='utf-8')
-          lines = text.splitlines(keepends=True)
-          starts = [i for i, line in enumerate(lines) if line.startswith('  workflow_call:')]
-          assert len(starts) == 1, 'expected one unused workflow_call block'
-          start = starts[0]
-          end = next(i for i in range(start + 1, len(lines)) if lines[i].startswith('concurrency:'))
-          del lines[start:end]
-          text = ''.join(lines)
-          text = text.replace('Render a migration/debug preview without uploading it to YouTube',
-                              'Render a debug preview without uploading it to YouTube')
-          text = text.replace('Render explicit migration visual preview', 'Render explicit debug visual preview')
-          text = text.replace('Preserve explicit migration visual preview', 'Preserve explicit debug visual preview')
-          text = text.replace('wacky-dramas-visual-preview-', 'wacky-dramas-debug-preview-')
-          assert 'workflow_call:' not in text
-          assert 'migration visual preview' not in text.lower()
-          prod.write_text(text, encoding='utf-8')
-
-          dry = Path('.github/workflows/youtube-shorts-dry-run.yml')
-          text = dry.read_text(encoding='utf-8')
-          text = text.replace('      - name: Verify legacy migration cleanup\n',
-                              '      - name: Verify retired architecture cleanup\n')
-          obsolete_analytics_guard = "              'youtube-shorts-bot/analytics',\n"
-          assert obsolete_analytics_guard in text, 'expected stale analytics-directory guard'
-          text = text.replace(obsolete_analytics_guard, '')
-          anchor = "              'youtube-shorts-bot/content/validation-triggers',\n"
-          assert anchor in text
-          text = text.replace(anchor, anchor +
-              "              'youtube-shorts-bot/content/requests/.gitkeep',\n" +
-              "              'youtube-shorts-bot/content/results/.gitkeep',\n")
-          text = text.replace(
-              "print('Legacy Shorts/story/longform architectures removed; immutable Shorts evidence preserved.')",
-              "print('Retired Shorts/story/longform architectures removed; immutable Shorts evidence and receipt-based analytics preserved.')")
-          guard = "          assert '--recovery-only' in prod\n"
-          assert guard in text
-          text = text.replace(guard, guard +
-              "          assert 'workflow_call:' not in prod\n" +
-              "          assert 'migration visual preview' not in prod.lower()\n")
-          dry.write_text(text, encoding='utf-8')
-
-          recovery = Path('youtube-shorts-bot/RECOVERY.md')
-          text = recovery.read_text(encoding='utf-8')
-          text = text.replace('## Accepted migration proof', '## Accepted visual and recovery proof')
-          marker = '## Operational entry point\n'
-          assert marker in text
-          historical = '''## Historical incomplete acceptance request\n\n`wd-20260909T010256-overtime-email-e4b91c` is an immutable historical acceptance request with no verified success receipt. Its earlier private upload was not accepted because recovery-marker verification failed. Keep the request unchanged as audit evidence; current recovery guards do not permit it to authorize a fresh upload.\n\n'''
-          if '## Historical incomplete acceptance request' not in text:
-              text = text.replace(marker, historical + marker)
-          recovery.write_text(text, encoding='utf-8')
-
-          for path in [
-              Path('youtube-shorts-bot/content/requests/.gitkeep'),
-              Path('youtube-shorts-bot/content/results/.gitkeep'),
-          ]:
-              assert path.exists(), f'missing expected placeholder: {path}'
-              path.unlink()
-
-          Path('.github/workflows/post-cleanup-sweep.yml').unlink()
-          PY
-
-          git add -A
-          git diff --cached --check
-          git commit -m "finish Wacky Dramas repository cleanup"
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-      - name: Prune merged migration branch
+      - name: Verify branch is fully merged and delete it
         shell: bash
         run: |
           set -euo pipefail
