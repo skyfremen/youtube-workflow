@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "record_type": "intent",
+  "content_id": "wd-20260909T064400-lunch-thief-caught-b61e3d",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260909T064400-lunch-thief-caught-b61e3d.json",
+  "request_blob_sha": "5f8661ecc09ef66ab53b768c5954d0e5304a4ae1",
+  "source_commit_sha": "8009df398b3a82ad85308a4c6b8e41490a87634d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-08T22:52:19.376415+00:00",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34287396852",
+    "run_attempt": "1",
+    "code_commit_sha": "8009df398b3a82ad85308a4c6b8e41490a87634d"
+  },
+  "background": {
+    "requested_primary_id": "satisfying-021",
+    "requested_backup_id": "satisfying-022",
+    "background_asset_id": "satisfying-021",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/close-up-on-waves-on-water-11284680/",
+    "direct_url": "https://www.pexels.com/download/video/11284680/",
+    "license": "Pexels License",
+    "preflight": "HTTP 206, video/mp4"
+  },
+  "render": {
+    "content_id": "wd-20260909T064400-lunch-thief-caught-b61e3d",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 135.575,
+    "card_title_text": "My coworker kept stealing my lunch.",
+    "card_title_seconds": 1.425,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 1.725,
+    "story_narration_seconds": 133.85,
+    "video_seconds": 135.933333,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "caption_timing_mode": "word_aligned",
+    "caption_alignment_backend": "torchaudio-2.8.0/wav2vec2-base-960h-ctc",
+    "caption_alignment_word_count": 664,
+    "caption_alignment_coverage": 1.0,
+    "caption_alignment_error": null,
+    "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
+    "caption_alignment_torch_version": "2.8.0+cpu",
+    "caption_alignment_torchaudio_version": "2.8.0+cpu",
+    "render_verified": true,
+    "render_verified_at": "2026-09-08T22:52:14.487338+00:00",
+    "render_verification_source": "ffprobe_and_frame_decode",
+    "configured_video_seconds": 135.925,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "ce114989b5602b9fc55677b46064d7f2969a573f74cf387fae600955460b55c1"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "My Coworker Kept Stealing My Lunch #Shorts",
+      "description": "The office lunch thief finally exposed himself. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260909T064400-lunch-thief-caught-b61e3d request_blob_sha=5f8661ecc09ef66ab53b768c5954d0e5304a4ae1]",
+      "tags": [
+        "wd-id-bb1865320ebe889ddde7",
+        "shorts",
+        "storytime",
+        "workplace",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  }
+}
