@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 BASE=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(BASE))
-from render import fit_hook, wrap_caption, FONT_BOLD
+from render import caption_layout, fit_hook, wrap_caption, FONT_BOLD
 
 class LayoutTests(unittest.TestCase):
     def test_acceptance_hook_is_complete_and_within_card(self):
@@ -23,6 +23,14 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual(' '.join(wrapped.split()),text)
             self.assertTrue(all(draw.textlength(line,font=font)<=500 for line in wrapped.splitlines()))
         self.assertIn('\n',wrap_caption('UNPAID OVERTIME MANDATORY'))
+
+    def test_long_single_word_scales_down_without_clipping(self):
+        wrapped,size=caption_layout('ADMINISTRATION')
+        self.assertEqual(wrapped,'ADMINISTRATION')
+        self.assertLess(size,52)
+        font=ImageFont.truetype(FONT_BOLD,size)
+        draw=ImageDraw.Draw(Image.new('L',(1,1)))
+        self.assertLessEqual(draw.textlength(wrapped,font=font),500)
 
     def test_unrenderable_word_fails_instead_of_clipping(self):
         with self.assertRaises(ValueError):wrap_caption('X'*200)

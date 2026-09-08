@@ -160,28 +160,46 @@ def fit_hook(draw, text, max_width, max_height, scale):
     raise ValueError("Complete opening hook cannot fit card bounds; refusing to truncate text")
 
 
-def wrap_caption(text):
+def caption_layout(text):
     cfg = expected_video_config()
     scale = cfg["width"] / 1080.0
-    fnt = font(FONT_BOLD, 78, scale)
     max_width = cfg["width"] - 2 * scaled(156, scale) - 2 * scaled(9, scale)
     draw = ImageDraw.Draw(Image.new("L", (1, 1)))
-    lines, current = [], ""
-    for word in text.split():
-        if draw.textlength(word, font=fnt) > max_width:
-            raise ValueError("Caption word exceeds safe horizontal bounds")
-        trial = (current + " " + word).strip()
-        if current and draw.textlength(trial, font=fnt) > max_width:
+    for base_size in range(78, 57, -2):
+        fnt = font(FONT_BOLD, base_size, scale)
+        lines, current = [], ""
+        oversized = False
+        for word in str(text).split():
+            if draw.textlength(word, font=fnt) > max_width:
+                oversized = True
+                break
+            trial = (current + " " + word).strip()
+            if current and draw.textlength(trial, font=fnt) > max_width:
+                lines.append(current)
+                current = word
+            else:
+                current = trial
+        if oversized:
+            continue
+        if current:
             lines.append(current)
-            current = word
-        else:
-            current = trial
-    if current:
-        lines.append(current)
-    if len(lines) > 3:
-        raise ValueError("Caption exceeds central three-line region")
-    return "\n".join(lines)
+        if len(lines) <= 3:
+            return "\n".join(lines), max(12, scaled(base_size, scale))
+    raise ValueError("Caption cannot fit safe central region without clipping")
 
+
+def wrap_caption(text):
+    return caption_layout(text)[0]
+
+
+def caption_ass_text(text):
+    wrapped, event_font_size = caption_layout(text)
+    payload = escape_ass(wrapped)
+    cfg = expected_video_config()
+    default_size = max(12, scaled(78, cfg["width"] / 1080.0))
+    if event_font_size != default_size:
+        return f"{{\fs{event_font_size}}}{payload}"
+    return payload
 
 def centered_text(draw, box, text, fnt, fill):
     x1, y1, x2, y2 = box
@@ -264,7 +282,7 @@ def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
             for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
                 end = min(speech_duration, seg_start + seg_duration if idx == len(chunks) - 1 else local + seg_duration * weight / total)
                 if end > local + 0.03:
-                    events.append(f"Dialogue: 0,{ass_time(start_offset + local)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
+                    events.append(f"Dialogue: 0,{ass_time(start_offset + local)},{ass_time(start_offset + end)},Main,,0,0,0,,{caption_ass_text(chunk.upper())}")
                 local = end
             cursor = min(speech_duration, seg_start + seg_duration)
     else:
@@ -274,7 +292,7 @@ def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
         for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
             end = speech_duration if idx == len(chunks) - 1 else min(speech_duration, cursor + speech_duration * weight / total)
             if end > cursor + 0.03:
-                events.append(f"Dialogue: 0,{ass_time(start_offset + cursor)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
+                events.append(f"Dialogue: 0,{ass_time(start_offset + cursor)},{ass_time(start_offset + end)},Main,,0,0,0,,{caption_ass_text(chunk.upper())}")
             cursor = end
     return events
 
