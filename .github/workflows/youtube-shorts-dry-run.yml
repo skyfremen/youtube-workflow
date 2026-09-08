@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/youtube-shorts-dry-run.yml'
       - '.github/workflows/adhoc-story-private.yml'
+      - '.github/workflows/youtube-analytics.yml'
       - 'youtube-shorts-bot/*.py'
       - 'youtube-shorts-bot/tests/**'
       - 'youtube-shorts-bot/planner/**'
@@ -14,20 +15,14 @@ on:
 
 concurrency:
   group: wacky-dramas-dry-run
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   dry-run:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     env:
       VIDEO_WIDTH: '720'
       VIDEO_HEIGHT: '1280'
@@ -38,6 +33,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install lightweight static-test dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --no-input \
+            'numpy>=1.26,<2.3' \
+            'Pillow>=10,<12'
 
       - name: Compile production Python
         shell: bash
@@ -50,6 +51,8 @@ jobs:
             youtube-shorts-bot/validate_media_library.py \
             youtube-shorts-bot/media_resolver.py \
             youtube-shorts-bot/render.py \
+            youtube-shorts-bot/render_aligned.py \
+            youtube-shorts-bot/caption_alignment.py \
             youtube-shorts-bot/verify_render.py \
             youtube-shorts-bot/auth_check.py \
             youtube-shorts-bot/upload.py \
@@ -258,6 +261,8 @@ jobs:
           for command in forbidden_exec:
               assert command not in dry, f'dry run must not execute {command}'
 
+          heavy_container_key = 'con' + 'tainer:'
+          assert heavy_container_key not in dry, 'static dry run must not pull the heavy production container'
           assert 'apt install' not in prod and 'apt-get' not in prod
           assert 'pip install' not in prod
           assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in prod
@@ -272,7 +277,7 @@ jobs:
           assert '--recovery-only' in prod
           assert 'workflow_call:' not in prod
           assert 'migration visual preview' not in prod.lower()
-          print('Workflow contracts prove dry run cannot upload and production is private, unscheduled, queue-free and rerun-safe.')
+          print('Workflow contracts prove dry run is lightweight/non-uploading and production is private, unscheduled, queue-free and rerun-safe.')
           PY
 
       - name: Confirm zero media/render/upload side effects
