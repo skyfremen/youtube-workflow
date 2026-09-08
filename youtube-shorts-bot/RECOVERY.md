@@ -40,9 +40,11 @@ The same run was rerun as attempt 2. Recovery resolved `CdpjHVq7sj8`, reported `
 
 The live YouTube channel rename is user-managed and may be completed later. Recovery and upload ownership are pinned to the authenticated channel ID, not the display name.
 
-## Historical incomplete acceptance request
+## Historical incomplete acceptance requests
 
 `wd-20260909T010256-overtime-email-e4b91c` is an immutable historical acceptance request with no verified success receipt. Its earlier private upload was not accepted because recovery-marker verification failed. Keep the request unchanged as audit evidence; current recovery guards do not permit it to authorize a fresh upload.
+
+`wd-20260908T185000-roommate-rent-k7m4qz` is an immutable full-length acceptance request that failed during caption layout before upload intent or YouTube insert. The failure exposed a long-word caption-fit bug, which was corrected in the renderer with adaptive per-caption font sizing and regression coverage. Keep the failed request unchanged; use a new content ID for the replacement production proof.
 
 ## Operational entry point
 
