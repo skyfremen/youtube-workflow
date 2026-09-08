@@ -32,7 +32,7 @@ The rendered opening has three strict phases:
 Planning rules:
 
 - `story.hook` is the spoken opening-card title/headline, not the first paragraph of the story.
-- Keep it crisp and immediately intriguing; prefer roughly **5–10 words** when natural so it reads quickly at `af_heart` / `1.75×` and leaves room for the controlled 5-second acceptance render.
+- Keep it crisp and immediately intriguing; prefer roughly **5–10 words** when natural so it reads quickly at `af_heart` / `1.75×` and leaves room for controlled acceptance/debug renders.
 - `story.script` should start directly after the hook and **must not repeat the hook verbatim**. Legacy immutable requests that already duplicate the hook are handled defensively by the renderer, but new requests should not rely on that fallback.
 - Open the story body with immediate context or action so the transition from title into story feels continuous.
 - Narrate in first person.
@@ -57,9 +57,7 @@ Always use:
 - `@WACKYDRAMAS`
 
 Never output:
-- `Wacky Insights`
-- `@WACKYINSIGHTS`
-- `#wackyinsights`
+- legacy channel branding, handle, or hashtags
 - `DOUBLE TAP TO AGREE`
 - `FOLLOW FOR PART`
 - `comedy_mechanism`
