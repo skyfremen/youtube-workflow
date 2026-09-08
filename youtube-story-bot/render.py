@@ -111,8 +111,6 @@ def render_emoji(icon, target_size=54):
     emoji_font_path = pick_existing(EMOJI_FONT_CANDIDATES)
     if emoji_font_path:
         try:
-            # Noto Color Emoji is a bitmap font and only accepts fixed strike sizes.
-            # Render at its supported 109 px strike, then downscale for the card.
             font = ImageFont.truetype(emoji_font_path, 109)
             tile = Image.new('RGBA', (150, 150), (0, 0, 0, 0))
             draw = ImageDraw.Draw(tile)
@@ -127,7 +125,6 @@ def render_emoji(icon, target_size=54):
         except (OSError, ValueError):
             pass
 
-    # Safe fallback if an emoji font is unavailable: use a large readable symbol.
     fallback_map = {
         '💼': 'B',
         '🏠': 'H',
@@ -181,13 +178,15 @@ for logo_path in avatar_paths:
             source_logo.load()
             logo = source_logo.convert('RGBA').copy()
         avatar_size = 132
-        if logo.getbbox():
-            logo = logo.crop(logo.getbbox())
-        avatar_circle = ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS)
+        contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
+        avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 255))
+        px = (avatar_size - contained.width) // 2
+        py = (avatar_size - contained.height) // 2
+        avatar_square.alpha_composite(contained, (px, py))
         mask = Image.new('L', (avatar_size, avatar_size), 0)
         ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
         clipped = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
-        clipped.paste(avatar_circle, (0, 0), mask)
+        clipped.paste(avatar_square, (0, 0), mask)
         card_overlay.alpha_composite(clipped, (82, 290))
         logo_loaded = True
         break
@@ -202,9 +201,9 @@ name_x, name_y = 235, 285
 f_name = ImageFont.truetype(FONT_BOLD, 40)
 d_card.text((name_x, name_y), channel_name, font=f_name, fill=(18, 18, 18, 255))
 name_bb = d_card.textbbox((name_x, name_y), channel_name, font=f_name)
-vx, vy = name_bb[2] + 20, name_y + 8
-d_card.ellipse((vx, vy, vx + 38, vy + 38), fill=(82, 141, 255, 255))
-d_card.text((vx + 10, vy + 5), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
+vx, vy = name_bb[2] + 20, name_y + 6
+verified_font = ImageFont.truetype(FONT_BOLD, 30)
+d_card.text((vx, vy), '✓', font=verified_font, fill=(105, 105, 105, 255))
 
 emoji_icons = ['💼', '🏠', '💔', '🔥', '☕', '😱']
 icon_y = 350
@@ -246,8 +245,8 @@ def pill(draw_obj, box, text, font, fill):
     draw_obj.rounded_rectangle(box, radius=(box[3] - box[1]) // 2, fill=(0, 0, 0, 225), outline=(255, 255, 255, 70), width=2)
     centered_text(draw_obj, box, text, font, fill)
 
-pill(d_brand, (285, 1490, 795, 1564), handle, ImageFont.truetype(FONT_BOLD, 42), (255, 255, 255, 255))
-pill(d_brand, (360, 1578, 720, 1648), 'SUBSCRIBE', ImageFont.truetype(FONT_BOLD, 38), (255, 214, 40, 255))
+pill(d_brand, (285, 1260, 795, 1334), handle, ImageFont.truetype(FONT_BOLD, 42), (255, 255, 255, 255))
+pill(d_brand, (360, 1348, 720, 1418), 'SUBSCRIBE', ImageFont.truetype(FONT_BOLD, 38), (255, 214, 40, 255))
 
 card_overlay_path = OUT / 'story-card.png'
 branding_overlay_path = OUT / 'branding.png'
