@@ -10,11 +10,11 @@ from render import render_emoji
 
 
 class EmojiRenderTests(unittest.TestCase):
-    # Regression: 720p rendering must preserve the requested contextual emojis,
-    # not collapse them into the old identical-dot fallback.
+    # Regression: native 720p rendering must preserve the requested contextual
+    # emojis, not collapse them into the old identical-dot fallback.
     def test_requested_emojis_render_as_distinct_images(self):
         icons = ["💼", "⏰", "📧", "😳", "🔥"]
-        images = [render_emoji(icon, 36, 2 / 3) for icon in icons]
+        images = [render_emoji(icon, 36) for icon in icons]
         hashes = {hashlib.sha256(image.tobytes()).hexdigest() for image in images}
         self.assertEqual(len(hashes), len(icons))
         for image in images:
