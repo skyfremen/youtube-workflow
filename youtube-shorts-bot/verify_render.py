@@ -7,6 +7,23 @@ import subprocess
 from workflow_common import OUTPUT_DIR, PRODUCTION_MAX_SECONDS, env_bool, expected_video_config, load_json
 
 
+def parse_rate(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return 0.0
+    if "/" in raw:
+        num, den = raw.split("/", 1)
+        try:
+            den_value = float(den)
+            return float(num) / den_value if den_value else 0.0
+        except ValueError:
+            return 0.0
+    try:
+        return float(raw)
+    except ValueError:
+        return 0.0
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--request", required=True)
@@ -39,6 +56,11 @@ def main():
     if (int(vs.get("width") or 0), int(vs.get("height") or 0)) != (cfg["width"], cfg["height"]):
         raise SystemExit(
             f"Render verification failed: expected {cfg['width']}x{cfg['height']}, got {vs.get('width')}x{vs.get('height')}"
+        )
+    actual_fps = parse_rate(vs.get("r_frame_rate"))
+    if abs(actual_fps - float(cfg["fps"])) > 0.01:
+        raise SystemExit(
+            f"Render verification failed: expected {cfg['fps']} fps, got {vs.get('r_frame_rate')} ({actual_fps:.3f})"
         )
     if vs.get("codec_name") != "h264":
         raise SystemExit(f"Render verification failed: video codec must be h264, got {vs.get('codec_name')}")
@@ -78,7 +100,7 @@ def main():
         raise SystemExit("Render verification failed: metadata/video duration mismatch")
     print(
         f"Render verified: {duration:.3f}s, {cfg['width']}x{cfg['height']}, "
-        f"{cfg['fps']} fps target, H.264 + one AAC narration stream."
+        f"{actual_fps:.3f} fps, H.264 + one AAC narration stream."
     )
 
 
