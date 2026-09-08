@@ -129,7 +129,7 @@ jobs:
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
         run: python youtube-shorts-bot/finalize.py --request "$REQUEST_PATH"
 
-      - name: Preserve lightweight verification and failure evidence
+      - name: Preserve lightweight verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -138,7 +138,6 @@ jobs:
             youtube-shorts-bot/output/*.json
             youtube-shorts-bot/output/story-card.png
             youtube-shorts-bot/output/captions.ass
-            youtube-shorts-bot/output/short.mp4
           if-no-files-found: ignore
           retention-days: 7
 
