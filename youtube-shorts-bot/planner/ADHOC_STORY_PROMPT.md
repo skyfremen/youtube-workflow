@@ -14,6 +14,16 @@ The content ID format is:
 
 Use UTC consistently for the timestamp. Use a concise lowercase topic slug and a collision-resistant six-character lowercase alphanumeric suffix.
 
+## Opening sequence contract
+
+Plan the opening as three separate phases:
+
+1. `story.hook` is a short spoken **card title/headline**. It is narrated in full while the card is visible and has **no subtitles**.
+2. The card then transitions out. Do not put story narration or subtitles under this transition.
+3. `story.script` begins after the card is gone; subtitles start with the story narration.
+
+Keep `story.hook` crisp—prefer about **5–10 words** when natural. The story script must continue from the idea rather than repeat the hook verbatim. For example, if the card says `My Boss Put It in Writing`, the script should start with context such as `We were three days from month-end when my manager called a meeting...`, not read the card title again.
+
 The request must use schema version 2:
 
 ```json
@@ -27,8 +37,8 @@ The request must use schema version 2:
   "story": {
     "category": "WORKPLACE",
     "story_type": "BACKFIRE",
-    "hook": "My boss demanded unpaid overtime. It backfired.",
-    "script": "FULL ORIGINAL STORY HERE",
+    "hook": "My Boss Put It in Writing",
+    "script": "We were three days from month-end when my manager called a meeting. FULL ORIGINAL STORY CONTINUES HERE.",
     "card_emojis": ["💼", "😤", "📧", "😳", "🔥"]
   },
   "narration": {
