@@ -23,7 +23,19 @@ jobs:
           fetch-depth: 0
 
       - name: Apply native-coordinate refactor
-        run: python tools/one_time_native_coordinate_refactor.py
+        shell: sh
+        run: |
+          set -eu
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tools/one_time_native_coordinate_refactor.py')
+          text = path.read_text(encoding='utf-8')
+          old = "for forbidden in ('W / 1080.0', 'H / 1920.0', 'scaled(', 'sx', 'sy', 'scale = min('):\n    assert forbidden not in text, forbidden\n"
+          new = "for forbidden in ('W / 1080.0', 'H / 1920.0', 'scaled(', 'scale = min('):\n    assert forbidden not in text, forbidden\n"
+          assert old in text
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          python tools/one_time_native_coordinate_refactor.py
 
       - name: Validate refactor
         shell: sh
