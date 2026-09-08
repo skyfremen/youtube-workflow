@@ -1,0 +1,42 @@
+name: One-time YouTube Shorts Backup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/backup-shorts-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy youtube-shorts-bot to backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf youtube-shorts-bot-backup
+          cp -a youtube-shorts-bot youtube-shorts-bot-backup
+
+      - name: Commit backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A youtube-shorts-bot-backup
+          if git diff --cached --quiet; then
+            echo "Backup is already identical; nothing to commit."
+            exit 0
+          fi
+          git commit -m "Backup youtube-shorts-bot"
+          git push
