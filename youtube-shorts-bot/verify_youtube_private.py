@@ -6,7 +6,11 @@ from upload import make_client, authenticated_channel, description_marker
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
 
 
-RETRY_DELAYS = (0, 2, 4, 8, 16, 30)
+# Keep the same 60-second bounded verification window, but avoid the previous
+# 30-second blind spot between the fifth and sixth checks. The extra cheap
+# videos.list reads can detect YouTube processing 10-20 seconds earlier while
+# preserving the exact same fail-closed deadline and verification semantics.
+RETRY_DELAYS = (0, 2, 4, 8, 8, 8, 10, 10, 10)
 
 
 def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
