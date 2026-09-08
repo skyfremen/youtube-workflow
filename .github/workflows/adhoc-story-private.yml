@@ -99,7 +99,7 @@ jobs:
         run: |
           set -euo pipefail
           EXTRA=()
-          if [ "$RECOVERY_ONLY" = 'true' ]; then EXTRA+=(--recovery-only); fi
+          if [ "$RECOVERY_ONLY" = 'true' ] || [ "${GITHUB_RUN_ATTEMPT:-1}" -gt 1 ]; then EXTRA+=(--recovery-only); fi
           python youtube-shorts-bot/publish.py --stage prepare --request "$REQUEST_PATH" "${EXTRA[@]}"
 
       - name: Resolve and preflight satisfying background
