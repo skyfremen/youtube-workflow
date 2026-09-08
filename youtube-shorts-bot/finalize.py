@@ -1,46 +1,67 @@
 import argparse
-import os
 from pathlib import Path
 
-from workflow_common import (
-    OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, git_blob_sha,
-    load_json, result_path_for_id,
-)
+from recovery_state import GitHubState, RecoveryBlocked, blob_sha, check_identity, identity_for, now, receipt_path, workflow_identity
+from workflow_common import OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, load_json
 
 
 def build_receipt(request_path, request, upload, selection, render_meta):
-    content_id = ensure_request_path_matches(request_path, request)
-    if upload.get("privacy_status") != "private":
-        raise ValueError("Cannot finalize: YouTube private verification has not passed")
-    if upload.get("publish_at") not in (None, ""):
-        raise ValueError("Cannot finalize: publish_at must be null")
-    requested = request["visual"]
+    cid = ensure_request_path_matches(request_path, request)
+    identity = {key: upload.get(key) for key in ("content_id", "request_path", "request_blob_sha", "source_commit_sha")}
+    if identity["content_id"] != cid or identity["request_blob_sha"] != blob_sha(Path(request_path).read_bytes()):
+        raise RecoveryBlocked("Receipt request identity does not match actual immutable bytes")
+    verification = upload.get("verification", {})
+    check_identity(verification, identity)
+    evidence = upload.get("upload_evidence", {})
+    check_identity(evidence, identity)
+    if verification.get("passed") is not True or verification.get("state") != "verified_private":
+        raise RecoveryBlocked("Cannot finalize without successful YouTube verification")
+    if verification.get("privacy_status") != "private" or verification.get("publish_at_absent") is not True:
+        raise RecoveryBlocked("Cannot finalize: exact private/unscheduled verification missing")
+    if verification.get("youtube_video_id") != upload.get("youtube_video_id") or evidence.get("youtube_video_id") != upload.get("youtube_video_id"):
+        raise RecoveryBlocked("Receipt video ID does not match verified durable evidence")
+    if verification.get("channel_id") != evidence.get("expected_channel_id"):
+        raise RecoveryBlocked("Receipt channel identity mismatch")
+    if not verification.get("verified_at") or not upload.get("recovery_record_blob_sha"):
+        raise RecoveryBlocked("Verification timestamp and durable evidence SHA are mandatory")
+    if render_meta.get("render_verified") is not True or render_meta.get("content_id") != cid:
+        raise RecoveryBlocked("A verified render for this content ID is required")
+    for key, expected in (("resolution", "720x1280"), ("fps", 30), ("video_codec", "h264"),
+                          ("audio_codec", "aac"), ("audio_stream_count", 1), ("narration_engine", "kokoro"),
+                          ("narration_voice", request['narration']['voice']), ("narration_speed", request['narration']['speed'])):
+        if render_meta.get(key) != expected:
+            raise RecoveryBlocked(f"Invalid verified render field: {key}")
+    if render_meta != evidence.get("render") or selection != evidence.get("background"):
+        raise RecoveryBlocked("Receipt render/background differs from original upload evidence")
+    slot = selection.get("background_selection")
+    if slot not in {"primary", "backup"} or selection.get("background_asset_id") != request['visual'][f'background_{slot}_id']:
+        raise RecoveryBlocked("Selected background is not the recorded request primary/backup")
+    workflow = workflow_identity()
+    origin = evidence["upload_workflow"]
+    for key in ("name", "run_id", "run_attempt", "code_commit_sha"):
+        if not workflow.get(key) or not origin.get(key):
+            raise RecoveryBlocked("Complete original and verification workflow provenance is required")
     return {
-        "schema_version": 1,
-        "content_id": content_id,
-        "request_path": Path(request_path).as_posix(),
-        "request_blob_sha": git_blob_sha(request_path),
-        "source_commit_sha": os.getenv("SOURCE_COMMIT_SHA", "").strip() or os.getenv("GITHUB_SHA", ""),
-        "renderer_source_commit": os.getenv("SOURCE_COMMIT_SHA", "").strip() or os.getenv("GITHUB_SHA", ""),
-        "youtube_video_id": upload["youtube_video_id"],
-        "youtube_url": upload.get("youtube_url") or f"https://www.youtube.com/watch?v={upload['youtube_video_id']}",
-        "privacy_status": "private",
-        "publish_at": None,
-        "background_requested_primary_id": requested["background_primary_id"],
-        "background_requested_backup_id": requested["background_backup_id"],
-        "background_asset_id": selection["background_asset_id"],
-        "background_selection": selection["background_selection"],
-        "narration_voice": request["narration"]["voice"],
-        "narration_speed": float(request["narration"]["speed"]),
-        "narration_seconds": float(render_meta["narration_seconds"]),
-        "video_seconds": float(render_meta["video_seconds"]),
-        "resolution": render_meta["resolution"],
-        "fps": int(render_meta["fps"]),
-        "workflow_run_id": os.getenv("GITHUB_RUN_ID", ""),
-        "uploaded_at": upload["uploaded_at"],
-        "youtube_verified_at": upload.get("youtube_verified_at"),
-        "content_id_tag_verified": bool(upload.get("content_id_tag_verified")),
-        "test_mode": bool(render_meta.get("test_mode")),
+        "schema_version": 2, **identity, "youtube_video_id": upload['youtube_video_id'],
+        "youtube_url": upload['youtube_url'], "youtube_channel_id": verification['channel_id'],
+        "privacy_status": "private", "publish_at": None, "publish_at_absent": True,
+        "verification_state": "verified_private", "verification": verification,
+        "background_requested_primary_id": request['visual']['background_primary_id'],
+        "background_requested_backup_id": request['visual']['background_backup_id'],
+        "background_asset_id": selection['background_asset_id'], "background_selection": slot,
+        "narration_engine": render_meta['narration_engine'], "narration_voice": render_meta['narration_voice'],
+        "narration_speed": render_meta['narration_speed'], "narration_seconds": render_meta['narration_seconds'],
+        "video_seconds": render_meta['video_seconds'], "resolution": render_meta['resolution'], "fps": render_meta['fps'],
+        "video_codec": render_meta['video_codec'], "audio_codec": render_meta['audio_codec'],
+        "audio_stream_count": render_meta['audio_stream_count'], "render_verification": render_meta,
+        "renderer_source_commit": origin['code_commit_sha'], "upload_workflow": origin,
+        "workflow_name": workflow['name'], "workflow_run_id": workflow['run_id'],
+        "workflow_run_attempt": workflow['run_attempt'], "verification_source_commit": workflow['code_commit_sha'],
+        "uploaded_at": upload['uploaded_at'], "youtube_verified_at": verification['verified_at'], "receipt_created_at": now(),
+        "test_mode": render_meta['test_mode'],
+        "test_kind": "migration_acceptance" if render_meta['test_mode'] else None,
+        "recovery": {"record_path": upload['recovery_record_path'], "record_blob_sha": upload['recovery_record_blob_sha'],
+                     "recovered": upload['recovered'], "association": evidence['association']},
     }
 
 
@@ -48,24 +69,32 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--request", required=True)
     args = parser.parse_args()
-    request_path = Path(args.request)
-    request = load_json(request_path)
+    request = load_json(args.request)
+    identity = identity_for(args.request, request)
     upload = load_json(OUTPUT_DIR / "upload_result.json")
-    selection = load_json(OUTPUT_DIR / "background_selection.json")
-    render_meta = load_json(OUTPUT_DIR / "render-metadata.json")
-    try:
-        receipt = build_receipt(request_path, request, upload, selection, render_meta)
-    except ValueError as exc:
-        raise SystemExit(str(exc))
-    result_path = result_path_for_id(request["content_id"])
-    if result_path.exists():
-        existing = load_json(result_path)
-        if existing.get("youtube_video_id") == receipt.get("youtube_video_id") and existing.get("request_blob_sha") == receipt.get("request_blob_sha"):
-            print(f"Immutable result receipt already exists and matches: {result_path.name}")
-            return
-        raise SystemExit(f"Result {request['content_id']} already exists and is immutable.")
-    atomic_write_json(result_path, receipt)
-    print(f"Created immutable result receipt: {result_path}")
+    check_identity(upload, identity)
+    candidate = build_receipt(args.request, request, upload, load_json(OUTPUT_DIR / "background_selection.json"),
+                              load_json(OUTPUT_DIR / "render-metadata.json"))
+    state = GitHubState()
+    path = receipt_path(identity['content_id'])
+    existing = state.load(path)
+    if existing:
+        check_identity(existing.data, identity)
+        if existing.data.get("schema_version") != 2 or existing.data.get("verification", {}).get("passed") is not True:
+            raise RecoveryBlocked("Existing receipt is incomplete or lacks verification")
+        for key in ('youtube_video_id', 'privacy_status', 'publish_at_absent', 'verification_state', 'recovery'):
+            if key == 'recovery':
+                if existing.data[key]['record_blob_sha'] != candidate[key]['record_blob_sha']:
+                    raise RecoveryBlocked('Immutable receipt recovery evidence differs')
+            elif existing.data.get(key) != candidate.get(key):
+                raise RecoveryBlocked(f'Immutable receipt differs: {key}')
+        stored = existing
+        print(f"Immutable receipt reused unchanged: {path}; video={candidate['youtube_video_id']}; blob={stored.sha}; no upload")
+    else:
+        stored = state.create(path, candidate)
+        print(f"Verified immutable receipt committed: {path}; commit={stored.commit}; blob={stored.sha}")
+    atomic_write_json(OUTPUT_DIR / "receipt-persistence.json", {"path": path, "blob_sha": stored.sha,
+                      "commit_sha": stored.commit, "created": stored.created, "youtube_video_id": candidate['youtube_video_id']})
 
 
 if __name__ == "__main__":

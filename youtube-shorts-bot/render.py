@@ -6,9 +6,7 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
-import soundfile as sf
 from PIL import Image, ImageDraw, ImageFile, ImageFont, ImageOps, ImageStat
-from kokoro import KPipeline
 
 from workflow_common import (
     END_TAIL_SECONDS, OUTPUT_DIR, PRODUCTION_MAX_SECONDS, atomic_write_json,
@@ -139,17 +137,38 @@ def wrap_pixels(draw, text, fnt, max_width, max_lines=3):
 
 
 def fit_hook(draw, text, max_width, max_height, scale):
-    for base_size in range(64, 41, -2):
+    for base_size in range(64, 39, -2):
         fnt = font(FONT_BOLD, base_size, scale)
-        lines, fits = wrap_pixels(draw, text, fnt, max_width, 3)
+        lines, fits = wrap_pixels(draw, text, fnt, max_width, 6)
         bb = draw.textbbox((0, 0), "Ag", font=fnt)
         line_height = (bb[3] - bb[1]) + scaled(9, scale)
-        if fits and len(lines) * line_height <= max_height:
+        widths_fit = all(draw.textlength(line, font=fnt) <= max_width for line in lines)
+        if fits and widths_fit and len(lines) * line_height <= max_height:
             return fnt, lines, line_height
-    fnt = font(FONT_BOLD, 42, scale)
-    lines, _ = wrap_pixels(draw, text, fnt, max_width, 3)
-    bb = draw.textbbox((0, 0), "Ag", font=fnt)
-    return fnt, lines, (bb[3] - bb[1]) + scaled(8, scale)
+    raise ValueError("Complete opening hook cannot fit card bounds; refusing to truncate text")
+
+
+def wrap_caption(text):
+    cfg = expected_video_config()
+    scale = cfg["width"] / 1080.0
+    fnt = font(FONT_BOLD, 78, scale)
+    max_width = cfg["width"] - 2 * scaled(156, scale) - 2 * scaled(9, scale)
+    draw = ImageDraw.Draw(Image.new("L", (1, 1)))
+    lines, current = [], ""
+    for word in text.split():
+        if draw.textlength(word, font=fnt) > max_width:
+            raise ValueError("Caption word exceeds safe horizontal bounds")
+        trial = (current + " " + word).strip()
+        if current and draw.textlength(trial, font=fnt) > max_width:
+            lines.append(current)
+            current = word
+        else:
+            current = trial
+    if current:
+        lines.append(current)
+    if len(lines) > 3:
+        raise ValueError("Caption exceeds central three-line region")
+    return "\n".join(lines)
 
 
 def centered_text(draw, box, text, fnt, fill):
@@ -233,7 +252,7 @@ def caption_events(text, tts_segments, speech_duration):
             for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
                 end = min(speech_duration, seg_start + seg_duration if idx == len(chunks) - 1 else local + seg_duration * weight / total)
                 if end > local + 0.03:
-                    events.append(f"Dialogue: 0,{ass_time(local)},{ass_time(end)},Main,,0,0,0,,{escape_ass(chunk.upper())}")
+                    events.append(f"Dialogue: 0,{ass_time(local)},{ass_time(end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
                 local = end
             cursor = min(speech_duration, seg_start + seg_duration)
     else:
@@ -243,7 +262,7 @@ def caption_events(text, tts_segments, speech_duration):
         for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
             end = speech_duration if idx == len(chunks) - 1 else min(speech_duration, cursor + speech_duration * weight / total)
             if end > cursor + 0.03:
-                events.append(f"Dialogue: 0,{ass_time(cursor)},{ass_time(end)},Main,,0,0,0,,{escape_ass(chunk.upper())}")
+                events.append(f"Dialogue: 0,{ass_time(cursor)},{ass_time(end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
             cursor = end
     return events
 
@@ -277,6 +296,9 @@ def main():
     test_max = float(os.getenv("STORY_RENDER_MAX_SECONDS", "5"))
     if test_mode and not 1.0 <= test_max <= 15.0:
         raise SystemExit("STORY_RENDER_MAX_SECONDS must be 1-15 seconds in test mode")
+
+    from kokoro import KPipeline
+    import soundfile as sf
 
     pipeline = KPipeline(lang_code="a")
     if test_mode:
@@ -341,8 +363,8 @@ def main():
     emojis = story.get("card_emojis", [])[:6]
     icon_y = scaled(350, sy)
     ix = name_x
-    icon_step = scaled(66, sx)
-    icon_target = scaled(54, scale)
+    icon_step = scaled(76, sx)
+    icon_target = scaled(66, scale)
     for emoji in emojis:
         img = render_emoji(str(emoji), icon_target, scale)
         x = int(ix + (scaled(58, sx) - img.width) / 2)
@@ -387,12 +409,12 @@ def main():
     font_size = scaled(78, scale)
     outline = max(3, scaled(7, scale))
     shadow = max(1, scaled(2, scale))
-    margin_lr = scaled(260, sx)
+    margin_lr = scaled(156, sx)
     ass_header = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {W}
 PlayResY: {H}
-WrapStyle: 2
+WrapStyle: 0
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]

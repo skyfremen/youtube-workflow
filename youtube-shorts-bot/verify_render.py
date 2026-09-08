@@ -1,10 +1,12 @@
 import argparse
+import hashlib
+from datetime import datetime, timezone
 import json
 import os
 import re
 import subprocess
 
-from workflow_common import OUTPUT_DIR, PRODUCTION_MAX_SECONDS, env_bool, expected_video_config, load_json
+from workflow_common import atomic_write_json, OUTPUT_DIR, PRODUCTION_MAX_SECONDS, env_bool, expected_video_config, load_json
 
 
 def parse_rate(value):
@@ -98,6 +100,16 @@ def main():
     render_meta = load_json(metadata_path)
     if abs(float(render_meta["video_seconds"]) - duration) > 0.25:
         raise SystemExit("Render verification failed: metadata/video duration mismatch")
+    render_meta.update({
+        "render_verified": True, "render_verified_at": datetime.now(timezone.utc).isoformat(),
+        "render_verification_source": "ffprobe_and_frame_decode",
+        "configured_video_seconds": render_meta["video_seconds"], "video_seconds": duration,
+        "fps": actual_fps, "video_codec": vs["codec_name"], "audio_codec": audios[0]["codec_name"],
+        "audio_stream_count": len(audios), "video_stream_count": len(videos),
+        "narration_engine": _request["narration"]["engine"], "audio_source": "narration.wav only (input 3:a:0)",
+        "video_sha256": hashlib.sha256(video.read_bytes()).hexdigest(),
+    })
+    atomic_write_json(metadata_path, render_meta)
     print(
         f"Render verified: {duration:.3f}s, {cfg['width']}x{cfg['height']}, "
         f"{actual_fps:.3f} fps, H.264 + one AAC narration stream."

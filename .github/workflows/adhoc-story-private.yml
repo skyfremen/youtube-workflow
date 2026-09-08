@@ -2,16 +2,33 @@ name: Wacky Dramas Ad-hoc Private Publish
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'youtube-shorts-bot/content/requests/*.json'
+    branches: [main]
+    paths: ['youtube-shorts-bot/content/requests/*.json']
   workflow_dispatch:
     inputs:
       content_id:
-        description: 'Existing immutable Wacky Dramas content_id to recover/process'
+        description: Existing immutable Wacky Dramas content ID
         required: true
         type: string
+      recovery_only:
+        description: Forbid any new upload
+        default: true
+        type: boolean
+      render_preview:
+        description: Render a migration/debug preview without uploading it to YouTube
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      content_id:
+        required: true
+        type: string
+      recovery_only:
+        default: true
+        type: boolean
+      render_preview:
+        default: false
+        type: boolean
 
 concurrency:
   group: wacky-dramas-youtube-upload
@@ -24,19 +41,16 @@ permissions:
 jobs:
   private-story:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     container:
       image: ghcr.io/skyfremen/youtube-shorts-runner:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     env:
-      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
       YOUTUBE_PRIVACY: private
       YOUTUBE_SCHEDULED_UPLOAD: 'false'
-      STORY_TEST_MODE: 'true'
-      STORY_RENDER_MAX_SECONDS: '5'
+      STORY_TEST_MODE: 'false'
       VIDEO_WIDTH: '720'
       VIDEO_HEIGHT: '1280'
       VIDEO_FPS: '30'
@@ -44,134 +58,124 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.sha }}
+          ref: main
 
-      - name: Configure container Git safety
-        shell: bash
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git fetch origin main
-
-      - name: Resolve exactly one immutable request
+      - name: Resolve immutable request with current recovery code
         id: request
         shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            python youtube-shorts-bot/request_guard.py \
-              --event push \
-              --commit "$GITHUB_SHA"
-          else
-            python youtube-shorts-bot/request_guard.py \
-              --event manual \
-              --content-id "${{ github.event.inputs.content_id }}"
-          fi
-
-      - name: Pin immutable request source commit
-        if: steps.request.outputs.already_complete != 'true'
-        shell: bash
-        run: echo "SOURCE_COMMIT_SHA=${{ steps.request.outputs.source_commit_sha }}" >> "$GITHUB_ENV"
-
-      - name: Report already-complete recovery
-        if: steps.request.outputs.already_complete == 'true'
-        run: |
-          echo "Request ${{ steps.request.outputs.content_id }} already has an immutable result receipt on main."
-          echo "No render or YouTube API mutation is needed; duplicate upload prevention passed."
-
-      - name: Validate request and background registry
-        if: steps.request.outputs.already_complete != 'true'
-        shell: bash
-        run: |
-          python youtube-shorts-bot/validate_content.py \
-            --request "${{ steps.request.outputs.request_path }}"
-          python youtube-shorts-bot/validate_media_library.py
-
-      - name: Validate YouTube credentials once
-        if: steps.request.outputs.already_complete != 'true'
-        run: python youtube-shorts-bot/auth_check.py
-
-      - name: Resolve and preflight satisfying background
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/media_resolver.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Generate Kokoro narration and render
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/render.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Verify rendered Short
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/verify_render.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Duplicate-safe private upload
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/publish.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Verify YouTube privacy and recovery marker
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/verify_youtube_private.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Create immutable result receipt
-        if: steps.request.outputs.already_complete != 'true'
-        run: |
-          python youtube-shorts-bot/finalize.py \
-            --request "${{ steps.request.outputs.request_path }}"
-
-      - name: Upload lightweight migration acceptance evidence
-        if: success() && steps.request.outputs.already_complete != 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: wacky-dramas-acceptance-${{ github.run_id }}
-          path: |
-            youtube-shorts-bot/output/story-card.png
-            youtube-shorts-bot/output/captions.ass
-            youtube-shorts-bot/output/render-metadata.json
-            youtube-shorts-bot/output/background_selection.json
-            youtube-shorts-bot/output/upload_result.json
-          if-no-files-found: error
-          retention-days: 3
-
-      - name: Persist result receipt only
-        if: steps.request.outputs.already_complete != 'true'
-        shell: bash
+        env:
+          INPUT_CONTENT_ID: ${{ inputs.content_id }}
         run: |
           set -euo pipefail
-          RESULT="youtube-shorts-bot/content/results/${{ steps.request.outputs.content_id }}.json"
-          test -f "$RESULT"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$RESULT"
-
-          CHANGED="$(git diff --cached --name-only)"
-          if [ "$CHANGED" != "$RESULT" ]; then
-            echo "::error::Only the immutable result receipt may be committed after production."
-            printf '%s\n' "$CHANGED"
-            exit 1
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch origin main
+          if [ -n "$INPUT_CONTENT_ID" ]; then
+            python youtube-shorts-bot/request_guard.py --event manual --content-id "$INPUT_CONTENT_ID"
+          else
+            python youtube-shorts-bot/request_guard.py --event push --commit "$GITHUB_SHA"
           fi
 
-          git commit -m "[skip upload] result ${{ steps.request.outputs.content_id }}"
-          git pull --rebase origin main
-          git push origin HEAD:main
+      - name: Pin immutable request source and validate contracts
+        shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          REQUEST_SOURCE: ${{ steps.request.outputs.source_commit_sha }}
+        run: |
+          set -euo pipefail
+          echo "SOURCE_COMMIT_SHA=$REQUEST_SOURCE" >> "$GITHUB_ENV"
+          python youtube-shorts-bot/validate_content.py --request "$REQUEST_PATH"
+          python youtube-shorts-bot/validate_media_library.py
 
-      - name: Upload lightweight failure diagnostics
-        if: failure() && steps.request.outputs.already_complete != 'true'
+      - name: Recover durable upload before media or rendering
+        id: recovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          RECOVERY_ONLY: ${{ inputs.recovery_only }}
+        run: |
+          set -euo pipefail
+          EXTRA=()
+          if [ "$RECOVERY_ONLY" = 'true' ]; then EXTRA+=(--recovery-only); fi
+          python youtube-shorts-bot/publish.py --stage prepare --request "$REQUEST_PATH" "${EXTRA[@]}"
+
+      - name: Resolve and preflight satisfying background
+        if: steps.recovery.outputs.upload_required == 'true'
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/media_resolver.py --request "$REQUEST_PATH"
+
+      - name: Generate Kokoro narration and verify render
+        if: steps.recovery.outputs.upload_required == 'true'
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: |
+          python youtube-shorts-bot/render.py --request "$REQUEST_PATH"
+          python youtube-shorts-bot/verify_render.py --request "$REQUEST_PATH"
+
+      - name: Persist exclusive intent and upload once
+        if: steps.recovery.outputs.upload_required == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/publish.py --stage upload --request "$REQUEST_PATH"
+
+      - name: Verify existing or new private video on every run
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/verify_youtube_private.py --request "$REQUEST_PATH"
+
+      - name: Persist verified immutable receipt or reuse unchanged receipt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/finalize.py --request "$REQUEST_PATH"
+
+      - name: Preserve lightweight verification and failure evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-dramas-diagnostics-${{ github.run_id }}
+          name: wacky-dramas-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            youtube-shorts-bot/output/*.json
             youtube-shorts-bot/output/story-card.png
             youtube-shorts-bot/output/captions.ass
-            youtube-shorts-bot/output/render-metadata.json
-            youtube-shorts-bot/output/background_selection.json
-            youtube-shorts-bot/output/upload_result.json
           if-no-files-found: ignore
-          retention-days: 3
+          retention-days: 7
+
+      - name: Render explicit migration visual preview
+        if: inputs.render_preview && github.run_attempt == 1
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          STORY_OUTPUT_DIR: youtube-shorts-bot/preview
+          STORY_TEST_MODE: 'true'
+          STORY_RENDER_MAX_SECONDS: '5'
+        run: |
+          python youtube-shorts-bot/media_resolver.py --request "$REQUEST_PATH"
+          python youtube-shorts-bot/render.py --request "$REQUEST_PATH"
+          python youtube-shorts-bot/verify_render.py --request "$REQUEST_PATH"
+          ffmpeg -v error -ss 0.50 -i youtube-shorts-bot/preview/short.mp4 -frames:v 1 youtube-shorts-bot/preview/frame-opening.png
+          ffmpeg -v error -ss 1.20 -i youtube-shorts-bot/preview/short.mp4 -frames:v 1 youtube-shorts-bot/preview/frame-caption.png
+          ffmpeg -v error -ss 2.30 -i youtube-shorts-bot/preview/short.mp4 -frames:v 1 youtube-shorts-bot/preview/frame-after-card.png
+
+      - name: Preserve explicit migration visual preview
+        if: inputs.render_preview && github.run_attempt == 1 && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-visual-preview-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            youtube-shorts-bot/preview/*.png
+            youtube-shorts-bot/preview/*.json
+            youtube-shorts-bot/preview/captions.ass
+            youtube-shorts-bot/preview/short.mp4
+          if-no-files-found: ignore
+          retention-days: 7

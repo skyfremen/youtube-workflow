@@ -35,12 +35,15 @@ jobs:
       STORY_RENDER_MAX_SECONDS: '5'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Compile production Python
         shell: bash
         run: |
           python -m py_compile \
             youtube-shorts-bot/workflow_common.py \
+            youtube-shorts-bot/recovery_state.py \
             youtube-shorts-bot/request_guard.py \
             youtube-shorts-bot/validate_content.py \
             youtube-shorts-bot/validate_media_library.py \
@@ -53,6 +56,23 @@ jobs:
             youtube-shorts-bot/verify_youtube_private.py \
             youtube-shorts-bot/finalize.py \
             youtube-shorts-bot/analytics.py
+
+      - name: Check immutable request result and recovery history
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          PREVIOUS_SHA: ${{ github.event.before }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          python - <<'PYCODE'
+          import os, sys
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from request_guard import check_immutable_changes
+          before = os.environ['PREVIOUS_SHA']
+          if before and set(before) != {'0'}:
+              check_immutable_changes(before, os.environ['GITHUB_SHA'])
+          print('Immutable history unchanged; only new evidence may be added.')
+          PYCODE
 
       - name: Run cheap unit and contract tests
         run: python -m unittest discover -s youtube-shorts-bot/tests -v

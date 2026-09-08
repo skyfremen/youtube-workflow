@@ -8,13 +8,14 @@ from pathlib import Path
 BASE = Path(__file__).parent
 REQUESTS_DIR = BASE / "content" / "requests"
 RESULTS_DIR = BASE / "content" / "results"
-OUTPUT_DIR = BASE / "output"
+OUTPUT_DIR = Path(os.getenv("STORY_OUTPUT_DIR", str(BASE / "output")))
 CONTENT_ID_RE = re.compile(r"^wd-\d{8}T\d{6}-[a-z0-9]+(?:-[a-z0-9]+)*-[a-z0-9]{6}$")
 PRODUCTION_MAX_SECONDS = 178.0
 PRODUCTION_TARGET_MIN_SECONDS = 120.0
 PRODUCTION_TARGET_MAX_SECONDS = 175.0
 END_TAIL_SECONDS = 0.35
-YOUTUBE_TAG_MAX_CHARS = 30
+YOUTUBE_TAG_MAX_CHARS = 30  # local marker budget, not a YouTube per-tag limit
+EXPECTED_YOUTUBE_CHANNEL_ID = "UCvrq2m9G4yrwPfL_X-QPzMA"
 
 
 def load_json(path):
@@ -44,9 +45,9 @@ def validate_content_id(content_id):
 def marker_tag(content_id):
     """Return a deterministic hidden YouTube recovery tag for a request.
 
-    A full Wacky Dramas content_id is longer than YouTube's practical single-tag
-    limit. Hashing the complete immutable content_id keeps the marker collision-
-    resistant while fitting safely inside the platform limit.
+    This is a compact supplemental marker, not the primary upload identity.
+    The original longer marker was later returned intact by YouTube; the
+    configured 30-character budget is local policy, not a documented API limit.
     """
     validate_content_id(content_id)
     digest = hashlib.sha256(content_id.encode("utf-8")).hexdigest()[:20]

@@ -82,6 +82,16 @@ def resolve_manual_request(content_id):
     return path.as_posix()
 
 
+def check_immutable_changes(base, head):
+    result = git(["diff", "--name-status", "--no-renames", base, head, "--",
+                  "youtube-shorts-bot/content/requests", "youtube-shorts-bot/content/results",
+                  "youtube-shorts-bot/content/recovery"])
+    for line in result.stdout.splitlines():
+        status, path = line.split("\t", 1)
+        if path.endswith(".json") and status != "A":
+            raise ValueError(f"Immutable request/result/recovery file changed: {path}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--event", choices=("push", "manual"), required=True)

@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "record_type": "upload",
+  "content_id": "wd-20260909T004900-unpaid-overtime-c84f2a",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260909T004900-unpaid-overtime-c84f2a.json",
+  "request_blob_sha": "8efe3f1a468445c7c18a0328d2780be47fe5a6b4",
+  "source_commit_sha": "f6e3bdcbfd4368fde8e2e8b552d3915002727188",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-08T16:50:41.129771+00:00",
+  "uploaded_at": "2026-09-08T16:50:41.129771+00:00",
+  "youtube_video_id": "vUTeNhM0UH8",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34253369477",
+    "run_attempt": "1",
+    "code_commit_sha": "f6e3bdcbfd4368fde8e2e8b552d3915002727188"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "My Boss Made Unpaid Overtime Mandatory — It Backfired #Shorts",
+      "description": "One confirmation email turned a mandatory unpaid-overtime rule back on the manager who created it. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #backfire #wackydramas",
+      "tags": [
+        "wd-id-wd-20260909T004900-unpaid-overtime-c84f2a",
+        "shorts",
+        "storytime",
+        "workplace",
+        "backfire",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "background": {
+    "requested_primary_id": "satisfying-008",
+    "requested_backup_id": "satisfying-015",
+    "background_asset_id": "satisfying-008",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/abstract-fluid-motion-background-loop-34127871/",
+    "direct_url": "https://www.pexels.com/download/video/34127871/",
+    "license": "Pexels License",
+    "preflight": "HTTP 206, video/mp4"
+  },
+  "render": {
+    "content_id": "wd-20260909T004900-unpaid-overtime-c84f2a",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 4.875,
+    "video_seconds": 5.233,
+    "resolution": "720x1280",
+    "fps": 30,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": true,
+    "test_render_max_seconds": 5.0,
+    "narration_excerpt": "My boss made two hours of unpaid overtime mandatory every night, and one confirmation email ended the policy before lunch.",
+    "render_verified": true,
+    "render_verified_at": "2026-09-08T16:50:37.8550778Z",
+    "render_verification_source": "original_workflow_ffprobe_log_and_owner_fileDetails",
+    "configured_video_seconds": 5.225,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "uploaded_file_bytes": 456788
+  },
+  "association": {
+    "kind": "original_workflow_upload_checkpoint",
+    "workflow_job_id": "102152963276",
+    "diagnostics_artifact_id": "10066917641",
+    "diagnostics_artifact_name": "wacky-dramas-diagnostics-34253369477",
+    "diagnostics_zip_sha256": "381307ed1662652ddbf11a56a230388e65737c73d4f7b6a322ae925d3d42c4fb",
+    "upload_checkpoint": {
+      "content_id": "wd-20260909T004900-unpaid-overtime-c84f2a",
+      "youtube_video_id": "vUTeNhM0UH8",
+      "youtube_url": "https://www.youtube.com/watch?v=vUTeNhM0UH8",
+      "uploaded_at": "2026-09-08T16:50:41.129771+00:00",
+      "recovered": false,
+      "recovery_source": null
+    },
+    "recovery_inspection_run_id": "34255131587",
+    "recovery_inspection_artifact_id": "10067580327",
+    "observed_at": "2026-09-08T17:08:24.698578+00:00",
+    "observed_original_marker": "wd-id-wd-20260909T004900-unpaid-overtime-c84f2a",
+    "metadata_source": "upload body reconstructed from original source; title/description/category and full tag checked against authenticated owner API",
+    "owner_file_details": {
+      "fileSize": "456788",
+      "fileType": "video",
+      "container": "mov",
+      "videoStreams": [
+        {
+          "widthPixels": 720,
+          "heightPixels": 1280,
+          "frameRateFps": 30,
+          "aspectRatio": 0.5623901581722319,
+          "codec": "h264",
+          "bitrateBps": "630757",
+          "vendor": "[0][0][0][0]"
+        }
+      ],
+      "audioStreams": [
+        {
+          "channelCount": 1,
+          "codec": "aac",
+          "bitrateBps": "101951",
+          "vendor": "[0][0][0][0]"
+        }
+      ],
+      "durationMs": "5233",
+      "bitrateBps": "732708"
+    }
+  }
+}

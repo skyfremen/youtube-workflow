@@ -37,6 +37,19 @@ class RequestImmutabilityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "sensitive"):
                 request_guard.resolve_push_request("deadbeef")
 
+    def test_result_and_recovery_edits_are_rejected(self):
+        from types import SimpleNamespace
+        for status in ('M', 'D'):
+            for path in ('youtube-shorts-bot/content/results/test.json', 'youtube-shorts-bot/content/recovery/test/upload.json'):
+                with patch.object(request_guard, 'git', return_value=SimpleNamespace(stdout=f"{status}\t{path}\n")):
+                    with self.assertRaisesRegex(ValueError, 'Immutable'):
+                        request_guard.check_immutable_changes('base', 'head')
+
+    def test_new_recovery_evidence_is_allowed(self):
+        from types import SimpleNamespace
+        with patch.object(request_guard, 'git', return_value=SimpleNamespace(stdout='A\tyoutube-shorts-bot/content/recovery/test/upload.json\n')):
+            request_guard.check_immutable_changes('base', 'head')
+
 
 if __name__ == "__main__":
     unittest.main()
