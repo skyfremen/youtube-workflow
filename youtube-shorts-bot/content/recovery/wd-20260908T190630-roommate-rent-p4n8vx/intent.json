@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "record_type": "intent",
+  "content_id": "wd-20260908T190630-roommate-rent-p4n8vx",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260908T190630-roommate-rent-p4n8vx.json",
+  "request_blob_sha": "ca1baedb9d1a4337f72a0588906872097de82fc1",
+  "source_commit_sha": "5768292553164e2f801479625fbe89471620ca8d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-08T19:14:53.109022+00:00",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34267054783",
+    "run_attempt": "1",
+    "code_commit_sha": "5768292553164e2f801479625fbe89471620ca8d"
+  },
+  "background": {
+    "requested_primary_id": "satisfying-001",
+    "requested_backup_id": "satisfying-002",
+    "background_asset_id": "satisfying-001",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/3d-background-abstract-satisfying-abstract-animation-motion-geometric-cubes-4k-seamless-looped-video-16458942/",
+    "direct_url": "https://www.pexels.com/download/video/16458942/",
+    "license": "Pexels License",
+    "preflight": "HTTP 206, video/mp4"
+  },
+  "render": {
+    "content_id": "wd-20260908T190630-roommate-rent-p4n8vx",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 141.975,
+    "card_title_text": "My roommate charged me fake fees for months.",
+    "card_title_seconds": 1.675,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 1.975,
+    "story_narration_seconds": 140.0,
+    "video_seconds": 142.333333,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "render_verified": true,
+    "render_verified_at": "2026-09-08T19:14:48.525595+00:00",
+    "render_verification_source": "ffprobe_and_frame_decode",
+    "configured_video_seconds": 142.325,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "85338c7a8da52eb547af2fc0d30991a58495f02be5035c59e73fbc73851f4b50"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "My Roommate Invented Fees Until I Checked the Lease #Shorts",
+      "description": "My roommate kept adding bizarre apartment fees until one lease check exposed a much bigger problem. An original Wacky Dramas story.\n\n#shorts #storytime #roommate #rent #wackydramas\n\n[WackyDramas content_id=wd-20260908T190630-roommate-rent-p4n8vx request_blob_sha=ca1baedb9d1a4337f72a0588906872097de82fc1]",
+      "tags": [
+        "wd-id-059450b4ce1727aa0a0e",
+        "shorts",
+        "storytime",
+        "roommate",
+        "rent",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  }
+}
