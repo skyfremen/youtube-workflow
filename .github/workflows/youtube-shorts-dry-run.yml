@@ -58,7 +58,7 @@ jobs:
             youtube-shorts-bot/finalize.py \
             youtube-shorts-bot/analytics.py
 
-      - name: Verify legacy migration cleanup
+      - name: Verify retired architecture cleanup
         shell: bash
         run: |
           python - <<'PY'
@@ -76,10 +76,13 @@ jobs:
               '.github/workflows/story-bot-test.yml',
               '.github/workflows/wacky-dramas-acceptance-recovery.yml',
               '.github/workflows/youtube-longform-mvp.yml',
+              '.github/workflows/post-cleanup-sweep.yml',
               'youtube-shorts-bot/content/archive',
               'youtube-shorts-bot/content/latest.json',
               'youtube-shorts-bot/content/plans',
               'youtube-shorts-bot/content/validation-triggers',
+              'youtube-shorts-bot/content/requests/.gitkeep',
+              'youtube-shorts-bot/content/results/.gitkeep',
               'youtube-shorts-bot/media-library/music.json',
               'youtube-shorts-bot/media_failover.py',
               'youtube-shorts-bot/media_preflight.py',
@@ -90,10 +93,9 @@ jobs:
               'youtube-shorts-bot/validate_backup_metadata.py',
               'youtube-shorts-bot/validate_series_plan.py',
               'youtube-shorts-bot/verify_youtube_schedule.py',
-              'youtube-shorts-bot/analytics',
           ]
           present = [p for p in forbidden_paths if Path(p).exists()]
-          assert not present, 'legacy paths still present: ' + ', '.join(present)
+          assert not present, 'retired paths still present: ' + ', '.join(present)
 
           expected_workflows = {
               'adhoc-story-private.yml',
@@ -133,7 +135,7 @@ jobs:
                   if term in text:
                       hits.append(f'{path}: {term}')
           assert not hits, 'stale active references: ' + '; '.join(hits)
-          print('Legacy Shorts/story/longform architectures removed; immutable Shorts evidence preserved.')
+          print('Retired Shorts/story/longform architectures removed; immutable Shorts evidence and receipt-based analytics preserved.')
           PY
 
       - name: Check immutable request result and recovery history
@@ -268,6 +270,8 @@ jobs:
           assert 'music' not in prod.lower()
           assert '${GITHUB_RUN_ATTEMPT:-1}' in prod
           assert '--recovery-only' in prod
+          assert 'workflow_call:' not in prod
+          assert 'migration visual preview' not in prod.lower()
           print('Workflow contracts prove dry run cannot upload and production is private, unscheduled, queue-free and rerun-safe.')
           PY
 
