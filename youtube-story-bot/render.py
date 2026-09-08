@@ -6,8 +6,6 @@ import soundfile as sf
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFile
 from kokoro import KPipeline
 
-# GitHub binary uploads can occasionally leave a truncated PNG. Allow Pillow to
-# recover any still-decodable image data, and fall back safely if decoding fails.
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 BASE = Path(__file__).parent
@@ -23,10 +21,7 @@ handle = str(data.get('handle', '@WACKYDRAMAS')).upper()
 hook = str(data['hook'])
 story = str(data['story'])
 voice = str(data.get('tts_voice', 'af_heart'))
-# Wacky Dramas standard: Kokoro narration at 1.5x.
-speed = float(data.get('tts_speed', 1.5))
-if abs(speed - 1.5) > 0.001:
-    print(f'Note: content overrides standard Kokoro speed 1.5x with {speed}x')
+speed = float(data.get('tts_speed', 1.75))
 
 W, H = 1080, 1920
 FONT_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
@@ -101,7 +96,7 @@ def centered_text(draw, box, text, font, fill):
     draw.text((x1 + (x2 - x1 - tw) / 2, y1 + (y2 - y1 - th) / 2 - 2), text, font=font, fill=fill)
 
 
-# Kokoro TTS using the configured speed directly (standard is 1.5x).
+# Kokoro TTS. Wacky Dramas standard speed is 1.75x.
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
 for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
@@ -117,21 +112,24 @@ else:
 narration = OUT / 'narration.wav'
 sf.write(narration, audio, 24000)
 
-# Branded card + persistent safe-zone branding overlay.
-overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-d = ImageDraw.Draw(overlay)
+# Separate transient card from persistent branding so the card can disappear
+# after the hook while the handle + subscribe prompt remain visible.
+card_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+branding_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+d_card = ImageDraw.Draw(card_overlay)
+d_brand = ImageDraw.Draw(branding_overlay)
 
-# Card is intentionally roomy so title text never spills outside.
-card_box = (56, 470, 1024, 1038)
+# Move the card higher so it occupies the top third rather than the middle.
+card_box = (56, 290, 1024, 858)
 for off, alpha in [(10, 55), (18, 25)]:
-    d.rounded_rectangle(
+    d_card.rounded_rectangle(
         (card_box[0] + off, card_box[1] + off, card_box[2] + off, card_box[3] + off),
         radius=36, fill=(0, 0, 0, alpha)
     )
-d.rounded_rectangle(card_box, radius=36, fill=(251, 251, 251, 252), outline=(28, 28, 28, 255), width=5)
+d_card.rounded_rectangle(card_box, radius=36, fill=(251, 251, 251, 252), outline=(28, 28, 28, 255), width=5)
 
-# Use the generated Wacky Dramas profile picture from assets. If the image is
-# damaged, render a deterministic WD avatar instead of failing the whole video.
+# Display picture. Crop away transparent padding before fitting so the actual
+# logo fills the avatar circle instead of appearing as a tiny sliver.
 logo_path = ASSETS / 'channel-logo.png'
 logo_loaded = False
 if logo_path.exists():
@@ -139,74 +137,91 @@ if logo_path.exists():
         with Image.open(logo_path) as source_logo:
             source_logo.load()
             logo = source_logo.convert('RGBA').copy()
+        bbox = logo.getbbox()
+        if bbox:
+            logo = logo.crop(bbox)
         avatar_size = 132
+        fitted = ImageOps.contain(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS)
+        avatar = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
+        avatar.alpha_composite(fitted, ((avatar_size - fitted.width) // 2, (avatar_size - fitted.height) // 2))
         mask = Image.new('L', (avatar_size, avatar_size), 0)
         ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
-        avatar = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
-        avatar.paste(ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS), (0, 0), mask)
-        overlay.alpha_composite(avatar, (82, 525))
+        clipped = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
+        clipped.paste(avatar, (0, 0), mask)
+        card_overlay.alpha_composite(clipped, (82, 345))
         logo_loaded = True
     except (OSError, ValueError) as exc:
         print(f'WARNING: channel logo could not be decoded; using WD fallback: {exc}')
 if not logo_loaded:
-    d.ellipse((82, 525, 214, 657), fill=(18, 18, 22, 255), outline=(230, 55, 45, 255), width=7)
+    d_card.ellipse((82, 345, 214, 477), fill=(18, 18, 22, 255), outline=(230, 55, 45, 255), width=7)
     f_avatar = ImageFont.truetype(FONT_BOLD, 46)
-    centered_text(d, (82, 525, 214, 657), 'WD', f_avatar, (255, 255, 255, 255))
+    centered_text(d_card, (82, 345, 214, 477), 'WD', f_avatar, (255, 255, 255, 255))
 
 # Channel name + verified tick.
-name_x, name_y = 235, 520
+name_x, name_y = 235, 340
 f_name = ImageFont.truetype(FONT_BOLD, 40)
-d.text((name_x, name_y), channel_name, font=f_name, fill=(18, 18, 18, 255))
-name_bb = d.textbbox((name_x, name_y), channel_name, font=f_name)
+d_card.text((name_x, name_y), channel_name, font=f_name, fill=(18, 18, 18, 255))
+name_bb = d_card.textbbox((name_x, name_y), channel_name, font=f_name)
 vx, vy = name_bb[2] + 18, name_y + 8
-d.ellipse((vx, vy, vx + 36, vy + 36), fill=(75, 128, 255, 255))
-d.text((vx + 9, vy + 4), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
+d_card.ellipse((vx, vy, vx + 36, vy + 36), fill=(75, 128, 255, 255))
+d_card.text((vx + 9, vy + 4), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
 
-# Larger, separated decorative card icons.
-icon_y, icon_size, icon_gap = 588, 34, 16
+# Larger separated decorative icons that remain readable on a phone screen.
+icon_y, icon_size, icon_gap = 408, 42, 18
 icons = [
     ('✦', (185, 157, 255)), ('✿', (210, 210, 210)), ('◆', (250, 214, 88)),
     ('☕', (245, 235, 170)), ('♨', (245, 130, 95)), ('✺', (84, 216, 190)),
     ('◉', (110, 205, 255))
 ]
 ix = name_x
-icon_font = ImageFont.truetype(FONT_BOLD, 19)
+icon_font = ImageFont.truetype(FONT_BOLD, 22)
 for symbol, color in icons:
-    d.ellipse((ix, icon_y, ix + icon_size, icon_y + icon_size), fill=color + (255,), outline=(255, 255, 255, 180), width=1)
-    centered_text(d, (ix, icon_y, ix + icon_size, icon_y + icon_size), symbol, icon_font, (25, 25, 25, 255))
+    d_card.ellipse((ix, icon_y, ix + icon_size, icon_y + icon_size), fill=color + (255,), outline=(255, 255, 255, 180), width=2)
+    centered_text(d_card, (ix, icon_y, ix + icon_size, icon_y + icon_size), symbol, icon_font, (25, 25, 25, 255))
     ix += icon_size + icon_gap
 
-# Hook is pixel-wrapped and font-fitted within the card.
-hook_x, hook_y = 86, 690
-hook_width, hook_height = 900, 225
-hook_font, hook_lines, line_height = fit_hook(d, hook, hook_width, hook_height)
+# Hook is pixel wrapped and constrained to the card.
+hook_x, hook_y = 86, 510
+hook_width, hook_height = 900, 210
+hook_font, hook_lines, line_height = fit_hook(d_card, hook, hook_width, hook_height)
 for i, line in enumerate(hook_lines):
-    d.text((hook_x, hook_y + i * line_height), line, font=hook_font, fill=(8, 8, 8, 255))
+    d_card.text((hook_x, hook_y + i * line_height), line, font=hook_font, fill=(8, 8, 8, 255))
 
-# Footer engagement icons inside card.
-foot_y = 950
+# Engagement row: separate like and comment counters with a real message bubble.
+foot_y = 770
 light = (110, 110, 110, 255)
-f_meta = ImageFont.truetype(FONT_REG, 28)
+f_meta = ImageFont.truetype(FONT_REG, 30)
 f_sym = ImageFont.truetype(FONT_REG, 34)
-d.text((82, foot_y - 6), '♡', font=f_sym, fill=light)
-d.text((123, foot_y), '99+', font=f_meta, fill=light)
-d.text((174, foot_y - 4), '◯', font=f_sym, fill=light)
-d.text((219, foot_y), '99+', font=f_meta, fill=light)
-d.text((872, foot_y - 4), '↗', font=ImageFont.truetype(FONT_REG, 29), fill=light)
-d.text((906, foot_y), 'Share', font=f_meta, fill=light)
+d_card.text((82, foot_y - 6), '♡', font=f_sym, fill=light)
+d_card.text((128, foot_y), '99+', font=f_meta, fill=light)
 
-# Persistent handle + yellow SUBSCRIBE in rounded black pills, above description UI safe zone.
-def pill(box, text, font, fill):
-    d.rounded_rectangle(box, radius=(box[3] - box[1]) // 2, fill=(0, 0, 0, 215), outline=(255, 255, 255, 60), width=2)
-    centered_text(d, box, text, font, fill)
+bubble_x, bubble_y = 218, foot_y + 3
+d_card.rounded_rectangle((bubble_x, bubble_y, bubble_x + 40, bubble_y + 28), radius=9, outline=light, width=3)
+d_card.polygon([
+    (bubble_x + 11, bubble_y + 28),
+    (bubble_x + 17, bubble_y + 38),
+    (bubble_x + 22, bubble_y + 28)
+], fill=light)
+d_card.text((272, foot_y), '99+', font=f_meta, fill=light)
 
-pill((285, 1490, 795, 1564), handle, ImageFont.truetype(FONT_BOLD, 42), (255, 255, 255, 255))
-pill((360, 1578, 720, 1648), 'SUBSCRIBE', ImageFont.truetype(FONT_BOLD, 38), (255, 214, 40, 255))
+d_card.text((872, foot_y - 4), '↗', font=ImageFont.truetype(FONT_REG, 29), fill=light)
+d_card.text((906, foot_y), 'Share', font=f_meta, fill=light)
 
-overlay_path = OUT / 'story-card.png'
-overlay.save(overlay_path)
+# Persistent safe-zone branding with opaque rounded black backgrounds.
+def pill(draw_obj, box, text, font, fill):
+    draw_obj.rounded_rectangle(box, radius=(box[3] - box[1]) // 2, fill=(0, 0, 0, 225), outline=(255, 255, 255, 70), width=2)
+    centered_text(draw_obj, box, text, font, fill)
 
-# Phrase-following subtitles with wide horizontal safety margins.
+pill(d_brand, (285, 1490, 795, 1564), handle, ImageFont.truetype(FONT_BOLD, 42), (255, 255, 255, 255))
+pill(d_brand, (360, 1578, 720, 1648), 'SUBSCRIBE', ImageFont.truetype(FONT_BOLD, 38), (255, 214, 40, 255))
+
+card_overlay_path = OUT / 'story-card.png'
+branding_overlay_path = OUT / 'branding.png'
+card_overlay.save(card_overlay_path)
+branding_overlay.save(branding_overlay_path)
+
+# Phrase-following subtitles: larger font, wider horizontal safety margins and
+# centered vertically once the transient card has disappeared.
 chunks = phrase_chunks(story, 5)
 weights = [max(1, len(c.split())) for c in chunks]
 total = sum(weights)
@@ -219,21 +234,29 @@ for c, w in zip(chunks, weights):
     t = end
 
 ass = OUT / 'captions.ass'
-ass.write_text(f'''[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 2\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Main,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,6,2,2,155,155,520,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n''' + '\n'.join(events) + '\n', encoding='utf-8')
+ass.write_text(f'''[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 2\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Main,DejaVu Sans,72,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,7,2,5,210,210,0,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n''' + '\n'.join(events) + '\n', encoding='utf-8')
 
-# Background footage is deliberately independent from the story: it should be visually satisfying,
-# kinetic and loopable (gameplay, abstract motion, satisfying process, etc.).
+# Visually satisfying background, independent from story semantics.
 background = OUT / 'background.asset'
 download(data['background_url'], background, data.get('background_source_url'))
 video = OUT / 'short.mp4'
 filter_complex = (
     "[0:v]fps=30,scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
     "eq=brightness=-0.03:saturation=1.03[bg];"
-    f"[bg][1:v]overlay=0:0[tmp];[tmp]subtitles='{ass.as_posix()}'[v]"
+    "[1:v]format=rgba,fade=t=out:st=1.70:d=0.30:alpha=1[card];"
+    "[2:v]format=rgba[brand];"
+    "[bg][card]overlay=x=0:y='-6*sin(PI*t/2)'[tmp1];"
+    "[tmp1][brand]overlay=0:0[tmp2];"
+    f"[tmp2]subtitles='{ass.as_posix()}'[v]"
 )
 run([
-    'ffmpeg', '-y', '-stream_loop', '-1', '-i', str(background), '-loop', '1', '-i', str(overlay_path), '-i', str(narration),
-    '-filter_complex', filter_complex, '-map', '[v]', '-map', '2:a:0', '-t', str(duration),
+    'ffmpeg', '-y',
+    '-stream_loop', '-1', '-i', str(background),
+    '-loop', '1', '-i', str(card_overlay_path),
+    '-loop', '1', '-i', str(branding_overlay_path),
+    '-i', str(narration),
+    '-filter_complex', filter_complex,
+    '-map', '[v]', '-map', '3:a:0', '-t', str(duration),
     '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21', '-pix_fmt', 'yuv420p',
     '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', str(video)
 ])
