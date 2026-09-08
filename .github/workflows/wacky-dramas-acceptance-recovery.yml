@@ -1,0 +1,82 @@
+name: Wacky Dramas Acceptance Recovery
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/wacky-dramas-acceptance-recovery.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: wacky-dramas-youtube-upload
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  inspect-existing:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Inspect existing acceptance video without mutation
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, sys
+          from datetime import datetime, timezone
+          import requests
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from upload import make_client, build_upload_body
+          cid = 'wd-20260909T004900-unpaid-overtime-c84f2a'
+          path = pathlib.Path(f'youtube-shorts-bot/content/requests/{cid}.json')
+          raw = path.read_bytes()
+          assert hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest() == '8efe3f1a468445c7c18a0328d2780be47fe5a6b4'
+          data = json.loads(raw)
+          client = make_client()
+          channels = client.channels().list(part='id,snippet,contentDetails', mine=True).execute()
+          video = client.videos().list(part='snippet,status,contentDetails', id='vUTeNhM0UH8').execute()
+          report = {'observed_at': datetime.now(timezone.utc).isoformat(), 'content_id': cid, 'channels': channels, 'video': video}
+          original_body = build_upload_body(data)
+          original_body['snippet']['tags'][0] = 'wd-id-' + cid
+          report['original_upload_body_reconstructed_from_source'] = original_body
+          try:
+              report['owner_file_details'] = client.videos().list(part='fileDetails,processingDetails', id='vUTeNhM0UH8').execute()
+          except Exception as exc:
+              report['owner_file_details_error'] = str(exc)
+          out = pathlib.Path('youtube-shorts-bot/output')
+          out.mkdir(exist_ok=True)
+          (out/'acceptance-inspection.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          items = video.get('items', [])
+          assert len(items) == 1 and items[0]['id'] == 'vUTeNhM0UH8'
+          item = items[0]
+          assert item['snippet']['channelId'] in [c['id'] for c in channels['items']]
+          assert item['status']['privacyStatus'] == 'private'
+          assert 'publishAt' not in item['status']
+          for name, thumbnail in item['snippet'].get('thumbnails', {}).items():
+              response = requests.get(thumbnail['url'], timeout=30)
+              if response.ok:
+                  (out/f'actual-youtube-thumbnail-{name}.jpg').write_bytes(response.content)
+          print('Read-only inspection passed: intended video, authenticated owner, PRIVATE, no publishAt. No upload or metadata mutation executed.')
+          PY
+      - name: Preserve lightweight inspection evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-inspection-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            youtube-shorts-bot/output/acceptance-inspection.json
+            youtube-shorts-bot/output/actual-youtube-thumbnail-*.jpg
+          if-no-files-found: error
+          retention-days: 7
