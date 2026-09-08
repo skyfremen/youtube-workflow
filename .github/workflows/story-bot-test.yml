@@ -2,6 +2,10 @@ name: Wacky Dramas Story Bot Test
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'youtube-story-bot/**'
+      - '.github/workflows/story-bot-test.yml'
 
 permissions:
   contents: read
@@ -27,7 +31,6 @@ jobs:
         run: python youtube-story-bot/render.py
       - name: Verify duration
         run: |
-          D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 youtube-story-bot/output/short.mp4)
           python - <<'PY'
           import subprocess
           d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','youtube-story-bot/output/short.mp4'], text=True).strip())
