@@ -36,16 +36,30 @@ jobs:
       - name: Validate test story
         run: python youtube-story-bot/validate_content.py
 
-      - name: Render 10-second Kokoro test
+      - name: Render Kokoro story test
         run: python youtube-story-bot/render.py
 
-      - name: Verify duration
+      - name: Verify narration-driven duration
         run: |
           python - <<'PY'
+          import json
           import subprocess
-          d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','youtube-story-bot/output/short.mp4'], text=True).strip())
-          assert 9.85 <= d <= 10.15, d
-          print(f'Verified duration: {d:.3f}s')
+          from pathlib import Path
+
+          base = Path('youtube-story-bot')
+          planned = float(json.loads((base / 'content/latest.json').read_text())['duration_seconds'])
+          video = float(subprocess.check_output([
+              'ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',
+              str(base / 'output/short.mp4')
+          ], text=True).strip())
+          narration = float(subprocess.check_output([
+              'ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',
+              str(base / 'output/narration.wav')
+          ], text=True).strip())
+          expected = min(planned, narration + 0.35)
+          assert abs(video - expected) <= 0.20, (video, narration, expected)
+          assert video <= planned + 0.10, (video, planned)
+          print(f'Verified video={video:.3f}s narration={narration:.3f}s expected={expected:.3f}s')
           PY
 
       - uses: actions/upload-artifact@v4
@@ -56,4 +70,5 @@ jobs:
             youtube-story-bot/output/story-card.png
             youtube-story-bot/output/branding.png
             youtube-story-bot/output/captions.ass
+            youtube-story-bot/output/narration.wav
           retention-days: 7
