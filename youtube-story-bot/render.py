@@ -3,8 +3,12 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFile
 from kokoro import KPipeline
+
+# GitHub binary uploads can occasionally leave a truncated PNG. Allow Pillow to
+# recover any still-decodable image data, and fall back safely if decoding fails.
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
@@ -126,17 +130,25 @@ for off, alpha in [(10, 55), (18, 25)]:
     )
 d.rounded_rectangle(card_box, radius=36, fill=(251, 251, 251, 252), outline=(28, 28, 28, 255), width=5)
 
-# Use the generated Wacky Dramas profile picture from assets.
+# Use the generated Wacky Dramas profile picture from assets. If the image is
+# damaged, render a deterministic WD avatar instead of failing the whole video.
 logo_path = ASSETS / 'channel-logo.png'
+logo_loaded = False
 if logo_path.exists():
-    logo = Image.open(logo_path).convert('RGBA')
-    avatar_size = 132
-    mask = Image.new('L', (avatar_size, avatar_size), 0)
-    ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
-    avatar = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
-    avatar.paste(ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS), (0, 0), mask)
-    overlay.alpha_composite(avatar, (82, 525))
-else:
+    try:
+        with Image.open(logo_path) as source_logo:
+            source_logo.load()
+            logo = source_logo.convert('RGBA').copy()
+        avatar_size = 132
+        mask = Image.new('L', (avatar_size, avatar_size), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
+        avatar = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
+        avatar.paste(ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS), (0, 0), mask)
+        overlay.alpha_composite(avatar, (82, 525))
+        logo_loaded = True
+    except (OSError, ValueError) as exc:
+        print(f'WARNING: channel logo could not be decoded; using WD fallback: {exc}')
+if not logo_loaded:
     d.ellipse((82, 525, 214, 657), fill=(18, 18, 22, 255), outline=(230, 55, 45, 255), width=7)
     f_avatar = ImageFont.truetype(FONT_BOLD, 46)
     centered_text(d, (82, 525, 214, 657), 'WD', f_avatar, (255, 255, 255, 255))
