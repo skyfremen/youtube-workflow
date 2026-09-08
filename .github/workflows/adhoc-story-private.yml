@@ -138,6 +138,7 @@ jobs:
             youtube-shorts-bot/output/*.json
             youtube-shorts-bot/output/story-card.png
             youtube-shorts-bot/output/captions.ass
+            youtube-shorts-bot/output/short.mp4
           if-no-files-found: ignore
           retention-days: 7
 
