@@ -23,6 +23,7 @@ EMOJI_FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",
     "/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf",
 ]
+CARD_TRANSITION_SECONDS = 0.30
 
 
 def run(cmd):
@@ -104,6 +105,17 @@ def choose_test_narration(pipeline, script, voice, speed, max_seconds):
         shorter = " ".join(words[:keep]).rstrip(",;:-")
         audio, segments = synthesize(pipeline, shorter, voice, speed)
     return shorter, audio, segments
+
+
+def story_body_without_repeated_hook(script, hook):
+    """Return the story body without re-reading an identical opening card hook."""
+    script = str(script).strip()
+    hook = str(hook).strip()
+    if hook and script.startswith(hook):
+        remainder = script[len(hook):].lstrip()
+        if remainder:
+            return remainder
+    return script
 
 
 def pick_existing(paths):
@@ -232,7 +244,7 @@ def render_emoji(icon, target_size, scale):
             continue
     raise RuntimeError(f"Unable to render requested card emoji: {icon}")
 
-def caption_events(text, tts_segments, speech_duration):
+def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
     events = []
     usable = [(t, n) for t, n in tts_segments if t and n > 0]
     segment_words = sum(len(t.split()) for t, _ in usable)
@@ -252,7 +264,7 @@ def caption_events(text, tts_segments, speech_duration):
             for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
                 end = min(speech_duration, seg_start + seg_duration if idx == len(chunks) - 1 else local + seg_duration * weight / total)
                 if end > local + 0.03:
-                    events.append(f"Dialogue: 0,{ass_time(local)},{ass_time(end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
+                    events.append(f"Dialogue: 0,{ass_time(start_offset + local)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
                 local = end
             cursor = min(speech_duration, seg_start + seg_duration)
     else:
@@ -262,7 +274,7 @@ def caption_events(text, tts_segments, speech_duration):
         for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
             end = speech_duration if idx == len(chunks) - 1 else min(speech_duration, cursor + speech_duration * weight / total)
             if end > cursor + 0.03:
-                events.append(f"Dialogue: 0,{ass_time(cursor)},{ass_time(end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
+                events.append(f"Dialogue: 0,{ass_time(cursor)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
             cursor = end
     return events
 
@@ -301,12 +313,36 @@ def main():
     import soundfile as sf
 
     pipeline = KPipeline(lang_code="a")
-    if test_mode:
-        narration_text, speech_audio, tts_segments = choose_test_narration(pipeline, script, voice, speed, test_max)
-    else:
-        narration_text = script
-        speech_audio, tts_segments = synthesize(pipeline, script, voice, speed)
+    story_text = story_body_without_repeated_hook(script, hook)
+    if not story_text:
+        raise SystemExit("story.script must contain story narration after the opening card hook")
 
+    # Phase 1: read the complete card hook while the card is fully visible.
+    # There are deliberately no subtitle events for this audio.
+    intro_audio, _intro_segments = synthesize(pipeline, hook, voice, speed)
+    intro_duration = len(intro_audio) / 24000.0
+
+    # Phase 2: reserve a short silent transition while the card fades away.
+    # Phase 3 begins only after the card has completely left the frame.
+    story_budget = test_max - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None
+    if test_mode:
+        if story_budget < 1.0:
+            raise SystemExit(
+                f"Opening card narration ({intro_duration:.3f}s) leaves too little room for a story excerpt "
+                f"inside STORY_RENDER_MAX_SECONDS={test_max:.3f}s; shorten story.hook for testability."
+            )
+        narration_text, story_audio, tts_segments = choose_test_narration(
+            pipeline, story_text, voice, speed, story_budget
+        )
+    else:
+        narration_text = story_text
+        story_audio, tts_segments = synthesize(pipeline, story_text, voice, speed)
+
+    story_duration = len(story_audio) / 24000.0
+    transition_samples = int(round(CARD_TRANSITION_SECONDS * 24000))
+    transition_audio = np.zeros(max(1, transition_samples), dtype=np.float32)
+    speech_audio = np.concatenate([intro_audio, transition_audio, story_audio])
+    story_start = intro_duration + CARD_TRANSITION_SECONDS
     speech_duration = len(speech_audio) / 24000.0
     final_duration = speech_duration + END_TAIL_SECONDS
     if test_mode:
@@ -404,7 +440,7 @@ def main():
     card.save(card_path)
     brand.save(brand_path)
 
-    events = caption_events(narration_text, tts_segments, speech_duration)
+    events = caption_events(narration_text, tts_segments, story_duration, start_offset=story_start)
     ass = OUTPUT_DIR / "captions.ass"
     font_size = scaled(78, scale)
     outline = max(3, scaled(7, scale))
@@ -427,8 +463,8 @@ Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
     ass.write_text(ass_header + "\n".join(events) + "\n", encoding="utf-8")
 
     video = OUTPUT_DIR / "short.mp4"
-    card_fade_start = min(1.70, max(0.0, final_duration - 0.30))
-    card_fade_dur = min(0.30, max(0.05, final_duration - card_fade_start))
+    card_fade_start = intro_duration
+    card_fade_dur = CARD_TRANSITION_SECONDS
     filter_complex = (
         f"[0:v]fps={fps},scale={W}:{H}:force_original_aspect_ratio=increase,"
         f"crop={W}:{H},eq=brightness=-0.03:saturation=1.03[bg];"
@@ -455,6 +491,11 @@ Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
         "narration_voice": voice,
         "narration_speed": speed,
         "narration_seconds": round(speech_duration, 6),
+        "card_title_text": hook,
+        "card_title_seconds": round(intro_duration, 6),
+        "card_transition_seconds": CARD_TRANSITION_SECONDS,
+        "story_start_seconds": round(story_start, 6),
+        "story_narration_seconds": round(story_duration, 6),
         "video_seconds": round(final_duration, 6),
         "resolution": f"{W}x{H}",
         "fps": fps,
