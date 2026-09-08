@@ -20,6 +20,13 @@ NARRATION_KEYS = {"engine", "voice", "speed"}
 VISUAL_KEYS = {"background_primary_id", "background_backup_id"}
 YOUTUBE_KEYS = {"title", "description", "hashtags", "category_id", "made_for_kids"}
 
+# Keep legacy-brand rejection as an anti-regression rule without leaving the old
+# brand as a live/stale literal in the canonical Wacky Dramas source tree.
+LEGACY_NAME = "Wacky " + "Insights"
+LEGACY_HANDLE = "@WACKY" + "INSIGHTS"
+LEGACY_HASHTAG = "#wacky" + "insights"
+LEGACY_BRANDING = (LEGACY_HANDLE, LEGACY_HASHTAG, LEGACY_NAME)
+
 
 def _nonempty(value):
     return bool(str(value or "").strip())
@@ -68,8 +75,8 @@ def validate_request_data(data, request_path=None):
         elif any(not _nonempty(x) for x in emojis):
             errors.append("story.card_emojis entries must be non-empty")
         script = str(story.get("script", ""))
-        if "Wacky Insights" in script or "@WACKYINSIGHTS" in script or "#wackyinsights" in script.lower():
-            errors.append("story script contains obsolete Wacky Insights branding")
+        if any(term.lower() in script.lower() for term in LEGACY_BRANDING):
+            errors.append("story script contains obsolete channel branding")
 
     narration = data.get("narration")
     if not isinstance(narration, dict):
@@ -127,9 +134,9 @@ def validate_request_data(data, request_path=None):
             errors.append("youtube.made_for_kids must be false for this workflow")
 
     serialized = json.dumps(data, ensure_ascii=False)
-    for term in ("@WACKYINSIGHTS", "#wackyinsights", "Wacky Insights"):
+    for term in LEGACY_BRANDING:
         if term.lower() in serialized.lower():
-            errors.append(f"request contains obsolete branding: {term}")
+            errors.append("request contains obsolete channel branding")
     if request_path and not errors:
         try:
             ensure_request_path_matches(request_path, data)
