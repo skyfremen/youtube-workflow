@@ -1,4 +1,4 @@
-# Wacky Dramas private upload recovery
+# Wacky Dramas private upload and recovery
 
 The canonical Shorts architecture is request-driven and immutable:
 
