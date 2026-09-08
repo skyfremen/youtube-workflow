@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
-from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFile
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFile, ImageStat
 from kokoro import KPipeline
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -133,24 +133,6 @@ def render_emoji(icon, target_size=54):
     return tile
 
 
-def draw_twitter_verified_badge(draw, x, y, size=38):
-    cx = x + size / 2
-    cy = y + size / 2
-    r_outer = size * 0.48
-    r_inner = size * 0.41
-    points = []
-    teeth = 12
-    for i in range(teeth * 2):
-        angle = math.radians(-90 + i * 180 / teeth)
-        radius = r_outer if i % 2 == 0 else r_inner
-        points.append((cx + math.cos(angle) * radius, cy + math.sin(angle) * radius))
-    draw.polygon(points, fill=(29, 155, 240, 255))
-    check_font = ImageFont.truetype(FONT_BOLD, int(size * 0.58))
-    bb = draw.textbbox((0, 0), '✓', font=check_font)
-    tw, th = bb[2] - bb[0], bb[3] - bb[1]
-    draw.text((cx - tw / 2, cy - th / 2 - 2), '✓', font=check_font, fill=(255,255,255,255))
-
-
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
 for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
@@ -176,6 +158,7 @@ for off, alpha in [(10,55),(18,25)]:
     d_card.rounded_rectangle((card_box[0]+off,card_box[1]+off,card_box[2]+off,card_box[3]+off), radius=36, fill=(0,0,0,alpha))
 d_card.rounded_rectangle(card_box, radius=36, fill=(251,251,251,252), outline=(28,28,28,255), width=5)
 
+# channel-avatar.png is the single authoritative display picture.
 logo_loaded = False
 logo_path = ASSETS / 'channel-avatar.png'
 if logo_path.exists():
@@ -183,7 +166,16 @@ if logo_path.exists():
         with Image.open(logo_path) as source_logo:
             source_logo.load()
             logo = source_logo.convert('RGBA').copy()
+        # Fail loudly if a nearly-black/corrupt asset ever gets committed again.
+        rgb = logo.convert('RGB')
+        stat = ImageStat.Stat(rgb)
+        mean_rgb = stat.mean
+        extrema = rgb.getextrema()
+        dynamic_range = sum(hi - lo for lo, hi in extrema)
+        if max(mean_rgb) < 18 or dynamic_range < 90:
+            raise ValueError(f'channel-avatar.png appears blank/corrupt: mean={mean_rgb}, extrema={extrema}')
         avatar_size = 132
+        # Preserve the complete source artwork; never crop it.
         contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
         avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0,0,0,255))
         px = (avatar_size-contained.width)//2
@@ -196,18 +188,26 @@ if logo_path.exists():
         card_overlay.alpha_composite(clipped,(82,290))
         logo_loaded=True
     except (OSError,ValueError) as exc:
-        print(f'WARNING: channel avatar could not be decoded: {exc}')
+        raise SystemExit(f'Invalid channel avatar: {exc}')
 if not logo_loaded:
-    d_card.ellipse((82,290,214,422),fill=(18,18,22,255),outline=(230,55,45,255),width=7)
-    f_avatar=ImageFont.truetype(FONT_BOLD,46)
-    centered_text(d_card,(82,290,214,422),'WD',f_avatar,(255,255,255,255))
+    raise SystemExit('Missing required asset: youtube-story-bot/assets/channel-avatar.png')
 
 name_x,name_y=235,285
 f_name=ImageFont.truetype(FONT_BOLD,40)
 d_card.text((name_x,name_y),channel_name,font=f_name,fill=(18,18,18,255))
 name_bb=d_card.textbbox((name_x,name_y),channel_name,font=f_name)
-vx,vy=name_bb[2]+20,name_y+5
-draw_twitter_verified_badge(d_card, vx, vy, size=38)
+vx,vy=name_bb[2]+20,name_y+7
+# Twitter/X-style scalloped blue verified badge.
+badge_size=38
+cx,cy=vx+badge_size/2,vy+badge_size/2
+pts=[]
+for i in range(24):
+    a=math.pi*2*i/24 - math.pi/2
+    r=(badge_size/2) if i%2==0 else (badge_size/2)*0.84
+    pts.append((cx+math.cos(a)*r,cy+math.sin(a)*r))
+d_card.polygon(pts,fill=(29,155,240,255))
+check_font=ImageFont.truetype(FONT_BOLD,22)
+d_card.text((vx+8,vy+3),'✓',font=check_font,fill=(255,255,255,255))
 
 emoji_icons=['💼','🏠','💔','🔥','☕','😱']
 icon_y=350
