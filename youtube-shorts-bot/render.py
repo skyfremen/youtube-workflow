@@ -80,154 +80,136 @@ def run(cmd):
     subprocess.run(cmd, check=True)
 
 
-def ass_time(seconds):
-    cs = int(round(max(0.0, seconds) * 100))
-    h, rem = divmod(cs, 360000)
-    m, rem = divmod(rem, 6000)
-    s, cs = divmod(rem, 100)
-    return f"{h}:{m:02}:{s:02}.{cs:02}"
-
-
-def escape_ass(text):
-    return str(text).replace("\\", r"\\").replace("{", r"\{").replace("}", r"\}").replace("\n", r"\N")
-
-
-def phrase_chunks(text, max_words=3):
-    words = text.split()
-    return [" ".join(words[i:i + max_words]) for i in range(0, len(words), max_words)]
-
-
-def sentence_prefixes(text, max_words=42):
-    sentences = [x.strip() for x in re.split(r"(?<=[.!?])\s+", text.strip()) if x.strip()]
-    prefixes = []
-    words = []
-    for sentence in sentences:
-        sw = sentence.split()
-        if words and len(words) + len(sw) > max_words:
-            break
-        words.extend(sw)
-        prefixes.append(" ".join(words))
-        if len(words) >= max_words:
-            break
-    if not prefixes:
-        words = text.split()[:max_words]
-        if words:
-            prefixes = [" ".join(words)]
-    return prefixes
-
-
-def synthesize(pipeline, text, voice, speed):
-    audio_parts, segments = [], []
-    for gs, _ps, segment_audio in pipeline(text, voice=voice, speed=speed):
-        part = np.asarray(segment_audio, dtype=np.float32)
-        if not part.size:
-            continue
-        audio_parts.append(part)
-        segments.append((str(gs).strip() if gs is not None else "", len(part)))
-    if not audio_parts:
-        raise RuntimeError("Kokoro produced no audio")
-    return np.concatenate(audio_parts), segments
-
-
-def choose_test_narration(pipeline, script, voice, speed, max_seconds):
-    prefixes = sentence_prefixes(script, max_words=42)
-    target_low = max(1.5, max_seconds - 0.8)
-    best = None
-    for excerpt in prefixes:
-        audio, segments = synthesize(pipeline, excerpt, voice, speed)
-        duration = len(audio) / 24000.0
-        best = (excerpt, audio, segments, duration)
-        if duration >= target_low:
-            break
-    if best is None:
-        raise RuntimeError("Could not derive a test excerpt")
-    excerpt, audio, segments, duration = best
-    if duration <= max_seconds:
-        return excerpt, audio, segments
-
-    words = excerpt.split()
-    keep = max(3, int(len(words) * (max_seconds - 0.15) / duration))
-    shorter = " ".join(words[:keep]).rstrip(",;:-")
-    audio, segments = synthesize(pipeline, shorter, voice, speed)
-    duration = len(audio) / 24000.0
-    if duration > max_seconds:
-        keep = max(3, int(keep * (max_seconds - 0.15) / duration))
-        shorter = " ".join(words[:keep]).rstrip(",;:-")
-        audio, segments = synthesize(pipeline, shorter, voice, speed)
-    return shorter, audio, segments
-
-
-def story_body_without_repeated_hook(script, hook):
-    """Return the story body without re-reading an identical opening card hook."""
-    script = str(script).strip()
-    hook = str(hook).strip()
-    if hook and script.startswith(hook):
-        remainder = script[len(hook):].lstrip()
-        if remainder:
-            return remainder
-    return script
-
-
-def pick_existing(paths):
-    for path in paths:
-        if Path(path).exists():
-            return path
-    return None
-
-
 def font_px(path, size):
-    return ImageFont.truetype(path, max(12, int(size)))
+    return ImageFont.truetype(path, int(size))
 
-def wrap_pixels(draw, text, fnt, max_width, max_lines=3):
-    lines, current = [], ""
-    for word in str(text).split():
-        trial = f"{current} {word}".strip()
-        width = draw.textbbox((0, 0), trial, font=fnt)[2]
-        if current and width > max_width:
-            lines.append(current)
-            current = word
+
+def fit_text(draw, text, path, max_size, min_size, max_width):
+    for size in range(max_size, min_size - 1, -1):
+        font = font_px(path, size)
+        if draw.textlength(text, font=font) <= max_width:
+            return font
+    return font_px(path, min_size)
+
+
+def wrap_by_width(draw, text, font, max_width):
+    words = str(text).split()
+    lines = []
+    current = []
+    for word in words:
+        candidate = " ".join(current + [word])
+        if not current or draw.textlength(candidate, font=font) <= max_width:
+            current.append(word)
         else:
-            current = trial
+            lines.append(" ".join(current))
+            current = [word]
     if current:
-        lines.append(current)
-    return lines[:max_lines], len(lines) <= max_lines
+        lines.append(" ".join(current))
+    return lines
 
 
 def fit_hook(draw, text, max_width, max_height):
-    for font_size in range(HOOK_MAX_FONT_SIZE, HOOK_MIN_FONT_SIZE - 1, -1):
-        fnt = font_px(FONT_BOLD, font_size)
-        lines, fits = wrap_pixels(draw, text, fnt, max_width, 6)
-        bb = draw.textbbox((0, 0), "Ag", font=fnt)
-        line_height = (bb[3] - bb[1]) + HOOK_LINE_GAP
-        widths_fit = all(draw.textlength(line, font=fnt) <= max_width for line in lines)
-        if fits and widths_fit and len(lines) * line_height <= max_height:
-            return fnt, lines, line_height
-    raise ValueError("Complete opening hook cannot fit card bounds; refusing to truncate text")
+    for size in range(HOOK_MAX_FONT_SIZE, HOOK_MIN_FONT_SIZE - 1, -1):
+        font = font_px(FONT_BOLD, size)
+        lines = wrap_by_width(draw, text, font, max_width)
+        bbox = draw.textbbox((0, 0), "Ag", font=font)
+        line_height = bbox[3] - bbox[1] + HOOK_LINE_GAP
+        if lines and len(lines) * line_height <= max_height:
+            return font, lines, line_height
+    font = font_px(FONT_BOLD, HOOK_MIN_FONT_SIZE)
+    lines = wrap_by_width(draw, text, font, max_width)
+    bbox = draw.textbbox((0, 0), "Ag", font=font)
+    line_height = bbox[3] - bbox[1] + HOOK_LINE_GAP
+    if len(lines) * line_height > max_height:
+        raise SystemExit("story.hook does not fit the opening card at the minimum font size")
+    return font, lines, line_height
+
+
+def centered_text(draw, box, text, font, fill):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
+    x = box[0] + (box[2] - box[0] - w) / 2 - bbox[0]
+    y = box[1] + (box[3] - box[1] - h) / 2 - bbox[1]
+    draw.text((x, y), text, font=font, fill=fill)
+
+
+def load_ui_icon(name, size):
+    path = UI_ASSETS / name
+    if not path.exists():
+        raise SystemExit(f"Missing required UI asset: {path}")
+    with Image.open(path) as src:
+        src.load()
+        image = src.convert("RGBA").copy()
+    return image.resize((size, size), Image.Resampling.LANCZOS)
+
+
+def paste_icon_centered(canvas, icon, x, center_y):
+    y = int(center_y - icon.height / 2)
+    canvas.alpha_composite(icon, (int(x), y))
+    return int(x) + icon.width
+
+
+def draw_text_centered_y(draw, x, center_y, text, font, fill):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    h = bbox[3] - bbox[1]
+    y = center_y - h / 2 - bbox[1]
+    draw.text((x, y), text, font=font, fill=fill)
+
+
+def _emoji_font_path():
+    return next((Path(p) for p in EMOJI_FONT_CANDIDATES if Path(p).exists()), None)
+
+
+def render_emoji(emoji, target_size=EMOJI_TARGET_SIZE):
+    font_path = _emoji_font_path()
+    if not font_path:
+        raise SystemExit("Noto emoji font is required for card emojis")
+    # Noto Color Emoji has fixed bitmap strikes; 109px is the native size on
+    # Debian and avoids Pillow's "invalid pixel size" failure.
+    native_size = 109 if font_path.name == "NotoColorEmoji.ttf" else max(72, target_size * 2)
+    font = ImageFont.truetype(str(font_path), native_size)
+    scratch = Image.new("RGBA", (180, 180), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(scratch)
+    bbox = draw.textbbox((0, 0), emoji, font=font, embedded_color=True)
+    if bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
+        raise SystemExit(f"Emoji could not be rendered: {emoji!r}")
+    draw.text((-bbox[0] + 12, -bbox[1] + 12), emoji, font=font, embedded_color=True)
+    alpha = scratch.getchannel("A")
+    content = alpha.getbbox()
+    if not content:
+        raise SystemExit(f"Emoji rendered blank: {emoji!r}")
+    cropped = scratch.crop(content)
+    cropped.thumbnail((target_size, target_size), Image.Resampling.LANCZOS)
+    return cropped
 
 
 def caption_layout(text):
-    draw = ImageDraw.Draw(Image.new("L", (1, 1)))
-    for font_size in range(CAPTION_FONT_SIZE, CAPTION_MIN_FONT_SIZE - 1, -1):
-        fnt = font_px(FONT_BOLD, font_size)
-        lines, current = [], ""
-        oversized = False
-        for word in str(text).split():
-            if draw.textlength(word, font=fnt) > CAPTION_MAX_WIDTH:
-                oversized = True
+    text = str(text).upper().strip()
+    if not text:
+        return "", CAPTION_FONT_SIZE
+    for size in range(CAPTION_FONT_SIZE, CAPTION_MIN_FONT_SIZE - 1, -1):
+        font = font_px(FONT_BOLD, size)
+        draw = ImageDraw.Draw(Image.new("L", (1, 1)))
+        words = text.split()
+        lines = []
+        current = []
+        failed = False
+        for word in words:
+            if draw.textlength(word, font=font) > CAPTION_MAX_WIDTH:
+                failed = True
                 break
-            trial = (current + " " + word).strip()
-            if current and draw.textlength(trial, font=fnt) > CAPTION_MAX_WIDTH:
-                lines.append(current)
-                current = word
+            candidate = " ".join(current + [word])
+            if not current or draw.textlength(candidate, font=font) <= CAPTION_MAX_WIDTH:
+                current.append(word)
             else:
-                current = trial
-        if oversized:
-            continue
+                lines.append(" ".join(current))
+                current = [word]
         if current:
-            lines.append(current)
-        if len(lines) <= CAPTION_MAX_LINES:
-            return "\n".join(lines), font_size
-    raise ValueError("Caption cannot fit safe central region without clipping")
+            lines.append(" ".join(current))
+        if not failed and len(lines) <= CAPTION_MAX_LINES:
+            return "\n".join(lines), size
+    raise ValueError(f"Caption cannot fit inside {CAPTION_MAX_WIDTH}px safe width: {text!r}")
 
 
 def wrap_caption(text):
@@ -235,11 +217,9 @@ def wrap_caption(text):
 
 
 def caption_ass_text(text):
-    wrapped, event_font_size = caption_layout(text)
-    payload = escape_ass(wrapped)
-    if event_font_size != CAPTION_FONT_SIZE:
-        return f"{{\fs{event_font_size}}}{payload}"
-    return payload
+    wrapped, size = caption_layout(text)
+    escaped = wrapped.replace("{", "\\{").replace("}", "\\}")
+    return f"{{\\fs{size}}}" + escaped.replace("\n", r"\N")
 
 
 def build_ass_header():
@@ -247,86 +227,96 @@ def build_ass_header():
 ScriptType: v4.00+
 PlayResX: {VIDEO_WIDTH}
 PlayResY: {VIDEO_HEIGHT}
-WrapStyle: 0
+WrapStyle: 2
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
-Style: Main,DejaVu Sans,{CAPTION_FONT_SIZE},&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,{CAPTION_OUTLINE},{CAPTION_SHADOW},5,{CAPTION_MARGIN_X},{CAPTION_MARGIN_X},0,1
+Style: Main,DejaVu Sans,{CAPTION_FONT_SIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H5A000000,-1,0,0,0,100,100,0,0,1,{CAPTION_OUTLINE},{CAPTION_SHADOW},5,{CAPTION_MARGIN_X},{CAPTION_MARGIN_X},0,1
 
 [Events]
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
 """
 
-def centered_text(draw, box, text, fnt, fill):
-    x1, y1, x2, y2 = box
-    bb = draw.textbbox((0, 0), text, font=fnt)
-    tw, th = bb[2] - bb[0], bb[3] - bb[1]
-    draw.text((x1 + (x2 - x1 - tw) / 2, y1 + (y2 - y1 - th) / 2 - 2), text, font=fnt, fill=fill)
+
+def ass_time(seconds):
+    seconds = max(0.0, float(seconds))
+    centis = int(round(seconds * 100))
+    h, rem = divmod(centis, 360000)
+    m, rem = divmod(rem, 6000)
+    s, cs = divmod(rem, 100)
+    return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
 
 
-def load_ui_icon(name, target_size):
-    path = UI_ASSETS / name
-    if not path.exists():
-        raise RuntimeError(f"Missing required UI asset: {path}")
-    with Image.open(path) as source:
-        source.load()
-        icon = source.convert("RGBA").copy()
-    bbox = icon.getchannel("A").getbbox()
-    if not bbox:
-        raise RuntimeError(f"UI asset has no visible pixels: {path}")
-    icon = icon.crop(bbox)
-    return ImageOps.contain(icon, (target_size, target_size), method=Image.Resampling.LANCZOS)
+def story_body_without_repeated_hook(script, hook):
+    body = str(script).strip()
+    opening = str(hook).strip()
+    if opening and body.startswith(opening):
+        body = body[len(opening):].lstrip(" \t\r\n-—:;,.!?\"")
+    return body
 
 
-def paste_icon_centered(canvas, icon, x, center_y):
-    y = int(round(center_y - icon.height / 2))
-    canvas.alpha_composite(icon, (int(x), y))
-    return int(x + icon.width)
-
-
-def draw_text_centered_y(draw, x, center_y, text, fnt, fill):
-    bb = draw.textbbox((0, 0), text, font=fnt)
-    y = center_y - (bb[3] - bb[1]) / 2 - bb[1]
-    draw.text((x, y), text, font=fnt, fill=fill)
-    return bb[2] - bb[0]
-
-
-def render_emoji(icon, target_size):
-    # NotoColorEmoji on Debian is a bitmap font with a native 109px strike.
-    # Render at that supported size first, then downscale the bitmap for
-    # the fixed 720p canvas. Scaling the font size itself makes Pillow
-    # reject the strike at 720p and previously caused every emoji to fall
-    # back to an identical dot.
-    for emoji_font in EMOJI_FONT_CANDIDATES:
-        if not Path(emoji_font).exists():
+def synthesize(pipeline, text, voice, speed, max_seconds=None):
+    chunks = []
+    segments = []
+    samples = 0
+    limit = None if max_seconds is None else max(1, int(round(float(max_seconds) * 24000)))
+    for _gs, ps, audio in pipeline(text, voice=voice, speed=speed):
+        arr = np.asarray(audio, dtype=np.float32).reshape(-1)
+        if arr.size == 0:
             continue
-        try:
-            tile_size = 150
-            tile = Image.new("RGBA", (tile_size, tile_size), (0, 0, 0, 0))
-            draw = ImageDraw.Draw(tile)
-            preferred_size = 109 if "ColorEmoji" in emoji_font else 96
-            fnt = ImageFont.truetype(emoji_font, preferred_size)
-            bb = draw.textbbox((0, 0), icon, font=fnt, embedded_color=True)
-            x = (tile_size - (bb[2] - bb[0])) / 2 - bb[0]
-            y = (tile_size - (bb[3] - bb[1])) / 2 - bb[1]
-            draw.text((x, y), icon, font=fnt, embedded_color=True)
-            bbox = tile.getbbox()
-            if bbox:
-                tile = tile.crop(bbox)
-                return ImageOps.contain(tile, (target_size, target_size), method=Image.Resampling.LANCZOS)
-        except (OSError, ValueError):
-            continue
-    raise RuntimeError(f"Unable to render requested card emoji: {icon}")
+        if limit is not None:
+            remaining = limit - samples
+            if remaining <= 0:
+                break
+            if arr.size > remaining:
+                arr = arr[:remaining]
+        chunks.append(arr)
+        segments.append((str(ps).strip(), int(arr.size)))
+        samples += int(arr.size)
+        if limit is not None and samples >= limit:
+            break
+    if not chunks:
+        raise SystemExit("Kokoro returned no narration audio")
+    return np.concatenate(chunks), segments
+
+
+def choose_test_narration(pipeline, text, voice, speed, max_seconds):
+    words = str(text).split()
+    if not words:
+        raise SystemExit("No story words available for the test excerpt")
+    low, high = 1, len(words)
+    best = None
+    while low <= high:
+        mid = (low + high) // 2
+        candidate = " ".join(words[:mid])
+        audio, segments = synthesize(pipeline, candidate, voice, speed, max_seconds=max_seconds)
+        duration = len(audio) / 24000.0
+        if duration <= max_seconds + 0.01:
+            best = (candidate, audio, segments)
+            low = mid + 1
+        else:
+            high = mid - 1
+    if not best:
+        candidate = words[0]
+        audio, segments = synthesize(pipeline, candidate, voice, speed, max_seconds=max_seconds)
+        best = (candidate, audio, segments)
+    return best
+
+
+def phrase_chunks(text, max_words=3):
+    words = str(text).split()
+    return [" ".join(words[i:i + max_words]) for i in range(0, len(words), max_words)]
+
 
 def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
     events = []
-    usable = [(t, n) for t, n in tts_segments if t and n > 0]
-    segment_words = sum(len(t.split()) for t, _ in usable)
-    text_words = len(text.split())
-    use_segments = bool(usable) and segment_words >= max(1, int(text_words * 0.75))
     cursor = 0.0
-    if use_segments:
+    segment_words = sum(len(seg.split()) for seg, samples in tts_segments if seg and samples > 0)
+    total_words = max(1, len(str(text).split()))
+    coverage = segment_words / total_words
+    usable = [(seg, samples) for seg, samples in tts_segments if seg and samples > 0]
+    if usable and coverage >= 0.75:
         for seg_text, samples in usable:
             seg_start = cursor
             seg_duration = min(samples / 24000.0, max(0.0, speech_duration - seg_start))
@@ -388,7 +378,7 @@ def main():
     from kokoro import KPipeline
     import soundfile as sf
 
-    pipeline = KPipeline(lang_code="a")
+    pipeline = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
     story_text = story_body_without_repeated_hook(script, hook)
     if not story_text:
         raise SystemExit("story.script must contain story narration after the opening card hook")
