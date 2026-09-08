@@ -12,6 +12,7 @@ BASE = Path(__file__).parent
 CONTENT = BASE / 'content' / 'latest.json'
 OUT = BASE / 'output'
 ASSETS = BASE / 'assets'
+UI_ASSETS = ASSETS / 'ui'
 OUT.mkdir(exist_ok=True)
 
 data = json.loads(CONTENT.read_text(encoding='utf-8'))
@@ -107,6 +108,23 @@ def centered_text(draw, box, text, font, fill):
     draw.text((x1 + (x2 - x1 - tw) / 2, y1 + (y2 - y1 - th) / 2 - 2), text, font=font, fill=fill)
 
 
+def load_ui_icon(name, target_size):
+    path = UI_ASSETS / name
+    if not path.exists():
+        raise SystemExit(f'Missing required UI asset: {path}')
+    try:
+        with Image.open(path) as source:
+            source.load()
+            icon = source.convert('RGBA').copy()
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f'Invalid UI asset {path}: {exc}')
+    bbox = icon.getchannel('A').getbbox()
+    if not bbox:
+        raise SystemExit(f'UI asset has no visible pixels: {path}')
+    icon = icon.crop(bbox)
+    return ImageOps.contain(icon, (target_size, target_size), method=Image.Resampling.LANCZOS)
+
+
 def render_emoji(icon, target_size=54):
     emoji_font_path = pick_existing(EMOJI_FONT_CANDIDATES)
     if emoji_font_path:
@@ -190,17 +208,10 @@ name_x,name_y=235,285
 f_name=ImageFont.truetype(FONT_BOLD,40)
 d_card.text((name_x,name_y),channel_name,font=f_name,fill=(18,18,18,255))
 name_bb=d_card.textbbox((name_x,name_y),channel_name,font=f_name)
-vx,vy=name_bb[2]+20,name_y+7
-badge_size=38
-cx,cy=vx+badge_size/2,vy+badge_size/2
-pts=[]
-for i in range(24):
-    a=math.pi*2*i/24 - math.pi/2
-    r=(badge_size/2) if i%2==0 else (badge_size/2)*0.84
-    pts.append((cx+math.cos(a)*r,cy+math.sin(a)*r))
-d_card.polygon(pts,fill=(29,155,240,255))
-check_font=ImageFont.truetype(FONT_BOLD,22)
-d_card.text((vx+8,vy+3),'✓',font=check_font,fill=(255,255,255,255))
+verified_icon = load_ui_icon('verified-blue.png', 38)
+verified_x = int(name_bb[2] + 18)
+verified_y = int(name_y + 4)
+card_overlay.alpha_composite(verified_icon, (verified_x, verified_y))
 
 emoji_icons=['💼','🏠','💔','🔥','☕','😱']
 icon_y=350
@@ -221,14 +232,14 @@ for i,line in enumerate(hook_lines):
 foot_y=720
 light=(110,110,110,255)
 f_meta=ImageFont.truetype(FONT_REG,30)
-f_sym=ImageFont.truetype(FONT_REG,34)
-d_card.text((82,foot_y-6),'♡',font=f_sym,fill=light)
-d_card.text((128,foot_y),'99+',font=f_meta,fill=light)
-bubble_x,bubble_y=218,foot_y+3
-d_card.rounded_rectangle((bubble_x,bubble_y,bubble_x+40,bubble_y+28),radius=9,outline=light,width=3)
-d_card.polygon([(bubble_x+11,bubble_y+28),(bubble_x+17,bubble_y+38),(bubble_x+22,bubble_y+28)],fill=light)
-d_card.text((272,foot_y),'99+',font=f_meta,fill=light)
-d_card.text((872,foot_y-4),'↗',font=ImageFont.truetype(FONT_REG,29),fill=light)
+like_icon = load_ui_icon('like.png', 30)
+comment_icon = load_ui_icon('comment.png', 31)
+share_icon = load_ui_icon('share.png', 29)
+card_overlay.alpha_composite(like_icon, (82, foot_y - 2))
+d_card.text((124,foot_y),'99+',font=f_meta,fill=light)
+card_overlay.alpha_composite(comment_icon, (214, foot_y - 1))
+d_card.text((258,foot_y),'99+',font=f_meta,fill=light)
+card_overlay.alpha_composite(share_icon, (868, foot_y - 1))
 d_card.text((906,foot_y),'Share',font=f_meta,fill=light)
 
 def pill(draw_obj,box,text,font,fill):
