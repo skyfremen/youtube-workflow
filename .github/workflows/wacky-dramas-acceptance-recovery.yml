@@ -1,9 +1,6 @@
 name: Wacky Dramas Acceptance Recovery
 
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/wacky-dramas-acceptance-recovery.yml']
   workflow_dispatch:
 
 permissions:
@@ -16,5 +13,5 @@ jobs:
     with:
       content_id: wd-20260909T004900-unpaid-overtime-c84f2a
       recovery_only: true
-      render_preview: true
+      render_preview: false
     secrets: inherit
