@@ -1,0 +1,44 @@
+name: Wacky Dramas Story Bot Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: youtube-story-bot/requirements.txt
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng libsndfile1 fonts-dejavu-core
+      - name: Install Python dependencies
+        run: pip install -r youtube-story-bot/requirements.txt
+      - name: Validate test story
+        run: python youtube-story-bot/validate_content.py
+      - name: Render 10-second Kokoro test
+        run: python youtube-story-bot/render.py
+      - name: Verify duration
+        run: |
+          D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 youtube-story-bot/output/short.mp4)
+          python - <<'PY'
+          import subprocess
+          d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','youtube-story-bot/output/short.mp4'], text=True).strip())
+          assert 9.85 <= d <= 10.15, d
+          print(f'Verified duration: {d:.3f}s')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-10s-test
+          path: |
+            youtube-story-bot/output/short.mp4
+            youtube-story-bot/output/story-card.png
+            youtube-story-bot/output/captions.ass
+          retention-days: 7
