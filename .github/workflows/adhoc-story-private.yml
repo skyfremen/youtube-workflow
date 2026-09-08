@@ -15,18 +15,7 @@ on:
         default: true
         type: boolean
       render_preview:
-        description: Render a migration/debug preview without uploading it to YouTube
-        default: false
-        type: boolean
-  workflow_call:
-    inputs:
-      content_id:
-        required: true
-        type: string
-      recovery_only:
-        default: true
-        type: boolean
-      render_preview:
+        description: Render a debug preview without uploading it to YouTube
         default: false
         type: boolean
 
@@ -152,7 +141,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Render explicit migration visual preview
+      - name: Render explicit debug visual preview
         if: inputs.render_preview && github.run_attempt == 1
         env:
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
@@ -167,11 +156,11 @@ jobs:
           ffmpeg -v error -ss 1.20 -i youtube-shorts-bot/preview/short.mp4 -frames:v 1 youtube-shorts-bot/preview/frame-caption.png
           ffmpeg -v error -ss 2.30 -i youtube-shorts-bot/preview/short.mp4 -frames:v 1 youtube-shorts-bot/preview/frame-after-card.png
 
-      - name: Preserve explicit migration visual preview
+      - name: Preserve explicit debug visual preview
         if: inputs.render_preview && github.run_attempt == 1 && always()
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-dramas-visual-preview-${{ github.run_id }}-${{ github.run_attempt }}
+          name: wacky-dramas-debug-preview-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             youtube-shorts-bot/preview/*.png
             youtube-shorts-bot/preview/*.json
