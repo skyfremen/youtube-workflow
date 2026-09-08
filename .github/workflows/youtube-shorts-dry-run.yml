@@ -142,11 +142,23 @@ jobs:
           dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text()
           prod=Path('.github/workflows/adhoc-story-private.yml').read_text()
 
-          for secret in ('YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN'):
+          # Build forbidden tokens in pieces so this assertion code does not make
+          # the workflow falsely match the very strings it is checking for.
+          secret_names = [
+              'YOUTUBE_' + 'CLIENT_ID',
+              'YOUTUBE_' + 'CLIENT_SECRET',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
+          ]
+          forbidden_exec = [
+              'python youtube-shorts-bot/' + 'render.py',
+              'python youtube-shorts-bot/' + 'publish.py',
+              'python youtube-shorts-bot/' + 'verify_youtube_private.py',
+          ]
+          for secret in secret_names:
               assert secret not in dry, f'dry run must not expose {secret}'
-          assert 'python youtube-shorts-bot/render.py' not in dry
-          assert 'python youtube-shorts-bot/publish.py' not in dry
-          assert 'python youtube-shorts-bot/verify_youtube_private.py' not in dry
+          for command in forbidden_exec:
+              assert command not in dry, f'dry run must not execute {command}'
+
           assert 'apt install' not in prod and 'apt-get' not in prod
           assert 'pip install' not in prod
           assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in prod
