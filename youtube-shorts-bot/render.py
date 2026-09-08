@@ -187,13 +187,20 @@ def draw_text_centered_y(draw, x, center_y, text, fnt, fill):
 
 
 def render_emoji(icon, target_size, scale):
-    emoji_font = pick_existing(EMOJI_FONT_CANDIDATES)
-    if emoji_font:
+    # NotoColorEmoji on Debian is a bitmap font with a native 109px strike.
+    # Render at that supported size first, then downscale the bitmap for
+    # the configured canvas. Scaling the font size itself makes Pillow
+    # reject the strike at 720p and previously caused every emoji to fall
+    # back to an identical dot.
+    for emoji_font in EMOJI_FONT_CANDIDATES:
+        if not Path(emoji_font).exists():
+            continue
         try:
-            tile_size = max(80, scaled(150, scale))
+            tile_size = 150
             tile = Image.new("RGBA", (tile_size, tile_size), (0, 0, 0, 0))
             draw = ImageDraw.Draw(tile)
-            fnt = ImageFont.truetype(emoji_font, max(40, scaled(109, scale)))
+            preferred_size = 109 if "ColorEmoji" in emoji_font else 96
+            fnt = ImageFont.truetype(emoji_font, preferred_size)
             bb = draw.textbbox((0, 0), icon, font=fnt, embedded_color=True)
             x = (tile_size - (bb[2] - bb[0])) / 2 - bb[0]
             y = (tile_size - (bb[3] - bb[1])) / 2 - bb[1]
@@ -201,14 +208,10 @@ def render_emoji(icon, target_size, scale):
             bbox = tile.getbbox()
             if bbox:
                 tile = tile.crop(bbox)
-            return ImageOps.contain(tile, (target_size, target_size), method=Image.Resampling.LANCZOS)
+                return ImageOps.contain(tile, (target_size, target_size), method=Image.Resampling.LANCZOS)
         except (OSError, ValueError):
-            pass
-    tile = Image.new("RGBA", (target_size, target_size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(tile)
-    centered_text(draw, (0, 0, target_size, target_size), "•", font(FONT_BOLD, 42, scale), (28, 28, 28, 255))
-    return tile
-
+            continue
+    raise RuntimeError(f"Unable to render requested card emoji: {icon}")
 
 def caption_events(text, tts_segments, speech_duration):
     events = []
