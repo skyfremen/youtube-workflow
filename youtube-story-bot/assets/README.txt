@@ -1,1 +1,0 @@
-Wacky Dramas visual assets live in this folder. channel-logo.png is the canonical channel display picture used by render.py.
