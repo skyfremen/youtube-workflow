@@ -158,46 +158,39 @@ for off, alpha in [(10,55),(18,25)]:
     d_card.rounded_rectangle((card_box[0]+off,card_box[1]+off,card_box[2]+off,card_box[3]+off), radius=36, fill=(0,0,0,alpha))
 d_card.rounded_rectangle(card_box, radius=36, fill=(251,251,251,252), outline=(28,28,28,255), width=5)
 
-# channel-avatar.png is the single authoritative display picture.
-logo_loaded = False
 logo_path = ASSETS / 'channel-avatar.png'
-if logo_path.exists():
-    try:
-        with Image.open(logo_path) as source_logo:
-            source_logo.load()
-            logo = source_logo.convert('RGBA').copy()
-        # Fail loudly if a nearly-black/corrupt asset ever gets committed again.
-        rgb = logo.convert('RGB')
-        stat = ImageStat.Stat(rgb)
-        mean_rgb = stat.mean
-        extrema = rgb.getextrema()
-        dynamic_range = sum(hi - lo for lo, hi in extrema)
-        if max(mean_rgb) < 18 or dynamic_range < 90:
-            raise ValueError(f'channel-avatar.png appears blank/corrupt: mean={mean_rgb}, extrema={extrema}')
-        avatar_size = 132
-        # Preserve the complete source artwork; never crop it.
-        contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
-        avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0,0,0,255))
-        px = (avatar_size-contained.width)//2
-        py = (avatar_size-contained.height)//2
-        avatar_square.alpha_composite(contained, (px,py))
-        mask = Image.new('L',(avatar_size,avatar_size),0)
-        ImageDraw.Draw(mask).ellipse((0,0,avatar_size-1,avatar_size-1),fill=255)
-        clipped = Image.new('RGBA',(avatar_size,avatar_size),(0,0,0,0))
-        clipped.paste(avatar_square,(0,0),mask)
-        card_overlay.alpha_composite(clipped,(82,290))
-        logo_loaded=True
-    except (OSError,ValueError) as exc:
-        raise SystemExit(f'Invalid channel avatar: {exc}')
-if not logo_loaded:
+if not logo_path.exists():
     raise SystemExit('Missing required asset: youtube-story-bot/assets/channel-avatar.png')
+try:
+    with Image.open(logo_path) as source_logo:
+        source_logo.load()
+        logo = source_logo.convert('RGBA').copy()
+    rgb = logo.convert('RGB')
+    stat = ImageStat.Stat(rgb)
+    mean_rgb = stat.mean
+    extrema = rgb.getextrema()
+    dynamic_range = sum(hi - lo for lo, hi in extrema)
+    if max(mean_rgb) < 18 or dynamic_range < 90:
+        raise ValueError(f'channel-avatar.png appears blank/corrupt: mean={mean_rgb}, extrema={extrema}')
+    avatar_size = 132
+    contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
+    avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0,0,0,0))
+    px = (avatar_size-contained.width)//2
+    py = (avatar_size-contained.height)//2
+    avatar_square.alpha_composite(contained, (px,py))
+    mask = Image.new('L',(avatar_size,avatar_size),0)
+    ImageDraw.Draw(mask).ellipse((0,0,avatar_size-1,avatar_size-1),fill=255)
+    clipped = Image.new('RGBA',(avatar_size,avatar_size),(0,0,0,0))
+    clipped.paste(avatar_square,(0,0),mask)
+    card_overlay.alpha_composite(clipped,(82,290))
+except (OSError,ValueError) as exc:
+    raise SystemExit(f'Invalid channel avatar: {exc}')
 
 name_x,name_y=235,285
 f_name=ImageFont.truetype(FONT_BOLD,40)
 d_card.text((name_x,name_y),channel_name,font=f_name,fill=(18,18,18,255))
 name_bb=d_card.textbbox((name_x,name_y),channel_name,font=f_name)
 vx,vy=name_bb[2]+20,name_y+7
-# Twitter/X-style scalloped blue verified badge.
 badge_size=38
 cx,cy=vx+badge_size/2,vy+badge_size/2
 pts=[]
