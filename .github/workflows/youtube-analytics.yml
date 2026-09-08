@@ -8,14 +8,8 @@ on:
 jobs:
   analytics:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     permissions:
       contents: write
-      packages: read
     env:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -24,6 +18,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Install analytics-only dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --no-input \
+            google-api-python-client==2.187.0 \
+            google-auth-httplib2==0.2.0 \
+            google-auth-oauthlib==1.2.2
       - name: Collect 90-day video analytics
         run: python youtube-shorts-bot/analytics.py
       - name: Commit analytics snapshot
