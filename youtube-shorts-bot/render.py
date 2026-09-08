@@ -25,6 +25,56 @@ EMOJI_FONT_CANDIDATES = [
 ]
 CARD_TRANSITION_SECONDS = 0.30
 
+# Wacky Dramas production layout is permanently 720x1280. Keep all UI
+# geometry in native output pixels so safe-space rules are explicit.
+VIDEO_WIDTH = 720
+VIDEO_HEIGHT = 1280
+
+CAPTION_MARGIN_X = 85
+CAPTION_MAX_WIDTH = VIDEO_WIDTH - (2 * CAPTION_MARGIN_X)  # 550px
+CAPTION_FONT_SIZE = 52
+CAPTION_MIN_FONT_SIZE = 39
+CAPTION_MAX_LINES = 3
+CAPTION_OUTLINE = 5
+CAPTION_SHADOW = 1
+
+CARD_BOX = (37, 157, 683, 537)
+CARD_RADIUS = 24
+CARD_SHADOWS = ((7, 55), (12, 25))
+CARD_BORDER_WIDTH = 3
+AVATAR_SIZE = 88
+AVATAR_POS = (55, 193)
+CHANNEL_NAME_POS = (157, 190)
+CHANNEL_NAME_FONT_SIZE = 27
+VERIFIED_ICON_SIZE = 25
+VERIFIED_ICON_GAP = 12
+VERIFIED_ICON_Y_OFFSET = 3
+EMOJI_ROW_Y = 233
+EMOJI_STEP_X = 51
+EMOJI_TARGET_SIZE = 44
+EMOJI_CELL_SIZE = 39
+HOOK_POS = (57, 303)
+HOOK_MAX_WIDTH = 600
+HOOK_MAX_HEIGHT = 147
+HOOK_MAX_FONT_SIZE = 43
+HOOK_MIN_FONT_SIZE = 27
+HOOK_LINE_GAP = 6
+FOOTER_Y = 495
+FOOTER_FONT_SIZE = 20
+LIKE_ICON_SIZE = 20
+COMMENT_ICON_SIZE = 21
+SHARE_ICON_SIZE = 19
+LIKE_X = 55
+COMMENT_X = 143
+SHARE_X = 579
+FOOTER_TEXT_GAP = 7
+HANDLE_PILL = (190, 840, 530, 889)
+SUBSCRIBE_PILL = (240, 899, 480, 945)
+HANDLE_FONT_SIZE = 28
+SUBSCRIBE_FONT_SIZE = 25
+PILL_OUTLINE_WIDTH = 1
+CARD_BOB_AMPLITUDE = 4
+
 
 def run(cmd):
     subprocess.run(cmd, check=True)
@@ -125,13 +175,8 @@ def pick_existing(paths):
     return None
 
 
-def scaled(value, scale):
-    return int(round(value * scale))
-
-
-def font(path, base_size, scale):
-    return ImageFont.truetype(path, max(12, scaled(base_size, scale)))
-
+def font_px(path, size):
+    return ImageFont.truetype(path, max(12, int(size)))
 
 def wrap_pixels(draw, text, fnt, max_width, max_lines=3):
     lines, current = [], ""
@@ -148,12 +193,12 @@ def wrap_pixels(draw, text, fnt, max_width, max_lines=3):
     return lines[:max_lines], len(lines) <= max_lines
 
 
-def fit_hook(draw, text, max_width, max_height, scale):
-    for base_size in range(64, 39, -2):
-        fnt = font(FONT_BOLD, base_size, scale)
+def fit_hook(draw, text, max_width, max_height):
+    for font_size in range(HOOK_MAX_FONT_SIZE, HOOK_MIN_FONT_SIZE - 1, -1):
+        fnt = font_px(FONT_BOLD, font_size)
         lines, fits = wrap_pixels(draw, text, fnt, max_width, 6)
         bb = draw.textbbox((0, 0), "Ag", font=fnt)
-        line_height = (bb[3] - bb[1]) + scaled(9, scale)
+        line_height = (bb[3] - bb[1]) + HOOK_LINE_GAP
         widths_fit = all(draw.textlength(line, font=fnt) <= max_width for line in lines)
         if fits and widths_fit and len(lines) * line_height <= max_height:
             return fnt, lines, line_height
@@ -161,20 +206,17 @@ def fit_hook(draw, text, max_width, max_height, scale):
 
 
 def caption_layout(text):
-    cfg = expected_video_config()
-    scale = cfg["width"] / 1080.0
-    max_width = cfg["width"] - 2 * scaled(156, scale) - 2 * scaled(9, scale)
     draw = ImageDraw.Draw(Image.new("L", (1, 1)))
-    for base_size in range(78, 57, -2):
-        fnt = font(FONT_BOLD, base_size, scale)
+    for font_size in range(CAPTION_FONT_SIZE, CAPTION_MIN_FONT_SIZE - 1, -1):
+        fnt = font_px(FONT_BOLD, font_size)
         lines, current = [], ""
         oversized = False
         for word in str(text).split():
-            if draw.textlength(word, font=fnt) > max_width:
+            if draw.textlength(word, font=fnt) > CAPTION_MAX_WIDTH:
                 oversized = True
                 break
             trial = (current + " " + word).strip()
-            if current and draw.textlength(trial, font=fnt) > max_width:
+            if current and draw.textlength(trial, font=fnt) > CAPTION_MAX_WIDTH:
                 lines.append(current)
                 current = word
             else:
@@ -183,8 +225,8 @@ def caption_layout(text):
             continue
         if current:
             lines.append(current)
-        if len(lines) <= 3:
-            return "\n".join(lines), max(12, scaled(base_size, scale))
+        if len(lines) <= CAPTION_MAX_LINES:
+            return "\n".join(lines), font_size
     raise ValueError("Caption cannot fit safe central region without clipping")
 
 
@@ -195,11 +237,26 @@ def wrap_caption(text):
 def caption_ass_text(text):
     wrapped, event_font_size = caption_layout(text)
     payload = escape_ass(wrapped)
-    cfg = expected_video_config()
-    default_size = max(12, scaled(78, cfg["width"] / 1080.0))
-    if event_font_size != default_size:
+    if event_font_size != CAPTION_FONT_SIZE:
         return f"{{\fs{event_font_size}}}{payload}"
     return payload
+
+
+def build_ass_header():
+    return f"""[Script Info]
+ScriptType: v4.00+
+PlayResX: {VIDEO_WIDTH}
+PlayResY: {VIDEO_HEIGHT}
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Main,DejaVu Sans,{CAPTION_FONT_SIZE},&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,{CAPTION_OUTLINE},{CAPTION_SHADOW},5,{CAPTION_MARGIN_X},{CAPTION_MARGIN_X},0,1
+
+[Events]
+Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+"""
 
 def centered_text(draw, box, text, fnt, fill):
     x1, y1, x2, y2 = box
@@ -235,10 +292,10 @@ def draw_text_centered_y(draw, x, center_y, text, fnt, fill):
     return bb[2] - bb[0]
 
 
-def render_emoji(icon, target_size, scale):
+def render_emoji(icon, target_size):
     # NotoColorEmoji on Debian is a bitmap font with a native 109px strike.
     # Render at that supported size first, then downscale the bitmap for
-    # the configured canvas. Scaling the font size itself makes Pillow
+    # the fixed 720p canvas. Scaling the font size itself makes Pillow
     # reject the strike at 720p and previously caused every emoji to fall
     # back to an identical dot.
     for emoji_font in EMOJI_FONT_CANDIDATES:
@@ -308,11 +365,12 @@ def main():
         raise SystemExit("Render requires resolved output/background_selection.json and background.asset")
 
     cfg = expected_video_config()
-    W, H, fps = cfg["width"], cfg["height"], cfg["fps"]
-    if W <= 0 or H <= 0 or fps <= 0:
-        raise SystemExit("VIDEO_WIDTH, VIDEO_HEIGHT and VIDEO_FPS must be positive")
-    sx, sy = W / 1080.0, H / 1920.0
-    scale = min(sx, sy)
+    fps = cfg["fps"]
+    if (cfg["width"], cfg["height"]) != (VIDEO_WIDTH, VIDEO_HEIGHT):
+        raise SystemExit("Wacky Dramas renderer requires fixed 720x1280 production dimensions")
+    if fps <= 0:
+        raise SystemExit("VIDEO_FPS must be positive")
+    W, H = VIDEO_WIDTH, VIDEO_HEIGHT
 
     story = request["story"]
     narration_cfg = request["narration"]
@@ -380,13 +438,17 @@ def main():
     brand = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     dc, db = ImageDraw.Draw(card), ImageDraw.Draw(brand)
 
-    box = tuple(scaled(v, sx if i % 2 == 0 else sy) for i, v in enumerate((56, 235, 1024, 805)))
-    radius = scaled(36, scale)
-    for off_base, alpha in ((10, 55), (18, 25)):
-        offx, offy = scaled(off_base, sx), scaled(off_base, sy)
-        shadow = (box[0] + offx, box[1] + offy, box[2] + offx, box[3] + offy)
-        dc.rounded_rectangle(shadow, radius=radius, fill=(0, 0, 0, alpha))
-    dc.rounded_rectangle(box, radius=radius, fill=(251, 251, 251, 252), outline=(28, 28, 28, 255), width=max(2, scaled(5, scale)))
+    box = CARD_BOX
+    for offset, alpha in CARD_SHADOWS:
+        shadow = (box[0] + offset, box[1] + offset, box[2] + offset, box[3] + offset)
+        dc.rounded_rectangle(shadow, radius=CARD_RADIUS, fill=(0, 0, 0, alpha))
+    dc.rounded_rectangle(
+        box,
+        radius=CARD_RADIUS,
+        fill=(251, 251, 251, 252),
+        outline=(28, 28, 28, 255),
+        width=CARD_BORDER_WIDTH,
+    )
 
     logo_path = ASSETS / "channel-avatar.png"
     if not logo_path.exists():
@@ -399,59 +461,69 @@ def main():
     extrema = rgb.getextrema()
     if max(stat.mean) < 18 or sum(hi - lo for lo, hi in extrema) < 90:
         raise SystemExit("channel-avatar.png appears blank or corrupt")
-    avatar_size = scaled(132, scale)
-    avatar = logo.resize((avatar_size, avatar_size), Image.Resampling.LANCZOS)
-    mask = Image.new("L", (avatar_size, avatar_size), 0)
-    ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
-    clipped = Image.new("RGBA", (avatar_size, avatar_size), (0, 0, 0, 0))
+    avatar = logo.resize((AVATAR_SIZE, AVATAR_SIZE), Image.Resampling.LANCZOS)
+    mask = Image.new("L", (AVATAR_SIZE, AVATAR_SIZE), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, AVATAR_SIZE - 1, AVATAR_SIZE - 1), fill=255)
+    clipped = Image.new("RGBA", (AVATAR_SIZE, AVATAR_SIZE), (0, 0, 0, 0))
     clipped.paste(avatar, (0, 0), mask)
-    card.alpha_composite(clipped, (scaled(82, sx), scaled(290, sy)))
+    card.alpha_composite(clipped, AVATAR_POS)
 
-    name_x, name_y = scaled(235, sx), scaled(285, sy)
-    name_font = font(FONT_BOLD, 40, scale)
+    name_x, name_y = CHANNEL_NAME_POS
+    name_font = font_px(FONT_BOLD, CHANNEL_NAME_FONT_SIZE)
     dc.text((name_x, name_y), channel_name, font=name_font, fill=(18, 18, 18, 255))
     name_bb = dc.textbbox((name_x, name_y), channel_name, font=name_font)
-    verified = load_ui_icon("verified-blue.png", scaled(38, scale))
-    card.alpha_composite(verified, (int(name_bb[2] + scaled(18, sx)), int(name_y + scaled(4, sy))))
+    verified = load_ui_icon("verified-blue.png", VERIFIED_ICON_SIZE)
+    card.alpha_composite(
+        verified,
+        (int(name_bb[2] + VERIFIED_ICON_GAP), int(name_y + VERIFIED_ICON_Y_OFFSET)),
+    )
 
     emojis = story.get("card_emojis", [])[:6]
-    icon_y = scaled(350, sy)
     ix = name_x
-    icon_step = scaled(76, sx)
-    icon_target = scaled(66, scale)
     for emoji in emojis:
-        img = render_emoji(str(emoji), icon_target, scale)
-        x = int(ix + (scaled(58, sx) - img.width) / 2)
-        y = int(icon_y + (scaled(58, sy) - img.height) / 2)
+        img = render_emoji(str(emoji), EMOJI_TARGET_SIZE)
+        x = int(ix + (EMOJI_CELL_SIZE - img.width) / 2)
+        y = int(EMOJI_ROW_Y + (EMOJI_CELL_SIZE - img.height) / 2)
         card.alpha_composite(img, (x, y))
-        ix += icon_step
+        ix += EMOJI_STEP_X
 
-    hook_x, hook_y = scaled(86, sx), scaled(455, sy)
-    hook_width, hook_height = scaled(900, sx), scaled(220, sy)
-    hook_font, hook_lines, line_height = fit_hook(dc, hook, hook_width, hook_height, scale)
+    hook_x, hook_y = HOOK_POS
+    hook_font, hook_lines, line_height = fit_hook(
+        dc, hook, HOOK_MAX_WIDTH, HOOK_MAX_HEIGHT
+    )
     for i, line in enumerate(hook_lines):
         dc.text((hook_x, hook_y + i * line_height), line, font=hook_font, fill=(8, 8, 8, 255))
 
-    foot_y = scaled(742, sy)
     light = (110, 110, 110, 255)
-    meta_font = font(FONT_REG, 30, scale)
-    like = load_ui_icon("like.png", scaled(30, scale))
-    comment = load_ui_icon("comment.png", scaled(31, scale))
-    share = load_ui_icon("share.png", scaled(29, scale))
-    end = paste_icon_centered(card, like, scaled(82, sx), foot_y)
-    draw_text_centered_y(dc, end + scaled(10, sx), foot_y, "99+", meta_font, light)
-    end = paste_icon_centered(card, comment, scaled(214, sx), foot_y)
-    draw_text_centered_y(dc, end + scaled(10, sx), foot_y, "99+", meta_font, light)
-    end = paste_icon_centered(card, share, scaled(868, sx), foot_y)
-    draw_text_centered_y(dc, end + scaled(10, sx), foot_y, "Share", meta_font, light)
+    meta_font = font_px(FONT_REG, FOOTER_FONT_SIZE)
+    like = load_ui_icon("like.png", LIKE_ICON_SIZE)
+    comment = load_ui_icon("comment.png", COMMENT_ICON_SIZE)
+    share = load_ui_icon("share.png", SHARE_ICON_SIZE)
+    end = paste_icon_centered(card, like, LIKE_X, FOOTER_Y)
+    draw_text_centered_y(dc, end + FOOTER_TEXT_GAP, FOOTER_Y, "99+", meta_font, light)
+    end = paste_icon_centered(card, comment, COMMENT_X, FOOTER_Y)
+    draw_text_centered_y(dc, end + FOOTER_TEXT_GAP, FOOTER_Y, "99+", meta_font, light)
+    end = paste_icon_centered(card, share, SHARE_X, FOOTER_Y)
+    draw_text_centered_y(dc, end + FOOTER_TEXT_GAP, FOOTER_Y, "Share", meta_font, light)
 
-    def pill(draw, coords, text, fnt, fill):
-        b = (scaled(coords[0], sx), scaled(coords[1], sy), scaled(coords[2], sx), scaled(coords[3], sy))
-        draw.rounded_rectangle(b, radius=(b[3] - b[1]) // 2, fill=(0, 0, 0, 225), outline=(255, 255, 255, 70), width=max(1, scaled(2, scale)))
-        centered_text(draw, b, text, fnt, fill)
+    def pill(draw, box, text, fnt, fill):
+        draw.rounded_rectangle(
+            box,
+            radius=(box[3] - box[1]) // 2,
+            fill=(0, 0, 0, 225),
+            outline=(255, 255, 255, 70),
+            width=PILL_OUTLINE_WIDTH,
+        )
+        centered_text(draw, box, text, fnt, fill)
 
-    pill(db, (285, 1260, 795, 1334), handle, font(FONT_BOLD, 42, scale), (255, 255, 255, 255))
-    pill(db, (360, 1348, 720, 1418), "SUBSCRIBE", font(FONT_BOLD, 38, scale), (255, 214, 40, 255))
+    pill(db, HANDLE_PILL, handle, font_px(FONT_BOLD, HANDLE_FONT_SIZE), (255, 255, 255, 255))
+    pill(
+        db,
+        SUBSCRIBE_PILL,
+        "SUBSCRIBE",
+        font_px(FONT_BOLD, SUBSCRIBE_FONT_SIZE),
+        (255, 214, 40, 255),
+    )
 
     card_path = OUTPUT_DIR / "story-card.png"
     brand_path = OUTPUT_DIR / "branding.png"
@@ -460,25 +532,7 @@ def main():
 
     events = caption_events(narration_text, tts_segments, story_duration, start_offset=story_start)
     ass = OUTPUT_DIR / "captions.ass"
-    font_size = scaled(78, scale)
-    outline = max(3, scaled(7, scale))
-    shadow = max(1, scaled(2, scale))
-    margin_lr = scaled(156, sx)
-    ass_header = f"""[Script Info]
-ScriptType: v4.00+
-PlayResX: {W}
-PlayResY: {H}
-WrapStyle: 0
-ScaledBorderAndShadow: yes
-
-[V4+ Styles]
-Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
-Style: Main,DejaVu Sans,{font_size},&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,{outline},{shadow},5,{margin_lr},{margin_lr},0,1
-
-[Events]
-Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
-"""
-    ass.write_text(ass_header + "\n".join(events) + "\n", encoding="utf-8")
+    ass.write_text(build_ass_header() + "\n".join(events) + "\n", encoding="utf-8")
 
     video = OUTPUT_DIR / "short.mp4"
     card_fade_start = intro_duration
@@ -488,7 +542,7 @@ Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
         f"crop={W}:{H},eq=brightness=-0.03:saturation=1.03[bg];"
         f"[1:v]format=rgba,fade=t=out:st={card_fade_start:.2f}:d={card_fade_dur:.2f}:alpha=1[card];"
         "[2:v]format=rgba[brand];"
-        f"[bg][card]overlay=x=0:y='-{scaled(6, sy)}*sin(PI*t/2)'[tmp1];"
+        f"[bg][card]overlay=x=0:y='-{CARD_BOB_AMPLITUDE}*sin(PI*t/2)'[tmp1];"
         "[tmp1][brand]overlay=0:0[tmp2];"
         f"[tmp2]subtitles='{ass.as_posix()}'[v]"
     )
