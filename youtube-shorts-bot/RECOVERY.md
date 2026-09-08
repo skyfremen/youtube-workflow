@@ -62,6 +62,10 @@ The production-duration path was accepted using content ID `wd-20260908T190630-r
 
 This proves the normal production path can render, upload, verify, and receipt a story inside the 120–175 second target while staying below the 178-second ceiling.
 
+## Native 720p layout contract
+
+The Shorts renderer now uses native fixed 720x1280 UI coordinates rather than scaling a 1080x1920 design space. Caption geometry is explicit: 85px left margin, 85px right margin, and 550px usable text width, with equal ASS margins so the subtitle block remains horizontally centered. Other card, branding, icon, pill, and motion coordinates are also stored directly in native 720p pixels.
+
 The live YouTube channel rename is user-managed and may be completed later. Recovery and upload ownership are pinned to the authenticated channel ID, not the display name.
 
 ## Historical incomplete acceptance requests
