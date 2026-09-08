@@ -29,7 +29,6 @@ FONT_REG = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 EMOJI_FONT_CANDIDATES = [
     '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',
     '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
 ]
 
 
@@ -37,7 +36,7 @@ def pick_existing(paths):
     for p in paths:
         if Path(p).exists():
             return p
-    return paths[-1]
+    return None
 
 
 def run(cmd):
@@ -108,6 +107,42 @@ def centered_text(draw, box, text, font, fill):
     draw.text((x1 + (x2 - x1 - tw) / 2, y1 + (y2 - y1 - th) / 2 - 2), text, font=font, fill=fill)
 
 
+def render_emoji(icon, target_size=54):
+    emoji_font_path = pick_existing(EMOJI_FONT_CANDIDATES)
+    if emoji_font_path:
+        try:
+            # Noto Color Emoji is a bitmap font and only accepts fixed strike sizes.
+            # Render at its supported 109 px strike, then downscale for the card.
+            font = ImageFont.truetype(emoji_font_path, 109)
+            tile = Image.new('RGBA', (150, 150), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(tile)
+            bb = draw.textbbox((0, 0), icon, font=font, embedded_color=True)
+            x = (150 - (bb[2] - bb[0])) / 2 - bb[0]
+            y = (150 - (bb[3] - bb[1])) / 2 - bb[1]
+            draw.text((x, y), icon, font=font, embedded_color=True)
+            bbox = tile.getbbox()
+            if bbox:
+                tile = tile.crop(bbox)
+            return ImageOps.contain(tile, (target_size, target_size), method=Image.Resampling.LANCZOS)
+        except (OSError, ValueError):
+            pass
+
+    # Safe fallback if an emoji font is unavailable: use a large readable symbol.
+    fallback_map = {
+        '💼': 'B',
+        '🏠': 'H',
+        '💔': '♥',
+        '🔥': 'F',
+        '☕': 'C',
+        '😱': '!',
+    }
+    tile = Image.new('RGBA', (target_size, target_size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    font = ImageFont.truetype(FONT_BOLD, int(target_size * 0.72))
+    centered_text(draw, (0, 0, target_size, target_size), fallback_map.get(icon, '•'), font, (28, 28, 28, 255))
+    return tile
+
+
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
 for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
@@ -171,14 +206,15 @@ vx, vy = name_bb[2] + 20, name_y + 8
 d_card.ellipse((vx, vy, vx + 38, vy + 38), fill=(82, 141, 255, 255))
 d_card.text((vx + 10, vy + 5), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
 
-emoji_font = ImageFont.truetype(pick_existing(EMOJI_FONT_CANDIDATES), 36)
 emoji_icons = ['💼', '🏠', '💔', '🔥', '☕', '😱']
-icon_y = 352
+icon_y = 350
 ix = name_x
 for icon in emoji_icons:
-    box = (ix, icon_y, ix + 58, icon_y + 58)
-    centered_text(d_card, box, icon, emoji_font, (32, 32, 32, 255))
-    ix += 64
+    emoji_img = render_emoji(icon, target_size=54)
+    x = int(ix + (58 - emoji_img.width) / 2)
+    y = int(icon_y + (58 - emoji_img.height) / 2)
+    card_overlay.alpha_composite(emoji_img, (x, y))
+    ix += 66
 
 hook_x, hook_y = 86, 455
 hook_width, hook_height = 900, 220
