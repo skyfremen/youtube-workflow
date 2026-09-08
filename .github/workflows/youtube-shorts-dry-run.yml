@@ -67,6 +67,7 @@ jobs:
           forbidden_paths = [
               'youtube-story-bot',
               'youtube-shorts-bot-backup',
+              'youtube-longform-bot',
               '.github/workflows/backup-shorts-once.yml',
               '.github/workflows/build-story-image.yml',
               '.github/workflows/daily-plan-validate.yml',
@@ -74,6 +75,7 @@ jobs:
               '.github/workflows/media-library-validate.yml',
               '.github/workflows/story-bot-test.yml',
               '.github/workflows/wacky-dramas-acceptance-recovery.yml',
+              '.github/workflows/youtube-longform-mvp.yml',
               'youtube-shorts-bot/content/archive',
               'youtube-shorts-bot/content/latest.json',
               'youtube-shorts-bot/content/plans',
@@ -97,7 +99,6 @@ jobs:
               'adhoc-story-private.yml',
               'build-shorts-image.yml',
               'youtube-analytics.yml',
-              'youtube-longform-mvp.yml',
               'youtube-shorts-dry-run.yml',
           }
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
@@ -118,6 +119,7 @@ jobs:
               '@WACKYINSIGHTS',
               'youtube-story-bot',
               'youtube-shorts-bot-backup',
+              'youtube-longform-bot',
               'content/latest.json',
               'content/plans/',
               'queue_manager.py',
@@ -131,7 +133,7 @@ jobs:
                   if term in text:
                       hits.append(f'{path}: {term}')
           assert not hits, 'stale active references: ' + '; '.join(hits)
-          print('Legacy Shorts/story architecture removed; immutable evidence and longform excluded from cleanup audit.')
+          print('Legacy Shorts/story/longform architectures removed; immutable Shorts evidence preserved.')
           PY
 
       - name: Check immutable request result and recovery history
