@@ -14,6 +14,7 @@ PRODUCTION_MAX_SECONDS = 178.0
 PRODUCTION_TARGET_MIN_SECONDS = 120.0
 PRODUCTION_TARGET_MAX_SECONDS = 175.0
 END_TAIL_SECONDS = 0.35
+YOUTUBE_TAG_MAX_CHARS = 30
 
 
 def load_json(path):
@@ -41,8 +42,18 @@ def validate_content_id(content_id):
 
 
 def marker_tag(content_id):
+    """Return a deterministic hidden YouTube recovery tag for a request.
+
+    A full Wacky Dramas content_id is longer than YouTube's practical single-tag
+    limit. Hashing the complete immutable content_id keeps the marker collision-
+    resistant while fitting safely inside the platform limit.
+    """
     validate_content_id(content_id)
-    return f"wd-id-{content_id}"
+    digest = hashlib.sha256(content_id.encode("utf-8")).hexdigest()[:20]
+    marker = f"wd-id-{digest}"
+    if len(marker) > YOUTUBE_TAG_MAX_CHARS:
+        raise AssertionError("Recovery marker unexpectedly exceeds YouTube tag limit")
+    return marker
 
 
 def request_path_for_id(content_id):
