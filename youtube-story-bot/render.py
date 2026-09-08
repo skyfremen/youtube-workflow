@@ -177,16 +177,20 @@ for gs, _ps, segment_audio in pipeline(story, voice=voice, speed=speed):
 if not audio_parts:
     raise SystemExit('Kokoro produced no audio')
 
+# Keep narration at its real spoken length. The finished video gets only a short
+# natural tail after speech instead of being padded to duration_seconds.
 speech_audio = np.concatenate(audio_parts)
+max_speech_samples = max(1, int(duration * 24000))
+if len(speech_audio) > max_speech_samples:
+    speech_audio = speech_audio[:max_speech_samples]
 speech_samples = len(speech_audio)
-speech_duration = min(duration, speech_samples / 24000.0)
-target_samples = int(duration * 24000)
-if speech_samples < target_samples:
-    audio = np.pad(speech_audio, (0, target_samples - speech_samples))
-else:
-    audio = speech_audio[:target_samples]
+speech_duration = speech_samples / 24000.0
+end_tail_seconds = 0.35
+final_duration = min(duration, speech_duration + end_tail_seconds)
+
 narration = OUT / 'narration.wav'
-sf.write(narration, audio, 24000)
+sf.write(narration, speech_audio, 24000)
+print(f'Speech duration: {speech_duration:.3f}s; final video duration: {final_duration:.3f}s')
 
 card_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 branding_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -256,10 +260,8 @@ share_icon = load_ui_icon('share.png', 29)
 
 like_end = paste_icon_centered(card_overlay, like_icon, 82, foot_center_y)
 draw_text_centered_y(d_card, like_end + 10, foot_center_y, '99+', f_meta, light)
-
 comment_end = paste_icon_centered(card_overlay, comment_icon, 214, foot_center_y)
 draw_text_centered_y(d_card, comment_end + 10, foot_center_y, '99+', f_meta, light)
-
 share_end = paste_icon_centered(card_overlay, share_icon, 868, foot_center_y)
 draw_text_centered_y(d_card, share_end + 10, foot_center_y, 'Share', f_meta, light)
 
@@ -291,7 +293,7 @@ if use_segment_text:
         if seg_duration <= 0:
             break
         chunks = phrase_chunks(segment_text, 3)
-        weights = [max(1, sum(len(w.strip('.,!?;:"()[]{}')) for w in c.split())) for c in chunks]
+        weights = [max(1, sum(len(w.strip('.,!?;:\"()[]{}')) for w in c.split())) for c in chunks]
         total_weight = max(1, sum(weights))
         local = seg_start
         for i, (chunk, weight) in enumerate(zip(chunks, weights)):
@@ -305,7 +307,7 @@ if use_segment_text:
         cursor = min(speech_duration, seg_start + seg_duration)
 else:
     chunks = phrase_chunks(story, 3)
-    weights = [max(1, sum(len(w.strip('.,!?;:"()[]{}')) for w in c.split())) for c in chunks]
+    weights = [max(1, sum(len(w.strip('.,!?;:\"()[]{}')) for w in c.split())) for c in chunks]
     total_weight = max(1, sum(weights))
     cursor = 0.0
     for i, (chunk, weight) in enumerate(zip(chunks, weights)):
@@ -338,5 +340,5 @@ background=OUT/'background.asset'
 download(data['background_url'],background,data.get('background_source_url'))
 video=OUT/'short.mp4'
 filter_complex=("[0:v]fps=30,scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=brightness=-0.03:saturation=1.03[bg];" "[1:v]format=rgba,fade=t=out:st=1.70:d=0.30:alpha=1[card];" "[2:v]format=rgba[brand];" "[bg][card]overlay=x=0:y='-6*sin(PI*t/2)'[tmp1];" "[tmp1][brand]overlay=0:0[tmp2];" f"[tmp2]subtitles='{ass.as_posix()}'[v]")
-run(['ffmpeg','-y','-stream_loop','-1','-i',str(background),'-loop','1','-i',str(card_overlay_path),'-loop','1','-i',str(branding_overlay_path),'-i',str(narration),'-filter_complex',filter_complex,'-map','[v]','-map','3:a:0','-t',str(duration),'-c:v','libx264','-preset','veryfast','-crf','21','-pix_fmt','yuv420p','-c:a','aac','-b:a','160k','-movflags','+faststart',str(video)])
+run(['ffmpeg','-y','-stream_loop','-1','-i',str(background),'-loop','1','-i',str(card_overlay_path),'-loop','1','-i',str(branding_overlay_path),'-i',str(narration),'-filter_complex',filter_complex,'-map','[v]','-map','3:a:0','-t',f'{final_duration:.3f}','-c:v','libx264','-preset','veryfast','-crf','21','-pix_fmt','yuv420p','-c:a','aac','-b:a','160k','-movflags','+faststart',str(video)])
 print(video)
