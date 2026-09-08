@@ -1,0 +1,88 @@
+name: Apply Card Intro Sequence
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-card-intro-sequence.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch renderer sequencing and add regression test
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('youtube-shorts-bot/render.py')
+          text = path.read_text()
+
+          def replace_once(old, new, label):
+              global text
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: expected exactly one match, found {text.count(old)}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              'EMOJI_FONT_CANDIDATES = [\n    "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",\n    "/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf",\n]\n',
+              'EMOJI_FONT_CANDIDATES = [\n    "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",\n    "/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf",\n]\nCARD_TRANSITION_SECONDS = 0.30\n',
+              'transition constant',
+          )
+
+          marker = '''def pick_existing(paths):\n'''
+          helper = '''def story_body_without_repeated_hook(script, hook):\n    """Return the story body without re-reading an identical opening card hook."""\n    script = str(script).strip()\n    hook = str(hook).strip()\n    if hook and script.startswith(hook):\n        remainder = script[len(hook):].lstrip()\n        if remainder:\n            return remainder\n    return script\n\n\n'''
+          if helper not in text:
+              replace_once(marker, helper + marker, 'story body helper')
+
+          replace_once(
+              'def caption_events(text, tts_segments, speech_duration):',
+              'def caption_events(text, tts_segments, speech_duration, start_offset=0.0):',
+              'caption offset signature',
+          )
+          text = text.replace('ass_time(local)', 'ass_time(start_offset + local)')
+          text = text.replace('ass_time(end)', 'ass_time(start_offset + end)')
+
+          old_audio = '''    pipeline = KPipeline(lang_code="a")\n    if test_mode:\n        narration_text, speech_audio, tts_segments = choose_test_narration(pipeline, script, voice, speed, test_max)\n    else:\n        narration_text = script\n        speech_audio, tts_segments = synthesize(pipeline, script, voice, speed)\n\n    speech_duration = len(speech_audio) / 24000.0\n    final_duration = speech_duration + END_TAIL_SECONDS\n    if test_mode:\n        if speech_duration > test_max + 0.05:\n            raise SystemExit(f"Test narration {speech_duration:.3f}s exceeds STORY_RENDER_MAX_SECONDS={test_max:.3f}s")\n    elif final_duration > PRODUCTION_MAX_SECONDS:\n        raise SystemExit(\n            f"Production duration {final_duration:.3f}s exceeds hard ceiling {PRODUCTION_MAX_SECONDS:.0f}s. "\n            "Do not trim; create a shorter story with a new content_id."\n        )\n\n    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n    narration = OUTPUT_DIR / "narration.wav"\n    sf.write(narration, speech_audio, 24000)\n'''
+          new_audio = '''    pipeline = KPipeline(lang_code="a")\n    story_text = story_body_without_repeated_hook(script, hook)\n    if not story_text:\n        raise SystemExit("story.script must contain story narration after the opening card hook")\n\n    # Phase 1: read the complete card hook while the card is fully visible.\n    # There are deliberately no subtitle events for this audio.\n    intro_audio, _intro_segments = synthesize(pipeline, hook, voice, speed)\n    intro_duration = len(intro_audio) / 24000.0\n\n    # Phase 2: reserve a short silent transition while the card fades away.\n    # Phase 3 begins only after the card has completely left the frame.\n    story_budget = test_max - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None\n    if test_mode:\n        if story_budget < 1.0:\n            raise SystemExit(\n                f"Opening card narration ({intro_duration:.3f}s) leaves too little room for a story excerpt "\n                f"inside STORY_RENDER_MAX_SECONDS={test_max:.3f}s; shorten story.hook for testability."\n            )\n        narration_text, story_audio, tts_segments = choose_test_narration(\n            pipeline, story_text, voice, speed, story_budget\n        )\n    else:\n        narration_text = story_text\n        story_audio, tts_segments = synthesize(pipeline, story_text, voice, speed)\n\n    story_duration = len(story_audio) / 24000.0\n    transition_samples = int(round(CARD_TRANSITION_SECONDS * 24000))\n    transition_audio = np.zeros(max(1, transition_samples), dtype=np.float32)\n    speech_audio = np.concatenate([intro_audio, transition_audio, story_audio])\n    story_start = intro_duration + CARD_TRANSITION_SECONDS\n    speech_duration = len(speech_audio) / 24000.0\n    final_duration = speech_duration + END_TAIL_SECONDS\n    if test_mode:\n        if speech_duration > test_max + 0.05:\n            raise SystemExit(f"Test narration {speech_duration:.3f}s exceeds STORY_RENDER_MAX_SECONDS={test_max:.3f}s")\n    elif final_duration > PRODUCTION_MAX_SECONDS:\n        raise SystemExit(\n            f"Production duration {final_duration:.3f}s exceeds hard ceiling {PRODUCTION_MAX_SECONDS:.0f}s. "\n            "Do not trim; create a shorter story with a new content_id."\n        )\n\n    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n    narration = OUTPUT_DIR / "narration.wav"\n    sf.write(narration, speech_audio, 24000)\n'''
+          replace_once(old_audio, new_audio, 'narration sequencing')
+
+          replace_once(
+              '    events = caption_events(narration_text, tts_segments, speech_duration)\n',
+              '    events = caption_events(narration_text, tts_segments, story_duration, start_offset=story_start)\n',
+              'caption start',
+          )
+
+          old_fade = '''    card_fade_start = min(1.70, max(0.0, final_duration - 0.30))\n    card_fade_dur = min(0.30, max(0.05, final_duration - card_fade_start))\n'''
+          new_fade = '''    card_fade_start = intro_duration\n    card_fade_dur = CARD_TRANSITION_SECONDS\n'''
+          replace_once(old_fade, new_fade, 'card fade timing')
+
+          old_meta = '''        "narration_seconds": round(speech_duration, 6),\n        "video_seconds": round(final_duration, 6),\n'''
+          new_meta = '''        "narration_seconds": round(speech_duration, 6),\n        "card_title_text": hook,\n        "card_title_seconds": round(intro_duration, 6),\n        "card_transition_seconds": CARD_TRANSITION_SECONDS,\n        "story_start_seconds": round(story_start, 6),\n        "story_narration_seconds": round(story_duration, 6),\n        "video_seconds": round(final_duration, 6),\n'''
+          replace_once(old_meta, new_meta, 'render metadata')
+
+          path.write_text(text)
+
+          test = Path('youtube-shorts-bot/tests/test_intro_sequence.py')
+          test.write_text('''import sys\nimport unittest\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parents[1]\nsys.path.insert(0, str(ROOT))\n\nfrom render import CARD_TRANSITION_SECONDS, caption_events, story_body_without_repeated_hook\n\n\nclass IntroSequenceTests(unittest.TestCase):\n    def test_repeated_card_hook_is_not_repeated_in_story(self):\n        hook = "My manager put the rule in writing."\n        script = hook + "\\n\\nThen payroll saw the email and everything changed."\n        self.assertEqual(\n            story_body_without_repeated_hook(script, hook),\n            "Then payroll saw the email and everything changed.",\n        )\n\n    def test_distinct_story_opening_is_preserved(self):\n        hook = "The email changed everything."\n        script = "We were three days from month-end when the meeting started."\n        self.assertEqual(story_body_without_repeated_hook(script, hook), script)\n\n    def test_subtitles_start_only_after_card_transition(self):\n        story_start = 2.80 + CARD_TRANSITION_SECONDS\n        events = caption_events(\n            "Then payroll saw it",\n            [("Then payroll saw it", 24000)],\n            1.0,\n            start_offset=story_start,\n        )\n        self.assertTrue(events)\n        self.assertIn("0:00:03.10", events[0])\n        self.assertNotIn("0:00:00.00", "\\n".join(events))\n\n    def test_renderer_fades_card_after_intro_and_offsets_captions(self):\n        source = (ROOT / "render.py").read_text()\n        self.assertIn("card_fade_start = intro_duration", source)\n        self.assertIn("card_fade_dur = CARD_TRANSITION_SECONDS", source)\n        self.assertIn("start_offset=story_start", source)\n        self.assertIn("transition_audio = np.zeros", source)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''')
+          PY
+
+          python -m py_compile youtube-shorts-bot/render.py youtube-shorts-bot/tests/test_intro_sequence.py
+          python -m unittest youtube-shorts-bot/tests/test_intro_sequence.py -v
+
+      - name: Commit renderer change and remove one-time patch workflow
+        shell: bash
+        run: |
+          rm .github/workflows/apply-card-intro-sequence.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add youtube-shorts-bot/render.py youtube-shorts-bot/tests/test_intro_sequence.py .github/workflows/apply-card-intro-sequence.yml
+          git commit -m 'sequence card narration before story subtitles'
+          git push origin HEAD:main
