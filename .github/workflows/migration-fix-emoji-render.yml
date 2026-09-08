@@ -25,29 +25,8 @@ jobs:
 
           path = Path('youtube-shorts-bot/render.py')
           text = path.read_text(encoding='utf-8')
-          old = '''def render_emoji(icon, target_size, scale):
-              emoji_font = pick_existing(EMOJI_FONT_CANDIDATES)
-              if emoji_font:
-                  try:
-                      tile_size = max(80, scaled(150, scale))
-                      tile = Image.new("RGBA", (tile_size, tile_size), (0, 0, 0, 0))
-                      draw = ImageDraw.Draw(tile)
-                      fnt = ImageFont.truetype(emoji_font, max(40, scaled(109, scale)))
-                      bb = draw.textbbox((0, 0), icon, font=fnt, embedded_color=True)
-                      x = (tile_size - (bb[2] - bb[0])) / 2 - bb[0]
-                      y = (tile_size - (bb[3] - bb[1])) / 2 - bb[1]
-                      draw.text((x, y), icon, font=fnt, embedded_color=True)
-                      bbox = tile.getbbox()
-                      if bbox:
-                          tile = tile.crop(bbox)
-                      return ImageOps.contain(tile, (target_size, target_size), method=Image.Resampling.LANCZOS)
-                  except (OSError, ValueError):
-                      pass
-              tile = Image.new("RGBA", (target_size, target_size), (0, 0, 0, 0))
-              draw = ImageDraw.Draw(tile)
-              centered_text(draw, (0, 0, target_size, target_size), "•", font(FONT_BOLD, 42, scale), (28, 28, 28, 255))
-              return tile
-          '''.replace('          ', '')
+          start = text.index('def render_emoji(')
+          end = text.index('\ndef caption_events(', start)
           new = '''def render_emoji(icon, target_size, scale):
               # NotoColorEmoji on Debian is a bitmap font with a native 109px strike.
               # Render at that supported size first, then downscale the bitmap for
@@ -74,10 +53,11 @@ jobs:
                   except (OSError, ValueError):
                       continue
               raise RuntimeError(f"Unable to render requested card emoji: {icon}")
-          '''.replace('          ', '')
-          if old not in text:
-              raise SystemExit('Expected render_emoji implementation not found; refusing unsafe patch')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          '''
+          # Dedent the source embedded in YAML while preserving Python function indentation.
+          import textwrap
+          new = textwrap.dedent(new)
+          path.write_text(text[:start] + new + text[end:], encoding='utf-8')
 
           test = Path('youtube-shorts-bot/tests/test_emoji_render.py')
           test.write_text('''import hashlib\nimport sys\nimport unittest\nfrom pathlib import Path\n\nBASE = Path(__file__).resolve().parents[1]\nsys.path.insert(0, str(BASE))\n\nfrom render import render_emoji\n\n\nclass EmojiRenderTests(unittest.TestCase):\n    def test_requested_emojis_render_as_distinct_images(self):\n        icons = ["💼", "⏰", "📧", "😳", "🔥"]\n        images = [render_emoji(icon, 36, 2 / 3) for icon in icons]\n        hashes = {hashlib.sha256(image.tobytes()).hexdigest() for image in images}\n        self.assertEqual(len(hashes), len(icons))\n        for image in images:\n            self.assertIsNotNone(image.getbbox())\n            self.assertGreater(image.getbbox()[2] - image.getbbox()[0], 8)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''', encoding='utf-8')
