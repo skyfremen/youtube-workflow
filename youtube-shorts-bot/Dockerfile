@@ -4,12 +4,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     HF_HUB_DISABLE_TELEMETRY=1 \
+    HF_HOME=/opt/huggingface \
+    HF_HUB_CACHE=/opt/huggingface/hub \
     TORCH_HOME=/opt/torch-cache
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        ca-certificates \
-       curl \
        ffmpeg \
        espeak-ng \
        libsndfile1 \
@@ -30,14 +31,15 @@ RUN pip install -r /tmp/requirements.txt
 # Kokoro's English frontend otherwise downloads this on a fresh production job.
 RUN python -m spacy download en_core_web_sm
 
-# Warm the Kokoro model and default voice during image build; ordinary content
-# changes never rebuild this image.
+# Warm the exact Kokoro model and default voice into a fixed cache path that is
+# independent of HOME. GitHub job containers override HOME=/github/home, so a
+# normal ~/.cache warmup would otherwise be invisible at production runtime.
 RUN python - <<'PY'
 from kokoro import KPipeline
-pipeline = KPipeline(lang_code='a')
-for _gs, _ps, _audio in pipeline('Wacky Dramas runner warmup.', voice='af_heart', speed=1.0):
+pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M')
+for _gs, _ps, _audio in pipeline('Wacky Dramas runner warmup.', voice='af_heart', speed=1.75):
     break
-print('Kokoro model and af_heart voice cache ready')
+print('Kokoro model and af_heart voice cache ready in fixed HF_HOME')
 PY
 
 # Cache the English Wav2Vec2 acoustic model in TORCH_HOME during the image
@@ -49,6 +51,23 @@ bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
 model = bundle.get_model()
 model.eval()
 print('Wav2Vec2 forced-alignment model cache ready')
+PY
+
+# From this layer onward production is intentionally Hugging Face offline.
+# The build itself proves the warmed Kokoro model and af_heart voice can be
+# loaded without an HTTP metadata check or model download.
+ENV HF_HUB_OFFLINE=1
+RUN python - <<'PY'
+from huggingface_hub import is_offline_mode
+from kokoro import KPipeline
+assert is_offline_mode(), 'HF offline mode must be active in the production image'
+pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M')
+for _gs, _ps, _audio in pipeline('Offline runner validation.', voice='af_heart', speed=1.75):
+    assert len(_audio) > 0
+    break
+else:
+    raise SystemExit('Kokoro offline validation produced no audio')
+print('Kokoro offline cache validation passed')
 PY
 
 WORKDIR /__w/youtube-workflow/youtube-workflow
