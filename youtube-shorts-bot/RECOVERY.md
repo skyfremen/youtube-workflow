@@ -21,7 +21,7 @@ There is no queue, series, music, daily-plan, `latest.json`, or scheduled-publis
 
 Never delete an intent to clear ambiguity, never add a force-reupload flag, and never infer that a failed workflow means no YouTube upload occurred. Durable evidence must be reconciled instead.
 
-## Accepted migration proof
+## Accepted visual and recovery proof
 
 The current card-first visual sequence was accepted using content ID `wd-20260908T180410-card-first-10s-b72d4e`.
 
@@ -39,6 +39,10 @@ The current card-first visual sequence was accepted using content ID `wd-2026090
 The same run was rerun as attempt 2. Recovery resolved `CdpjHVq7sj8`, reported `upload_required=false`, skipped background resolution, TTS/render and upload, reverified the existing private video, and reused the exact receipt blob unchanged. This proves same-content idempotency without another upload.
 
 The live YouTube channel rename is user-managed and may be completed later. Recovery and upload ownership are pinned to the authenticated channel ID, not the display name.
+
+## Historical incomplete acceptance request
+
+`wd-20260909T010256-overtime-email-e4b91c` is an immutable historical acceptance request with no verified success receipt. Its earlier private upload was not accepted because recovery-marker verification failed. Keep the request unchanged as audit evidence; current recovery guards do not permit it to authorize a fresh upload.
 
 ## Operational entry point
 
