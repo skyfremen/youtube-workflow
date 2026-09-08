@@ -125,6 +125,19 @@ def load_ui_icon(name, target_size):
     return ImageOps.contain(icon, (target_size, target_size), method=Image.Resampling.LANCZOS)
 
 
+def paste_icon_centered(canvas, icon, x, center_y):
+    y = int(round(center_y - icon.height / 2))
+    canvas.alpha_composite(icon, (int(x), y))
+    return int(x + icon.width)
+
+
+def draw_text_centered_y(draw, x, center_y, text, font, fill):
+    bb = draw.textbbox((0, 0), text, font=font)
+    y = center_y - (bb[3] - bb[1]) / 2 - bb[1]
+    draw.text((x, y), text, font=font, fill=fill)
+    return bb[2] - bb[0]
+
+
 def render_emoji(icon, target_size=54):
     emoji_font_path = pick_existing(EMOJI_FONT_CANDIDATES)
     if emoji_font_path:
@@ -153,16 +166,25 @@ def render_emoji(icon, target_size=54):
 
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
-for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
-    audio_parts.append(np.asarray(audio, dtype=np.float32))
+tts_segments = []
+for gs, _ps, segment_audio in pipeline(story, voice=voice, speed=speed):
+    part = np.asarray(segment_audio, dtype=np.float32)
+    if part.size == 0:
+        continue
+    audio_parts.append(part)
+    segment_text = str(gs).strip() if gs is not None else ''
+    tts_segments.append((segment_text, len(part)))
 if not audio_parts:
     raise SystemExit('Kokoro produced no audio')
-audio = np.concatenate(audio_parts)
+
+speech_audio = np.concatenate(audio_parts)
+speech_samples = len(speech_audio)
+speech_duration = min(duration, speech_samples / 24000.0)
 target_samples = int(duration * 24000)
-if len(audio) < target_samples:
-    audio = np.pad(audio, (0, target_samples - len(audio)))
+if speech_samples < target_samples:
+    audio = np.pad(speech_audio, (0, target_samples - speech_samples))
 else:
-    audio = audio[:target_samples]
+    audio = speech_audio[:target_samples]
 narration = OUT / 'narration.wav'
 sf.write(narration, audio, 24000)
 
@@ -191,17 +213,13 @@ try:
     if max(mean_rgb) < 18 or dynamic_range < 90:
         raise ValueError(f'channel-avatar.png appears blank/corrupt: mean={mean_rgb}, extrema={extrema}')
     avatar_size = 132
-    contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
-    avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0,0,0,0))
-    px = (avatar_size-contained.width)//2
-    py = (avatar_size-contained.height)//2
-    avatar_square.alpha_composite(contained, (px,py))
-    mask = Image.new('L',(avatar_size,avatar_size),0)
-    ImageDraw.Draw(mask).ellipse((0,0,avatar_size-1,avatar_size-1),fill=255)
-    clipped = Image.new('RGBA',(avatar_size,avatar_size),(0,0,0,0))
-    clipped.paste(avatar_square,(0,0),mask)
-    card_overlay.alpha_composite(clipped,(82,290))
-except (OSError,ValueError) as exc:
+    avatar_square = logo.resize((avatar_size, avatar_size), Image.Resampling.LANCZOS)
+    mask = Image.new('L', (avatar_size, avatar_size), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
+    clipped = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
+    clipped.paste(avatar_square, (0, 0), mask)
+    card_overlay.alpha_composite(clipped, (82, 290))
+except (OSError, ValueError) as exc:
     raise SystemExit(f'Invalid channel avatar: {exc}')
 
 name_x,name_y=235,285
@@ -229,22 +247,27 @@ hook_font,hook_lines,line_height=fit_hook(d_card,hook,hook_width,hook_height)
 for i,line in enumerate(hook_lines):
     d_card.text((hook_x,hook_y+i*line_height),line,font=hook_font,fill=(8,8,8,255))
 
-foot_y=720
+foot_center_y = 742
 light=(110,110,110,255)
 f_meta=ImageFont.truetype(FONT_REG,30)
 like_icon = load_ui_icon('like.png', 30)
 comment_icon = load_ui_icon('comment.png', 31)
 share_icon = load_ui_icon('share.png', 29)
-card_overlay.alpha_composite(like_icon, (82, foot_y - 2))
-d_card.text((124,foot_y),'99+',font=f_meta,fill=light)
-card_overlay.alpha_composite(comment_icon, (214, foot_y - 1))
-d_card.text((258,foot_y),'99+',font=f_meta,fill=light)
-card_overlay.alpha_composite(share_icon, (868, foot_y - 1))
-d_card.text((906,foot_y),'Share',font=f_meta,fill=light)
+
+like_end = paste_icon_centered(card_overlay, like_icon, 82, foot_center_y)
+draw_text_centered_y(d_card, like_end + 10, foot_center_y, '99+', f_meta, light)
+
+comment_end = paste_icon_centered(card_overlay, comment_icon, 214, foot_center_y)
+draw_text_centered_y(d_card, comment_end + 10, foot_center_y, '99+', f_meta, light)
+
+share_end = paste_icon_centered(card_overlay, share_icon, 868, foot_center_y)
+draw_text_centered_y(d_card, share_end + 10, foot_center_y, 'Share', f_meta, light)
+
 
 def pill(draw_obj,box,text,font,fill):
     draw_obj.rounded_rectangle(box,radius=(box[3]-box[1])//2,fill=(0,0,0,225),outline=(255,255,255,70),width=2)
     centered_text(draw_obj,box,text,font,fill)
+
 
 pill(d_brand,(285,1260,795,1334),handle,ImageFont.truetype(FONT_BOLD,42),(255,255,255,255))
 pill(d_brand,(360,1348,720,1418),'SUBSCRIBE',ImageFont.truetype(FONT_BOLD,38),(255,214,40,255))
@@ -254,18 +277,62 @@ branding_overlay_path=OUT/'branding.png'
 card_overlay.save(card_overlay_path)
 branding_overlay.save(branding_overlay_path)
 
-chunks=phrase_chunks(story,3)
-weights=[max(1,len(c.split())) for c in chunks]
-total=sum(weights)
-t=0.10
 events=[]
-for c,w in zip(chunks,weights):
-    seg=max(0.28,(duration-0.2)*w/total)
-    end=min(duration-0.03,t+seg)
-    events.append(f'Dialogue: 0,{ass_time(t)},{ass_time(end)},Main,,0,0,0,,{escape_ass(c.upper())}')
-    t=end
+cursor = 0.0
+usable_segments = [(text, samples) for text, samples in tts_segments if text and samples > 0]
+segment_words = sum(len(text.split()) for text, _ in usable_segments)
+story_words = len(story.split())
+use_segment_text = bool(usable_segments) and segment_words >= max(1, int(story_words * 0.75))
+
+if use_segment_text:
+    for segment_text, samples in usable_segments:
+        seg_start = cursor
+        seg_duration = min(samples / 24000.0, max(0.0, speech_duration - seg_start))
+        if seg_duration <= 0:
+            break
+        chunks = phrase_chunks(segment_text, 3)
+        weights = [max(1, sum(len(w.strip('.,!?;:"()[]{}')) for w in c.split())) for c in chunks]
+        total_weight = max(1, sum(weights))
+        local = seg_start
+        for i, (chunk, weight) in enumerate(zip(chunks, weights)):
+            if i == len(chunks) - 1:
+                end = min(speech_duration, seg_start + seg_duration)
+            else:
+                end = min(speech_duration, local + seg_duration * weight / total_weight)
+            if end > local + 0.03:
+                events.append(f'Dialogue: 0,{ass_time(local)},{ass_time(end)},Main,,0,0,0,,{escape_ass(chunk.upper())}')
+            local = end
+        cursor = min(speech_duration, seg_start + seg_duration)
+else:
+    chunks = phrase_chunks(story, 3)
+    weights = [max(1, sum(len(w.strip('.,!?;:"()[]{}')) for w in c.split())) for c in chunks]
+    total_weight = max(1, sum(weights))
+    cursor = 0.0
+    for i, (chunk, weight) in enumerate(zip(chunks, weights)):
+        if i == len(chunks) - 1:
+            end = speech_duration
+        else:
+            end = min(speech_duration, cursor + speech_duration * weight / total_weight)
+        if end > cursor + 0.03:
+            events.append(f'Dialogue: 0,{ass_time(cursor)},{ass_time(end)},Main,,0,0,0,,{escape_ass(chunk.upper())}')
+        cursor = end
+
 ass=OUT/'captions.ass'
-ass.write_text(f'''[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 2\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Main,DejaVu Sans,78,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,7,2,5,260,260,0,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n'''+ '\n'.join(events)+'\n',encoding='utf-8')
+ass_header = '''[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Main,DejaVu Sans,78,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,7,2,5,260,260,0,1
+
+[Events]
+Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+'''
+ass.write_text(ass_header + '\n'.join(events) + '\n', encoding='utf-8')
 
 background=OUT/'background.asset'
 download(data['background_url'],background,data.get('background_source_url'))
