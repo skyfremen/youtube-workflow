@@ -38,6 +38,30 @@ The current card-first visual sequence was accepted using content ID `wd-2026090
 
 The same run was rerun as attempt 2. Recovery resolved `CdpjHVq7sj8`, reported `upload_required=false`, skipped background resolution, TTS/render and upload, reverified the existing private video, and reused the exact receipt blob unchanged. This proves same-content idempotency without another upload.
 
+## Accepted full-length production proof
+
+The production-duration path was accepted using content ID `wd-20260908T190630-roommate-rent-p4n8vx` after correcting the long-word caption-fit issue discovered by the preceding failed request.
+
+- Canonical private video: `ntjLVNyPyus`
+- Acceptance run: `34267054783`, attempt 1
+- Actual video duration: `142.333333` seconds
+- Total narration: `141.975` seconds
+- Card title narration: `1.675` seconds
+- Card transition: `0.300` seconds
+- Story narration start: `1.975` seconds
+- Story narration: `140.000` seconds
+- Render: 720x1280, 30 fps, H.264 + one AAC narration stream
+- Audio source: narration only
+- Background: `satisfying-001` primary, `satisfying-002` backup
+- Kokoro: `af_heart` at `1.75x`
+- Test mode: false
+- Privacy: PRIVATE
+- YouTube processing: processed
+- `publishAt`: absent
+- Recovery marker and immutable description marker: verified
+
+This proves the normal production path can render, upload, verify, and receipt a story inside the 120–175 second target while staying below the 178-second ceiling.
+
 The live YouTube channel rename is user-managed and may be completed later. Recovery and upload ownership are pinned to the authenticated channel ID, not the display name.
 
 ## Historical incomplete acceptance requests
