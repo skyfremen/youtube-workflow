@@ -2,33 +2,43 @@ name: Wacky Dramas Story Bot Test
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Build Story runner image'
+    types:
+      - completed
   push:
     paths:
-      - 'youtube-story-bot/**'
-      - '.github/workflows/story-bot-test.yml'
+      - 'youtube-story-bot/render.py'
+      - 'youtube-story-bot/validate_content.py'
+      - 'youtube-story-bot/content/**'
+      - 'youtube-story-bot/assets/**'
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   render-test:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    container:
+      image: ghcr.io/skyfremen/youtube-story-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
-          cache-dependency-path: youtube-story-bot/requirements.txt
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng libsndfile1 fonts-dejavu-core
-      - name: Install Python dependencies
-        run: pip install -r youtube-story-bot/requirements.txt
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
       - name: Validate test story
         run: python youtube-story-bot/validate_content.py
+
       - name: Render 10-second Kokoro test
         run: python youtube-story-bot/render.py
+
       - name: Verify duration
         run: |
           python - <<'PY'
@@ -37,11 +47,13 @@ jobs:
           assert 9.85 <= d <= 10.15, d
           print(f'Verified duration: {d:.3f}s')
           PY
+
       - uses: actions/upload-artifact@v4
         with:
           name: wacky-dramas-10s-test
           path: |
             youtube-story-bot/output/short.mp4
             youtube-story-bot/output/story-card.png
+            youtube-story-bot/output/branding.png
             youtube-story-bot/output/captions.ass
           retention-days: 7
