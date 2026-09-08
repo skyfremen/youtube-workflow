@@ -31,7 +31,7 @@ class CaptionAlignmentTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertIn("0:00:02.30", events[0])
         self.assertIn("0:00:03.02", events[0])
-        self.assertIn("FOR WEEKS, EVERYONE", events[0])
+        self.assertIn("FOR WEEKS, EVERYONE", events[0].replace(r"\N", " "))
         self.assertEqual(metadata["caption_timing_mode"], "word_aligned")
         self.assertEqual(metadata["caption_alignment_backend"], "fake-ctc")
         self.assertEqual(metadata["caption_alignment_word_count"], 3)
