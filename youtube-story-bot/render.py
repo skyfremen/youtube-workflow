@@ -1,5 +1,4 @@
-import base64, json, math, subprocess
-from io import BytesIO
+import json, math, subprocess
 from pathlib import Path
 
 import numpy as np
@@ -27,6 +26,18 @@ speed = float(data.get('tts_speed', 1.75))
 W, H = 1080, 1920
 FONT_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 FONT_REG = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+EMOJI_FONT_CANDIDATES = [
+    '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',
+    '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf',
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+]
+
+
+def pick_existing(paths):
+    for p in paths:
+        if Path(p).exists():
+            return p
+    return paths[-1]
 
 
 def run(cmd):
@@ -57,7 +68,7 @@ def escape_ass(text):
     return str(text).replace('\\', r'\\').replace('{', r'\{').replace('}', r'\}').replace('\n', r'\N')
 
 
-def phrase_chunks(text, max_words=4):
+def phrase_chunks(text, max_words=3):
     words = text.split()
     return [' '.join(words[i:i + max_words]) for i in range(0, len(words), max_words)]
 
@@ -79,7 +90,7 @@ def wrap_pixels(draw, text, font, max_width, max_lines=3):
 
 
 def fit_hook(draw, text, max_width, max_height):
-    for size in range(62, 43, -2):
+    for size in range(64, 43, -2):
         font = ImageFont.truetype(FONT_BOLD, size)
         lines, fits_lines = wrap_pixels(draw, text, font, max_width, max_lines=3)
         line_height = draw.textbbox((0, 0), 'Ag', font=font)[3] + 9
@@ -97,30 +108,6 @@ def centered_text(draw, box, text, font, fill):
     draw.text((x1 + (x2 - x1 - tw) / 2, y1 + (y2 - y1 - th) / 2 - 2), text, font=font, fill=fill)
 
 
-def load_channel_logo():
-    """Load the canonical Wacky Dramas display picture from repo assets."""
-    b64_path = ASSETS / 'channel-logo-base64.txt'
-    if b64_path.exists():
-        try:
-            raw = base64.b64decode(b64_path.read_text(encoding='utf-8').strip())
-            with Image.open(BytesIO(raw)) as source_logo:
-                source_logo.load()
-                return source_logo.convert('RGBA').copy()
-        except Exception as exc:
-            print(f'WARNING: base64 channel logo asset failed to load: {exc}')
-
-    png_path = ASSETS / 'channel-logo.png'
-    if png_path.exists():
-        try:
-            with Image.open(png_path) as source_logo:
-                source_logo.load()
-                return source_logo.convert('RGBA').copy()
-        except Exception as exc:
-            print(f'WARNING: PNG channel logo asset failed to load: {exc}')
-    return None
-
-
-# Kokoro TTS. Wacky Dramas standard speed is 1.75x.
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
 for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
@@ -136,14 +123,12 @@ else:
 narration = OUT / 'narration.wav'
 sf.write(narration, audio, 24000)
 
-# Separate transient card from persistent branding.
 card_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 branding_overlay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 d_card = ImageDraw.Draw(card_overlay)
 d_brand = ImageDraw.Draw(branding_overlay)
 
-# Keep the story card in the upper third of the 9:16 frame.
-card_box = (56, 275, 1024, 843)
+card_box = (56, 235, 1024, 805)
 for off, alpha in [(10, 55), (18, 25)]:
     d_card.rounded_rectangle(
         (card_box[0] + off, card_box[1] + off, card_box[2] + off, card_box[3] + off),
@@ -151,79 +136,76 @@ for off, alpha in [(10, 55), (18, 25)]:
     )
 d_card.rounded_rectangle(card_box, radius=36, fill=(251, 251, 251, 252), outline=(28, 28, 28, 255), width=5)
 
-# Display picture from the repository asset.
-logo = load_channel_logo()
+avatar_paths = [ASSETS / 'channel-avatar.png', ASSETS / 'channel-logo.png']
 logo_loaded = False
-if logo is not None:
+for logo_path in avatar_paths:
+    if not logo_path.exists():
+        continue
     try:
-        bbox = logo.getbbox()
-        if bbox:
-            logo = logo.crop(bbox)
-        avatar_size = 138
-        fitted = ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+        with Image.open(logo_path) as source_logo:
+            source_logo.load()
+            logo = source_logo.convert('RGBA').copy()
+        avatar_size = 132
+        if logo.getbbox():
+            logo = logo.crop(logo.getbbox())
+        avatar_circle = ImageOps.fit(logo, (avatar_size, avatar_size), method=Image.Resampling.LANCZOS)
         mask = Image.new('L', (avatar_size, avatar_size), 0)
         ImageDraw.Draw(mask).ellipse((0, 0, avatar_size - 1, avatar_size - 1), fill=255)
         clipped = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
-        clipped.paste(fitted, (0, 0), mask)
-        card_overlay.alpha_composite(clipped, (80, 326))
+        clipped.paste(avatar_circle, (0, 0), mask)
+        card_overlay.alpha_composite(clipped, (82, 290))
         logo_loaded = True
-    except Exception as exc:
-        print(f'WARNING: channel logo could not be rendered; using WD fallback: {exc}')
+        break
+    except (OSError, ValueError) as exc:
+        print(f'WARNING: channel logo could not be decoded from {logo_path}; using WD fallback: {exc}')
 if not logo_loaded:
-    d_card.ellipse((80, 326, 218, 464), fill=(18, 18, 22, 255), outline=(230, 55, 45, 255), width=7)
-    centered_text(d_card, (80, 326, 218, 464), 'WD', ImageFont.truetype(FONT_BOLD, 48), (255, 255, 255, 255))
+    d_card.ellipse((82, 290, 214, 422), fill=(18, 18, 22, 255), outline=(230, 55, 45, 255), width=7)
+    f_avatar = ImageFont.truetype(FONT_BOLD, 46)
+    centered_text(d_card, (82, 290, 214, 422), 'WD', f_avatar, (255, 255, 255, 255))
 
-# Channel name + verified tick.
-name_x, name_y = 238, 326
+name_x, name_y = 235, 285
 f_name = ImageFont.truetype(FONT_BOLD, 40)
 d_card.text((name_x, name_y), channel_name, font=f_name, fill=(18, 18, 18, 255))
 name_bb = d_card.textbbox((name_x, name_y), channel_name, font=f_name)
-vx, vy = name_bb[2] + 18, name_y + 8
-d_card.ellipse((vx, vy, vx + 36, vy + 36), fill=(75, 128, 255, 255))
-d_card.text((vx + 9, vy + 4), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
+vx, vy = name_bb[2] + 20, name_y + 8
+d_card.ellipse((vx, vy, vx + 38, vy + 38), fill=(82, 141, 255, 255))
+d_card.text((vx + 10, vy + 5), '✓', font=ImageFont.truetype(FONT_BOLD, 22), fill='white')
 
-# Larger, clearly readable badge icons. These are intentionally phone-scale.
-icon_y, icon_size, icon_gap = 397, 50, 16
-icons = [
-    ('★', (185, 157, 255)), ('♥', (226, 205, 215)), ('◆', (250, 214, 88)),
-    ('☕', (245, 235, 170)), ('♨', (245, 130, 95)), ('$', (84, 216, 190)),
-    ('◎', (110, 205, 255))
-]
+emoji_font = ImageFont.truetype(pick_existing(EMOJI_FONT_CANDIDATES), 36)
+emoji_icons = ['💼', '🏠', '💔', '🔥', '☕', '😱']
+icon_y = 352
 ix = name_x
-icon_font = ImageFont.truetype(FONT_BOLD, 27)
-for symbol, color in icons:
-    d_card.ellipse((ix, icon_y, ix + icon_size, icon_y + icon_size), fill=color + (255,), outline=(235, 235, 235, 255), width=2)
-    centered_text(d_card, (ix, icon_y, ix + icon_size, icon_y + icon_size), symbol, icon_font, (25, 25, 25, 255))
-    ix += icon_size + icon_gap
+for icon in emoji_icons:
+    box = (ix, icon_y, ix + 58, icon_y + 58)
+    centered_text(d_card, box, icon, emoji_font, (32, 32, 32, 255))
+    ix += 64
 
-# Hook stays completely inside the card.
-hook_x, hook_y = 86, 500
-hook_width, hook_height = 900, 210
+hook_x, hook_y = 86, 455
+hook_width, hook_height = 900, 220
 hook_font, hook_lines, line_height = fit_hook(d_card, hook, hook_width, hook_height)
 for i, line in enumerate(hook_lines):
     d_card.text((hook_x, hook_y + i * line_height), line, font=hook_font, fill=(8, 8, 8, 255))
 
-# Engagement row: keep like and message counters separated.
-foot_y = 755
+foot_y = 720
 light = (110, 110, 110, 255)
 f_meta = ImageFont.truetype(FONT_REG, 30)
 f_sym = ImageFont.truetype(FONT_REG, 34)
 d_card.text((82, foot_y - 6), '♡', font=f_sym, fill=light)
-d_card.text((132, foot_y), '99+', font=f_meta, fill=light)
+d_card.text((128, foot_y), '99+', font=f_meta, fill=light)
 
-bubble_x, bubble_y = 230, foot_y + 2
-d_card.rounded_rectangle((bubble_x, bubble_y, bubble_x + 42, bubble_y + 30), radius=9, outline=light, width=3)
+bubble_x, bubble_y = 218, foot_y + 3
+d_card.rounded_rectangle((bubble_x, bubble_y, bubble_x + 40, bubble_y + 28), radius=9, outline=light, width=3)
 d_card.polygon([
-    (bubble_x + 11, bubble_y + 30),
-    (bubble_x + 18, bubble_y + 40),
-    (bubble_x + 23, bubble_y + 30)
+    (bubble_x + 11, bubble_y + 28),
+    (bubble_x + 17, bubble_y + 38),
+    (bubble_x + 22, bubble_y + 28)
 ], fill=light)
-d_card.text((286, foot_y), '99+', font=f_meta, fill=light)
+d_card.text((272, foot_y), '99+', font=f_meta, fill=light)
 
 d_card.text((872, foot_y - 4), '↗', font=ImageFont.truetype(FONT_REG, 29), fill=light)
 d_card.text((906, foot_y), 'Share', font=f_meta, fill=light)
 
-# Persistent safe-zone branding.
+
 def pill(draw_obj, box, text, font, fill):
     draw_obj.rounded_rectangle(box, radius=(box[3] - box[1]) // 2, fill=(0, 0, 0, 225), outline=(255, 255, 255, 70), width=2)
     centered_text(draw_obj, box, text, font, fill)
@@ -236,23 +218,24 @@ branding_overlay_path = OUT / 'branding.png'
 card_overlay.save(card_overlay_path)
 branding_overlay.save(branding_overlay_path)
 
-# YouTube Shorts subtitle safety: short phrases, smart wrapping, large side margins,
-# and vertical center placement. This prevents glyphs from touching/crossing edges.
-chunks = phrase_chunks(story, 4)
+chunks = phrase_chunks(story, 3)
 weights = [max(1, len(c.split())) for c in chunks]
 total = sum(weights)
 t = 0.10
 events = []
 for c, w in zip(chunks, weights):
-    seg = max(0.30, (duration - 0.2) * w / total)
+    seg = max(0.28, (duration - 0.2) * w / total)
     end = min(duration - 0.03, t + seg)
     events.append(f'Dialogue: 0,{ass_time(t)},{ass_time(end)},Main,,0,0,0,,{escape_ass(c.upper())}')
     t = end
 
 ass = OUT / 'captions.ass'
-ass.write_text(f'''[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 0\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Main,DejaVu Sans,70,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,7,2,5,250,250,0,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n''' + '\n'.join(events) + '\n', encoding='utf-8')
+ass.write_text(
+    f'''[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 2\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Main,DejaVu Sans,78,&H00FFFFFF,&H00FFFFFF,&H00101010,&H35000000,-1,0,0,0,100,100,0,0,1,7,2,5,260,260,0,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n'''
+    + '\n'.join(events) + '\n',
+    encoding='utf-8'
+)
 
-# Visually satisfying background, independent from story semantics.
 background = OUT / 'background.asset'
 download(data['background_url'], background, data.get('background_source_url'))
 video = OUT / 'short.mp4'
