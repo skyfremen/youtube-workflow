@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "record_type": "upload",
+  "content_id": "wd-20260908T180410-card-first-10s-b72d4e",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260908T180410-card-first-10s-b72d4e.json",
+  "request_blob_sha": "da776ef5f0cd2f538b6af5ebfaac23af24e0bed6",
+  "source_commit_sha": "7ee108d91737bb482b5c88b531957562bbfb9fb3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-08T18:06:48.456955+00:00",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34260939023",
+    "run_attempt": "1",
+    "code_commit_sha": "7ee108d91737bb482b5c88b531957562bbfb9fb3"
+  },
+  "background": {
+    "requested_primary_id": "satisfying-017",
+    "requested_backup_id": "satisfying-018",
+    "background_asset_id": "satisfying-017",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/dynamic-abstract-blue-visual-loop-33871750/",
+    "direct_url": "https://www.pexels.com/download/video/33871750/",
+    "license": "Pexels License",
+    "preflight": "HTTP 206, video/mp4"
+  },
+  "render": {
+    "content_id": "wd-20260908T180410-card-first-10s-b72d4e",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 9.725,
+    "card_title_text": "My manager invented mandatory overtime.",
+    "card_title_seconds": 1.925,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 2.225,
+    "story_narration_seconds": 7.5,
+    "video_seconds": 10.066667,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": true,
+    "test_render_max_seconds": 10.0,
+    "narration_excerpt": "For weeks, everyone stayed two unpaid hours late because he claimed head office had ordered it, and the rule finally cracked that night when I asked payroll which policy code belonged on our timesheets.",
+    "render_verified": true,
+    "render_verified_at": "2026-09-08T18:06:43.238825+00:00",
+    "render_verification_source": "ffprobe_and_frame_decode",
+    "configured_video_seconds": 10.075,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "2877886274f2fe61cce09bfd25b3c14c7e394862af9522f318f33ebb55b7ef0c"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "My Manager Invented Mandatory Overtime #Shorts",
+      "description": "One payroll question exposes a manager's fake overtime rule. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180410-card-first-10s-b72d4e request_blob_sha=da776ef5f0cd2f538b6af5ebfaac23af24e0bed6]",
+      "tags": [
+        "wd-id-e89d97af0a743b0119c5",
+        "shorts",
+        "storytime",
+        "workplace",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "youtube_video_id": "CdpjHVq7sj8",
+  "uploaded_at": "2026-09-08T18:06:51.343578+00:00",
+  "association": {
+    "kind": "youtube_insert_response",
+    "intent_blob_sha": "081bf62260dc0e01b8713b424d1c2885053000aa",
+    "intent_commit_sha": "976b1be8eba3a89a9e1c86bdd09189d90ea25640",
+    "response": {
+      "kind": "youtube#video",
+      "etag": "HlBFY8Q47GvLO3qr8mmjaHBR0W8",
+      "id": "CdpjHVq7sj8",
+      "snippet": {
+        "publishedAt": "2026-09-08T18:06:49Z",
+        "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+        "title": "My Manager Invented Mandatory Overtime #Shorts",
+        "description": "One payroll question exposes a manager's fake overtime rule. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180410-card-first-10s-b72d4e request_blob_sha=da776ef5f0cd2f538b6af5ebfaac23af24e0bed6]",
+        "thumbnails": {
+          "default": {
+            "url": "https://i9.ytimg.com/vi/CdpjHVq7sj8/default.jpg?sqp=CMycgdUG&rs=AOn4CLDpHqrmeV4Mbzilb8GpO7-BmQdkbw",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i9.ytimg.com/vi/CdpjHVq7sj8/mqdefault.jpg?sqp=CMycgdUG&rs=AOn4CLD0sSaDPULpBLZr7p-MJAdOMg5eCA",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i9.ytimg.com/vi/CdpjHVq7sj8/hqdefault.jpg?sqp=CMycgdUG&rs=AOn4CLArrvB3XzTm-kk8cwGtb07jscQTQg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Wacky Insights",
+        "tags": [
+          "shorts",
+          "storytime",
+          "wackydramas",
+          "wd-id-e89d97af0a743b0119c5",
+          "workplace"
+        ],
+        "categoryId": "24",
+        "liveBroadcastContent": "none",
+        "localized": {
+          "title": "My Manager Invented Mandatory Overtime #Shorts",
+          "description": "One payroll question exposes a manager's fake overtime rule. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180410-card-first-10s-b72d4e request_blob_sha=da776ef5f0cd2f538b6af5ebfaac23af24e0bed6]"
+        }
+      },
+      "status": {
+        "uploadStatus": "uploaded",
+        "privacyStatus": "private",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "selfDeclaredMadeForKids": false
+      }
+    }
+  }
+}
