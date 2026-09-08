@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "record_type": "upload",
+  "content_id": "wd-20260908T180130-card-first-test-a91f3c",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260908T180130-card-first-test-a91f3c.json",
+  "request_blob_sha": "627116fa40f3891cff67fc7aaa9f74b19a2c07aa",
+  "source_commit_sha": "67d402cc0bddd4a5a7c5d3ce038deff21e572c56",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-08T18:02:37.457813+00:00",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34260513884",
+    "run_attempt": "1",
+    "code_commit_sha": "67d402cc0bddd4a5a7c5d3ce038deff21e572c56"
+  },
+  "background": {
+    "requested_primary_id": "satisfying-016",
+    "requested_backup_id": "satisfying-017",
+    "background_asset_id": "satisfying-016",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/abstract-blue-sculptural-animation-loop-34327133/",
+    "direct_url": "https://www.pexels.com/download/video/34327133/",
+    "license": "Pexels License",
+    "preflight": "HTTP 206, video/mp4"
+  },
+  "render": {
+    "content_id": "wd-20260908T180130-card-first-test-a91f3c",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 7.325,
+    "card_title_text": "One tiny email exposed my manager's fake rule.",
+    "card_title_seconds": 2.025,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 2.325,
+    "story_narration_seconds": 5.0,
+    "video_seconds": 7.666667,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": true,
+    "test_render_max_seconds": 10.0,
+    "narration_excerpt": "For three weeks, my manager had everyone staying late because he kept saying head office had made two hours of overtime mandatory.",
+    "render_verified": true,
+    "render_verified_at": "2026-09-08T18:02:32.635617+00:00",
+    "render_verification_source": "ffprobe_and_frame_decode",
+    "configured_video_seconds": 7.675,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "2ee8389fabfa9c778fdaff6b9b01977862669f95ac350fa045f9a68ce05f7796"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "One Email Exposed My Manager's Fake Rule #Shorts",
+      "description": "A manager invents an unpaid overtime rule, until one simple email reaches payroll. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180130-card-first-test-a91f3c request_blob_sha=627116fa40f3891cff67fc7aaa9f74b19a2c07aa]",
+      "tags": [
+        "wd-id-286cf53685bb4abf5cca",
+        "shorts",
+        "storytime",
+        "workplace",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "youtube_video_id": "xl1Fn1kgQrs",
+  "uploaded_at": "2026-09-08T18:02:41.046644+00:00",
+  "association": {
+    "kind": "youtube_insert_response",
+    "intent_blob_sha": "04bd1276494d08bff632c1de9ac3ee05bf5ce40f",
+    "intent_commit_sha": "6d54519b31be116a18c3b9ef9a66ffb06ca541be",
+    "response": {
+      "kind": "youtube#video",
+      "etag": "BwrDJKvqAZPPp4FRrgTe9sLdq74",
+      "id": "xl1Fn1kgQrs",
+      "snippet": {
+        "publishedAt": "2026-09-08T18:02:39Z",
+        "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+        "title": "One Email Exposed My Manager's Fake Rule #Shorts",
+        "description": "A manager invents an unpaid overtime rule, until one simple email reaches payroll. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180130-card-first-test-a91f3c request_blob_sha=627116fa40f3891cff67fc7aaa9f74b19a2c07aa]",
+        "thumbnails": {
+          "default": {
+            "url": "https://i9.ytimg.com/vi/xl1Fn1kgQrs/default.jpg?sqp=CKCagdUG&rs=AOn4CLDNqG8Cx2kE01Uq0snBtHXuPcPrqg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i9.ytimg.com/vi/xl1Fn1kgQrs/mqdefault.jpg?sqp=CKCagdUG&rs=AOn4CLAREOYY0dgsBLlilbzaQQ30DSpnjg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i9.ytimg.com/vi/xl1Fn1kgQrs/hqdefault.jpg?sqp=CKCagdUG&rs=AOn4CLBi_joupGHKuH5xibWDCTcQjEa1mw",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Wacky Insights",
+        "tags": [
+          "shorts",
+          "storytime",
+          "wackydramas",
+          "wd-id-286cf53685bb4abf5cca",
+          "workplace"
+        ],
+        "categoryId": "24",
+        "liveBroadcastContent": "none",
+        "localized": {
+          "title": "One Email Exposed My Manager's Fake Rule #Shorts",
+          "description": "A manager invents an unpaid overtime rule, until one simple email reaches payroll. An original Wacky Dramas story.\n\n#shorts #storytime #workplace #wackydramas\n\n[WackyDramas content_id=wd-20260908T180130-card-first-test-a91f3c request_blob_sha=627116fa40f3891cff67fc7aaa9f74b19a2c07aa]"
+        }
+      },
+      "status": {
+        "uploadStatus": "uploaded",
+        "privacyStatus": "private",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "selfDeclaredMadeForKids": false
+      }
+    }
+  }
+}
