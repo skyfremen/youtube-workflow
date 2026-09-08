@@ -1,31 +1,23 @@
-name: Dry run YouTube Short pipeline
+name: Wacky Dramas Dry Run
 
 on:
   push:
     paths:
       - '.github/workflows/youtube-shorts-dry-run.yml'
-      - '.github/workflows/daily-plan-validate.yml'
-      - '.github/workflows/daily-queue-publish.yml'
-      - 'youtube-shorts-bot/queue_manager.py'
-      - 'youtube-shorts-bot/schedule_utils.py'
-      - 'youtube-shorts-bot/schedule_guard.py'
-      - 'youtube-shorts-bot/validate_backup_metadata.py'
-      - 'youtube-shorts-bot/validate_media_library.py'
-      - 'youtube-shorts-bot/media_failover.py'
-      - 'youtube-shorts-bot/media_preflight.py'
-      - 'youtube-shorts-bot/validate_content.py'
-      - 'youtube-shorts-bot/render.py'
-      - 'youtube-shorts-bot/verify_render.py'
-      - 'youtube-shorts-bot/auth_check.py'
-      - 'youtube-shorts-bot/upload.py'
-      - 'youtube-shorts-bot/publish.py'
-      - 'youtube-shorts-bot/verify_youtube_schedule.py'
-      - 'youtube-shorts-bot/finalize.py'
+      - '.github/workflows/adhoc-story-private.yml'
+      - 'youtube-shorts-bot/*.py'
+      - 'youtube-shorts-bot/tests/**'
+      - 'youtube-shorts-bot/planner/**'
+      - 'youtube-shorts-bot/media-library/backgrounds.json'
   workflow_dispatch:
 
 concurrency:
-  group: youtube-short-dry-run
+  group: wacky-dramas-dry-run
   cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   dry-run:
@@ -35,334 +27,142 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: read
-      packages: read
     env:
-      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      VIDEO_WIDTH: '720'
+      VIDEO_HEIGHT: '1280'
+      VIDEO_FPS: '30'
+      STORY_TEST_MODE: 'true'
+      STORY_RENDER_MAX_SECONDS: '5'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Mark repository safe for container Git
+      - name: Compile production Python
         shell: bash
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - name: Verify production workflows configure Git safety before Git inspection
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          checks = [
-              (Path('.github/workflows/daily-plan-validate.yml'), 'Resolve exact plan date from triggering change'),
-              (Path('.github/workflows/daily-queue-publish.yml'), 'Resolve and validate exact daily plan once'),
-          ]
-          marker = 'Mark repository safe for container Git'
-          for path, resolver in checks:
-              text = path.read_text(encoding='utf-8')
-              marker_pos = text.find(marker)
-              resolver_pos = text.find(resolver)
-              assert marker_pos >= 0, f'{path}: missing Git safe-directory step'
-              assert resolver_pos >= 0, f'{path}: missing resolver step'
-              assert marker_pos < resolver_pos, f'{path}: Git safety must be configured before resolver Git commands'
-          print('Production validation and publisher workflows both configure container Git safety before Git inspection.')
-          PY
-
-      - name: Verify production-style Git inspection works in container
-        shell: bash
-        run: |
-          git rev-parse --verify "$GITHUB_SHA"
-          git show --pretty='' --name-only "$GITHUB_SHA" >/dev/null
-          echo 'Container Git inspection works without dubious-ownership errors.'
-
-      - name: Compile production pipeline helpers
         run: |
           python -m py_compile \
-            youtube-shorts-bot/queue_manager.py \
-            youtube-shorts-bot/schedule_utils.py \
-            youtube-shorts-bot/schedule_guard.py \
-            youtube-shorts-bot/validate_backup_metadata.py \
-            youtube-shorts-bot/validate_media_library.py \
-            youtube-shorts-bot/media_failover.py \
-            youtube-shorts-bot/media_preflight.py \
+            youtube-shorts-bot/workflow_common.py \
+            youtube-shorts-bot/request_guard.py \
             youtube-shorts-bot/validate_content.py \
+            youtube-shorts-bot/validate_media_library.py \
+            youtube-shorts-bot/media_resolver.py \
             youtube-shorts-bot/render.py \
             youtube-shorts-bot/verify_render.py \
             youtube-shorts-bot/auth_check.py \
             youtube-shorts-bot/upload.py \
             youtube-shorts-bot/publish.py \
-            youtube-shorts-bot/verify_youtube_schedule.py \
-            youtube-shorts-bot/finalize.py
+            youtube-shorts-bot/verify_youtube_private.py \
+            youtube-shorts-bot/finalize.py \
+            youtube-shorts-bot/analytics.py
 
-      - name: Validate reusable media cache
+      - name: Run cheap unit and contract tests
+        run: python -m unittest discover -s youtube-shorts-bot/tests -v
+
+      - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/validate_media_library.py
 
-      - name: Create temporary 24-Short plan with real slot-1 backups
+      - name: Create temporary request and exercise validator
         shell: bash
         run: |
-          python - <<'PY'
-          import json
-          from datetime import datetime, timedelta
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-
-          concepts = [
-              ('PHONE','Autocorrect betrayal','TYPES ONE NORMAL WORD.','AUTOCORRECT STARTS A NEW LANGUAGE.'),
-              ('WORK','Printer panic','PRINTS ONE PAGE BEFORE A MEETING.','PRINTER CHOOSES THIS MOMENT FOR A LIFE CRISIS.'),
-              ('SLEEP','Blanket temperature war','TOO HOT WITH THE BLANKET.','TOO COLD WITHOUT IT.'),
-              ('FOOD','Fries tax','ORDERS OWN MEAL.','STILL TAKES MY FRIES.'),
-              ('SHOPPING','Receipt shock','CART LOOKS REASONABLE.','TOTAL HAS OTHER PLANS.'),
-              ('FRIENDS','Late friend physics','SAYS FIVE MINUTES AWAY.','HAS NOT LEFT HOME.'),
-              ('TRAVEL','Gate change sprint','FINALLY SITS AT THE GATE.','BOARD CHANGES TO THE OTHER END.'),
-              ('SCHOOL','Pen disappears','HAS THREE PENS BEFORE CLASS.','TEST STARTS WITH ZERO.'),
-              ('PARENTS','Remote control mystery','PARENT CANNOT FIND THE REMOTE.','IT IS IN THEIR HAND.'),
-              ('PETS','Door decision','PET BEGS TO GO OUT.','DOOR OPENS AND PET RECONSIDERS LIFE.'),
-              ('DATING','Reply timing strategy','WAITS TEN MINUTES TO REPLY CASUALLY.','SPENDS ALL TEN MINUTES STARING AT THE CHAT.'),
-              ('COUPLE','Thermostat diplomacy','ONE PERSON FEELS FREEZING.','THE OTHER IS LIVING IN A VOLCANO.'),
-              ('EVERYDAY LIFE','Sock disappearance','PUTS TWO SOCKS IN THE WASH.','DRYER RETURNS A SINGLE WITNESS.'),
-              ('HUMAN BEHAVIOR','Queue selection regret','CHOOSES THE SHORTEST LINE.','EVERY OTHER LINE MOVES FIRST.'),
-              ('MARRIAGE','Dishwasher geometry','LOADS DISHWASHER ONE WAY.','PARTNER REBUILDS IT LIKE TETRIS.'),
-              ('KIDS','Bedtime thirst','NOT THIRSTY ALL EVENING.','BEDTIME CREATES AN OCEAN EMERGENCY.'),
-              ('MEN','Instruction manual confidence','SEES THE INSTRUCTION MANUAL.','DECIDES EXPERIENCE WILL APPEAR AUTOMATICALLY.'),
-              ('WOMEN','Pocket disappointment','FINDS A PERFECT DRESS.','POCKETS ARE FAKE.'),
-              ('CHORES','Vacuum cable math','OUTLET LOOKS CLOSE ENOUGH.','CABLE STOPS FIVE CENTIMETERS SHORT.'),
-              ('SOCIAL HABITS','Elevator small talk','ENTERS ELEVATOR WITH A STRANGER.','SUDDENLY THE FLOOR NUMBERS ARE FASCINATING.'),
-              ('MORNING','Alarm confidence','SETS ONE ALARM LIKE A RESPONSIBLE ADULT.','MORNING ME HAS LEGAL APPEAL RIGHTS.'),
-              ('OFFICE','Meeting snack timing','OPENS A CRUNCHY SNACK QUIETLY.','THE ROOM BECOMES A RECORDING STUDIO.'),
-              ('HOME','Package delivery timing','WAITS HOME ALL DAY.','DELIVERY ARRIVES DURING A TWO-MINUTE SHOWER.'),
-              ('SOCIAL','Name memory failure','HEARS A NAME DURING INTRODUCTION.','BRAIN DELETES IT BEFORE THE HANDSHAKE ENDS.'),
-          ]
-
-          base = Path('youtube-shorts-bot')
-          plans = base / 'content' / 'plans'
-          plans.mkdir(parents=True, exist_ok=True)
-          plan_date = (datetime.now(ZoneInfo('Asia/Singapore')).date() + timedelta(days=1)).isoformat()
-          items = []
-
-          for i, (category, topic, setup, payoff) in enumerate(concepts, 1):
-              bg_backup = f'https://backup.example.invalid/video-{i}.mp4'
-              bg_backup_source = f'https://backup.example.invalid/video-source-{i}'
-              bg_backup_creator = f'Dry Run Backup Creator {i}'
-              bg_backup_license = 'Synthetic dry-run backup license'
-              music_backup = f'https://backup.example.invalid/music-{i}.mp3'
-              music_backup_source = f'https://backup.example.invalid/music-source-{i}'
-              music_backup_title = f'Dry Run Backup Track {i}'
-              music_backup_artist = f'Dry Run Backup Artist {i}'
-              music_backup_license = 'Synthetic dry-run backup music license'
-
-              if i == 1:
-                  bg_backup = 'https://www.pexels.com/download/video/4747218/'
-                  bg_backup_source = 'https://www.pexels.com/video/4747218/'
-                  bg_backup_creator = 'Pexels creator'
-                  bg_backup_license = 'Pexels License'
-                  music_backup = 'https://cdn.freesafemusic.com/audio/whjc.mp3'
-                  music_backup_source = 'https://freesafemusic.com/'
-                  music_backup_title = 'Soft Vinyl Dreams'
-                  music_backup_artist = 'Freedom Motif'
-                  music_backup_license = 'Free Safe Music License'
-
-              content = {
-                  'topic': topic,
-                  'category': category,
-                  'setup': setup,
-                  'payoff': payoff,
-                  'cta': 'DOUBLE TAP TO AGREE',
-                  'handle': '@WACKYINSIGHTS',
-                  'title': f'{topic} 😂 #Shorts',
-                  'description': f'{topic}. Synthetic CI dry-run content only.',
-                  'hashtags': ['#shorts','#funny','#relatable','#humor','#wackyinsights'],
-                  'background_url': f'https://primary.example.invalid/video-{i}.mp4',
-                  'background_source_url': f'https://primary.example.invalid/video-source-{i}',
-                  'background_creator': f'Dry Run Creator {i}',
-                  'background_license': 'Synthetic dry-run license',
-                  'background_credit': '',
-                  'background_backup_url': bg_backup,
-                  'background_backup_source_url': bg_backup_source,
-                  'background_backup_creator': bg_backup_creator,
-                  'background_backup_license': bg_backup_license,
-                  'background_backup_credit': '',
-                  'background_backup_attribution_required': False,
-                  'music_url': f'https://primary.example.invalid/music-{i}.mp3',
-                  'music_source_url': f'https://primary.example.invalid/music-source-{i}',
-                  'music_title': f'Dry Run Track {i}',
-                  'music_artist': f'Dry Run Artist {i}',
-                  'music_license': 'Synthetic dry-run music license',
-                  'music_credit': '',
-                  'music_backup_url': music_backup,
-                  'music_backup_source_url': music_backup_source,
-                  'music_backup_title': music_backup_title,
-                  'music_backup_artist': music_backup_artist,
-                  'music_backup_license': music_backup_license,
-                  'music_backup_credit': '',
-                  'music_backup_attribution_required': False,
-                  'background_scene': f'Exact synthetic visual scene for topic {topic}',
-                  'background_match_reason': f'The primary visual directly depicts the distinct dry-run scenario for {topic} and its main action.',
-                  'background_match_score': 95,
-                  'background_backup_scene': f'Alternate visual scene for topic {topic}',
-                  'background_backup_match_reason': f'The backup visual independently supports the same dry-run scenario for {topic} without reusing the primary.',
-                  'background_backup_match_score': 91,
-                  'music_mood': f'Quirky light comedic mood tailored to {topic}',
-                  'music_match_reason': f'The primary track supports the timing and light comedic mechanism of {topic} without overpowering the joke.',
-                  'music_match_score': 94,
-                  'music_backup_mood': f'Alternate playful comedic mood for {topic}',
-                  'music_backup_match_reason': f'The backup track independently supports the pacing and comedic tone of {topic} while remaining distinct.',
-                  'music_backup_match_score': 90,
-              }
-              items.append({
-                  'slot': i,
-                  'status': 'pending',
-                  'comedy_mechanism': ['misdirection','escalation','expectation-vs-reality','instant regret'][i % 4],
-                  'quality': {
-                      'relatability': 90,'funny': 90,'hook': 90,
-                      'originality': 90,'clarity': 90,'visual_potential': 90,'total': 90,
-                  },
-                  'content': content,
-              })
-
-          plan = {
-              'plan_date': plan_date,
-              'target_count': 24,
-              'candidates_generated': 60,
-              'media_backups_required': True,
-              'strategy_notes': 'Synthetic CI plan used only to test the complete non-publishing 24-slot pipeline.',
-              'items': items,
+          cat > /tmp/wd-20260908T161000-dry-run-abc123.json <<'JSON'
+          {
+            "schema_version": 2,
+            "content_id": "wd-20260908T161000-dry-run-abc123",
+            "channel": {"name": "Wacky Dramas", "handle": "@WACKYDRAMAS"},
+            "story": {
+              "category": "WORKPLACE",
+              "story_type": "BACKFIRE",
+              "hook": "My boss changed the rules. The email trail changed them back.",
+              "script": "I asked for the new rule in writing. The reply reached the person who owned the policy.",
+              "card_emojis": ["💼", "📧", "😤", "😳", "🔥"]
+            },
+            "narration": {"engine": "kokoro", "voice": "af_heart", "speed": 1.75},
+            "visual": {
+              "background_primary_id": "satisfying-001",
+              "background_backup_id": "satisfying-002"
+            },
+            "youtube": {
+              "title": "The Email Trail Changed Everything #Shorts",
+              "description": "An original Wacky Dramas story.",
+              "hashtags": ["#shorts", "#storytime", "#wackydramas"],
+              "category_id": "24",
+              "made_for_kids": false
+            }
           }
-          path = plans / f'{plan_date}.json'
-          path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          Path('youtube-shorts-bot/output').mkdir(exist_ok=True)
-          Path('youtube-shorts-bot/output/dry_run_plan_date.txt').write_text(plan_date + '\n')
-          print(f'Created temporary 24-slot dry-run plan {path}.')
-          PY
+          JSON
 
-      - name: Validate full 24-Short plan and strict backup metadata
-        shell: bash
-        run: |
-          PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
-          python youtube-shorts-bot/queue_manager.py validate --date "${PLAN_DATE}"
-          python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"
+          python youtube-shorts-bot/validate_content.py \
+            --request /tmp/wd-20260908T161000-dry-run-abc123.json
 
-      - name: Verify attribution-required backups fail without credit
-        shell: bash
-        run: |
-          PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
-          PLAN_PATH="youtube-shorts-bot/content/plans/${PLAN_DATE}.json"
-          cp "$PLAN_PATH" "${PLAN_PATH}.bak"
+          cp /tmp/wd-20260908T161000-dry-run-abc123.json /tmp/invalid.json
           python - <<'PY'
           import json
-          from pathlib import Path
-          plan_date = Path('youtube-shorts-bot/output/dry_run_plan_date.txt').read_text().strip()
-          path = Path(f'youtube-shorts-bot/content/plans/{plan_date}.json')
-          data = json.loads(path.read_text())
-          data['items'][0]['content']['background_backup_attribution_required'] = True
-          data['items'][0]['content']['background_backup_credit'] = ''
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+          p='/tmp/invalid.json'
+          d=json.load(open(p))
+          d['channel']['handle']='@WACKYINSIGHTS'
+          json.dump(d,open(p,'w'))
           PY
-          if python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"; then
-            echo 'Expected attribution-required empty credit to fail validation.' >&2
+          if python youtube-shorts-bot/validate_content.py --request /tmp/invalid.json; then
+            echo "::error::Invalid Wacky Insights request unexpectedly passed."
             exit 1
           fi
-          mv "${PLAN_PATH}.bak" "$PLAN_PATH"
-          python youtube-shorts-bot/validate_backup_metadata.py --date "${PLAN_DATE}"
 
-      - name: Verify all 24 hourly release mappings and schedule guard
+      - name: Resolve media IDs without downloading media
+        run: |
+          python youtube-shorts-bot/media_resolver.py \
+            --request /tmp/wd-20260908T161000-dry-run-abc123.json \
+            --no-download \
+            --skip-preflight
+
+      - name: Verify renderer and duration policy statically
         shell: bash
         run: |
           python - <<'PY'
-          from datetime import datetime, timedelta
           from pathlib import Path
-          from zoneinfo import ZoneInfo
           import sys
-
           sys.path.insert(0, 'youtube-shorts-bot')
-          from schedule_utils import ensure_publish_at_is_safe, scheduled_publish_at
-
-          plan_date = Path('youtube-shorts-bot/output/dry_run_plan_date.txt').read_text().strip()
-          for slot in range(1, 25):
-              value = scheduled_publish_at(plan_date, slot)
-              dt = datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(ZoneInfo('Asia/Singapore'))
-              assert dt.date().isoformat() == plan_date, (slot, dt)
-              assert dt.hour == slot - 1 and dt.minute == 0, (slot, dt)
-
-          first = scheduled_publish_at(plan_date, 1)
-          first_dt = datetime.fromisoformat(first.replace('Z', '+00:00'))
-          assert ensure_publish_at_is_safe(first, now=first_dt - timedelta(hours=2)) == first
-          try:
-              ensure_publish_at_is_safe(first, now=first_dt - timedelta(minutes=5))
-          except ValueError as exc:
-              assert 'MISSED_SCHEDULE_WINDOW' in str(exc), exc
-          else:
-              raise AssertionError('10-minute schedule guard did not fail closed.')
-
-          print('24 hourly mappings verified: slot 1 = 00:00 SGT through slot 24 = 23:00 SGT.')
+          import workflow_common
+          assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
+          assert workflow_common.END_TAIL_SECONDS == 0.35
+          assert workflow_common.expected_video_config() == {'width':720,'height':1280,'fps':30}
+          text=Path('youtube-shorts-bot/render.py').read_text()
+          assert 'KPipeline' in text
+          assert 'STORY_TEST_MODE' in text
+          assert 'STORY_RENDER_MAX_SECONDS' in text
+          assert 'PRODUCTION_MAX_SECONDS' in text
+          assert 'END_TAIL_SECONDS' in text
+          assert '"-map", "3:a:0"' in text
+          print('Renderer policy contract present without executing Kokoro or FFmpeg.')
           PY
 
-      - name: Real YouTube OAuth and channel preflight
-        run: python youtube-shorts-bot/auth_check.py
-
-      - name: Select slot 1 for full non-publishing production-path test
-        shell: bash
-        run: |
-          PLAN_DATE="$(cat youtube-shorts-bot/output/dry_run_plan_date.txt)"
-          python youtube-shorts-bot/queue_manager.py select --date "${PLAN_DATE}" --slot 1 --skip-validation
-          test -f youtube-shorts-bot/output/queue_selection.json
-
-      - name: Exercise lazy primary-to-backup media failover
-        run: python youtube-shorts-bot/media_failover.py
-
-      - name: Verify real backups were activated
+      - name: Verify workflow safety contracts
         shell: bash
         run: |
           python - <<'PY'
-          import json
           from pathlib import Path
-          data = json.loads(Path('youtube-shorts-bot/content/latest.json').read_text())
-          assert data.get('background_used_backup') is True, data
-          assert data.get('music_used_backup') is True, data
-          assert 'pexels.com/download/video/4747218' in data['background_url'], data['background_url']
-          assert 'freesafemusic.com/audio/whjc.mp3' in data['music_url'], data['music_url']
-          print('Lazy media failover verified with real backup video and music URLs.')
+          dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text()
+          prod=Path('.github/workflows/adhoc-story-private.yml').read_text()
+
+          for secret in ('YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN'):
+              assert secret not in dry, f'dry run must not expose {secret}'
+          assert 'python youtube-shorts-bot/render.py' not in dry
+          assert 'python youtube-shorts-bot/publish.py' not in dry
+          assert 'python youtube-shorts-bot/verify_youtube_private.py' not in dry
+          assert 'apt install' not in prod and 'apt-get' not in prod
+          assert 'pip install' not in prod
+          assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in prod
+          assert 'group: wacky-dramas-youtube-upload' in prod
+          assert "YOUTUBE_SCHEDULED_UPLOAD: 'false'" in prod
+          assert 'for slot in' not in prod
+          assert 'content/latest.json' not in prod
+          assert 'publishAt' not in prod
+          assert 'music' not in prod.lower()
+          print('Workflow contracts prove dry run cannot upload and production has no schedule/queue/music path.')
           PY
 
-      - name: Preflight active media after failover
-        run: python youtube-shorts-bot/media_preflight.py
-
-      - name: Validate selected content
-        run: python youtube-shorts-bot/validate_content.py
-
-      - name: Render selected Short
-        run: python youtube-shorts-bot/render.py
-
-      - name: Verify rendered video and audio
-        run: python youtube-shorts-bot/verify_render.py
-
-      - name: Verify upload/schedule code is present but never executed
+      - name: Confirm zero media/render/upload side effects
         shell: bash
         run: |
-          test -f youtube-shorts-bot/upload.py
-          test -f youtube-shorts-bot/publish.py
-          test -f youtube-shorts-bot/verify_youtube_schedule.py
-          test -f youtube-shorts-bot/finalize.py
+          test ! -f youtube-shorts-bot/output/short.mp4
+          test ! -f youtube-shorts-bot/output/narration.wav
           test ! -f youtube-shorts-bot/output/upload_result.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          selection = json.loads(Path('youtube-shorts-bot/output/queue_selection.json').read_text())
-          plan = json.loads(Path(selection['plan_path']).read_text())
-          assert len(plan['items']) == 24
-          assert all(item['status'] == 'pending' for item in plan['items'])
-          print('No upload occurred; all 24 queue items remain pending.')
-          PY
-
-      - name: Upload rendered dry-run artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: youtube-24-hour-dry-run-${{ github.run_id }}
-          path: |
-            youtube-shorts-bot/output/short.mp4
-            youtube-shorts-bot/output/queue_selection.json
-          retention-days: 3
-
-      - name: Confirm no publication
-        run: echo 'STRONG 24-HOUR DRY RUN PASSED - production workflow Git-safety parity, production-style Git inspection, validation policy parity, 24 hourly mappings, schedule guard, live OAuth/channel access, real media failover, active-media preflight, content validation, render and audio/video QA all passed. Upload/publish/finalize were compiled but deliberately never executed; no YouTube video was created.'
+          echo 'Dry run passed with no TTS, WAV, MP4 render, upload, schedule, queue mutation, or publication artifact.'

@@ -1,105 +1,72 @@
-import json
-from datetime import datetime
+import argparse
+import os
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
-from workflow_common import content_id
+from workflow_common import (
+    OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, git_blob_sha,
+    load_json, result_path_for_id,
+)
 
-BASE = Path(__file__).parent
-CONTENT = BASE / 'content' / 'latest.json'
-UPLOAD_RESULT = BASE / 'output' / 'upload_result.json'
-QUEUE_SELECTION = BASE / 'output' / 'queue_selection.json'
-ARCHIVE_DIR = BASE / 'content' / 'archive'
-ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
 
-with CONTENT.open(encoding='utf-8') as f:
-    data = json.load(f)
-with UPLOAD_RESULT.open(encoding='utf-8') as f:
-    upload = json.load(f)
+def build_receipt(request_path, request, upload, selection, render_meta):
+    content_id = ensure_request_path_matches(request_path, request)
+    if upload.get("privacy_status") != "private":
+        raise ValueError("Cannot finalize: YouTube private verification has not passed")
+    if upload.get("publish_at") not in (None, ""):
+        raise ValueError("Cannot finalize: publish_at must be null")
+    requested = request["visual"]
+    return {
+        "schema_version": 1,
+        "content_id": content_id,
+        "request_path": Path(request_path).as_posix(),
+        "request_blob_sha": git_blob_sha(request_path),
+        "source_commit_sha": os.getenv("SOURCE_COMMIT_SHA", "").strip() or os.getenv("GITHUB_SHA", ""),
+        "renderer_source_commit": os.getenv("SOURCE_COMMIT_SHA", "").strip() or os.getenv("GITHUB_SHA", ""),
+        "youtube_video_id": upload["youtube_video_id"],
+        "youtube_url": upload.get("youtube_url") or f"https://www.youtube.com/watch?v={upload['youtube_video_id']}",
+        "privacy_status": "private",
+        "publish_at": None,
+        "background_requested_primary_id": requested["background_primary_id"],
+        "background_requested_backup_id": requested["background_backup_id"],
+        "background_asset_id": selection["background_asset_id"],
+        "background_selection": selection["background_selection"],
+        "narration_voice": request["narration"]["voice"],
+        "narration_speed": float(request["narration"]["speed"]),
+        "narration_seconds": float(render_meta["narration_seconds"]),
+        "video_seconds": float(render_meta["video_seconds"]),
+        "resolution": render_meta["resolution"],
+        "fps": int(render_meta["fps"]),
+        "workflow_run_id": os.getenv("GITHUB_RUN_ID", ""),
+        "uploaded_at": upload["uploaded_at"],
+        "youtube_verified_at": upload.get("youtube_verified_at"),
+        "content_id_tag_verified": bool(upload.get("content_id_tag_verified")),
+        "test_mode": bool(render_meta.get("test_mode")),
+    }
 
-video_id = str(upload.get('youtube_video_id', '')).strip()
-if not video_id:
-    raise SystemExit('Finalize failed: upload_result.json has no YouTube video ID.')
 
-# Queue publishing must stay attached to the plan date selected at the beginning of
-# the run, even if a delayed GitHub job crosses midnight Singapore time. The legacy
-# single-Short workflow has no queue selection, so it keeps current-date behavior.
-if QUEUE_SELECTION.exists():
-    selection = json.loads(QUEUE_SELECTION.read_text(encoding='utf-8'))
-    archive_date = str(selection.get('plan_date', '')).strip()
-    if not archive_date:
-        plan_path = str(selection.get('plan_path', '')).strip()
-        archive_date = Path(plan_path).stem if plan_path else ''
-    if not archive_date:
-        raise SystemExit('Finalize failed: queue selection has no plan date.')
-else:
-    archive_date = datetime.now(ZoneInfo('Asia/Singapore')).date().isoformat()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--request", required=True)
+    args = parser.parse_args()
+    request_path = Path(args.request)
+    request = load_json(request_path)
+    upload = load_json(OUTPUT_DIR / "upload_result.json")
+    selection = load_json(OUTPUT_DIR / "background_selection.json")
+    render_meta = load_json(OUTPUT_DIR / "render-metadata.json")
+    try:
+        receipt = build_receipt(request_path, request, upload, selection, render_meta)
+    except ValueError as exc:
+        raise SystemExit(str(exc))
+    result_path = result_path_for_id(request["content_id"])
+    if result_path.exists():
+        existing = load_json(result_path)
+        if existing.get("youtube_video_id") == receipt.get("youtube_video_id") and existing.get("request_blob_sha") == receipt.get("request_blob_sha"):
+            print(f"Immutable result receipt already exists and matches: {result_path.name}")
+            return
+        raise SystemExit(f"Result {request['content_id']} already exists and is immutable.")
+    atomic_write_json(result_path, receipt)
+    print(f"Created immutable result receipt: {result_path}")
 
-archive_path = ARCHIVE_DIR / f'{archive_date}.json'
 
-if archive_path.exists():
-    existing = json.loads(archive_path.read_text(encoding='utf-8'))
-else:
-    existing = {'date': archive_date, 'count': 0, 'shorts': []}
-
-if isinstance(existing, dict) and isinstance(existing.get('shorts'), list):
-    shorts = existing['shorts']
-elif isinstance(existing, dict):
-    legacy = dict(existing)
-    legacy.pop('date', None)
-    legacy.pop('count', None)
-    shorts = [legacy] if legacy else []
-else:
-    raise SystemExit(f'Finalize failed: unsupported archive format in {archive_path.name}.')
-
-cid = str(upload.get('content_id', '')).strip() or content_id(data)
-commit_sha = str(upload.get('commit_sha', '')).strip()
-
-for item in shorts:
-    if not isinstance(item, dict):
-        continue
-    if str(item.get('youtube_video_id', '')).strip() == video_id:
-        print(f'Archive already contains YouTube video {video_id}; no duplicate append needed.')
-        break
-    if (
-        str(item.get('content_id', '')).strip() == cid
-        and str(item.get('commit_sha', '')).strip() == commit_sha
-        and commit_sha
-    ):
-        print(f'Archive already contains content_id={cid} for commit {commit_sha}; no duplicate append needed.')
-        break
-else:
-    record = dict(data)
-    record.pop('force_reupload', None)
-    record.update({
-        'content_id': cid,
-        'youtube_video_id': video_id,
-        'youtube_url': upload.get('youtube_url', f'https://www.youtube.com/watch?v={video_id}'),
-        'commit_sha': commit_sha,
-        'workflow_run_id': str(upload.get('workflow_run_id', '')).strip(),
-        'uploaded_at': upload.get('uploaded_at', ''),
-    })
-    for key in (
-        'scheduled_publish_at',
-        'youtube_verified_at',
-        'youtube_upload_status',
-        'youtube_privacy_at_upload',
-        'youtube_privacy_at_verification',
-        'recovered_after_scheduled_release',
-    ):
-        if upload.get(key) not in (None, ''):
-            record[key] = upload[key]
-    shorts.append(record)
-    print(f'Archived YouTube video {video_id} with content_id={cid}.')
-
-payload = {
-    'date': archive_date,
-    'count': len(shorts),
-    'shorts': shorts,
-}
-archive_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-
-if payload['count'] != len(payload['shorts']):
-    raise SystemExit('Finalize failed: archive count does not match shorts length.')
-
-print(f'Archive verified: {archive_path.name}, count={payload["count"]}.')
+if __name__ == "__main__":
+    main()

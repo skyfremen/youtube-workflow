@@ -1,83 +1,114 @@
 import hashlib
 import json
+import os
+import re
+import subprocess
 from pathlib import Path
 
-FINGERPRINT_FIELDS = ('topic', 'category', 'setup', 'payoff')
+BASE = Path(__file__).parent
+REQUESTS_DIR = BASE / "content" / "requests"
+RESULTS_DIR = BASE / "content" / "results"
+OUTPUT_DIR = BASE / "output"
+CONTENT_ID_RE = re.compile(r"^wd-\d{8}T\d{6}-[a-z0-9]+(?:-[a-z0-9]+)*-[a-z0-9]{6}$")
+PRODUCTION_MAX_SECONDS = 178.0
+PRODUCTION_TARGET_MIN_SECONDS = 120.0
+PRODUCTION_TARGET_MAX_SECONDS = 175.0
+END_TAIL_SECONDS = 0.35
 
 
-def content_id(data):
-    """Stable identity for the joke itself, independent of media or metadata."""
-    payload = {key: str(data.get(key, '')).strip() for key in FINGERPRINT_FIELDS}
-    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()[:20]
+def load_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def archive_records(archive_dir):
-    """Yield records from both legacy single-object and current daily archives."""
-    archive_dir = Path(archive_dir)
-    if not archive_dir.exists():
-        return
-    for path in sorted(archive_dir.glob('*.json')):
+def atomic_write_json(path, payload):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def request_content_id(data):
+    return str(data.get("content_id", "")).strip()
+
+
+def validate_content_id(content_id):
+    if not CONTENT_ID_RE.fullmatch(str(content_id or "").strip()):
+        raise ValueError(
+            "content_id must match wd-YYYYMMDDTHHMMSS-topic-slug-random6"
+        )
+    return content_id
+
+
+def marker_tag(content_id):
+    validate_content_id(content_id)
+    return f"wd-id-{content_id}"
+
+
+def request_path_for_id(content_id):
+    validate_content_id(content_id)
+    return REQUESTS_DIR / f"{content_id}.json"
+
+
+def result_path_for_id(content_id):
+    validate_content_id(content_id)
+    return RESULTS_DIR / f"{content_id}.json"
+
+
+def ensure_request_path_matches(path, data):
+    path = Path(path)
+    content_id = request_content_id(data)
+    validate_content_id(content_id)
+    expected = f"{content_id}.json"
+    if path.name != expected:
+        raise ValueError(f"Request filename must be {expected}")
+    return content_id
+
+
+def git_blob_sha(path, ref="HEAD"):
+    path = Path(path)
+    try:
+        relative = path.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        relative = path.as_posix()
+    result = subprocess.run(
+        ["git", "rev-parse", f"{ref}:{relative}"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        return result.stdout.strip()
+    raw = path.read_bytes()
+    header = f"blob {len(raw)}\0".encode()
+    return hashlib.sha1(header + raw).hexdigest()
+
+
+def env_bool(name, default=False):
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def expected_video_config():
+    return {
+        "width": int(os.getenv("VIDEO_WIDTH", "720")),
+        "height": int(os.getenv("VIDEO_HEIGHT", "1280")),
+        "fps": int(os.getenv("VIDEO_FPS", "30")),
+    }
+
+
+def load_recent_results(limit=50):
+    records = []
+    if not RESULTS_DIR.exists():
+        return records
+    for path in sorted(RESULTS_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
         try:
-            payload = json.loads(path.read_text(encoding='utf-8'))
+            data = load_json(path)
         except (OSError, json.JSONDecodeError):
             continue
-
-        if isinstance(payload, dict) and isinstance(payload.get('shorts'), list):
-            for record in payload['shorts']:
-                if isinstance(record, dict):
-                    yield path, record
-        elif isinstance(payload, dict):
-            yield path, payload
-
-
-def recoverable_archive_match(archive_dir, selection_path, current_content):
-    """Return an exact archived upload only for a still-pending selected queue item.
-
-    This is intentionally narrow. It repairs the failure window where YouTube upload
-    and archive persistence succeeded but the queue item remained pending. It must
-    never turn a normal duplicate into a reusable upload.
-    """
-    selection_path = Path(selection_path)
-    if not selection_path.exists():
-        return None
-
-    try:
-        selection = json.loads(selection_path.read_text(encoding='utf-8'))
-        raw_plan_path = str(selection.get('plan_path', '')).strip()
-        item_index = int(selection.get('item_index'))
-    except (OSError, json.JSONDecodeError, TypeError, ValueError):
-        return None
-
-    if not raw_plan_path:
-        return None
-    plan_path = Path(raw_plan_path)
-    if not plan_path.is_absolute():
-        plan_path = Path.cwd() / plan_path
-
-    try:
-        plan = json.loads(plan_path.read_text(encoding='utf-8'))
-        item = plan['items'][item_index]
-    except (OSError, json.JSONDecodeError, KeyError, IndexError, TypeError):
-        return None
-
-    if not isinstance(item, dict) or item.get('status', 'pending') != 'pending':
-        return None
-    selected_content = item.get('content')
-    if not isinstance(selected_content, dict):
-        return None
-
-    current_cid = content_id(current_content)
-    if content_id(selected_content) != current_cid:
-        return None
-
-    matches = []
-    for path, record in archive_records(archive_dir):
-        archived_cid = str(record.get('content_id', '')).strip() or content_id(record)
-        video_id = str(record.get('youtube_video_id', '')).strip()
-        if archived_cid == current_cid and video_id:
-            matches.append((path, record))
-
-    if len(matches) != 1:
-        return None
-    return matches[0]
+        if isinstance(data, dict):
+            records.append(data)
+        if len(records) >= limit:
+            break
+    return records

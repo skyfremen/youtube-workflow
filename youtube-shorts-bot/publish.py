@@ -1,57 +1,46 @@
-import json
-import os
-import re
-import subprocess
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
-from schedule_utils import scheduled_publish_at_from_selection
-from workflow_common import content_id
+from upload import execute_upload
+from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, result_path_for_id
 
-BASE = Path(__file__).parent
-CONTENT = BASE / 'content' / 'latest.json'
-OUT = BASE / 'output'
-QUEUE_SELECTION = OUT / 'queue_selection.json'
-OUT.mkdir(exist_ok=True)
 
-with CONTENT.open(encoding='utf-8') as f:
-    data = json.load(f)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--request", required=True)
+    args = parser.parse_args()
+    request_path = Path(args.request)
+    data = load_json(request_path)
+    content_id = data["content_id"]
 
-result = subprocess.run(
-    ['python', str(BASE / 'upload.py')],
-    capture_output=True,
-    text=True,
-    env=os.environ.copy(),
-)
+    receipt = result_path_for_id(content_id)
+    if receipt.exists():
+        existing = load_json(receipt)
+        print(f"Result receipt already exists; reusing video {existing['youtube_video_id']}.")
+        atomic_write_json(OUTPUT_DIR / "upload_result.json", {
+            "content_id": content_id,
+            "youtube_video_id": existing["youtube_video_id"],
+            "youtube_url": existing["youtube_url"],
+            "uploaded_at": existing["uploaded_at"],
+            "recovered": True,
+            "recovery_source": "result_receipt",
+        })
+        return
 
-if result.stdout:
-    print(result.stdout, end='')
-if result.stderr:
-    print(result.stderr, end='')
-if result.returncode != 0:
-    raise SystemExit(result.returncode)
+    result = execute_upload(data, OUTPUT_DIR / "short.mp4")
+    video_id = result["id"]
+    payload = {
+        "content_id": content_id,
+        "youtube_video_id": video_id,
+        "youtube_url": f"https://www.youtube.com/watch?v={video_id}",
+        "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        "recovered": bool(result.get("recovered")),
+        "recovery_source": result.get("recovery_source"),
+    }
+    atomic_write_json(OUTPUT_DIR / "upload_result.json", payload)
+    print(f"YouTube video resolved: {video_id}; recovered={payload['recovered']}")
 
-match = re.search(r'Uploaded video ID:\s*([A-Za-z0-9_-]+)', result.stdout or '')
-if not match:
-    raise SystemExit('Upload completed without a parseable YouTube video ID; refusing to archive.')
 
-video_id = match.group(1)
-record = {
-    'youtube_video_id': video_id,
-    'youtube_url': f'https://www.youtube.com/watch?v={video_id}',
-    'content_id': content_id(data),
-    'commit_sha': os.getenv('SOURCE_COMMIT_SHA', '').strip() or os.getenv('GITHUB_SHA', ''),
-    'workflow_run_id': os.getenv('GITHUB_RUN_ID', ''),
-    'uploaded_at': datetime.now(timezone.utc).isoformat(),
-}
-
-schedule_mode = os.getenv('YOUTUBE_SCHEDULED_UPLOAD', '').strip().lower() in {'1', 'true', 'yes'}
-if schedule_mode:
-    record['scheduled_publish_at'] = scheduled_publish_at_from_selection(QUEUE_SELECTION)
-    record['youtube_privacy_at_upload'] = 'private'
-
-(OUT / 'upload_result.json').write_text(
-    json.dumps(record, ensure_ascii=False, indent=2) + '\n',
-    encoding='utf-8',
-)
-print('Upload metadata saved:', json.dumps(record, ensure_ascii=False))
+if __name__ == "__main__":
+    main()
