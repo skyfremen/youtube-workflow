@@ -125,6 +125,20 @@ jobs:
           python youtube-shorts-bot/finalize.py \
             --request "${{ steps.request.outputs.request_path }}"
 
+      - name: Upload lightweight migration acceptance evidence
+        if: success() && steps.request.outputs.already_complete != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-acceptance-${{ github.run_id }}
+          path: |
+            youtube-shorts-bot/output/story-card.png
+            youtube-shorts-bot/output/captions.ass
+            youtube-shorts-bot/output/render-metadata.json
+            youtube-shorts-bot/output/background_selection.json
+            youtube-shorts-bot/output/upload_result.json
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Persist result receipt only
         if: steps.request.outputs.already_complete != 'true'
         shell: bash
