@@ -274,7 +274,7 @@ def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
         for idx, (chunk, weight) in enumerate(zip(chunks, weights)):
             end = speech_duration if idx == len(chunks) - 1 else min(speech_duration, cursor + speech_duration * weight / total)
             if end > cursor + 0.03:
-                events.append(f"Dialogue: 0,{ass_time(cursor)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
+                events.append(f"Dialogue: 0,{ass_time(start_offset + cursor)},{ass_time(start_offset + end)},Main,,0,0,0,,{escape_ass(wrap_caption(chunk.upper()))}")
             cursor = end
     return events
 

@@ -34,6 +34,18 @@ class IntroSequenceTests(unittest.TestCase):
         self.assertIn("0:00:03.10", events[0])
         self.assertNotIn("0:00:00.00", "\n".join(events))
 
+    def test_fallback_subtitles_also_start_after_card_transition(self):
+        story_start = 2.50 + CARD_TRANSITION_SECONDS
+        events = caption_events(
+            "Then payroll saw it",
+            [],
+            1.0,
+            start_offset=story_start,
+        )
+        self.assertTrue(events)
+        self.assertIn("0:00:02.80", events[0])
+        self.assertNotIn("0:00:00.00", "\n".join(events))
+
     def test_renderer_fades_card_after_intro_and_offsets_captions(self):
         source = (ROOT / "render.py").read_text()
         self.assertIn("card_fade_start = intro_duration", source)
