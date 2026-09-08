@@ -134,7 +134,6 @@ def render_emoji(icon, target_size=54):
 
 
 def draw_twitter_verified_badge(draw, x, y, size=38):
-    # Twitter/X-style scalloped blue badge with a white checkmark.
     cx = x + size / 2
     cy = y + size / 2
     r_outer = size * 0.48
@@ -177,7 +176,6 @@ for off, alpha in [(10,55),(18,25)]:
     d_card.rounded_rectangle((card_box[0]+off,card_box[1]+off,card_box[2]+off,card_box[3]+off), radius=36, fill=(0,0,0,alpha))
 d_card.rounded_rectangle(card_box, radius=36, fill=(251,251,251,252), outline=(28,28,28,255), width=5)
 
-# channel-avatar.png is the single authoritative display picture.
 logo_loaded = False
 logo_path = ASSETS / 'channel-avatar.png'
 if logo_path.exists():
@@ -186,7 +184,6 @@ if logo_path.exists():
             source_logo.load()
             logo = source_logo.convert('RGBA').copy()
         avatar_size = 132
-        # Preserve the complete source artwork; never crop it.
         contained = ImageOps.contain(logo, (118, 118), method=Image.Resampling.LANCZOS)
         avatar_square = Image.new('RGBA', (avatar_size, avatar_size), (0,0,0,255))
         px = (avatar_size-contained.width)//2
