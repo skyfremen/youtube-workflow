@@ -133,6 +133,25 @@ def render_emoji(icon, target_size=54):
     return tile
 
 
+def draw_twitter_verified_badge(draw, x, y, size=38):
+    # Twitter/X-style scalloped blue badge with a white checkmark.
+    cx = x + size / 2
+    cy = y + size / 2
+    r_outer = size * 0.48
+    r_inner = size * 0.41
+    points = []
+    teeth = 12
+    for i in range(teeth * 2):
+        angle = math.radians(-90 + i * 180 / teeth)
+        radius = r_outer if i % 2 == 0 else r_inner
+        points.append((cx + math.cos(angle) * radius, cy + math.sin(angle) * radius))
+    draw.polygon(points, fill=(29, 155, 240, 255))
+    check_font = ImageFont.truetype(FONT_BOLD, int(size * 0.58))
+    bb = draw.textbbox((0, 0), '✓', font=check_font)
+    tw, th = bb[2] - bb[0], bb[3] - bb[1]
+    draw.text((cx - tw / 2, cy - th / 2 - 2), '✓', font=check_font, fill=(255,255,255,255))
+
+
 pipeline = KPipeline(lang_code='a')
 audio_parts = []
 for _gs, _ps, audio in pipeline(story, voice=voice, speed=speed):
@@ -190,12 +209,8 @@ name_x,name_y=235,285
 f_name=ImageFont.truetype(FONT_BOLD,40)
 d_card.text((name_x,name_y),channel_name,font=f_name,fill=(18,18,18,255))
 name_bb=d_card.textbbox((name_x,name_y),channel_name,font=f_name)
-vx,vy=name_bb[2]+20,name_y+7
-# Blue verified badge treatment requested for the card.
-badge_size=36
-d_card.ellipse((vx,vy,vx+badge_size,vy+badge_size),fill=(70,120,230,255))
-verified_font=ImageFont.truetype(FONT_BOLD,22)
-d_card.text((vx+8,vy+3),'✓',font=verified_font,fill=(255,255,255,255))
+vx,vy=name_bb[2]+20,name_y+5
+draw_twitter_verified_badge(d_card, vx, vy, size=38)
 
 emoji_icons=['💼','🏠','💔','🔥','☕','😱']
 icon_y=350
