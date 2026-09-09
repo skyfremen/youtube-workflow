@@ -232,8 +232,10 @@ jobs:
         run: |
           set -uo pipefail
           success=0
+          skipped=0
           failed=0
           : > /tmp/batch-failures.txt
+          : > /tmp/batch-skipped.txt
 
           source_for_request() {
             local req="$1"
@@ -253,9 +255,20 @@ jobs:
             local status_file
             status_file="$(mktemp)"
             GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publish.py --stage prepare --request "$req"
-            local upload_required
+            local upload_required schedule_skipped schedule_skip_reason
             upload_required="$(sed -n 's/^upload_required=//p' "$status_file" | tail -1)"
+            schedule_skipped="$(sed -n 's/^schedule_skipped=//p' "$status_file" | tail -1)"
+            schedule_skip_reason="$(sed -n 's/^schedule_skip_reason=//p' "$status_file" | tail -1)"
             rm -f "$status_file"
+
+            # A skipped fresh slot intentionally has no video to verify/finalize.
+            # Recovery was already attempted by publish.py before this guard fired.
+            if [ "$schedule_skipped" = "true" ]; then
+              echo "$req | $schedule_skip_reason" >> /tmp/batch-skipped.txt
+              echo "::notice::Skipped fresh generation: $req — $schedule_skip_reason"
+              return 10
+            fi
+
             if [ "$upload_required" = "true" ]; then
               python youtube-shorts-bot/media_resolver.py --request "$req"
               python youtube-shorts-bot/render_aligned.py --request "$req"
@@ -273,14 +286,24 @@ jobs:
               success=$((success+1))
               echo "Completed: $req"
             else
-              failed=$((failed+1))
-              echo "$req" >> /tmp/batch-failures.txt
-              echo "::error::Failed: $req — durable intent/recovery rules remain authoritative"
+              rc=$?
+              if [ "$rc" -eq 10 ]; then
+                skipped=$((skipped+1))
+                echo "Skipped: $req"
+              else
+                failed=$((failed+1))
+                echo "$req" >> /tmp/batch-failures.txt
+                echo "::error::Failed: $req — durable intent/recovery rules remain authoritative"
+              fi
             fi
             echo "::endgroup::"
           done < /tmp/batch-requests.txt
 
-          echo "Batch complete: success=$success failed=$failed total=$((success+failed))"
+          echo "Batch complete: success=$success skipped=$skipped failed=$failed total=$((success+skipped+failed))"
+          if [ "$skipped" -gt 0 ]; then
+            echo "Schedule-skipped fresh requests (past or <=10 minutes remaining):"
+            cat /tmp/batch-skipped.txt
+          fi
           if [ "$failed" -gt 0 ]; then
             echo "Failed requests:"
             cat /tmp/batch-failures.txt
@@ -295,5 +318,6 @@ jobs:
           path: |
             youtube-shorts-bot/output/**/*.json
             /tmp/batch-failures.txt
+            /tmp/batch-skipped.txt
           if-no-files-found: ignore
           retention-days: 7
