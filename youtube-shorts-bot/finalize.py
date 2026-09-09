@@ -6,10 +6,18 @@ from recovery_state import GitHubState, RecoveryBlocked, blob_sha, check_identit
 from workflow_common import OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, load_json
 
 
-def _publication_contract(request):
+def _publication_contract(request, evidence):
     publication = request.get("publication")
     if not publication:
-        return {"mode": "private", "publish_at": None, "allowed_states": {"verified_private"}}
+        status = evidence.get("upload_body", {}).get("status", {})
+        privacy = status.get("privacyStatus")
+        if "publishAt" in status or privacy not in {"public", "private"}:
+            raise RecoveryBlocked("Invalid unscheduled durable publication evidence")
+        return {
+            "mode": privacy,
+            "publish_at": None,
+            "allowed_states": {"verified_public"} if privacy == "public" else {"verified_private"},
+        }
     return {
         "mode": "scheduled",
         "publish_at": publication["publish_at"],
@@ -26,12 +34,12 @@ def build_receipt(request_path, request, upload, selection, render_meta):
     check_identity(verification, identity)
     evidence = upload.get("upload_evidence", {})
     check_identity(evidence, identity)
-    publication = _publication_contract(request)
+    publication = _publication_contract(request, evidence)
     if verification.get("passed") is not True or verification.get("state") not in publication["allowed_states"]:
         raise RecoveryBlocked("Cannot finalize without successful exact YouTube publication verification")
-    if publication["mode"] == "private":
-        if verification.get("privacy_status") != "private" or verification.get("publish_at_absent") is not True:
-            raise RecoveryBlocked("Cannot finalize: exact private/unscheduled verification missing")
+    if publication["mode"] in {"public", "private"}:
+        if verification.get("privacy_status") != publication["mode"] or verification.get("publish_at_absent") is not True:
+            raise RecoveryBlocked(f"Cannot finalize: exact {publication['mode']}/unscheduled verification missing")
     else:
         if verification.get("publish_at") != publication["publish_at"]:
             raise RecoveryBlocked("Cannot finalize: verified scheduled publication differs from immutable request")
@@ -74,7 +82,7 @@ def build_receipt(request_path, request, upload, selection, render_meta):
         **identity, "youtube_video_id": upload['youtube_video_id'],
         "youtube_url": upload['youtube_url'], "youtube_channel_id": verification['channel_id'],
         "publication_mode": publication["mode"], "privacy_status": verification["privacy_status"],
-        "publish_at": publication["publish_at"], "publish_at_absent": publication["mode"] == "private",
+        "publish_at": publication["publish_at"], "publish_at_absent": publication["mode"] in {"public", "private"},
         "verification_state": verification["state"], "verification": verification,
         "planning": request.get("planning"),
         "background_requested_primary_id": request['visual']['background_primary_id'],
