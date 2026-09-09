@@ -41,7 +41,7 @@ def _timestamp(record):
 
 
 def is_successful_receipt(record):
-    """Count canonical verified private *and* scheduled successes for recency."""
+    """Count canonical verified public, historical private and scheduled successes."""
     if not (
         isinstance(record, dict)
         and record.get("background_asset_id")
@@ -49,6 +49,11 @@ def is_successful_receipt(record):
     ):
         return False
     state = record.get("verification_state")
+    if state == "verified_public":
+        return bool(
+            record.get("privacy_status") == "public"
+            and record.get("publish_at_absent") is True
+        )
     if state == "verified_private":
         return bool(
             record.get("privacy_status") == "private"
@@ -126,183 +131,149 @@ def semantic_score(asset, requirements):
     )
     orientation = _normal(requirements.get("orientation"))
     orientation_score = 1.0 if not orientation else float(
-        _normal(asset.get("orientation")) in {orientation, "unknown"}
+        orientation == _normal(asset.get("orientation"))
     )
     return round(
         0.70 * tag_score
         + 0.12 * type_score
         + 0.10 * intensity_score
         + 0.08 * orientation_score,
-        6,
+        4,
     )
 
 
 def quality_score(asset):
-    visual = float(asset.get("visual_satisfaction_score", 0)) / 100.0
-    loop = float(asset.get("loopability_score", 0)) / 100.0
-    captions = float(asset.get("caption_readability_score", 0)) / 100.0
-    return round(0.40 * visual + 0.25 * loop + 0.35 * captions, 6)
-
-
-def rendition_ready(asset):
-    """True when the cache has a production-suitable non-UHD physical rendition."""
-    return any(
-        isinstance(item, dict) and rendition_is_production_suitable(item)
-        for item in asset.get("renditions", [])
+    values = (
+        float(asset.get("visual_satisfaction_score") or 0),
+        float(asset.get("loopability_score") or 0),
+        float(asset.get("caption_readability_score") or 0),
     )
+    return round((values[0] * 0.40 + values[1] * 0.25 + values[2] * 0.35) / 100.0, 4)
 
 
-def recency_penalty(shorts_ago):
-    if shorts_ago is None:
-        return -NEVER_USED_BONUS
-    if shorts_ago < HARD_AVOID_SHORTS:
-        return 1000.0
-    if shorts_ago < 20:
-        return 48.0 - ((shorts_ago - HARD_AVOID_SHORTS) * 2.0)
-    if shorts_ago < RECENCY_PENALTY_SHORTS:
-        return 24.0 - ((shorts_ago - 20) * 2.0)
-    return 0.0
+def _has_production_rendition(asset):
+    return any(rendition_is_production_suitable(r) for r in asset.get("renditions", []))
 
 
 def rank_assets(registry, requirements, receipts):
-    """Return a cache-first mechanical shortlist for the AI planner to inspect."""
     usage = derive_usage_history(receipts)
     ranked = []
-    for asset in registry["assets"]:
+    for asset in registry.get("assets", []):
         if asset.get("status") != "active" or asset.get("verified") is not True:
             continue
         semantic = semantic_score(asset, requirements)
         quality = quality_score(asset)
         recent = usage.get(asset["id"])
-        shorts_ago = recent["shorts_ago"] if recent else None
-        penalty = recency_penalty(shorts_ago)
-        technically_ready = rendition_ready(asset)
-        strong = (
+        shorts_ago = recent.get("shorts_ago") if recent else None
+        never_used = recent is None
+        hard_avoided = shorts_ago is not None and shorts_ago < HARD_AVOID_SHORTS
+        if hard_avoided:
+            recency_penalty = 1000.0
+        elif shorts_ago is None:
+            recency_penalty = -NEVER_USED_BONUS
+        elif shorts_ago < 20:
+            recency_penalty = 48.0 - (shorts_ago - 10) * 2.0
+        elif shorts_ago < RECENCY_PENALTY_SHORTS:
+            recency_penalty = 24.0 - (shorts_ago - 20) * 2.0
+        else:
+            recency_penalty = 0.0
+        rendition_ready = _has_production_rendition(asset)
+        strong_match = bool(
             semantic >= MIN_SEMANTIC_SCORE
             and quality >= MIN_QUALITY_SCORE
-            and technically_ready
+            and rendition_ready
         )
-        hard_avoided = shorts_ago is not None and shorts_ago < HARD_AVOID_SHORTS
-        base = (semantic * 62.0) + (quality * 38.0)
+        base = semantic * 62.0 + quality * 38.0
         ranked.append({
-            "id": asset["id"],
+            **asset,
             "semantic_score": semantic,
             "quality_score": quality,
-            "strong_match": strong,
-            "rendition_ready": technically_ready,
+            "base_score": round(base, 3),
+            "recency_penalty": round(recency_penalty, 3),
+            "score": round(base - recency_penalty, 3),
             "shorts_ago": shorts_ago,
-            "never_used": recent is None,
+            "never_used": never_used,
             "hard_avoided": hard_avoided,
-            "recency_penalty": penalty,
-            "score": round(base - penalty, 6),
-            "last_content_id": recent.get("last_content_id") if recent else None,
+            "rendition_ready": rendition_ready,
+            "strong_match": strong_match,
         })
-    return sorted(ranked, key=lambda item: (-item["score"], item["id"]))
-
-
-def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=None):
-    """Mechanical safety gate for two IDs chosen semantically by ChatGPT.
-
-    Semantic metadata scores are returned for audit visibility but are not a hard
-    rejection here: the AI may understand a story/background fit that sparse cache
-    tags do not capture. Quality, freshness, verification and production rendition
-    cost remain hard requirements.
-    """
-    errors = []
-    if not primary_id or not backup_id or primary_id == backup_id:
-        errors.append("AI background primary and backup must be two different IDs")
-    mapping = asset_map(registry)
-    usage = derive_usage_history(receipts)
-    audited = {}
-    for slot, asset_id in (("primary", primary_id), ("backup", backup_id)):
-        asset = mapping.get(asset_id)
-        if not asset:
-            errors.append(f"{slot} background {asset_id} is not in the cache")
-            continue
-        quality = quality_score(asset)
-        recent = usage.get(asset_id)
-        shorts_ago = recent["shorts_ago"] if recent else None
-        info = {
-            "id": asset_id,
-            "quality_score": quality,
-            "rendition_ready": rendition_ready(asset),
-            "shorts_ago": shorts_ago,
-            "hard_avoided": shorts_ago is not None and shorts_ago < HARD_AVOID_SHORTS,
-            "semantic_score": semantic_score(asset, requirements or {}),
-        }
-        audited[slot] = info
-        if asset.get("status") != "active" or asset.get("verified") is not True:
-            errors.append(f"{slot} background {asset_id} is not active and verified")
-        if quality < MIN_QUALITY_SCORE:
-            errors.append(f"{slot} background {asset_id} is below quality threshold")
-        if not info["rendition_ready"]:
-            errors.append(
-                f"{slot} background {asset_id} has no production-suitable <=1080p rendition"
-            )
-        if info["hard_avoided"]:
-            errors.append(
-                f"{slot} background {asset_id} was used within the last {HARD_AVOID_SHORTS} Shorts"
-            )
-    return {"passed": not errors, "errors": errors, **audited}
+    return sorted(ranked, key=lambda item: (item["score"], item["quality_score"]), reverse=True)
 
 
 def select_logical_backgrounds(registry, requirements, receipts):
-    """Deterministic cache shortlist/fallback; AI semantic review remains canonical."""
     ranked = rank_assets(registry, requirements, receipts)
-    strong = [item for item in ranked if item["strong_match"]]
-    fresh = [item for item in strong if not item["hard_avoided"]]
-    expansion_required = len(fresh) < MIN_FRESH_STRONG_CANDIDATES
-    selected = fresh[:2] if not expansion_required else []
+    fresh = [item for item in ranked if item["strong_match"] and not item["hard_avoided"]]
+    if len(fresh) < MIN_FRESH_STRONG_CANDIDATES:
+        return {
+            "primary": None,
+            "backup": None,
+            "expansion_required": True,
+            "reason": "fewer than two strong fresh cache backgrounds",
+            "ranked_candidates": ranked,
+        }
     return {
-        "policy": {
-            "hard_avoid_shorts": HARD_AVOID_SHORTS,
-            "recency_penalty_shorts": RECENCY_PENALTY_SHORTS,
-            "min_semantic_score": MIN_SEMANTIC_SCORE,
-            "min_quality_score": MIN_QUALITY_SCORE,
-            "min_fresh_strong_candidates": MIN_FRESH_STRONG_CANDIDATES,
-            "semantic_owner": "chatgpt_planner",
-        },
-        "requirements": requirements,
-        "successful_receipts_considered": len(
-            [r for r in receipts if is_successful_receipt(r)]
-        ),
-        "fresh_strong_candidate_count": len(fresh),
-        "expansion_required": expansion_required,
-        "expansion_reason": (
-            "fewer_than_two_strong_fresh_cached_backgrounds"
-            if expansion_required
-            else None
-        ),
-        "primary": selected[0] if len(selected) > 0 else None,
-        "backup": selected[1] if len(selected) > 1 else None,
+        "primary": fresh[0]["id"],
+        "backup": fresh[1]["id"],
+        "expansion_required": False,
+        "reason": "cache supplied at least two strong fresh backgrounds",
         "ranked_candidates": ranked,
     }
 
 
+def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=None):
+    """Mechanical gate for IDs chosen semantically by the AI planner."""
+    requirements = requirements or {}
+    assets = asset_map(registry)
+    errors = []
+    if primary_id == backup_id:
+        errors.append("primary and backup background IDs must differ")
+    ranked = {item["id"]: item for item in rank_assets(registry, requirements, receipts)}
+    selected = []
+    for label, asset_id in (("primary", primary_id), ("backup", backup_id)):
+        asset = assets.get(asset_id)
+        if not asset:
+            errors.append(f"{label} background {asset_id} is missing from cache")
+            continue
+        audit = ranked.get(asset_id)
+        if not audit:
+            errors.append(f"{label} background {asset_id} is not active and verified")
+            continue
+        if audit["quality_score"] < MIN_QUALITY_SCORE:
+            errors.append(f"{label} background {asset_id} is below the quality floor")
+        if audit["hard_avoided"]:
+            errors.append(f"{label} background {asset_id} was used within the last 10 Shorts")
+        if not audit["rendition_ready"]:
+            errors.append(f"{label} background {asset_id} has no <=1080p production rendition")
+        selected.append((label, audit))
+    return {
+        "passed": not errors,
+        "errors": errors,
+        "primary": next((x for label, x in selected if label == "primary"), None),
+        "backup": next((x for label, x in selected if label == "backup"), None),
+    }
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Planning-only Wacky Dramas background cache shortlist"
-    )
-    parser.add_argument("--tags", required=True, help="Comma-separated visual requirements")
-    parser.add_argument("--motion-type", default="")
-    parser.add_argument("--motion-intensity", default="medium")
-    parser.add_argument("--orientation", default="")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--requirements")
+    parser.add_argument("--primary-id")
+    parser.add_argument("--backup-id")
     parser.add_argument("--registry", default=str(REGISTRY_PATH))
     parser.add_argument("--results-dir", default=str(RESULTS_DIR))
     args = parser.parse_args()
-    requirements = {
-        "visual_tags": [tag.strip() for tag in args.tags.split(",") if tag.strip()],
-        "motion_type": args.motion_type,
-        "motion_intensity": args.motion_intensity,
-        "orientation": args.orientation,
-    }
-    decision = select_logical_backgrounds(
-        load_registry(args.registry),
-        requirements,
-        load_successful_receipts(args.results_dir),
-    )
-    print(json.dumps(decision, indent=2, ensure_ascii=False))
-    if decision["expansion_required"]:
+    registry = load_registry(args.registry)
+    receipts = load_successful_receipts(args.results_dir)
+    requirements = {}
+    if args.requirements:
+        requirements = json.loads(Path(args.requirements).read_text(encoding="utf-8"))
+    if args.primary_id or args.backup_id:
+        if not args.primary_id or not args.backup_id:
+            raise SystemExit("Both --primary-id and --backup-id are required for AI-selection audit")
+        result = audit_ai_selection(registry, args.primary_id, args.backup_id, receipts, requirements)
+    else:
+        result = select_logical_backgrounds(registry, requirements, receipts)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if result.get("expansion_required") or result.get("passed") is False:
         raise SystemExit(2)
 
 
