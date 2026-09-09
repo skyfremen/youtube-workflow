@@ -12,6 +12,7 @@ from workflow_common import (
     START_LEAD_SECONDS,
     PRODUCTION_ENCODE_SAFETY_SECONDS,
     PRODUCTION_MAX_SECONDS,
+    PRODUCTION_TARGET_MAX_SECONDS,
     expected_video_config,
 )
 
@@ -19,6 +20,7 @@ from workflow_common import (
 class DurationPolicyTests(unittest.TestCase):
     def test_production_ceiling_and_tail(self):
         self.assertEqual(PRODUCTION_MAX_SECONDS, 179.0)
+        self.assertEqual(PRODUCTION_TARGET_MAX_SECONDS, 170.0)
         self.assertEqual(START_LEAD_SECONDS, 0.50)
         self.assertEqual(END_TAIL_SECONDS, 0.50)
         self.assertEqual(PRODUCTION_ENCODE_SAFETY_SECONDS, 0.10)
