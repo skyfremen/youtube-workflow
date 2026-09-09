@@ -7,13 +7,14 @@ from unittest.mock import patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from workflow_common import END_TAIL_SECONDS, PRODUCTION_MAX_SECONDS, expected_video_config
+from workflow_common import END_TAIL_SECONDS, START_LEAD_SECONDS, PRODUCTION_MAX_SECONDS, expected_video_config
 
 
 class DurationPolicyTests(unittest.TestCase):
     def test_production_ceiling_and_tail(self):
-        self.assertEqual(PRODUCTION_MAX_SECONDS, 178.0)
-        self.assertEqual(END_TAIL_SECONDS, 0.35)
+        self.assertEqual(PRODUCTION_MAX_SECONDS, 179.0)
+        self.assertEqual(START_LEAD_SECONDS, 0.50)
+        self.assertEqual(END_TAIL_SECONDS, 0.50)
 
     def test_default_canvas(self):
         with patch.dict(os.environ, {}, clear=True):

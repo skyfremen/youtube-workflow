@@ -10,10 +10,12 @@ REQUESTS_DIR = BASE / "content" / "requests"
 RESULTS_DIR = BASE / "content" / "results"
 OUTPUT_DIR = Path(os.getenv("STORY_OUTPUT_DIR", str(BASE / "output")))
 CONTENT_ID_RE = re.compile(r"^wd-\d{8}T\d{6}-[a-z0-9]+(?:-[a-z0-9]+)*-[a-z0-9]{6}$")
-PRODUCTION_MAX_SECONDS = 178.0
+PRODUCTION_MAX_SECONDS = 179.0  # hard YouTube Shorts ceiling: 2:59
 PRODUCTION_TARGET_MIN_SECONDS = 120.0
-PRODUCTION_TARGET_MAX_SECONDS = 175.0
-END_TAIL_SECONDS = 0.35
+PRODUCTION_TARGET_MAX_SECONDS = 170.0  # preserve headroom for TTS variance and timing buffers
+START_LEAD_SECONDS = 0.50
+END_TAIL_SECONDS = 0.50
+PRODUCTION_ENCODE_SAFETY_SECONDS = 0.10
 YOUTUBE_TAG_MAX_CHARS = 30  # local marker budget, not a YouTube per-tag limit
 EXPECTED_YOUTUBE_CHANNEL_ID = "UCvrq2m9G4yrwPfL_X-QPzMA"
 

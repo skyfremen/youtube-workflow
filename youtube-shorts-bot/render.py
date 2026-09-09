@@ -18,7 +18,8 @@ from tts_backend import (
     audio_metrics,
 )
 from workflow_common import (
-    END_TAIL_SECONDS, OUTPUT_DIR, PRODUCTION_MAX_SECONDS, atomic_write_json,
+    END_TAIL_SECONDS, START_LEAD_SECONDS, PRODUCTION_ENCODE_SAFETY_SECONDS, OUTPUT_DIR,
+    PRODUCTION_MAX_SECONDS, atomic_write_json,
     env_bool, expected_video_config, load_json,
 )
 
@@ -174,7 +175,7 @@ def generate_narration(synthesizer, hook, story_text, voice, speed, test_mode, t
     started = time.monotonic()
     intro_audio, _intro_segments = synthesize(synthesizer, hook, voice, speed)
     intro_duration = len(intro_audio) / 24000.0
-    story_budget = test_max - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None
+    story_budget = test_max - START_LEAD_SECONDS - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None
     if test_mode:
         if story_budget < 1.0:
             raise RuntimeError(
@@ -465,18 +466,21 @@ def main():
     tts_generation_duration_seconds = generated["tts_generation_duration_seconds"]
 
     story_duration = len(story_audio) / 24000.0
+    lead_samples = int(round(START_LEAD_SECONDS * 24000))
+    lead_audio = np.zeros(max(1, lead_samples), dtype=np.float32)
     transition_samples = int(round(CARD_TRANSITION_SECONDS * 24000))
     transition_audio = np.zeros(max(1, transition_samples), dtype=np.float32)
-    speech_audio = np.concatenate([intro_audio, transition_audio, story_audio])
-    story_start = intro_duration + CARD_TRANSITION_SECONDS
+    speech_audio = np.concatenate([lead_audio, intro_audio, transition_audio, story_audio])
+    story_start = START_LEAD_SECONDS + intro_duration + CARD_TRANSITION_SECONDS
     speech_duration = len(speech_audio) / 24000.0
     final_duration = speech_duration + END_TAIL_SECONDS
     if test_mode:
         if speech_duration > test_max + 0.05:
             raise SystemExit(f"Test narration {speech_duration:.3f}s exceeds STORY_RENDER_MAX_SECONDS={test_max:.3f}s")
-    elif final_duration > PRODUCTION_MAX_SECONDS:
+    elif final_duration > PRODUCTION_MAX_SECONDS - PRODUCTION_ENCODE_SAFETY_SECONDS:
         raise SystemExit(
-            f"Production duration {final_duration:.3f}s exceeds hard ceiling {PRODUCTION_MAX_SECONDS:.0f}s. "
+            f"Production duration {final_duration:.3f}s exceeds safe render limit "
+            f"{PRODUCTION_MAX_SECONDS - PRODUCTION_ENCODE_SAFETY_SECONDS:.2f}s for the hard {PRODUCTION_MAX_SECONDS:.0f}s ceiling. "
             "Do not trim; create a shorter story with a new content_id."
         )
 
@@ -585,7 +589,7 @@ def main():
     ass.write_text(build_ass_header() + "\n".join(events) + "\n", encoding="utf-8")
 
     video = OUTPUT_DIR / "short.mp4"
-    card_fade_start = intro_duration
+    card_fade_start = START_LEAD_SECONDS + intro_duration
     card_fade_dur = CARD_TRANSITION_SECONDS
     filter_complex = (
         f"[0:v]fps={fps},scale={W}:{H}:force_original_aspect_ratio=increase,"
@@ -640,6 +644,7 @@ def main():
         "narration_seconds": round(speech_duration, 6),
         "narration_audio_metrics": speech_metrics,
         "card_title_text": hook,
+        "start_lead_seconds": START_LEAD_SECONDS,
         "card_title_seconds": round(intro_duration, 6),
         "card_transition_seconds": CARD_TRANSITION_SECONDS,
         "story_start_seconds": round(story_start, 6),
