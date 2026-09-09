@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from render import (
-    CARD_TRANSITION_SECONDS, X264_CRF, X264_PRESET, caption_events,
+    CARD_TRANSITION_SECONDS, START_LEAD_SECONDS, X264_CRF, X264_PRESET, caption_events,
     story_body_without_repeated_hook,
 )
 
@@ -49,11 +49,13 @@ class IntroSequenceTests(unittest.TestCase):
         self.assertIn("0:00:02.80", events[0])
         self.assertNotIn("0:00:00.00", "\n".join(events))
 
-    def test_renderer_fades_card_after_intro_and_offsets_captions(self):
+    def test_renderer_fades_card_after_lead_and_intro_and_offsets_captions(self):
         source = (ROOT / "render.py").read_text()
-        self.assertIn("card_fade_start = intro_duration", source)
+        self.assertEqual(START_LEAD_SECONDS, 0.50)
+        self.assertIn("card_fade_start = START_LEAD_SECONDS + intro_duration", source)
         self.assertIn("card_fade_dur = CARD_TRANSITION_SECONDS", source)
         self.assertIn("start_offset=story_start", source)
+        self.assertIn("lead_audio = np.zeros", source)
         self.assertIn("transition_audio = np.zeros", source)
 
     def test_encoder_uses_measured_quality_preserving_fast_profile(self):
