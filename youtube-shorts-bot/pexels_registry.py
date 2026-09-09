@@ -36,7 +36,11 @@ def api_key():
 
 
 def api_get(path, key=None):
-    request = Request(f"{API_ROOT}/{path.lstrip('/')}", headers={"Authorization": key or api_key()})
+    request = Request(f"{API_ROOT}/{path.lstrip('/')}", headers={
+        "Authorization": key or api_key(),
+        "Accept": "application/json",
+        "User-Agent": "WackyDramas/1.0 (+https://github.com/skyfremen/youtube-workflow)",
+    })
     with urlopen(request, timeout=30) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -236,6 +240,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     enrich = sub.add_parser("enrich-existing")
     enrich.add_argument("--strict", action="store_true")
+    enrich.add_argument("--require-any", action="store_true")
     find = sub.add_parser("search")
     find.add_argument("--query", required=True)
     find.add_argument("--orientation", choices=("portrait", "landscape", "square"))
@@ -255,6 +260,8 @@ def main():
         if args.command == "enrich-existing":
             changed, failures = enrich_existing(args.registry)
             print(json.dumps({"enriched": changed, "failures": failures}, indent=2))
+            if args.require_any and changed == 0:
+                raise SystemExit(4)
             if failures and args.strict:
                 raise SystemExit(3)
         elif args.command == "search":

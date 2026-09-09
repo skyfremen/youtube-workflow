@@ -39,7 +39,7 @@ jobs:
 
       - name: Populate exact rendition metadata
         if: steps.pexels-key.outputs.available == 'true'
-        run: python youtube-shorts-bot/pexels_registry.py enrich-existing
+        run: python youtube-shorts-bot/pexels_registry.py enrich-existing --require-any
 
       - name: Validate migrated registry
         if: steps.pexels-key.outputs.available == 'true'
