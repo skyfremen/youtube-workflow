@@ -101,7 +101,7 @@ jobs:
           from request_guard import check_immutable_changes
           before=os.environ['PREVIOUS_SHA']
           if before and set(before) != {'0'}: check_immutable_changes(before, os.environ['GITHUB_SHA'])
-          print('Immutable request/result/recovery history unchanged.')
+          print('Immutable request/result/recovery/planning/background-sourcing history unchanged.')
           PY
 
       - name: Run unit and contract tests
@@ -137,15 +137,15 @@ jobs:
           import json
           d=json.load(open('/tmp/growth-dry-run.json'))
           assert d['raw_premises_generated'] >= 120
-          assert 0 < d['final_selected'] <= 24
+          assert d['final_selected'] == 24
           assert d['analytics_weight'] == 0
-          assert d['exploit_selections'] > 0 and d['explore_selections'] > 0
+          assert d['exploit_selections'] == 19 and d['explore_selections'] == 5
           selected=d['selected']
           assert len({x['publication']['publish_at'] for x in selected}) == len(selected)
           assert all(x['publication']['timezone'] == 'Asia/Singapore' for x in selected)
           assert all(len(x['title_candidates']) >= 5 for x in selected)
           assert all(x['opening_line'] for x in selected)
-          print('Growth acceptance: 120+ raw -> filtered/scored -> semifinal title/hook competition -> diverse explore/exploit winners -> unique hourly slots.')
+          print('Growth acceptance: 120+ raw -> filtered/scored -> semifinal title/hook competition -> 19 exploit + 5 explore -> 24 unique hourly slots.')
           PY
 
       - name: Verify renderer production contracts statically
@@ -156,6 +156,7 @@ jobs:
           import sys
           sys.path.insert(0,'youtube-shorts-bot')
           import render, tts_backend, workflow_common
+          from background_policy import production_rendition_policy
           assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
           assert workflow_common.PRODUCTION_TARGET_MIN_SECONDS == 120.0
           assert workflow_common.PRODUCTION_TARGET_MAX_SECONDS == 175.0
@@ -164,11 +165,14 @@ jobs:
           assert workflow_common.expected_video_config() == {'width':720,'height':1280,'fps':30}
           assert render.X264_PRESET == 'superfast' and render.X264_CRF == 19
           assert tts_backend.ONNX_BACKEND == 'onnx-fp32'
+          policy=production_rendition_policy()
+          assert policy['max_source_pixels'] == 1920 * 1080
+          assert policy['uhd_downloads_allowed'] is False
           text=Path('youtube-shorts-bot/render.py').read_text(encoding='utf-8')
           for needle in ['OnnxKokoroSynthesizer','PytorchKokoroSynthesizer','narration_backend_used',
                          'inline_blackdetect_passed','"-map", "3:a:0"','lead_audio = np.zeros']:
               assert needle in text
-          print('Rendering identity preserved: Kokoro, 720x1280, 30fps, H.264/AAC, duration ceiling and safety checks.')
+          print('Rendering identity preserved; background production downloads are capped at 1080p-equivalent and UHD is forbidden.')
           PY
 
       - name: Verify workflow safety contracts
@@ -179,16 +183,27 @@ jobs:
           dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text()
           adhoc=Path('.github/workflows/adhoc-story-private.yml').read_text()
           batch=Path('.github/workflows/daily-growth-batch.yml').read_text()
-          for secret in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN']:
+          maintenance=Path('.github/workflows/background-library-renditions.yml').read_text()
+          # Build self-search tokens dynamically so the test does not match its own source.
+          secret_names=[
+              'YOUTUBE_' + 'CLIENT_ID',
+              'YOUTUBE_' + 'CLIENT_SECRET',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
+          ]
+          for secret in secret_names:
               assert secret not in dry
-          assert 'container:' not in dry
+          assert ('container' + ':') not in dry
           assert 'group: wacky-dramas-youtube-upload' in adhoc
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert "[daily growth]" in adhoc and "[daily growth]" in batch
           assert 'schedule:' not in batch.split('jobs:')[0], 'batch must not wake hourly; YouTube scheduling owns cadence'
           assert 'for req in' not in adhoc and 'content/latest.json' not in adhoc
           assert 'queue_manager.py' not in batch and 'content/latest.json' not in batch
-          print('Dry-run has no secrets/uploads; ad-hoc and growth batch serialize on one upload concurrency group; no hourly render cron exists.')
+          # Cache ingestion must happen before any expensive media/TTS/render work.
+          assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
+          assert batch.index('ingest-manifest') < batch.index('render_aligned.py')
+          assert 'branches: [main]' in maintenance
+          print('Dry-run has no production secrets/container; AI-sourced cache ingestion precedes rendering; upload paths serialize; no hourly render cron exists.')
           PY
 
       - name: Confirm zero expensive production side effects
@@ -198,4 +213,5 @@ jobs:
           test ! -f youtube-shorts-bot/output/narration.wav
           test ! -f youtube-shorts-bot/output/upload_result.json
           test ! -d youtube-shorts-bot/content/planning
-          echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, or immutable planning mutation.'
+          test ! -d youtube-shorts-bot/content/background-sourcing
+          echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, immutable planning mutation, or background-sourcing mutation.'
