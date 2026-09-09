@@ -39,9 +39,9 @@ Planning rules:
 - Narrate in first person.
 - Make the conflict easy to follow on first listen.
 - Default Kokoro configuration: `voice=af_heart`, `speed=1.75`. The production primary backend is ONNX FP32; the request contract remains `engine=kokoro`.
-- Aim for **120–170 seconds of total rendered narration sequence** at the configured voice/speed. This budget includes the 0.50-second opening silence, spoken card title, card transition, story narration, and 0.50-second ending silence. The ONNX FP32 benchmark produced about 2.5% longer audio than the former PyTorch primary for the same story, so this target deliberately leaves headroom.
-- The renderer includes **0.50 seconds of silence at the beginning** and **0.50 seconds at the end**.
-- **179 seconds (2:59) is the hard production ceiling** for the complete encoded Short. The renderer reserves an additional 0.10-second encode safety margin, and the encoded-file verifier independently rejects anything over 179 seconds.
+- Aim for **120–170 seconds of total rendered narration sequence** at the configured voice/speed. This budget includes the 0.50-second opening silence, spoken card title, card transition, story narration, and 0.35-second ending silence. The ONNX FP32 benchmark produced about 2.5% longer audio than the former PyTorch primary for the same story, so this target deliberately leaves headroom.
+- The renderer includes **0.50 seconds of silence at the beginning** and **0.35 seconds at the end**.
+- **178 seconds is the hard production ceiling** for the complete encoded Short. The renderer reserves an additional 0.10-second encode safety margin, and the encoded-file verifier independently rejects anything over 178 seconds.
 - The planner should target natural spoken length, not an arbitrary word count.
 - If a production render would exceed the ceiling, do not trim the ending. Rewrite/regenerate as a **new request/content ID**.
 

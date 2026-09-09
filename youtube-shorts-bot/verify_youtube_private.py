@@ -2,15 +2,15 @@ import argparse
 import time
 
 from recovery_state import RecoveryBlocked, check_identity, identity_for, now
-from upload import make_client, authenticated_channel, description_marker
+from upload import make_client, authenticated_channel
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
 
 
-# Keep the same 60-second bounded verification window, but avoid the previous
-# 30-second blind spot between the fifth and sixth checks. The extra cheap
-# videos.list reads can detect YouTube processing 10-20 seconds earlier while
-# preserving the exact same fail-closed deadline and verification semantics.
-RETRY_DELAYS = (0, 2, 4, 8, 8, 8, 10, 10, 10)
+# Keep the same 60-second bounded verification window and all existing poll
+# milestones, while adding a 26-second observation between the common 22- and
+# 30-second states. This can save four runner-seconds without delaying any
+# previously observable state or weakening the fail-closed deadline.
+RETRY_DELAYS = (0, 2, 4, 8, 8, 4, 4, 10, 10, 10)
 
 
 def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
@@ -69,7 +69,10 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
             "privacy_status": "private", "publish_at_absent": True,
             "upload_status": status["uploadStatus"], "association_method": "immutable_github_upload_record",
             "observed_marker_tags": seen_tags,
-            "description_marker_observed": description_marker(identity) in snippet.get("description", ""),
+            # Recovery metadata intentionally lives in non-viewer-facing tags.
+            # Keep the receipt field for backward-compatible diagnostics, but
+            # new uploads must never place the old marker in the description.
+            "description_marker_observed": False,
             "attempts": attempt, "prior_observations": observations,
         }
     raise RecoveryBlocked(f"Private verification incomplete after {len(RETRY_DELAYS)} bounded attempts: {last}")

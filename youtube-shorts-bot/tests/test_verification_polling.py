@@ -14,6 +14,14 @@ class VerificationPollingTests(unittest.TestCase):
         self.assertEqual(sum(RETRY_DELAYS), 60)
         self.assertLessEqual(max(RETRY_DELAYS), 10)
         self.assertGreater(len(RETRY_DELAYS), 6)
+        cumulative = []
+        elapsed = 0
+        for delay in RETRY_DELAYS:
+            elapsed += delay
+            cumulative.append(elapsed)
+        self.assertIn(22, cumulative)
+        self.assertIn(26, cumulative)
+        self.assertIn(30, cumulative)
 
 
 if __name__ == '__main__':

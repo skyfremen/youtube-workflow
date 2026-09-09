@@ -20,6 +20,9 @@ from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
 BASE = Path(__file__).parent
 SUPPORTED_TYPES = {"video/mp4"}
+NORMALIZED_VIDEO_CODEC = "h264"
+NORMALIZED_PRESET = "superfast"
+NORMALIZED_CRF = 18
 HTTP_HEADERS = {
     "User-Agent": "WackyDramasMediaResolver/1.0",
     "Accept": "video/mp4,video/*;q=0.9,*/*;q=0.1",
@@ -181,6 +184,76 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
+def normalization_required(probe, target_width=720, target_height=1280, target_fps=30):
+    """Return whether repeated rendering would decode or scale avoidable pixels."""
+    return not (
+        int(probe.get("width") or 0) == int(target_width)
+        and int(probe.get("height") or 0) == int(target_height)
+        and abs(float(probe.get("fps") or 0) - float(target_fps)) <= 0.05
+        and probe.get("codec") == NORMALIZED_VIDEO_CODEC
+    )
+
+
+def normalize_for_render(target, source_probe, target_width=720, target_height=1280, target_fps=30):
+    """Transcode a finite source clip once instead of scaling every loop iteration.
+
+    The downloaded source is still fully probed and hashed for evidence. Only the
+    ephemeral render input is replaced, so immutable logical-media selection and
+    provider attribution remain unchanged.
+    """
+    target = Path(target)
+    if not normalization_required(
+        source_probe, target_width, target_height, target_fps
+    ):
+        return {
+            "background_normalization_applied": False,
+            "background_normalization_duration_seconds": 0.0,
+            "render_probe": source_probe,
+        }
+
+    normalized = target.parent / f"{target.name}.normalized.mp4"
+    normalized.unlink(missing_ok=True)
+    started = time.monotonic()
+    try:
+        process = subprocess.run(
+            [
+                "ffmpeg", "-y", "-hide_banner", "-v", "error", "-i", str(target),
+                "-map", "0:v:0", "-vf",
+                (
+                    f"fps={target_fps},"
+                    f"scale={target_width}:{target_height}:force_original_aspect_ratio=increase,"
+                    f"crop={target_width}:{target_height},format=yuv420p"
+                ),
+                "-an", "-sn", "-dn", "-map_metadata", "-1",
+                "-c:v", "libx264", "-preset", NORMALIZED_PRESET,
+                "-crf", str(NORMALIZED_CRF), "-movflags", "+faststart", str(normalized),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if process.returncode != 0:
+            detail = (process.stderr or "unknown ffmpeg failure").strip()[-1000:]
+            raise RuntimeError(f"background normalization failed: {detail}")
+        if not normalized.exists() or normalized.stat().st_size < 10000:
+            raise RuntimeError("normalized background is suspiciously small")
+        render_probe = probe_video(normalized)
+        if normalization_required(
+            render_probe, target_width, target_height, target_fps
+        ):
+            raise RuntimeError(f"normalized background has unexpected probe: {render_probe}")
+        normalized.replace(target)
+    finally:
+        normalized.unlink(missing_ok=True)
+
+    return {
+        "background_normalization_applied": True,
+        "background_normalization_duration_seconds": round(
+            time.monotonic() - started, 6
+        ),
+        "render_probe": render_probe,
+    }
+
+
 def download(asset, rendition, target, target_width=720, target_height=1280):
     target = Path(target)
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -217,11 +290,19 @@ def download(asset, rendition, target, target_width=720, target_height=1280):
         raise RuntimeError(
             f"downloaded rendition {probe['width']}x{probe['height']} would require material upscaling"
         )
+    source_bytes = target.stat().st_size
+    source_sha256 = sha256_file(target)
+    normalization = normalize_for_render(
+        target, probe, target_width, target_height, 30
+    )
     return {
-        "downloaded_bytes": target.stat().st_size,
+        "downloaded_bytes": source_bytes,
         "download_duration_seconds": elapsed,
-        "background_sha256": sha256_file(target),
+        "background_sha256": source_sha256,
+        "render_background_bytes": target.stat().st_size,
+        "render_background_sha256": sha256_file(target),
         "source_probe": probe,
+        **normalization,
     }
 
 

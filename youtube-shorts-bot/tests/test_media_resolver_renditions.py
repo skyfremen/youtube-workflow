@@ -75,6 +75,39 @@ class RenditionSelectionTests(unittest.TestCase):
     def test_insufficient_source_is_rejected(self):
         self.assertIsNone(media_resolver.select_best_rendition(asset(1, [rendition("small", 719, 1279)])))
 
+    def test_render_ready_h264_is_not_normalized_again(self):
+        probe = {"codec": "h264", "width": 720, "height": 1280, "fps": 29.97}
+        self.assertFalse(media_resolver.normalization_required(probe))
+
+    def test_oversized_or_wrong_codec_background_is_normalized(self):
+        oversized = {"codec": "h264", "width": 2560, "height": 1440, "fps": 30}
+        wrong_codec = {"codec": "vp9", "width": 720, "height": 1280, "fps": 30}
+        self.assertTrue(media_resolver.normalization_required(oversized))
+        self.assertTrue(media_resolver.normalization_required(wrong_codec))
+
+    def test_normalization_produces_exact_ephemeral_render_input(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "background.asset"
+            target.write_bytes(b"s" * 12000)
+            source_probe = {"codec": "h264", "width": 2560, "height": 1440, "fps": 29.97}
+            output_probe = {"codec": "h264", "width": 720, "height": 1280, "fps": 30.0}
+
+            def fake_run(command, **_kwargs):
+                Path(command[-1]).write_bytes(b"n" * 12000)
+                return mock.MagicMock(returncode=0, stderr="")
+
+            with mock.patch.object(media_resolver.subprocess, "run", side_effect=fake_run) as runner, \
+                 mock.patch.object(media_resolver, "probe_video", return_value=output_probe):
+                metrics = media_resolver.normalize_for_render(target, source_probe)
+
+            self.assertTrue(metrics["background_normalization_applied"])
+            self.assertEqual(metrics["render_probe"], output_probe)
+            self.assertEqual(target.read_bytes(), b"n" * 12000)
+            command = runner.call_args.args[0]
+            self.assertIn("libx264", command)
+            self.assertIn("superfast", command)
+            self.assertIn("fps=30,scale=720:1280", command[command.index("-vf") + 1])
+
 
 class HttpTransportTests(unittest.TestCase):
     def test_preflight_uses_bounded_range_request_without_curl(self):

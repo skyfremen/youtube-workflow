@@ -8,7 +8,6 @@ on:
       - '.github/workflows/background-library-renditions.yml'
       - '.github/workflows/youtube-analytics.yml'
       - '.github/workflows/build-shorts-image.yml'
-      - '.github/workflows/test-shorts-tag-recovery.yml'
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
       - 'youtube-shorts-bot/*.py'
@@ -91,7 +90,7 @@ jobs:
           ]
           present = [p for p in forbidden_paths if Path(p).exists()]
           assert not present, 'retired paths still present: ' + ', '.join(present)
-          expected_workflows = {'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml','test-shorts-tag-recovery.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml'}
+          expected_workflows = {'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml'}
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
           active_files = [*Path('youtube-shorts-bot').glob('*.py'),*Path('youtube-shorts-bot/planner').glob('*.md'),Path('youtube-shorts-bot/RECOVERY.md'),Path('.github/workflows/adhoc-story-private.yml'),Path('.github/workflows/build-shorts-image.yml'),Path('.github/workflows/youtube-analytics.yml')]
@@ -160,9 +159,9 @@ jobs:
           import sys
           sys.path.insert(0,'youtube-shorts-bot')
           import render, tts_backend, workflow_common
-          assert workflow_common.PRODUCTION_MAX_SECONDS == 179.0
+          assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
           assert workflow_common.START_LEAD_SECONDS == 0.50
-          assert workflow_common.END_TAIL_SECONDS == 0.50
+          assert workflow_common.END_TAIL_SECONDS == 0.35
           assert workflow_common.PRODUCTION_ENCODE_SAFETY_SECONDS == 0.10
           assert workflow_common.expected_video_config() == {'width':720,'height':1280,'fps':30}
           assert render.X264_PRESET == 'superfast' and render.X264_CRF == 19
@@ -175,8 +174,8 @@ jobs:
               assert needle in text
           rules=Path('youtube-shorts-bot/planner/STORY_RULES.md').read_text(encoding='utf-8')
           assert '120–170 seconds' in rules
-          assert '179 seconds (2:59) is the hard production ceiling' in rules
-          print('ONNX-primary/PyTorch-fallback, inline blackdetect, superfast CRF19, 0.5s edge buffers and 2:59 ceiling contracts present.')
+          assert '178 seconds is the hard production ceiling' in rules
+          print('ONNX-primary/PyTorch-fallback, inline blackdetect, superfast CRF19, 0.50s lead, 0.35s tail and 178s ceiling contracts present.')
           PY
 
       - name: Verify workflow safety contracts
