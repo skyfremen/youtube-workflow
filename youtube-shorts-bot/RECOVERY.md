@@ -1,85 +1,84 @@
-# Wacky Dramas private upload and recovery
+# Wacky Dramas upload and recovery
 
-The canonical Shorts architecture is request-driven and immutable:
+The canonical Shorts architecture is request-driven, immutable, and fail-closed around YouTube insertion.
 
-- `content/requests/<content_id>.json` is the immutable request.
+## Durable state
+
+- `content/requests/<content_id>.json` is the immutable production request.
+- `content/recovery/<content_id>/intent.json` is the create-only upload intent.
+- `content/recovery/<content_id>/upload.json` is create-only durable upload evidence.
 - `content/results/<content_id>.json` is the immutable verified-success receipt.
-- `content/recovery/<content_id>/intent.json` and `upload.json` are durable append-only upload evidence.
 
-There is no queue, series, music, daily-plan, `latest.json`, or scheduled-publish path in the canonical Wacky Dramas publisher.
+The request bytes are bound to the exact commit that first added them. Production refuses to publish if the current request differs from those source bytes.
 
-## Retry contract
+## Publication modes
 
-1. Resolve the original request-addition commit and verify that the current request bytes still match that Git blob.
-2. Before downloading media or rendering, read any canonical receipt and durable upload record from GitHub.
-3. If a durable video ID already exists, recover that exact video and set `upload_required=false`.
-4. For a genuinely new request only, create exclusive durable upload intent before calling YouTube `videos.insert`.
-5. Persist the returned YouTube video ID to durable recovery evidence before final verification.
-6. Verify through the authenticated owner API that the exact video is PRIVATE, processed, associated with the immutable request, and has no `publishAt`.
-7. Create the immutable result receipt only after verification passes. If the receipt already exists, verify it and reuse its bytes unchanged.
-8. GitHub Actions reruns (`GITHUB_RUN_ATTEMPT > 1`) are forced into `--recovery-only` mode. A rerun is therefore never permission for a fresh upload.
+Two current publication modes share the same recovery guarantees:
 
-Never delete an intent to clear ambiguity, never add a force-reupload flag, and never infer that a failed workflow means no YouTube upload occurred. Durable evidence must be reconciled instead.
+- **Ad-hoc request:** no `publication` object. The uploader requires an immediate `privacyStatus=public` body and no `publishAt`.
+- **Daily-growth schema-v3 request:** immutable `publication.mode=scheduled`. The uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
-## Accepted visual and recovery proof
+The workflow file `adhoc-story-private.yml` retains a historical filename, but its current workflow name and production behavior are **Wacky Dramas Ad-hoc Public Publish**. The filename is not a publication contract.
 
-The current card-first visual sequence was accepted using content ID `wd-20260908T180410-card-first-10s-b72d4e`.
+## Retry and idempotency contract
 
-- Canonical private video: `CdpjHVq7sj8`
-- Acceptance run: `34260939023`, attempt 1
-- Actual video duration: `10.066667` seconds
-- Render: 720x1280, 30 fps, H.264 + one AAC narration stream
-- Card title narration: `1.925` seconds
-- Card transition: `0.300` seconds
-- Story/subtitles start: `2.225` seconds
-- Privacy: PRIVATE
-- `publishAt`: absent
-- Receipt blob: `f9b850eb8135b3863fcb0e20cad94e347a35e79b`
+1. Resolve the original request-addition commit and verify the current request bytes against that Git blob.
+2. Validate the request and shared media registry.
+3. Before media download, TTS, rendering, or insertion, read any existing immutable receipt and durable upload evidence.
+4. If durable upload evidence exists, restore that exact YouTube video ID and do not create another upload.
+5. If an intent exists without a durable upload record, search the authenticated channel for the deterministic recovery marker. If the upload cannot be reconciled unambiguously, fail closed; absence is never permission to insert again.
+6. For a genuinely new request only, validate the exact upload contract and confirm no matching upload exists.
+7. After a verified render exists, create the upload intent exclusively before calling YouTube `videos.insert`.
+8. Persist durable upload evidence from the insert response or reconciled recovery result.
+9. Verify the exact YouTube video, channel, publication state, and schedule where applicable.
+10. Create the immutable result receipt only after verification passes. If the receipt already exists, verify its identity/evidence and reuse it unchanged.
 
-The same run was rerun as attempt 2. Recovery resolved `CdpjHVq7sj8`, reported `upload_required=false`, skipped background resolution, TTS/render and upload, reverified the existing private video, and reused the exact receipt blob unchanged. This proves same-content idempotency without another upload.
+A lost or ambiguous GitHub write acknowledgement is treated as unsafe. The code does not infer ownership of an upload intent from a later matching read and does not retry insertion optimistically.
 
-## Accepted full-length production proof
+## Reruns
 
-The production-duration path was accepted using content ID `wd-20260908T190630-roommate-rent-p4n8vx` after correcting the long-word caption-fit issue discovered by the preceding failed request.
+Ad-hoc GitHub Actions reruns are recovery-only. Manual recovery also uses `recovery_only=true`; this forbids a new upload when no durable record can be reconciled.
 
-- Canonical private video: `ntjLVNyPyus`
-- Acceptance run: `34267054783`, attempt 1
-- Actual video duration: `142.333333` seconds
-- Total narration: `141.975` seconds
-- Card title narration: `1.675` seconds
-- Card transition: `0.300` seconds
-- Story narration start: `1.975` seconds
-- Story narration: `140.000` seconds
-- Render: 720x1280, 30 fps, H.264 + one AAC narration stream
-- Audio source: narration only
-- Background: `satisfying-001` primary, `satisfying-002` backup
-- Kokoro: `af_heart` at `1.75x`
-- Test mode: false
-- Privacy: PRIVATE
-- YouTube processing: processed
-- `publishAt`: absent
-- Recovery marker and immutable description marker: verified
+The daily batch processes each immutable content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
 
-This proves the normal production path can render, upload, verify, and receipt a story inside the 120–175 second target while staying below the 178-second ceiling.
+## Scheduled-slot guard
 
-## Native 720p layout contract
+For fresh scheduled generation, `publish.py` skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
 
-The Shorts renderer now uses native fixed 720x1280 UI coordinates rather than scaling a 1080x1920 design space. Caption geometry is explicit: 85px left margin, 85px right margin, and 550px usable text width, with equal ASS margins so the subtitle block remains horizontally centered. Other card, branding, icon, pill, and motion coordinates are also stored directly in native 720p pixels.
+The planner additionally avoids creating same-day catch-up slots that are too close to the current time. These are separate protections: planning chooses viable slots; publication guards prevent stale immutable slots from causing late generation.
 
-The live YouTube channel rename is user-managed and may be completed later. Recovery and upload ownership are pinned to the authenticated channel ID, not the display name.
+## Duplicate recovery marker
 
-## Historical incomplete acceptance requests
+`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. `upload.py` searches the authenticated channel uploads for that marker when durable intent recovery requires YouTube reconciliation.
 
-`wd-20260909T010256-overtime-email-e4b91c` is an immutable historical acceptance request with no verified success receipt. Its earlier private upload was not accepted because recovery-marker verification failed. Keep the request unchanged as audit evidence; current recovery guards do not permit it to authorize a fresh upload.
+The recovery marker must not be placed in the public description. Semantic YouTube tags and visible hashtags remain distinct from the hidden recovery marker.
 
-`wd-20260908T185000-roommate-rent-k7m4qz` is an immutable full-length acceptance request that failed during caption layout before upload intent or YouTube insert. The failure exposed a long-word caption-fit bug, which was corrected in the renderer with adaptive per-caption font sizing and regression coverage. Keep the failed request unchanged; use a new content ID for the replacement production proof.
+## Verification and receipt requirements
 
-## Operational entry point
+A receipt cannot be finalized unless all of the following agree with the immutable request and durable upload evidence:
 
-For a new story, add exactly one new immutable request file under `content/requests/` in its own commit. The push-triggered **Wacky Dramas Ad-hoc Private Publish** workflow is the only Shorts publishing path and uploads PRIVATE only.
+- YouTube video ID and authenticated channel.
+- Immediate-public or scheduled publication state, including exact `publishAt` for scheduled requests.
+- Verified render identity and SHA.
+- 720×1280 resolution, 30 fps, H.264 video, one AAC narration stream.
+- Kokoro narration using the request voice/speed contract.
+- Primary or backup background selected from the request and recorded with its rendition/provenance.
+- Workflow/source-commit provenance.
 
-## Background rendition migration
+The receipt itself is create-only. A rerun may reuse an existing verified receipt but may not mutate it.
 
-The schema-v3 Pexels migration populated official `video_files` metadata for 17 of the 30 existing logical backgrounds. The remaining 13 stay registered for historical generic-fallback compatibility because Pexels exposes no rendition large enough to crop-fill 720×1280 without upscaling. Planning excludes those generic-only assets from new requests; it does not change their stable logical IDs or provenance.
+## Operator recovery
 
-For recovery of an existing content ID, manually run **Wacky Dramas Ad-hoc Private Publish** with that `content_id` and `recovery_only=true`.
+For an existing ad-hoc content ID, manually run **Wacky Dramas Ad-hoc Public Publish** with:
+
+- `content_id=<existing immutable content_id>`
+- `recovery_only=true`
+- `render_preview=false` unless a separate debug preview is explicitly needed
+
+For a daily-growth content ID, use `daily-growth-batch.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
+
+If recovery reports conflicting videos, mismatched evidence, an intent with no observable video, or any other ambiguous state, stop automated insertion and reconcile the durable GitHub/YouTube evidence. Never delete an intent, edit an immutable request/receipt, or add a force-reupload path to clear ambiguity.
+
+## Safe verification
+
+Repository cleanup and code changes should use `youtube-shorts-dry-run.yml` and its unit/contract checks. A public YouTube upload is not part of cleanup verification. Debug rendering may be used only through the explicit test/preview path that does not upload.

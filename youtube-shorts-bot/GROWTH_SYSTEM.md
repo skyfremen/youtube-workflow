@@ -67,7 +67,7 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 
 ## Immutable request versions
 
-Schema v2 remains the ad-hoc private/unscheduled compatibility path.
+Schema v2 remains the ad-hoc compatibility path. It has no scheduled `publication` object and therefore follows the current immediate-public ad-hoc upload contract.
 
 Schema v3 is the daily-growth path. It keeps the same canonical story/narration/visual/YouTube fields and adds:
 
@@ -122,9 +122,13 @@ The external daily planner follows `planner/DAILY_GROWTH_PROMPT.md` and creates 
 
 That commit is routed to the batch workflow. The ad-hoc workflow explicitly ignores it.
 
+## Repository state hygiene
+
+Transient Python caches, local environment files, render outputs, and preview outputs are ignored by the root `.gitignore`. Durable requests, recovery evidence, result receipts, planning/background-sourcing audits, analytics state, and the verified media registry are intentionally tracked and must not be treated as disposable generated files.
+
 ## Acceptance and safe rollout
 
-Before recurring planning is enabled:
+Before a production change is merged:
 
 1. branch/static compilation and all unit tests must pass
 2. growth acceptance must generate at least 120 raw premises
@@ -134,4 +138,4 @@ Before recurring planning is enabled:
 6. production workflow must retain the durable intent/duplicate-recovery invariant
 7. current secrets must remain referenced only through GitHub Actions secret expressions
 
-Recurring production should remain disabled until those checks pass on `main`.
+Production behavior should not be changed or enabled through cleanup work merely to satisfy repository-size goals.

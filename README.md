@@ -1,0 +1,66 @@
+# Wacky Dramas YouTube Workflow
+
+This repository contains the canonical **Wacky Dramas** Shorts production system. The active implementation lives under `youtube-shorts-bot/`; GitHub Actions orchestration lives under `.github/workflows/`.
+
+## Canonical architecture
+
+The production path is request-driven and append-only:
+
+1. The daily planner generates a large premise pool, applies deterministic scoring/diversity policy, selects up to 24 winners, and creates immutable schema-v3 requests with hourly `Asia/Singapore` publication slots.
+2. Ad-hoc operation creates one immutable request for one `content_id`.
+3. Requests are validated before expensive work.
+4. Primary/backup logical background IDs are resolved through the verified media registry, with rendition preflight and controlled fallback.
+5. Kokoro generates narration using the approved voice/speed contract; captions are aligned and the video is rendered at 720×1280 / 30 fps / H.264 + AAC.
+6. Upload recovery is checked before generation or insertion. A durable upload intent is an irreversible retry fence.
+7. Ad-hoc requests publish immediately public. Scheduled growth requests upload private with the immutable YouTube `publishAt` value.
+8. YouTube state is verified through the authenticated owner API.
+9. A success receipt is written only after verification succeeds and is immutable thereafter.
+10. Scheduled growth receipts feed age-matched analytics and future candidate scoring.
+
+Canonical durable paths:
+
+- `youtube-shorts-bot/content/requests/<content_id>.json` — immutable production request.
+- `youtube-shorts-bot/content/recovery/<content_id>/intent.json` — create-only upload intent.
+- `youtube-shorts-bot/content/recovery/<content_id>/upload.json` — create-only durable upload evidence.
+- `youtube-shorts-bot/content/results/<content_id>.json` — immutable verified success receipt.
+- `youtube-shorts-bot/content/planning/YYYY-MM-DD.json` — immutable daily planning audit when a daily plan is created.
+- `youtube-shorts-bot/content/background-sourcing/YYYY-MM-DD.json` — optional immutable sourcing manifest for newly selected Pexels backgrounds.
+
+Never edit or delete an existing production JSON in those immutable paths during ordinary operation.
+
+## Active workflows
+
+The supported workflow set is deliberately small:
+
+| Workflow | Purpose |
+| --- | --- |
+| `adhoc-story-private.yml` | Ad-hoc public publish plus recovery-only reruns and optional debug preview. The historical filename is retained to avoid an unnecessary workflow-identity rename; the workflow name and current behavior are public publish. |
+| `daily-growth-batch.yml` | Processes a daily selected batch, isolates per-video failures, preserves shared-state safety, and delegates hourly release timing to YouTube scheduling. |
+| `youtube-analytics.yml` | Collects age-matched Shorts analytics and updates the learning snapshot/model. |
+| `background-library-renditions.yml` | Maintains official Pexels rendition metadata in the verified background registry. |
+| `build-shorts-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
+| `youtube-shorts-dry-run.yml` | Static, unit, contract, growth-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
+
+The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, and migration workflow paths do not reappear.
+
+## Publication and recovery invariants
+
+- One story maps to one immutable `content_id`.
+- The current channel identity is **Wacky Dramas / @WACKYDRAMAS** and production ownership is additionally pinned to the expected YouTube channel ID in code.
+- Schema-v3 scheduled uploads must enter YouTube as private and carry the exact immutable `publishAt`.
+- Ad-hoc requests without a scheduled publication object publish immediately public.
+- The deterministic recovery marker is stored in non-viewer-facing YouTube tags, not in the description.
+- If a durable intent exists, a missing/temporarily unobservable video is never permission to upload again.
+- Result receipts are created only after exact YouTube state, request identity, render, background, and provenance verification.
+
+See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/GROWTH_SYSTEM.md` for the planning/analytics design.
+
+## Development and verification
+
+The canonical lightweight validation baseline is encoded in `.github/workflows/youtube-shorts-dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises request compatibility and the 120-premise growth acceptance path, checks renderer constants, enforces workflow safety, and proves the dry run creates no TTS/render/upload side effects.
+
+A production upload is **not** required to validate repository cleanup or ordinary code changes. Do not use public YouTube publishing as a cleanup test.
+
+## Repository scope
+
+Retired Wacky Insights planner/queue/series/music/publishing architecture and the former `youtube-story-bot` prototype are not part of the supported tree. Do not restore them. Historical or experimental branches with unique unmerged work must be reviewed before deletion rather than treated as disposable solely because of age or naming.
