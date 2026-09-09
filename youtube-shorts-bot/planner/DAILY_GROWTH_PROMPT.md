@@ -5,8 +5,12 @@ This is the single canonical daily planning instruction for the aggressive Wacky
 ## Objective
 Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day, using exact top-of-hour YouTube publication slots. Optimize for strong opportunities, not quota filling. Planning never uploads, renders, synthesizes TTS, or downloads production media.
 
-## Planning date and catch-up
-Resolve current `Asia/Singapore` time before generating candidates. At or after 20:00 SGT, plan the next Singapore calendar day with hourly slots 00:00–23:00. Before 20:00 SGT, use same-day catch-up for the current date. Immediately before slot assignment and commit, re-read SGT and keep only exact top-of-hour slots at least 30 minutes in the future. Never backfill or shift hours. If today's planning audit already exists, do not replan; use canonical production recovery. Record `planning_mode`, and for catch-up record reference time, eligible slots and omitted elapsed/too-close slots.
+## Planning date and same-day catch-up mode
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. At or after 20:00, plan the **next Singapore calendar day**. All exact hourly slots from `00:00` through `23:00` are eligible before quality/diversity gates.
+
+When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. Example: at `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+
+Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-growth-batch.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
 
 ## Canonical production contract
 Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; Kokoro af_heart 1.75x; 720×1280/30fps H.264 + AAC; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
@@ -33,11 +37,7 @@ Each schema-v3 `youtube` object must contain exactly:
 
 The uploader constructs final `snippet.tags` in this order: deterministic hidden recovery marker, planned `youtube.tags`, then de-duplicated hashtag words with the leading `#` removed. The hidden marker is backend-owned and must never be authored by ChatGPT or placed in the description.
 
-Hard final-payload limits:
-- title <=100 characters including `#Shorts`;
-- final description <=5,000 UTF-8 bytes after missing request hashtags are appended;
-- final `snippet.tags` <=500 YouTube combined-character cost including hidden marker + planned semantic tags + hashtag-derived tags;
-- hashtags 3–8; semantic tags 4–12.
+Hard final-payload limits: title <=100 characters including `#Shorts`; final description <=5,000 UTF-8 bytes after missing request hashtags are appended; final `snippet.tags` <=500 YouTube combined-character cost including hidden marker + planned semantic tags + hashtag-derived tags; hashtags 3–8; semantic tags 4–12.
 
 Before committing **every** winner, validate the exact local production payload:
 ```python
@@ -47,7 +47,7 @@ build_upload_body(request_data, require_future=False)
 This is authoritative for description assembly, tag de-duplication and final tag cost. If it fails, fix or reject the winner before commit. The backend repeats these checks before expensive generation and at upload time.
 
 ## Analytics learning
-Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. When analytics is disabled, use editorial/diversity fallback. When enabled, score historical attribute fit using the canonical analytics-learning arithmetic and feed only normalized 0–100 analytics metrics into growth scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
+Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. When analytics is disabled, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical analytics-learning arithmetic and feed only normalized 0–100 analytics metrics into growth scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
 
 ## Diversity
 Apply diversity after ranking. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day target roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
