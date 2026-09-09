@@ -3,317 +3,63 @@
 This is the single canonical daily planning instruction for the aggressive Wacky Dramas Shorts growth system. It evolves the immutable request architecture; it must never restore a retired queue/planner model.
 
 ## Objective
-
-Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day resolved by the planning-mode rules below, using exact top-of-hour YouTube publication slots.
-
-Optimize for **24 strong opportunities**, not quota filling. If fewer than 24 stories pass hard quality, safety, originality, duration, truthfulness, background, or catch-up slot-availability gates, create fewer requests and explain the shortfall in the planning audit.
-
-Planning must never upload, render, synthesize TTS, or download production media.
+Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day, using exact top-of-hour YouTube publication slots. Optimize for strong opportunities, not quota filling. Planning never uploads, renders, synthesizes TTS, or downloads production media.
 
 ## Planning date and same-day catch-up mode
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. At or after 20:00, plan the **next Singapore calendar day**. All exact hourly slots from `00:00` through `23:00` are eligible before quality/diversity gates.
 
-Resolve the plan date **before generating candidates** using the current `Asia/Singapore` date and time.
+When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
-### Normal scheduled mode
-
-The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. When the planner runs at or after 20:00 Singapore time, plan the **next Singapore calendar day**.
-
-- All exact hourly slots from `00:00` through `23:00` on the next day are eligible before normal quality/diversity gates.
-- This preserves the standard 8 PM planning flow unchanged.
-- The GitHub production batch still runs once after the content commit; YouTube `publishAt` owns the hourly release cadence.
-
-### Same-day catch-up mode
-
-When the planner is manually run **after midnight and before 20:00 Asia/Singapore**, treat it as a same-day catch-up for the **current Singapore calendar day**.
-
-Immediately before assigning publication slots and again immediately before the content-only commit:
-
-1. Re-read the current Singapore time. Do not rely on the time when planning first started.
-2. Keep only exact top-of-hour slots on the current day that are at least **30 minutes in the future** at that moment.
-3. Never recreate, backfill, or shift elapsed/too-close hours to arbitrary minute values. Catch-up releases remain on exact hourly boundaries.
-4. Select at most the number of still-eligible hourly slots. Fewer available hours means fewer requests; never lower story-quality gates to fill them.
-5. If no hourly slot remains at least 30 minutes in the future, do not create a daily growth content commit. Report that there are no safe same-day slots left.
-6. The backend's existing 10-minute fresh-generation guard remains authoritative. The planner's 30-minute catch-up lead is deliberately more conservative so the first request has room for commit, global preflight, generation, upload, and YouTube scheduling.
-
-Example: at `01:20` Singapore time, `02:00` through `23:00` are eligible. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
-
-### Existing plan versus missed plan
-
-Before creating a same-day catch-up plan, check whether `youtube-shorts-bot/content/planning/YYYY-MM-DD.json` already exists for the current Singapore date.
-
-- **No existing daily planning audit:** this is a genuinely missed planner run; same-day catch-up may create a new content-only daily growth commit for the remaining safe hourly slots.
-- **Existing daily planning audit:** do **not** create a second plan, do not modify the existing audit, and do not create replacement immutable requests. This is a production recovery case, not a planning case. Recover/process the existing immutable `content_id` values through the canonical `daily-growth-batch.yml` manual `workflow_dispatch` path instead.
-
-The planning audit must record `planning_mode` as `normal_next_day` or `same_day_catch_up`. For catch-up, also record the Singapore reference time used for final slot assignment, eligible hourly slots, and omitted elapsed/too-close slots so the reduced count is auditable.
+Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-growth-batch.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
 
 ## Canonical production contract
+Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; Kokoro af_heart 1.75x; 720×1280/30fps H.264 + AAC; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
 
-Preserve all of these invariants:
-
-- Channel `Wacky Dramas`, handle `@WACKYDRAMAS`.
-- One immutable `content_id` per story.
-- Requests: `youtube-shorts-bot/content/requests/<content_id>.json`.
-- Verified immutable receipts: `youtube-shorts-bot/content/results/<content_id>.json`.
-- Kokoro `af_heart` at `1.75` speed.
-- 720×1280, 30 fps, H.264 video and AAC narration.
-- Satisfying background video with immutable primary + backup logical IDs.
-- Existing opening card, subtitles, handle and SUBSCRIBE treatment.
-- Durable upload intent, marker recovery, exact YouTube verification, and receipt only after verified success.
-
-Read before planning:
-
-- `planner/STORY_RULES.md`
-- `growth_config.py`
-- `growth_planner.py`
-- `background_policy.py`
-- `background_selector.py`
-- `media-library/backgrounds.json`
-- recent immutable requests/results
-- `analytics/latest.json` when it exists and is valid
+Read before planning: `planner/STORY_RULES.md`, `growth_config.py`, `growth_planner.py`, `background_policy.py`, `background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
 
 ## Funnel
+Use progressive detail, not 120 full scripts:
+`>=120 raw premises → hard rejection/duplicate filtering → ~60 qualified → ~36 semifinalists → concrete ending/outline/opening + >=5 truthful titles → title/hook competition → analytics adjustment → diversity + ~80/20 exploit/explore → <=24 winners → full 120–175s scripts → background selection → immutable schema-v3 requests`.
+Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial swap concepts.
 
-Use progressive detail. Do **not** write 120 full scripts.
+## Editorial and title competition
+Use central `EDITORIAL_WEIGHTS` and `growth_planner.py`. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
 
-```text
->=120 distinct raw premises
-→ hard rejection / duplicate filtering
-→ editorial scoring
-→ roughly 60 qualified ideas naturally, without keeping weak fillers
-→ roughly 36 semifinalists
-→ actual ending + stronger outline + opening line + >=5 titles each
-→ title + hook competition
-→ confidence-weighted analytics adjustment
-→ diversity + approximately 80/20 exploit/explore
-→ <=24 winners
-→ full 120–175 second scripts
-→ AI cache-first background selection / optional sourcing
-→ immutable schema-v3 production requests
-```
+## YouTube metadata — planner-owned hard contract
+For every winning story, ChatGPT must author the complete YouTube metadata **before** the immutable request is committed. Do not rely on the uploader to invent semantic metadata later.
 
-Hard rejection always overrides numerical scores. Reject malformed, unsafe, misleading, incoherent, weak-duration, missing-payoff, exposition-dependent, visually dependent, exact duplicate, near duplicate, or superficial name/relationship-swap concepts.
+Each schema-v3 `youtube` object must contain exactly:
+- `title`: truthful curiosity-driven selected title, <=100 characters total and containing `#Shorts`.
+- `description`: concise, story-specific copy. Prefer 1–3 short sentences: a curiosity/reveal-oriented summary that does not spoil the entire payoff, optionally followed by one natural engagement question. Do not use generic boilerplate like `An original Wacky Dramas story.` as normal production copy. Do not keyword-stuff or repeat the title verbatim.
+- `hashtags`: 3–8 visible hashtags. Normally include `#Shorts` and `#WackyDramas`, then 1–6 genuinely relevant topic/story hashtags such as `#RelationshipDrama`, `#WorkplaceDrama`, `#FamilyDrama`, `#Storytime`. Avoid irrelevant trending hashtags and repetitive padding.
+- `tags`: **4–12 explicit backend semantic tags without `#`**. These are planned per story and stored immutably. Include brand/topic/story-intent terms that genuinely describe the video, e.g. `wacky dramas`, `workplace drama`, `boss story`, `office conflict`, `evidence backfire`, `storytime`. Do not generate hundreds of SEO variants, misleading keywords, competitor/channel names, or cosmetic singular/plural duplicates.
+- `category_id` and `made_for_kids` per the canonical production contract.
 
-## Raw premise breadth
+The uploader constructs final `snippet.tags` in this order: deterministic hidden recovery marker, planned `youtube.tags`, then de-duplicated hashtag words with the leading `#` removed. The hidden marker is backend-owned and must never be authored by ChatGPT or placed in the description.
 
-Explore genuinely different idea spaces across relationship, dating, marriage, betrayal, family, inheritance, money, workplace, revenge, friendship, wedding, entitled-person conflict, neighbors, secrets, discoveries, social conflict, housing/property, parenting, moral dilemma, kindness, misunderstanding, hidden identity, consequences, reversals and wildcard concepts.
+Hard final-payload limits: title <=100 characters including `#Shorts`; final description <=5,000 UTF-8 bytes after missing request hashtags are appended; final `snippet.tags` <=500 YouTube combined-character cost including hidden marker + planned semantic tags + hashtag-derived tags; hashtags 3–8; semantic tags 4–12.
 
-Vary conflict type, emotional tone, protagonist/antagonist roles, setting, escalation, hook structure, title structure and ending structure. A different name, gender, location or relationship label is not a different premise.
-
-Each raw candidate needs enough structured information to judge protagonist/context, inciting incident, conflict, escalation potential, likely payoff, category and tags.
-
-## Editorial cold-start scoring
-
-Use the central `EDITORIAL_WEIGHTS` in `growth_config.py`:
-
-- Opening hook potential: 20
-- Curiosity gap: 20
-- Emotional stakes: 15
-- Escalation potential: 10
-- Payoff quality: 10
-- Title potential: 10
-- Broad relatability: 5
-- Originality: 5
-- Narration suitability: 5
-
-Score components 0–100 and let `growth_planner.py` own weighted arithmetic.
-
-## Semifinalists, titles and opening line
-
-For roughly the top 36, develop a short but concrete outline with opening situation, first reveal, escalation, turning point and actual ending/payoff. Add an opening spoken story-body line, controlled attributes, and **at least five materially different truthful title candidates**.
-
-Rotate title patterns: hidden revelation, discovery, normal→abnormal, decision→consequence, countdown, underestimated narrator, moral conflict, delayed revelation, contradiction and consequence-first. Do not produce five cosmetic rewrites or repeatedly use a generic “Then THIS Happened” formula.
-
-A more sensational but inaccurate title is ineligible. Never promise a person, crime, reveal, consequence or emotional event that the story does not contain.
-
-The title creates the first unanswered question. The first spoken story-body line must add a contradiction, discovery, consequence, urgent conflict or evidence immediately. Avoid generic history such as “for context”, relationship-length introductions or family-tree exposition unless essential.
-
-The renderer narrates the short opening card hook separately. `story.script` must still begin strongly after the card disappears and must not repeat the card wording.
-
-## YouTube metadata limits — hard planner gate
-
-ChatGPT must account for YouTube metadata limits **while generating every winning request**, not leave them for the backend to discover after planning.
-
-Hard limits for the final production payload:
-
-- `youtube.title`: maximum **100 characters total**, including `#Shorts`. Prefer meaningful titles comfortably below the hard ceiling instead of targeting exactly 100.
-- Final YouTube description: maximum **5,000 UTF-8 bytes** after production appends any missing request hashtags. Keep the authored `youtube.description` concise and leave generous headroom; do not approach the 5,000-byte ceiling intentionally.
-- Final YouTube `snippet.tags`: maximum **500 combined characters/cost** across all tags. This includes the deterministic hidden Wacky Dramas recovery marker plus every request hashtag after the leading `#` is removed. Tags containing spaces consume extra encoded cost in the production calculation.
-- Keep `youtube.hashtags` to the schema-allowed **3–8 concise, relevant hashtags**. Do not pad tags for SEO or consume the 500-character budget unnecessarily.
-
-Before writing or committing **any** immutable winner request, validate the exact local upload payload using the same production code:
-
+Before committing **every** winner, validate the exact local production payload:
 ```python
 from upload import build_upload_body
 build_upload_body(request_data, require_future=False)
 ```
-
-This validation is local/read-only. It must happen during planning before the content-only commit and does not contact YouTube.
-
-`build_upload_body(..., require_future=False)` is authoritative for the final description/tag cost because it applies the same deterministic hashtag appending and hidden recovery marker used by production. If it raises for description length, tag length, privacy/publication metadata, or another upload-contract error, **fix or reject that winner before committing it**. Never create an over-limit immutable request and rely on the GitHub production batch to fail later.
-
-The backend still repeats these checks as a fail-fast safety net before expensive generation and again at upload time; planner-side validation is the first line of defense.
+This is authoritative for description assembly, tag de-duplication and final tag cost. If it fails, fix or reject the winner before commit. The backend repeats these checks before expensive generation and at upload time.
 
 ## Analytics learning
+Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. When analytics is disabled, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical analytics-learning arithmetic and feed only normalized 0–100 analytics metrics into growth scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
 
-Use `analytics/latest.json` only when valid and current enough to help. The collector records API-available public views, `engagedViews` (used as qualified/engaged Shorts views), average view duration, average view percentage, likes, comments, shares and subscribers when exposed.
+## Diversity
+Apply diversity after ranking. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day target roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
 
-The targeted Analytics API path does **not** provide the exact Studio “viewed vs swiped away” control used in the UI. Never invent it. The system may use the explicitly named `engaged_view_rate = engagedViews / views` as an API-available continuation proxy, but must not relabel that proxy.
-
-Use `growth_video_count`, not private/test receipt count, when determining confidence. Let `growth_planner.analytics_weight()` increase analytics influence gradually from zero while retaining editorial/exploration contribution. Missing, empty, malformed, stale or unavailable analytics means a documented editorial fallback, never fabricated values.
-
-Prefer normalized rates and comparable public-age windows. Use 24h, 72h and 7d snapshots where available. Do not compare a two-hour-old Short directly with a seven-day-old Short using raw views.
-
-Learn from controlled attributes such as category, subtype, conflict, primary emotion, protagonist/antagonist roles, opening style, title style, ending style and duration. Use sample size, recency and smoothing; one viral outlier must not monopolize tomorrow’s plan.
-
-## Diversity and exploration
-
-Apply diversity after ranking rather than taking a blind numerical top 24. Default constraints from `growth_config.py` include approximately:
-
-- max 4 from one major category
-- max 2 with essentially the same conflict
-- max 3 with one title pattern
-- no strong recent near duplicate
-- avoid identical ending/title patterns in adjacent slots
-- avoid excessive protagonist/antagonist repetition
-
-For a full 24-story day, target roughly 19 exploit + 5 explore selections. Exploratory candidates must still clear every hard quality/safety gate.
-
-## AI-owned cache-first background selection
-
-Background semantic matching is owned by **ChatGPT during planning**, not by a blind production fallback.
-
-For every final winner:
-
-1. Read `media-library/backgrounds.json` first. This is the background cache.
-2. Read successful immutable receipts and use `background_selector.py` recency/quality helpers so backgrounds used within the last 10 successful Shorts are hard-avoided and older recent use is penalized.
-3. Semantically compare the actual story with cached asset titles, visual tags, motion type/intensity, orientation, visual satisfaction, loopability and caption readability. Do not rely only on literal keyword overlap when the meaning is obvious.
-4. Prefer cached assets whenever **two genuinely suitable, active, verified, fresh assets** exist. Do not search the web merely for novelty.
-5. The selected cached primary and backup must differ. Use `audit_ai_selection()` as the mechanical quality/freshness/rendition safety gate; its metadata semantic score is informational, while ChatGPT owns the final semantic-fit judgment.
-6. A cached asset is production-ready only if it has a rendition accepted by `background_policy.py`.
-
-### Cache miss: source only what is missing
-
-If the cache cannot provide two genuinely suitable fresh backgrounds, ChatGPT must source only the missing background(s) **before the immutable request is finalized**.
-
-Current automatic ingestion provider: **Pexels**. Use public web research/preview inspection to find an appropriate Pexels video. Do not invent a provider ID or URL. Visually inspect the available preview or representative frames and confirm the clip is suitable, has no embedded text/watermark, leaves captions readable, and has satisfying continuous/loopable motion.
-
-For each new Pexels candidate use the deterministic logical ID:
-
-`Satisfying ID = satisfying-px-<Pexels video ID>`
-
-Example: Pexels video `424242` becomes `satisfying-px-424242`.
-
-When at least one new background is required, create exactly one immutable sourcing manifest for the day:
-
-`youtube-shorts-bot/content/background-sourcing/YYYY-MM-DD.json`
-
-Schema:
-
-```json
-{
-  "schema_version": 1,
-  "plan_date": "YYYY-MM-DD",
-  "provider": "Pexels",
-  "candidates": [
-    {
-      "logical_id": "satisfying-px-424242",
-      "provider_asset_id": "424242",
-      "source_page": "https://www.pexels.com/video/...-424242/",
-      "title": "Concise visual description",
-      "visual_tags": ["satisfying", "cleaning", "repetitive-motion"],
-      "motion_type": "continuous",
-      "motion_intensity": "medium",
-      "loopability_score": 90,
-      "visual_satisfaction_score": 92,
-      "caption_readability_score": 90,
-      "verified_preview": true,
-      "required_by_content_ids": ["<content_id>"]
-    }
-  ]
-}
-```
-
-Set `verified_preview=true` only after actual AI visual/source review. Every sourced logical ID must be referenced by at least one request in the same daily growth commit, and every `required_by_content_ids` entry must actually reference that ID as primary or backup.
-
-The backend batch uses its GitHub-held `PEXELS_API_KEY` to fetch official Pexels `video_files`, verify an acceptable physical rendition exists, append the asset to `backgrounds.json`, validate the cache, and persist that cache append **before any TTS/render/upload work**. If ingestion fails, the batch fails closed before expensive production. Production never searches for an unrelated third background.
-
-### Rendition cost rule
-
-The final Short is permanently 720×1280/30fps, so production must not download a 1440p/4K source simply to scale it down.
-
-`background_policy.py` enforces:
-
-- prefer exact 720×1280 when available
-- then prefer 30fps and the lowest decode/download cost
-- maximum source budget: 1920×1080 or 1080×1920 equivalent (2,073,600 pixels)
-- allow at most 1.25× crop-fill upscale, which permits a normal 1920×1080 landscape clip to fill the portrait crop
-- reject UHD/4K renditions from production selection
-- generic provider-original fallback is allowed only if the original itself fits the same source budget
-
-The registry may retain higher-resolution provider metadata for audit, but `media_resolver.py` must never select or download those UHD entries.
+## AI-owned cache-first backgrounds
+For every winner read `media-library/backgrounds.json`, successful receipts and `background_selector.py` recency/quality helpers. Semantically select two genuinely suitable, verified, fresh cached assets whenever possible; primary and backup must differ. Use `audit_ai_selection()` for mechanical quality/freshness/rendition safety. If fewer than two suitable cached assets exist, source only the missing Pexels assets, visually verify them, and create exactly one immutable `content/background-sourcing/YYYY-MM-DD.json` manifest for the day. Never invent provider IDs/URLs. Production ingestion uses PEXELS_API_KEY and fails closed before TTS/render/upload if ingestion fails. Respect `background_policy.py`: prefer 720×1280, then 30fps/lowest decode cost; max 1920×1080 or 1080×1920 equivalent; reject UHD/4K production selection.
 
 ## Immutable schema-v3 request
+Only after winner selection/background planning write full scripts and requests. Add scheduled `publication` with timezone `Asia/Singapore` and exact UTC RFC3339 `publish_at`. Include the canonical compact `planning` object: plan_date, editorial components/score, analytics score/weight, final score, >=5 title candidates, selected title score, hook score, exploit/explore class, reason, similarity, controlled attributes and target duration. `visual.background_primary_id` and backup are the AI-selected cache IDs. `youtube.title`, `description`, `hashtags`, and `tags` are immutable planned metadata and must match the exact payload validated before commit.
 
-Only after final story selection and background resolution planning write full scripts and immutable requests. Each selected request adds:
+## Daily planning audit
+Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. Record planning mode/date, funnel counts, selected count/content IDs, diversity/exploration summary, analytics availability/model cohort/evidence/weight/fallback, background reuse/sourcing, metadata validation summary, and catch-up slot details where applicable. If no candidate clears hard gates, commit no weak filler.
 
-```json
-"publication": {
-  "mode": "scheduled",
-  "timezone": "Asia/Singapore",
-  "publish_at": "<UTC RFC3339 timestamp ending Z>"
-}
-```
-
-Assign unique exact local hourly slots from the eligible set resolved by the planning-mode rules, then convert them to exact UTC timestamps. In normal mode this is `00:00` through `23:00` on the next day. In same-day catch-up mode this is only the remaining current-day hourly slots that are at least 30 minutes in the future at final assignment time. The schedule lives inside the immutable request—there is no mutable publication queue.
-
-Each request also includes a compact `planning` object containing:
-
-- `plan_date`
-- editorial component scores and overall score
-- analytics score (`null` when unavailable) and analytics weight
-- final score
-- >=5 title candidates with component scores/style/truthfulness
-- selected title score
-- hook score
-- `selection_class` (`exploit` or `explore`)
-- selection reason
-- similarity result including `max_recent_similarity`
-- controlled attributes: subtype, conflict, primary emotion, protagonist role, antagonist role, opening style, title style, ending style
-- target duration in the 120–175 second range
-
-The request's `visual.background_primary_id` and `visual.background_backup_id` are the cache IDs chosen by ChatGPT. Once committed, production may use only those two logical assets.
-
-## Planning audit and commit
-
-Create exactly one compact immutable daily audit:
-
-`youtube-shorts-bot/content/planning/YYYY-MM-DD.json`
-
-It must at minimum record the funnel counts, analytics confidence/weight/fallback reason, duplicate rejections, diversity substitutions, exploit/explore counts, final selected count, exact `content_ids`, background cache-hit count, background sourced count, any background shortfall reason, and the resolved `planning_mode`. For same-day catch-up also record the final Singapore reference time, eligible hourly slots, and omitted elapsed/too-close slots.
-
-Create 1–24 new immutable request files in the same **content-only** commit. Add the optional same-day background sourcing manifest only when the cache genuinely misses. Never modify an existing request, result, recovery record, prior planning audit or prior sourcing manifest. Never mix implementation/code changes into that content commit.
-
-The commit message must begin:
-
-`[daily growth] YYYY-MM-DD`
-
-That marker routes the commit to the canonical batch production workflow. Planning itself performs no YouTube action and does not download production media.
-
-## Production cost discipline
-
-Do not preflight/download production media, run TTS, render or upload for rejected candidates. Only final winners reach expensive production. Cache ingestion is metadata/API work and happens before rendering. The renderer receives only the lowest-cost production-suitable rendition of the immutable primary or backup ID.
-
-## Failure behavior
-
-- Fewer than 24 qualified winners: create fewer, never lower hard gates.
-- Same-day catch-up has fewer safe hourly slots: create at most that many winners; never backfill elapsed/too-close hours.
-- Same-day catch-up has no safe hourly slots: create no content commit and report the condition.
-- Today's immutable planning audit already exists: do not re-plan or mutate it; use canonical batch recovery for its existing `content_id` values.
-- Missing analytics: editorial fallback with reason.
-- One malformed winner: reject it before request creation.
-- YouTube metadata over limit or invalid upload contract: repair/reject the winner during planning before immutable request creation; never defer this to production.
-- Cache miss: source reviewed Pexels candidate(s), write the immutable sourcing manifest, and let backend ingestion validate/store them before rendering.
-- Pexels ingestion/key/rendition failure: fail closed before TTS/render/upload; never pick a random background.
-- Partial batch failure: do not alter another immutable request or blindly retry an upload. Durable per-content intent/recovery evidence remains authoritative.
-- Upload accepted but later step fails: recovery must resolve the existing video before any insert is considered.
-- Receipt is created only after YouTube state matches the immutable publication contract and render evidence.
+## Commit and handoff
+The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily growth] YYYY-MM-DD`. ChatGPT planning ends after the content commit; the canonical Daily Growth Batch owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
