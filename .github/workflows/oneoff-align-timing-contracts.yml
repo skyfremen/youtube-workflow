@@ -1,0 +1,63 @@
+name: One-off Align Timing Contracts
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-align-timing-contracts.yml'
+permissions:
+  contents: write
+jobs:
+  align:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Align contracts
+        shell: python
+        run: |
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/youtube-shorts-dry-run.yml')
+          text = workflow.read_text()
+          replacements = {
+              'assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0': 'assert workflow_common.PRODUCTION_MAX_SECONDS == 179.0',
+              'assert workflow_common.END_TAIL_SECONDS == 0.35': "assert workflow_common.START_LEAD_SECONDS == 0.50\n          assert workflow_common.END_TAIL_SECONDS == 0.50\n          assert workflow_common.PRODUCTION_ENCODE_SAFETY_SECONDS == 0.10",
+              "assert '178 seconds is a hard production ceiling' in rules": "assert '179 seconds (2:59) is the hard production ceiling' in rules",
+              "print('ONNX-primary/PyTorch-fallback, inline blackdetect, superfast CRF19 and 178s ceiling contracts present.')": "print('ONNX-primary/PyTorch-fallback, inline blackdetect, superfast CRF19, 0.5s edge buffers and 2:59 ceiling contracts present.')",
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Missing expected dry-run contract: {old!r}')
+              text = text.replace(old, new, 1)
+          workflow.write_text(text)
+
+          rules = Path('youtube-shorts-bot/planner/STORY_RULES.md')
+          text = rules.read_text()
+          text = text.replace(
+              'The rendered opening has three strict phases:',
+              'The rendered opening has four strict phases:',
+              1,
+          )
+          text = text.replace(
+              '1. Show the opening card and narrate `story.hook` in full. **Do not show subtitles during the card-title narration.**\n2. After the title narration finishes, fade the card out over the renderer\'s short transition. Do not start the story or subtitles until the card has fully transitioned out.\n3. Start `story.script` narration only after the card is gone. Subtitles begin with the story narration and remain synchronized to the story body.',
+              '1. Show the opening card for **0.50 seconds of intentional silence** before narration begins.\n2. Narrate `story.hook` in full. **Do not show subtitles during the card-title narration.**\n3. After the title narration finishes, fade the card out over the renderer\'s short transition. Do not start the story or subtitles until the card has fully transitioned out.\n4. Start `story.script` narration only after the card is gone. Subtitles begin with the story narration and remain synchronized to the story body.',
+              1,
+          )
+          text = text.replace(
+              '- **178 seconds is a hard production ceiling** including the opening sequence and natural ending tail.',
+              '- The renderer includes **0.50 seconds of silence at the beginning** and **0.50 seconds at the end**.\n- **179 seconds (2:59) is the hard production ceiling** for the complete encoded Short. The renderer reserves an additional 0.10-second encode safety margin and the encoded-file verifier independently rejects anything over 179 seconds.',
+              1,
+          )
+          rules.write_text(text)
+      - name: Validate diff
+        run: |
+          git diff --check
+          grep -F 'PRODUCTION_MAX_SECONDS == 179.0' .github/workflows/youtube-shorts-dry-run.yml
+          grep -F '179 seconds (2:59) is the hard production ceiling' youtube-shorts-bot/planner/STORY_RULES.md
+      - name: Commit contracts
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/youtube-shorts-dry-run.yml youtube-shorts-bot/planner/STORY_RULES.md
+          git commit -m 'test: align Shorts timing contracts with 2:59 ceiling'
+          git push origin HEAD:main
