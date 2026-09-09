@@ -8,7 +8,7 @@ Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` cal
 ## Planning date and same-day catch-up mode
 The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. At or after 20:00, plan the **next Singapore calendar day**. All exact hourly slots from `00:00` through `23:00` are eligible before quality/diversity gates.
 
-When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. Example: at `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
 Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-growth-batch.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
 
