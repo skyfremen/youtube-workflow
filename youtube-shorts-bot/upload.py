@@ -8,7 +8,7 @@ from workflow_common import EXPECTED_YOUTUBE_CHANNEL_ID, OUTPUT_DIR, atomic_writ
 YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly"]
 
 
-def expected_publication(request_data):
+def expected_publication(request_data, *, require_future=True, now_utc=None):
     publication = request_data.get("publication")
     if not publication:
         # Schema-v2 / ad-hoc uploads are immediate public releases. Historical
@@ -26,13 +26,24 @@ def expected_publication(request_data):
         raise ValueError("Invalid scheduled publish_at") from None
     if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
         raise ValueError("Scheduled publish_at must be UTC")
-    if parsed <= datetime.now(timezone.utc):
+    current = now_utc or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        raise ValueError("now_utc must be timezone-aware")
+    current = current.astimezone(timezone.utc)
+    if require_future and parsed <= current:
         raise ValueError("Scheduled publish_at must be in the future at upload time")
     return {"mode": "scheduled", "publish_at": raw}
 
 
-def build_upload_body(request_data, privacy=None, identity=None):
-    publication = expected_publication(request_data)
+def build_upload_body(request_data, privacy=None, identity=None, *, require_future=True, now_utc=None):
+    """Build and validate the exact YouTube metadata/status contract.
+
+    Callers may set require_future=False only for static pre-generation
+    validation. The real upload path always keeps the future-time requirement.
+    """
+    publication = expected_publication(
+        request_data, require_future=require_future, now_utc=now_utc
+    )
     required_privacy = "private" if publication["mode"] == "scheduled" else "public"
     if privacy is not None and privacy != required_privacy:
         raise ValueError(
@@ -174,8 +185,10 @@ def execute_upload(request_data, video_path, *, state, identity, channel, select
     recovered = recover_record(youtube, state, identity, channel)
     if recovered:
         return recovered, True
-    authorize_fresh_upload(youtube, state, identity, channel)
+    # Pure/local upload contract checks are cheaper than scanning the channel's
+    # upload inventory, so fail on stale scheduling/metadata before that read.
     body = build_upload_body(request_data, identity=identity)
+    authorize_fresh_upload(youtube, state, identity, channel)
     intent = {"schema_version": 1, "record_type": "intent", **identity,
               "expected_channel_id": channel["id"], "created_at": now(),
               "upload_workflow": workflow_identity(), "background": selection,

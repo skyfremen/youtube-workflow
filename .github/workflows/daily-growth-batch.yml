@@ -43,12 +43,15 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Resolve cache expansion and validate immutable daily batch
+      - name: Resolve and fail-fast validate immutable daily batch
         id: batch
         shell: bash
         env:
           MANUAL_CONTENT_IDS: ${{ inputs.content_ids }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
           set -euo pipefail
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -166,14 +169,58 @@ jobs:
           print(f'Resolved {len(requests)} immutable growth requests; sourcing manifests={len(sourcing_paths)}')
           PY
 
+          # CHEAP / LOCAL boundary: validate every immutable request and the exact
+          # YouTube metadata contract before any external cache mutation, media
+          # download, TTS or render work.
+          while IFS= read -r req; do
+            [ -n "$req" ] || continue
+            python youtube-shorts-bot/validate_content.py --request "$req"
+          done < /tmp/batch-requests.txt
+
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from upload import build_upload_body
+
+          rows=[]
+          for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
+              if not path:
+                  continue
+              data=json.loads(Path(path).read_text())
+              if data.get('schema_version') != 3:
+                  raise SystemExit(f'Daily growth request must be schema v3: {path}')
+              try:
+                  # Static validation deliberately does not reject a now-past slot;
+                  # recovery + the 10-minute warning/skip guard own that decision.
+                  build_upload_body(data, require_future=False)
+              except (KeyError, TypeError, ValueError) as exc:
+                  raise SystemExit(f'Invalid YouTube upload contract for {path}: {exc}') from None
+              rows.append((data['publication']['publish_at'], path))
+          slots=[slot for slot,_path in rows]
+          if len(slots) != len(set(slots)):
+              raise SystemExit('Duplicate publication slot in daily batch')
+          Path('/tmp/batch-requests.txt').write_text(
+              '\n'.join(path for _slot,path in sorted(rows))+'\n'
+          )
+          print('Request schemas/upload bodies valid; scheduled slots unique; processing order fixed by publish_at')
+          PY
+
+          # Secret presence is deterministic and cheaper than a network call.
+          if [ -s /tmp/background-sourcing-manifests.txt ] && [ -z "${PEXELS_API_KEY:-}" ]; then
+            echo "::error::PEXELS_API_KEY is required because this batch contains new AI-sourced backgrounds."
+            exit 1
+          fi
+
+          # CHEAP / NETWORK boundary: one read-only OAuth/Data API/channel check
+          # for the whole batch. This must pass before Pexels ingestion or any
+          # background/TTS/render work starts.
+          python youtube-shorts-bot/auth_check.py
+
           # ChatGPT has already performed semantic cache lookup. If it had to
           # source new Pexels backgrounds, ingest exact official rendition metadata
           # now and persist the append-only cache before any TTS/render/upload work.
           if [ -s /tmp/background-sourcing-manifests.txt ]; then
-            if [ -z "${PEXELS_API_KEY:-}" ]; then
-              echo "::error::PEXELS_API_KEY is required because this batch contains new AI-sourced backgrounds."
-              exit 1
-            fi
             while IFS= read -r manifest; do
               [ -n "$manifest" ] || continue
               python youtube-shorts-bot/pexels_registry.py ingest-manifest --manifest "$manifest"
@@ -191,12 +238,8 @@ jobs:
             fi
           fi
 
-          # Validate every immutable request only after optional cache ingestion.
-          while IFS= read -r req; do
-            [ -n "$req" ] || continue
-            python youtube-shorts-bot/validate_content.py --request "$req"
-          done < /tmp/batch-requests.txt
-
+          # Final cache-dependent validation must happen after optional ingestion,
+          # but still before the expensive production phase.
           python - <<'PY'
           import json, sys
           from pathlib import Path
@@ -204,22 +247,11 @@ jobs:
           from validate_media_library import load_registry, validate_request_backgrounds
 
           registry = load_registry()
-          rows=[]
           for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
               if not path:
                   continue
-              d=json.loads(Path(path).read_text())
-              if d.get('schema_version') != 3:
-                  raise SystemExit(f'Daily growth request must be schema v3: {path}')
-              validate_request_backgrounds(d, registry)
-              rows.append((d['publication']['publish_at'], path))
-          slots=[x[0] for x in rows]
-          if len(slots) != len(set(slots)):
-              raise SystemExit('Duplicate publication slot in daily batch')
-          Path('/tmp/batch-requests.txt').write_text(
-              '\n'.join(path for _slot,path in sorted(rows))+'\n'
-          )
-          print('Background IDs cached; scheduled slots unique; processing order fixed by publish_at')
+              validate_request_backgrounds(json.loads(Path(path).read_text()), registry)
+          print('All requested background IDs are cached, active, verified and production-suitable.')
           PY
 
       - name: Render upload schedule verify and finalize selected stories
@@ -269,6 +301,9 @@ jobs:
               return 10
             fi
 
+            # ==============================
+            # EXPENSIVE GENERATION PHASE
+            # ==============================
             if [ "$upload_required" = "true" ]; then
               python youtube-shorts-bot/media_resolver.py --request "$req"
               python youtube-shorts-bot/render_aligned.py --request "$req"

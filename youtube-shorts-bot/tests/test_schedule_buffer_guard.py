@@ -2,11 +2,17 @@ import sys
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from publish import SCHEDULE_FRESHNESS_BUFFER_MINUTES, scheduled_slot_guard
+from publish import (
+    SCHEDULE_FRESHNESS_BUFFER_MINUTES,
+    pre_generation_authorization,
+    scheduled_slot_guard,
+)
+from test_request_schema import valid_request
 
 
 class ScheduledSlotGuardTests(unittest.TestCase):
@@ -21,6 +27,11 @@ class ScheduledSlotGuardTests(unittest.TestCase):
                 "publish_at": when.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
             }
         }
+
+    def full_request_at(self, when):
+        request = valid_request()
+        request["publication"] = self.request_at(when)["publication"]
+        return request
 
     def test_policy_is_exactly_ten_minutes(self):
         self.assertEqual(SCHEDULE_FRESHNESS_BUFFER_MINUTES, 10)
@@ -48,6 +59,28 @@ class ScheduledSlotGuardTests(unittest.TestCase):
         result = scheduled_slot_guard({}, now_utc=self.now)
         self.assertFalse(result["skip"])
         self.assertIsNone(result["remaining_seconds"])
+
+    def test_skipped_slot_avoids_upload_contract_and_inventory_scan(self):
+        request = self.full_request_at(self.now + timedelta(minutes=5))
+        with patch("publish.build_upload_body") as body, \
+             patch("publish.authorize_fresh_upload") as authorize:
+            result = pre_generation_authorization(
+                request, {}, Mock(), Mock(), Mock(), now_utc=self.now
+            )
+        self.assertTrue(result["skip"])
+        body.assert_not_called()
+        authorize.assert_not_called()
+
+    def test_valid_fresh_slot_checks_contract_before_inventory_authorization(self):
+        request = self.full_request_at(self.now + timedelta(minutes=11))
+        events = []
+        with patch("publish.build_upload_body", side_effect=lambda *a, **k: events.append("body") or {}), \
+             patch("publish.authorize_fresh_upload", side_effect=lambda *a, **k: events.append("authorize")):
+            result = pre_generation_authorization(
+                request, {}, Mock(), Mock(), Mock(), now_utc=self.now
+            )
+        self.assertFalse(result["skip"])
+        self.assertEqual(events, ["body", "authorize"])
 
 
 if __name__ == "__main__":

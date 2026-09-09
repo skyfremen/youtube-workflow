@@ -4,7 +4,14 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from recovery_state import GitHubState, RecoveryBlocked, check_identity, identity_for, receipt_path, record_path
-from upload import make_client, authenticated_channel, recover_record, authorize_fresh_upload, execute_upload
+from upload import (
+    make_client,
+    authenticated_channel,
+    recover_record,
+    authorize_fresh_upload,
+    build_upload_body,
+    execute_upload,
+)
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
 SCHEDULE_FRESHNESS_BUFFER_MINUTES = 10
@@ -63,6 +70,12 @@ def scheduled_slot_guard(request, *, now_utc=None, buffer_minutes=SCHEDULE_FRESH
 
 
 def prepare(request, identity, state, youtube, channel, recovery_only):
+    """Resolve durable recovery state before any fresh-generation decision.
+
+    Fresh-upload authorization is intentionally deferred until after the schedule
+    and local upload-contract guards. This keeps recovery first while avoiding an
+    expensive channel inventory scan for a request that will be skipped anyway.
+    """
     receipt = state.load(receipt_path(identity["content_id"]))
     if receipt:
         check_identity(receipt.data, identity)
@@ -76,8 +89,27 @@ def prepare(request, identity, state, youtube, channel, recovery_only):
         raise RecoveryBlocked("Receipt is missing its durable upload evidence")
     if recovery_only:
         raise RecoveryBlocked("Recovery-only execution has no durable upload record; upload forbidden")
-    authorize_fresh_upload(youtube, state, identity, channel)
     return True
+
+
+def pre_generation_authorization(request, identity, state, youtube, channel, *, now_utc=None):
+    """Run cheap fresh-generation guards before the duplicate inventory scan."""
+    current = now_utc or datetime.now(timezone.utc)
+    guard = scheduled_slot_guard(request, now_utc=current)
+    if guard["skip"]:
+        return guard
+
+    try:
+        # Validate the exact metadata/privacy/publishAt body now, before media,
+        # TTS and rendering. Real upload validates it again at insert time.
+        build_upload_body(request, identity=identity, now_utc=current)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RecoveryBlocked(f"Invalid YouTube upload contract before generation: {exc}") from None
+
+    # This can enumerate channel uploads, so keep it after all deterministic
+    # local guards. execute_upload repeats it immediately before durable intent.
+    authorize_fresh_upload(youtube, state, identity, channel)
+    return guard
 
 
 def main():
@@ -92,7 +124,11 @@ def main():
     channel = authenticated_channel(youtube)
     required = prepare(data, identity, state, youtube, channel, args.recovery_only)
     if args.stage == "prepare":
-        guard = scheduled_slot_guard(data) if required else {"skip": False, "reason": None, "remaining_seconds": None}
+        guard = (
+            pre_generation_authorization(data, identity, state, youtube, channel)
+            if required
+            else {"skip": False, "reason": None, "remaining_seconds": None}
+        )
         upload_required = bool(required and not guard["skip"])
         if os.environ.get("GITHUB_OUTPUT"):
             with open(os.environ["GITHUB_OUTPUT"], "a") as output:
