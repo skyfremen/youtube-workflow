@@ -5,9 +5,7 @@ from pathlib import Path
 
 from workflow_common import REQUESTS_DIR, result_path_for_id, validate_content_id
 
-ALLOWED_EXTRA_PRODUCTION_PATHS = {
-    "youtube-shorts-bot/media-library/backgrounds.json",
-}
+ALLOWED_EXTRA_PRODUCTION_PATHS = {"youtube-shorts-bot/media-library/backgrounds.json"}
 
 
 def is_sensitive(path):
@@ -55,17 +53,14 @@ def resolve_push_request(commit):
     added = [(s, p) for s, p in request_rows if s.startswith("A")]
     if len(request_rows) != 1 or len(added) != 1:
         raise ValueError(
-            "Automatic production requires exactly one newly added "
+            "Automatic ad-hoc production requires exactly one newly added "
             "youtube-shorts-bot/content/requests/*.json file in the triggering commit."
         )
     request_path = added[0][1]
-    sensitive = [
-        path for _status, path in rows
-        if path != request_path and is_sensitive(path)
-    ]
+    sensitive = [path for _status, path in rows if path != request_path and is_sensitive(path)]
     if sensitive:
         raise ValueError(
-            "Production content commit also changes sensitive implementation files: "
+            "Ad-hoc production content commit also changes sensitive implementation files: "
             + ", ".join(sorted(sensitive))
         )
     if parent_has_path(commit, request_path):
@@ -83,13 +78,15 @@ def resolve_manual_request(content_id):
 
 
 def check_immutable_changes(base, head):
-    result = git(["diff", "--name-status", "--no-renames", base, head, "--",
-                  "youtube-shorts-bot/content/requests", "youtube-shorts-bot/content/results",
-                  "youtube-shorts-bot/content/recovery"])
+    result = git([
+        "diff", "--name-status", "--no-renames", base, head, "--",
+        "youtube-shorts-bot/content/requests", "youtube-shorts-bot/content/results",
+        "youtube-shorts-bot/content/recovery", "youtube-shorts-bot/content/planning",
+    ])
     for line in result.stdout.splitlines():
         status, path = line.split("\t", 1)
         if path.endswith(".json") and status != "A":
-            raise ValueError(f"Immutable request/result/recovery file changed: {path}")
+            raise ValueError(f"Immutable request/result/recovery/planning file changed: {path}")
 
 
 def main():

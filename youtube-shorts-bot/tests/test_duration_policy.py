@@ -20,7 +20,7 @@ from workflow_common import (
 class DurationPolicyTests(unittest.TestCase):
     def test_production_ceiling_and_tail(self):
         self.assertEqual(PRODUCTION_MAX_SECONDS, 178.0)
-        self.assertEqual(PRODUCTION_TARGET_MAX_SECONDS, 170.0)
+        self.assertEqual(PRODUCTION_TARGET_MAX_SECONDS, 175.0)
         self.assertEqual(START_LEAD_SECONDS, 0.50)
         self.assertEqual(END_TAIL_SECONDS, 0.35)
         self.assertEqual(PRODUCTION_ENCODE_SAFETY_SECONDS, 0.10)

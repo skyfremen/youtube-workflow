@@ -29,10 +29,9 @@ permissions:
 
 jobs:
   private-story:
-    # First-attempt uploads and explicit render previews need Kokoro, TorchAudio
-    # and FFmpeg. Recovery-only execution is handled by the lightweight job
-    # below so it does not pull the multi-GB production image.
-    if: ${{ github.run_attempt == 1 && (github.event_name != 'workflow_dispatch' || inputs.recovery_only != true || inputs.render_preview == true) }}
+    # Daily growth commits are owned by daily-growth-batch.yml. Keeping the
+    # same concurrency group prevents ad-hoc and batch inserts overlapping.
+    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily growth]')) && github.run_attempt == 1 && (github.event_name != 'workflow_dispatch' || inputs.recovery_only != true || inputs.render_preview == true) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -118,7 +117,7 @@ jobs:
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
         run: python youtube-shorts-bot/publish.py --stage upload --request "$REQUEST_PATH"
 
-      - name: Verify existing or new private video on every run
+      - name: Verify existing or new video on every run
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -173,10 +172,7 @@ jobs:
           retention-days: 7
 
   recovery-story:
-    # A rerun or explicit recovery-only dispatch is forbidden from inserting a
-    # new video. It needs Git, JSON validation and YouTube/GitHub API clients,
-    # but not Kokoro, Torch, TorchAudio, Wav2Vec2, FFmpeg or media downloads.
-    if: ${{ github.run_attempt > 1 || (github.event_name == 'workflow_dispatch' && inputs.recovery_only == true && inputs.render_preview != true) }}
+    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily growth]')) && (github.run_attempt > 1 || (github.event_name == 'workflow_dispatch' && inputs.recovery_only == true && inputs.render_preview != true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -193,7 +189,6 @@ jobs:
 
       - name: Install recovery-only YouTube dependencies
         run: |
-          # Deliberately excludes every ML/render dependency from requirements.txt.
           python -m pip --disable-pip-version-check --no-input install \
             google-api-python-client==2.179.0 \
             google-auth==2.40.3
@@ -230,7 +225,7 @@ jobs:
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
         run: python youtube-shorts-bot/publish.py --stage prepare --request "$REQUEST_PATH" --recovery-only
 
-      - name: Verify recovered private video
+      - name: Verify recovered video
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}

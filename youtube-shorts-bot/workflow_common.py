@@ -8,15 +8,16 @@ from pathlib import Path
 BASE = Path(__file__).parent
 REQUESTS_DIR = BASE / "content" / "requests"
 RESULTS_DIR = BASE / "content" / "results"
+PLANNING_DIR = BASE / "content" / "planning"
 OUTPUT_DIR = Path(os.getenv("STORY_OUTPUT_DIR", str(BASE / "output")))
 CONTENT_ID_RE = re.compile(r"^wd-\d{8}T\d{6}-[a-z0-9]+(?:-[a-z0-9]+)*-[a-z0-9]{6}$")
 PRODUCTION_MAX_SECONDS = 178.0
 PRODUCTION_TARGET_MIN_SECONDS = 120.0
-PRODUCTION_TARGET_MAX_SECONDS = 170.0  # preserve headroom for TTS variance and timing buffers
+PRODUCTION_TARGET_MAX_SECONDS = 175.0
 START_LEAD_SECONDS = 0.50
 END_TAIL_SECONDS = 0.35
 PRODUCTION_ENCODE_SAFETY_SECONDS = 0.10
-YOUTUBE_TAG_MAX_CHARS = 30  # local marker budget, not a YouTube per-tag limit
+YOUTUBE_TAG_MAX_CHARS = 30
 EXPECTED_YOUTUBE_CHANNEL_ID = "UCvrq2m9G4yrwPfL_X-QPzMA"
 
 
@@ -38,24 +39,17 @@ def request_content_id(data):
 
 def validate_content_id(content_id):
     if not CONTENT_ID_RE.fullmatch(str(content_id or "").strip()):
-        raise ValueError(
-            "content_id must match wd-YYYYMMDDTHHMMSS-topic-slug-random6"
-        )
+        raise ValueError("content_id must match wd-YYYYMMDDTHHMMSS-topic-slug-random6")
     return content_id
 
 
 def marker_tag(content_id):
-    """Return a deterministic hidden YouTube recovery tag for a request.
-
-    This is a compact supplemental marker, not the primary upload identity.
-    The original longer marker was later returned intact by YouTube; the
-    configured 30-character budget is local policy, not a documented API limit.
-    """
+    """Return a deterministic non-viewer-facing YouTube recovery tag."""
     validate_content_id(content_id)
     digest = hashlib.sha256(content_id.encode("utf-8")).hexdigest()[:20]
     marker = f"wd-id-{digest}"
     if len(marker) > YOUTUBE_TAG_MAX_CHARS:
-        raise AssertionError("Recovery marker unexpectedly exceeds YouTube tag limit")
+        raise AssertionError("Recovery marker unexpectedly exceeds local tag budget")
     return marker
 
 
@@ -85,16 +79,11 @@ def git_blob_sha(path, ref="HEAD"):
         relative = path.resolve().relative_to(Path.cwd().resolve()).as_posix()
     except ValueError:
         relative = path.as_posix()
-    result = subprocess.run(
-        ["git", "rev-parse", f"{ref}:{relative}"],
-        capture_output=True,
-        text=True,
-    )
+    result = subprocess.run(["git", "rev-parse", f"{ref}:{relative}"], capture_output=True, text=True)
     if result.returncode == 0:
         return result.stdout.strip()
     raw = path.read_bytes()
-    header = f"blob {len(raw)}\0".encode()
-    return hashlib.sha1(header + raw).hexdigest()
+    return hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()
 
 
 def env_bool(name, default=False):

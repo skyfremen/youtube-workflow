@@ -1,9 +1,20 @@
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 from recovery_state import GitHubState, RecoveryBlocked, blob_sha, check_identity, identity_for, now, receipt_path, workflow_identity
 from workflow_common import OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, load_json
+
+
+def _publication_contract(request):
+    publication = request.get("publication")
+    if not publication:
+        return {"mode": "private", "publish_at": None, "allowed_states": {"verified_private"}}
+    return {
+        "mode": "scheduled",
+        "publish_at": publication["publish_at"],
+        "allowed_states": {"verified_scheduled", "verified_scheduled_published"},
+    }
 
 
 def build_receipt(request_path, request, upload, selection, render_meta):
@@ -15,10 +26,17 @@ def build_receipt(request_path, request, upload, selection, render_meta):
     check_identity(verification, identity)
     evidence = upload.get("upload_evidence", {})
     check_identity(evidence, identity)
-    if verification.get("passed") is not True or verification.get("state") != "verified_private":
-        raise RecoveryBlocked("Cannot finalize without successful YouTube verification")
-    if verification.get("privacy_status") != "private" or verification.get("publish_at_absent") is not True:
-        raise RecoveryBlocked("Cannot finalize: exact private/unscheduled verification missing")
+    publication = _publication_contract(request)
+    if verification.get("passed") is not True or verification.get("state") not in publication["allowed_states"]:
+        raise RecoveryBlocked("Cannot finalize without successful exact YouTube publication verification")
+    if publication["mode"] == "private":
+        if verification.get("privacy_status") != "private" or verification.get("publish_at_absent") is not True:
+            raise RecoveryBlocked("Cannot finalize: exact private/unscheduled verification missing")
+    else:
+        if verification.get("publish_at") != publication["publish_at"]:
+            raise RecoveryBlocked("Cannot finalize: verified scheduled publication differs from immutable request")
+        if verification.get("privacy_status") not in {"private", "public"}:
+            raise RecoveryBlocked("Cannot finalize: scheduled video has unexpected privacy state")
     if verification.get("youtube_video_id") != upload.get("youtube_video_id") or evidence.get("youtube_video_id") != upload.get("youtube_video_id"):
         raise RecoveryBlocked("Receipt video ID does not match verified durable evidence")
     if verification.get("channel_id") != evidence.get("expected_channel_id"):
@@ -52,21 +70,21 @@ def build_receipt(request_path, request, upload, selection, render_meta):
     except (TypeError, ValueError):
         total_production_seconds = None
     return {
-        "schema_version": 2, **identity, "youtube_video_id": upload['youtube_video_id'],
+        "schema_version": 3 if request.get("schema_version") == 3 else 2,
+        **identity, "youtube_video_id": upload['youtube_video_id'],
         "youtube_url": upload['youtube_url'], "youtube_channel_id": verification['channel_id'],
-        "privacy_status": "private", "publish_at": None, "publish_at_absent": True,
-        "verification_state": "verified_private", "verification": verification,
+        "publication_mode": publication["mode"], "privacy_status": verification["privacy_status"],
+        "publish_at": publication["publish_at"], "publish_at_absent": publication["mode"] == "private",
+        "verification_state": verification["state"], "verification": verification,
+        "planning": request.get("planning"),
         "background_requested_primary_id": request['visual']['background_primary_id'],
         "background_requested_backup_id": request['visual']['background_backup_id'],
         "background_asset_id": selection['background_asset_id'], "background_selection": slot,
         "background_usage": {
-            "logical_asset_id": selection['background_asset_id'],
-            "selection": slot,
-            "counts_for_diversity": True,
-            "source": "verified_immutable_success_receipt",
+            "logical_asset_id": selection['background_asset_id'], "selection": slot,
+            "counts_for_diversity": True, "source": "verified_immutable_success_receipt",
         },
-        "background_rendition": selection.get("rendition"),
-        "background_target": selection.get("target"),
+        "background_rendition": selection.get("rendition"), "background_target": selection.get("target"),
         "background_rendition_fallback_used": selection.get("rendition_fallback_used", False),
         "background_logical_fallback_used": selection.get("logical_fallback_used", slot == "backup"),
         "background_generic_source_fallback_used": selection.get("generic_source_fallback_used", False),
@@ -83,8 +101,7 @@ def build_receipt(request_path, request, upload, selection, render_meta):
         "production_metrics": {
             **selection.get("metrics", {}),
             "ffmpeg_duration_seconds": render_meta.get("ffmpeg_duration_seconds"),
-            "x264_preset": render_meta.get("x264_preset"),
-            "x264_crf": render_meta.get("x264_crf"),
+            "x264_preset": render_meta.get("x264_preset"), "x264_crf": render_meta.get("x264_crf"),
             "kokoro_pipeline_init_duration_seconds": render_meta.get("kokoro_pipeline_init_duration_seconds"),
             "tts_generation_duration_seconds": render_meta.get("tts_generation_duration_seconds"),
             "caption_alignment_duration_seconds": render_meta.get("caption_alignment_duration_seconds"),
@@ -114,9 +131,12 @@ def main():
     existing = state.load(path)
     if existing:
         check_identity(existing.data, identity)
-        if existing.data.get("schema_version") != 2 or existing.data.get("verification", {}).get("passed") is not True:
+        if existing.data.get("schema_version") not in {2, 3} or existing.data.get("verification", {}).get("passed") is not True:
             raise RecoveryBlocked("Existing receipt is incomplete or lacks verification")
-        for key in ('youtube_video_id', 'privacy_status', 'publish_at_absent', 'verification_state', 'recovery'):
+        compare_keys = ['youtube_video_id', 'privacy_status', 'publish_at_absent', 'verification_state', 'recovery']
+        if request.get('schema_version') == 3:
+            compare_keys += ['publication_mode', 'publish_at']
+        for key in compare_keys:
             if key == 'recovery':
                 if existing.data[key]['record_blob_sha'] != candidate[key]['record_blob_sha']:
                     raise RecoveryBlocked('Immutable receipt recovery evidence differs')

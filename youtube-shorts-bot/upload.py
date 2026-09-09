@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import datetime, timezone
 
 from recovery_state import RecoveryBlocked, check_identity, now, record_path, workflow_identity, source_supports_intent
 from workflow_common import EXPECTED_YOUTUBE_CHANNEL_ID, OUTPUT_DIR, atomic_write_json, marker_tag, request_content_id
@@ -7,9 +8,29 @@ from workflow_common import EXPECTED_YOUTUBE_CHANNEL_ID, OUTPUT_DIR, atomic_writ
 YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly"]
 
 
+def expected_publication(request_data):
+    publication = request_data.get("publication")
+    if not publication:
+        return {"mode": "private", "publish_at": None}
+    if publication.get("mode") != "scheduled":
+        raise ValueError("Unknown publication mode")
+    raw = str(publication.get("publish_at", ""))
+    if not raw.endswith("Z"):
+        raise ValueError("Scheduled publish_at must be UTC RFC3339 ending Z")
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        raise ValueError("Invalid scheduled publish_at") from None
+    if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+        raise ValueError("Scheduled publish_at must be UTC")
+    if parsed <= datetime.now(timezone.utc):
+        raise ValueError("Scheduled publish_at must be in the future at upload time")
+    return {"mode": "scheduled", "publish_at": raw}
+
+
 def build_upload_body(request_data, privacy="private", identity=None):
     if privacy != "private":
-        raise ValueError("Wacky Dramas ad-hoc workflow only supports private uploads")
+        raise ValueError("Wacky Dramas uploads must enter YouTube as private")
     marker = marker_tag(request_content_id(request_data))
     yt = request_data["youtube"]
     description = str(yt["description"]).strip()
@@ -32,9 +53,13 @@ def build_upload_body(request_data, privacy="private", identity=None):
     cost = sum(len(tag) + (2 if " " in tag else 0) for tag in tags) + max(0, len(tags) - 1)
     if cost > 500:
         raise ValueError("Tags exceed YouTube's combined 500-character limit")
+    status = {"privacyStatus": "private", "selfDeclaredMadeForKids": bool(yt["made_for_kids"])}
+    publication = expected_publication(request_data)
+    if publication["mode"] == "scheduled":
+        status["publishAt"] = publication["publish_at"]
     return {"snippet": {"title": str(yt["title"]), "description": description,
                         "tags": tags, "categoryId": str(yt["category_id"])},
-            "status": {"privacyStatus": "private", "selfDeclaredMadeForKids": bool(yt["made_for_kids"])}}
+            "status": status}
 
 
 def make_client():
@@ -88,14 +113,19 @@ def find_existing_by_marker(youtube, content_id, max_videos=5000, identity=None,
 
 def upload_new(youtube, request_data, video_path, body):
     from googleapiclient.http import MediaFileUpload
-    if body["status"].get("privacyStatus") != "private" or "publishAt" in body["status"]:
-        raise RecoveryBlocked("Upload body violates PRIVATE-only policy")
+    expected = expected_publication(request_data)
+    status = body.get("status", {})
+    if status.get("privacyStatus") != "private":
+        raise RecoveryBlocked("Upload body violates private-entry policy")
+    if expected["mode"] == "private":
+        if "publishAt" in status:
+            raise RecoveryBlocked("Ad-hoc private upload unexpectedly contains publishAt")
+    elif status.get("publishAt") != expected["publish_at"]:
+        raise RecoveryBlocked("Scheduled upload body does not match immutable publication time")
     media = MediaFileUpload(str(video_path), mimetype="video/mp4", resumable=True)
     request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
     response = None
     while response is None:
-        # Only resume this one in-memory session. Never restart insert on an
-        # exception or create another resumable session during recovery.
         _, response = request.next_chunk(num_retries=0)
     return response
 
@@ -151,8 +181,6 @@ def execute_upload(request_data, video_path, *, state, identity, channel, select
         if recovered:
             return recovered, True
         raise
-    # Write diagnostic evidence immediately, then acknowledge it durably BEFORE
-    # verification or receipt creation. The intent survives either write failing.
     atomic_write_json(OUTPUT_DIR / "upload-response.json", response)
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}", str(response.get("id", ""))):
         raise RecoveryBlocked("Upload response lacks a valid video ID; existing intent prevents re-upload")

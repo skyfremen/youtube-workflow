@@ -1,0 +1,186 @@
+name: Wacky Dramas Daily Growth Batch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'youtube-shorts-bot/content/requests/*.json'
+      - 'youtube-shorts-bot/content/planning/*.json'
+  workflow_dispatch:
+    inputs:
+      content_ids:
+        description: Comma-separated immutable content IDs to recover/process
+        required: true
+        type: string
+
+concurrency:
+  group: wacky-dramas-youtube-upload
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  growth-batch:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[daily growth]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      VIDEO_WIDTH: '720'
+      VIDEO_HEIGHT: '1280'
+      VIDEO_FPS: '30'
+      STORY_TEST_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Resolve and validate immutable daily batch
+        id: batch
+        shell: bash
+        env:
+          MANUAL_CONTENT_IDS: ${{ inputs.content_ids }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          python - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+
+          manual = os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch'
+          requests = []
+          source_sha = os.environ['GITHUB_SHA']
+          if manual:
+              ids = [x.strip() for x in os.environ.get('MANUAL_CONTENT_IDS','').split(',') if x.strip()]
+              if not ids or len(ids) > 24:
+                  raise SystemExit('Manual batch requires 1-24 content IDs')
+              requests = [f'youtube-shorts-bot/content/requests/{x}.json' for x in ids]
+              for path in requests:
+                  if not Path(path).exists(): raise SystemExit(f'Missing request: {path}')
+                  commits = subprocess.check_output(['git','log','--diff-filter=A','--format=%H','--',path], text=True).splitlines()
+                  if not commits: raise SystemExit(f'Cannot determine immutable source for {path}')
+              # Each manual item resolves its own source later.
+          else:
+              rows = subprocess.check_output(['git','diff-tree','--no-commit-id','--name-status','-r',source_sha], text=True).splitlines()
+              changed = [(r.split('\t')[0], r.split('\t')[-1]) for r in rows if '\t' in r]
+              requests = [p for s,p in changed if s == 'A' and p.startswith('youtube-shorts-bot/content/requests/') and p.endswith('.json')]
+              planning = [p for s,p in changed if s == 'A' and p.startswith('youtube-shorts-bot/content/planning/') and p.endswith('.json')]
+              if not 1 <= len(requests) <= 24: raise SystemExit(f'Daily growth commit must add 1-24 requests; got {len(requests)}')
+              if len(planning) != 1: raise SystemExit('Daily growth commit must add exactly one immutable planning audit artifact')
+              allowed = set(requests + planning)
+              other = [p for _s,p in changed if p not in allowed]
+              if other: raise SystemExit('Daily growth content commit changes non-content files: ' + ', '.join(other))
+
+              payload = json.loads(Path(planning[0]).read_text())
+              expected = set(payload.get('content_ids') or [])
+              actual = {Path(p).stem for p in requests}
+              if expected != actual: raise SystemExit('Planning audit content_ids do not exactly match request files')
+              if payload.get('final_selected') != len(requests): raise SystemExit('Planning audit final_selected does not match request count')
+
+          Path('/tmp/batch-requests.txt').write_text('\n'.join(requests) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write(f'request_count={len(requests)}\n')
+          print(f'Resolved {len(requests)} immutable growth requests')
+          PY
+
+          # Validate every request and enforce unique scheduled slots before any media/TTS work.
+          while IFS= read -r req; do
+            python youtube-shorts-bot/validate_content.py --request "$req"
+          done < /tmp/batch-requests.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
+              d=json.loads(Path(path).read_text())
+              if d.get('schema_version') != 3: raise SystemExit(f'Daily growth request must be schema v3: {path}')
+              rows.append((d['publication']['publish_at'], path))
+          slots=[x[0] for x in rows]
+          if len(slots) != len(set(slots)): raise SystemExit('Duplicate publication slot in daily batch')
+          Path('/tmp/batch-requests.txt').write_text('\n'.join(path for _slot,path in sorted(rows))+'\n')
+          print('Scheduled slots unique; processing order fixed by publish_at')
+          PY
+          python youtube-shorts-bot/validate_media_library.py
+
+      - name: Render upload schedule verify and finalize selected stories
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          set -uo pipefail
+          success=0
+          failed=0
+          : > /tmp/batch-failures.txt
+
+          source_for_request() {
+            local req="$1"
+            if [ "$GITHUB_EVENT_NAME" = "push" ]; then echo "$GITHUB_SHA"; return; fi
+            git log --diff-filter=A --format=%H -- "$req" | tail -1
+          }
+
+          process_one() {
+            set -euo pipefail
+            local req="$1"
+            local cid
+            cid="$(basename "$req" .json)"
+            export SOURCE_COMMIT_SHA="$(source_for_request "$req")"
+            export STORY_OUTPUT_DIR="youtube-shorts-bot/output/$cid"
+            rm -rf "$STORY_OUTPUT_DIR"
+            mkdir -p "$STORY_OUTPUT_DIR"
+            local status_file
+            status_file="$(mktemp)"
+            GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publish.py --stage prepare --request "$req"
+            local upload_required
+            upload_required="$(sed -n 's/^upload_required=//p' "$status_file" | tail -1)"
+            rm -f "$status_file"
+            if [ "$upload_required" = "true" ]; then
+              python youtube-shorts-bot/media_resolver.py --request "$req"
+              python youtube-shorts-bot/render_aligned.py --request "$req"
+              python youtube-shorts-bot/verify_render.py --request "$req"
+              python youtube-shorts-bot/publish.py --stage upload --request "$req"
+            fi
+            python youtube-shorts-bot/verify_youtube_private.py --request "$req"
+            python youtube-shorts-bot/finalize.py --request "$req"
+          }
+
+          while IFS= read -r req; do
+            [ -n "$req" ] || continue
+            echo "::group::$(basename "$req" .json)"
+            if process_one "$req"; then
+              success=$((success+1))
+              echo "Completed: $req"
+            else
+              failed=$((failed+1))
+              echo "$req" >> /tmp/batch-failures.txt
+              echo "::error::Failed: $req — durable intent/recovery rules remain authoritative"
+            fi
+            echo "::endgroup::"
+          done < /tmp/batch-requests.txt
+
+          echo "Batch complete: success=$success failed=$failed total=$((success+failed))"
+          if [ "$failed" -gt 0 ]; then
+            echo "Failed requests:"
+            cat /tmp/batch-failures.txt
+            exit 1
+          fi
+
+      - name: Preserve lightweight per-story evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-growth-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            youtube-shorts-bot/output/**/*.json
+            /tmp/batch-failures.txt
+          if-no-files-found: ignore
+          retention-days: 7

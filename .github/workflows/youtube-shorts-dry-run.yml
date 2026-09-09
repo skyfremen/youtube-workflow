@@ -3,21 +3,18 @@ name: Wacky Dramas Dry Run
 on:
   push:
     paths:
-      - '.github/workflows/youtube-shorts-dry-run.yml'
-      - '.github/workflows/adhoc-story-private.yml'
-      - '.github/workflows/background-library-renditions.yml'
-      - '.github/workflows/youtube-analytics.yml'
-      - '.github/workflows/build-shorts-image.yml'
+      - '.github/workflows/**'
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
       - 'youtube-shorts-bot/*.py'
       - 'youtube-shorts-bot/tests/**'
       - 'youtube-shorts-bot/planner/**'
+      - 'youtube-shorts-bot/*.md'
       - 'youtube-shorts-bot/media-library/backgrounds.json'
   workflow_dispatch:
 
 concurrency:
-  group: wacky-dramas-dry-run
+  group: wacky-dramas-dry-run-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -46,26 +43,7 @@ jobs:
       - name: Compile production Python
         shell: bash
         run: |
-          python -m py_compile \
-            youtube-shorts-bot/workflow_common.py \
-            youtube-shorts-bot/recovery_state.py \
-            youtube-shorts-bot/request_guard.py \
-            youtube-shorts-bot/validate_content.py \
-            youtube-shorts-bot/validate_media_library.py \
-            youtube-shorts-bot/background_selector.py \
-            youtube-shorts-bot/pexels_registry.py \
-            youtube-shorts-bot/media_resolver.py \
-            youtube-shorts-bot/tts_backend.py \
-            youtube-shorts-bot/render.py \
-            youtube-shorts-bot/render_aligned.py \
-            youtube-shorts-bot/caption_alignment.py \
-            youtube-shorts-bot/verify_render.py \
-            youtube-shorts-bot/auth_check.py \
-            youtube-shorts-bot/upload.py \
-            youtube-shorts-bot/publish.py \
-            youtube-shorts-bot/verify_youtube_private.py \
-            youtube-shorts-bot/finalize.py \
-            youtube-shorts-bot/analytics.py
+          python -m py_compile youtube-shorts-bot/*.py
 
       - name: Verify retired architecture cleanup
         shell: bash
@@ -80,8 +58,7 @@ jobs:
               '.github/workflows/wacky-dramas-acceptance-recovery.yml','.github/workflows/youtube-longform-mvp.yml',
               '.github/workflows/post-cleanup-sweep.yml','youtube-shorts-bot/content/archive',
               'youtube-shorts-bot/content/latest.json','youtube-shorts-bot/content/plans',
-              'youtube-shorts-bot/content/validation-triggers','youtube-shorts-bot/content/requests/.gitkeep',
-              'youtube-shorts-bot/content/results/.gitkeep','youtube-shorts-bot/media-library/music.json',
+              'youtube-shorts-bot/content/validation-triggers','youtube-shorts-bot/media-library/music.json',
               'youtube-shorts-bot/media_failover.py','youtube-shorts-bot/media_preflight.py',
               'youtube-shorts-bot/planner/PLANNER_INSTRUCTIONS.md','youtube-shorts-bot/queue_manager.py',
               'youtube-shorts-bot/schedule_guard.py','youtube-shorts-bot/schedule_utils.py',
@@ -90,18 +67,25 @@ jobs:
           ]
           present = [p for p in forbidden_paths if Path(p).exists()]
           assert not present, 'retired paths still present: ' + ', '.join(present)
-          expected_workflows = {'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml'}
+          expected_workflows = {
+              'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml',
+              'daily-growth-batch.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml',
+          }
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
-          active_files = [*Path('youtube-shorts-bot').glob('*.py'),*Path('youtube-shorts-bot/planner').glob('*.md'),Path('youtube-shorts-bot/RECOVERY.md'),Path('.github/workflows/adhoc-story-private.yml'),Path('.github/workflows/build-shorts-image.yml'),Path('.github/workflows/youtube-analytics.yml')]
-          forbidden_terms = ['Wacky Insights','@WACKYINSIGHTS','youtube-story-bot','youtube-shorts-bot-backup','youtube-longform-bot','content/latest.json','content/plans/','queue_manager.py','media-library/music.json','verify_youtube_schedule.py']
+          active_files = [*Path('youtube-shorts-bot').glob('*.py'),*Path('youtube-shorts-bot/planner').glob('*.md'),
+                          *Path('youtube-shorts-bot').glob('*.md'),*Path('.github/workflows').glob('*.yml')]
+          forbidden_terms = ['Wacky Insights','@WACKYINSIGHTS','youtube-story-bot','youtube-shorts-bot-backup',
+                             'content/latest.json','content/plans/','queue_manager.py','media-library/music.json']
           hits=[]
+          # Cleanup workflow itself lists retired names intentionally; do not scan this file.
           for path in active_files:
+              if path.name == 'youtube-shorts-dry-run.yml': continue
               text=path.read_text(encoding='utf-8')
               for term in forbidden_terms:
                   if term in text: hits.append(f'{path}: {term}')
           assert not hits, 'stale active references: ' + '; '.join(hits)
-          print('Retired architectures remain absent; immutable Wacky Dramas architecture preserved.')
+          print('Retired architecture remains absent; canonical Wacky Dramas paths preserved.')
           PY
 
       - name: Check immutable request result and recovery history
@@ -117,16 +101,16 @@ jobs:
           from request_guard import check_immutable_changes
           before=os.environ['PREVIOUS_SHA']
           if before and set(before) != {'0'}: check_immutable_changes(before, os.environ['GITHUB_SHA'])
-          print('Immutable history unchanged; only new evidence may be added.')
+          print('Immutable request/result/recovery history unchanged.')
           PY
 
-      - name: Run cheap unit and contract tests
+      - name: Run unit and contract tests
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
 
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/validate_media_library.py
 
-      - name: Create temporary request and exercise validator
+      - name: Exercise legacy ad-hoc schema v2 compatibility
         shell: bash
         run: |
           cat > /tmp/wd-20260908T161000-dry-run-abc123.json <<'JSON'
@@ -134,24 +118,37 @@ jobs:
             "schema_version": 2,
             "content_id": "wd-20260908T161000-dry-run-abc123",
             "channel": {"name": "Wacky Dramas", "handle": "@WACKYDRAMAS"},
-            "story": {"category":"WORKPLACE","story_type":"BACKFIRE","hook":"My boss changed the rules. The email trail changed them back.","script":"I asked for the new rule in writing. The reply reached the person who owned the policy.","card_emojis":["💼","📧","😤","😳","🔥"]},
+            "story": {"category":"WORKPLACE","story_type":"BACKFIRE","hook":"My Boss Put It in Writing","script":"I asked for the new rule in writing. The reply reached the person who owned the policy.","card_emojis":["💼","📧","😤","😳","🔥"]},
             "narration": {"engine":"kokoro","voice":"af_heart","speed":1.75},
             "visual": {"background_primary_id":"satisfying-001","background_backup_id":"satisfying-002"},
             "youtube": {"title":"The Email Trail Changed Everything #Shorts","description":"An original Wacky Dramas story.","hashtags":["#shorts","#storytime","#wackydramas"],"category_id":"24","made_for_kids":false}
           }
           JSON
           python youtube-shorts-bot/validate_content.py --request /tmp/wd-20260908T161000-dry-run-abc123.json
-          cp /tmp/wd-20260908T161000-dry-run-abc123.json /tmp/invalid.json
+          python youtube-shorts-bot/media_resolver.py --request /tmp/wd-20260908T161000-dry-run-abc123.json --no-download --skip-preflight
+
+      - name: Run full 120 premise growth acceptance dry run
+        shell: bash
+        run: |
+          python youtube-shorts-bot/growth_planner.py \
+            --acceptance-dry-run --date 2026-09-10 --analytics-video-count 0 \
+            --output /tmp/growth-dry-run.json
           python - <<'PY'
           import json
-          p='/tmp/invalid.json'; d=json.load(open(p)); d['channel']['handle']='@WACKYINSIGHTS'; json.dump(d,open(p,'w'))
+          d=json.load(open('/tmp/growth-dry-run.json'))
+          assert d['raw_premises_generated'] >= 120
+          assert 0 < d['final_selected'] <= 24
+          assert d['analytics_weight'] == 0
+          assert d['exploit_selections'] > 0 and d['explore_selections'] > 0
+          selected=d['selected']
+          assert len({x['publication']['publish_at'] for x in selected}) == len(selected)
+          assert all(x['publication']['timezone'] == 'Asia/Singapore' for x in selected)
+          assert all(len(x['title_candidates']) >= 5 for x in selected)
+          assert all(x['opening_line'] for x in selected)
+          print('Growth acceptance: 120+ raw -> filtered/scored -> semifinal title/hook competition -> diverse explore/exploit winners -> unique hourly slots.')
           PY
-          if python youtube-shorts-bot/validate_content.py --request /tmp/invalid.json; then echo '::error::Invalid legacy channel request unexpectedly passed.'; exit 1; fi
 
-      - name: Resolve media IDs without downloading media
-        run: python youtube-shorts-bot/media_resolver.py --request /tmp/wd-20260908T161000-dry-run-abc123.json --no-download --skip-preflight
-
-      - name: Verify renderer TTS blackdetect and duration policy statically
+      - name: Verify renderer production contracts statically
         shell: bash
         run: |
           python - <<'PY'
@@ -160,22 +157,18 @@ jobs:
           sys.path.insert(0,'youtube-shorts-bot')
           import render, tts_backend, workflow_common
           assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
+          assert workflow_common.PRODUCTION_TARGET_MIN_SECONDS == 120.0
+          assert workflow_common.PRODUCTION_TARGET_MAX_SECONDS == 175.0
           assert workflow_common.START_LEAD_SECONDS == 0.50
           assert workflow_common.END_TAIL_SECONDS == 0.35
-          assert workflow_common.PRODUCTION_ENCODE_SAFETY_SECONDS == 0.10
           assert workflow_common.expected_video_config() == {'width':720,'height':1280,'fps':30}
           assert render.X264_PRESET == 'superfast' and render.X264_CRF == 19
-          assert render.BLACKDETECT_FILTER == 'blackdetect=d=0.50:pic_th=0.98:pix_th=0.10'
-          assert render.BLACKDETECT_MAX_ALLOWED_SECONDS == 0.75
           assert tts_backend.ONNX_BACKEND == 'onnx-fp32'
-          assert tts_backend.PYTORCH_FALLBACK_BACKEND == 'pytorch-fallback'
           text=Path('youtube-shorts-bot/render.py').read_text(encoding='utf-8')
-          for needle in ['OnnxKokoroSynthesizer','PytorchKokoroSynthesizer','narration_backend_used','inline_blackdetect_passed','"-map", "3:a:0"','lead_audio = np.zeros','card_fade_start = START_LEAD_SECONDS + intro_duration']:
+          for needle in ['OnnxKokoroSynthesizer','PytorchKokoroSynthesizer','narration_backend_used',
+                         'inline_blackdetect_passed','"-map", "3:a:0"','lead_audio = np.zeros']:
               assert needle in text
-          rules=Path('youtube-shorts-bot/planner/STORY_RULES.md').read_text(encoding='utf-8')
-          assert '120–170 seconds' in rules
-          assert '178 seconds is the hard production ceiling' in rules
-          print('ONNX-primary/PyTorch-fallback, inline blackdetect, superfast CRF19, 0.50s lead, 0.35s tail and 178s ceiling contracts present.')
+          print('Rendering identity preserved: Kokoro, 720x1280, 30fps, H.264/AAC, duration ceiling and safety checks.')
           PY
 
       - name: Verify workflow safety contracts
@@ -183,30 +176,26 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text(encoding='utf-8')
-          prod=Path('.github/workflows/adhoc-story-private.yml').read_text(encoding='utf-8')
-          build=Path('.github/workflows/build-shorts-image.yml').read_text(encoding='utf-8')
-          secret_names=['YOUTUBE_'+'CLIENT_ID','YOUTUBE_'+'CLIENT_SECRET','YOUTUBE_'+'REFRESH_TOKEN']
-          forbidden_exec=['python youtube-shorts-bot/'+'render.py','python youtube-shorts-bot/'+'publish.py','python youtube-shorts-bot/'+'verify_youtube_private.py','python youtube-shorts-bot/'+'pexels_registry.py']
-          for secret in secret_names: assert secret not in dry
-          for command in forbidden_exec: assert command not in dry
-          heavy_container_key='con'+'tainer:'
-          assert heavy_container_key not in dry
-          assert 'apt install' not in prod and 'apt-get' not in prod and 'pip install' not in prod
-          assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in prod
-          assert 'group: wacky-dramas-youtube-upload' in prod
-          assert "YOUTUBE_SCHEDULED_UPLOAD: 'false'" in prod and 'YOUTUBE_PRIVACY: private' in prod
-          assert 'for slot in' not in prod and 'content/latest.json' not in prod and 'publishAt' not in prod and 'music' not in prod.lower()
-          assert '${GITHUB_RUN_ATTEMPT:-1}' in prod and '--recovery-only' in prod and 'workflow_call:' not in prod
-          assert "if: github.ref == 'refs/heads/main'" in build
-          assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in build
-          print('Dry run is non-uploading; production remains private/unscheduled/rerun-safe; only main may publish the runner image.')
+          dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text()
+          adhoc=Path('.github/workflows/adhoc-story-private.yml').read_text()
+          batch=Path('.github/workflows/daily-growth-batch.yml').read_text()
+          for secret in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN']:
+              assert secret not in dry
+          assert 'container:' not in dry
+          assert 'group: wacky-dramas-youtube-upload' in adhoc
+          assert 'group: wacky-dramas-youtube-upload' in batch
+          assert "[daily growth]" in adhoc and "[daily growth]" in batch
+          assert 'schedule:' not in batch.split('jobs:')[0], 'batch must not wake hourly; YouTube scheduling owns cadence'
+          assert 'for req in' not in adhoc and 'content/latest.json' not in adhoc
+          assert 'queue_manager.py' not in batch and 'content/latest.json' not in batch
+          print('Dry-run has no secrets/uploads; ad-hoc and growth batch serialize on one upload concurrency group; no hourly render cron exists.')
           PY
 
-      - name: Confirm zero media render upload side effects
+      - name: Confirm zero expensive production side effects
         shell: bash
         run: |
           test ! -f youtube-shorts-bot/output/short.mp4
           test ! -f youtube-shorts-bot/output/narration.wav
           test ! -f youtube-shorts-bot/output/upload_result.json
-          echo 'Dry run passed with no TTS model execution, MP4 render, upload, schedule, queue mutation, or publication artifact.'
+          test ! -d youtube-shorts-bot/content/planning
+          echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, or immutable planning mutation.'

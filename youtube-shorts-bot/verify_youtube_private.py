@@ -1,16 +1,25 @@
 import argparse
 import time
+from datetime import datetime, timezone
 
 from recovery_state import RecoveryBlocked, check_identity, identity_for, now
-from upload import make_client, authenticated_channel
+from upload import authenticated_channel, expected_publication, make_client
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
 
-
-# Keep the same 60-second bounded verification window and all existing poll
-# milestones, while adding a 26-second observation between the common 22- and
-# 30-second states. This can save four runner-seconds without delaying any
-# previously observable state or weakening the fail-closed deadline.
 RETRY_DELAYS = (0, 2, 4, 8, 8, 4, 4, 10, 10, 10)
+
+
+def _instant(raw):
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(str(raw).replace("Z", "+00:00")).astimezone(timezone.utc)
+    except ValueError:
+        return None
+
+
+def _same_instant(left, right):
+    return _instant(left) is not None and _instant(left) == _instant(right)
 
 
 def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
@@ -22,6 +31,13 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
     if channel["id"] != evidence.get("expected_channel_id"):
         raise RecoveryBlocked("Authenticated channel differs from upload evidence")
     expected_snippet = evidence["upload_body"]["snippet"]
+    publication = expected_publication_for_verification(request)
+    expected_publish_at = publication.get("publish_at")
+    if publication["mode"] == "scheduled":
+        intent_publish_at = evidence.get("upload_body", {}).get("status", {}).get("publishAt")
+        if not _same_instant(intent_publish_at, expected_publish_at):
+            raise RecoveryBlocked("Durable upload intent does not contain the immutable scheduled publication time")
+
     last = "video not visible"
     observations = []
     for attempt, delay in enumerate(RETRY_DELAYS, 1):
@@ -39,16 +55,12 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
         snippet, status = item.get("snippet", {}), item.get("status", {})
         if not snippet or not status:
             last = "snippet/status not propagated"
+            observations.append({"attempt": attempt, "observed_at": now(), "state": last})
             continue
         if snippet.get("channelId") != channel["id"]:
             raise RecoveryBlocked("Video belongs to a different channel")
-        if status.get("privacyStatus") != "private":
-            raise RecoveryBlocked("Video is not exactly PRIVATE")
-        if "publishAt" in status:
-            raise RecoveryBlocked("publishAt must be absent, including empty/null values")
         if status.get("uploadStatus") in {"failed", "rejected", "deleted"} or status.get("failureReason") or status.get("rejectionReason"):
             raise RecoveryBlocked("YouTube rejected or failed the upload")
-        # Do not silently accept another story or overwrite mismatched metadata.
         for field in ("title", "description", "categoryId"):
             if snippet.get(field) != expected_snippet.get(field):
                 raise RecoveryBlocked(f"YouTube {field} differs from recorded upload metadata")
@@ -56,26 +68,66 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
             last = "YouTube processing not complete"
             observations.append({"attempt": attempt, "observed_at": now(), "state": last})
             continue
+
+        privacy = status.get("privacyStatus")
+        publish_at = status.get("publishAt")
+        verification_state = None
+        publish_at_absent = "publishAt" not in status
+        if publication["mode"] == "private":
+            if privacy != "private":
+                raise RecoveryBlocked("Ad-hoc video is not exactly PRIVATE")
+            if not publish_at_absent:
+                raise RecoveryBlocked("Ad-hoc private video must not contain publishAt")
+            verification_state = "verified_private"
+        else:
+            expected_dt = _instant(expected_publish_at)
+            if privacy == "private":
+                if not _same_instant(publish_at, expected_publish_at):
+                    raise RecoveryBlocked("YouTube scheduled publication differs from immutable request")
+                verification_state = "verified_scheduled"
+                publish_at_absent = False
+            elif privacy == "public":
+                # Recovery may occur after the scheduled transition. The durable
+                # pre-insert intent proves the requested publishAt; public state
+                # is accepted only after that instant, never before it.
+                current = datetime.now(timezone.utc)
+                if expected_dt is None or current < expected_dt:
+                    raise RecoveryBlocked("Scheduled video became public before its immutable publication time")
+                if publish_at is not None and not _same_instant(publish_at, expected_publish_at):
+                    raise RecoveryBlocked("Published video exposes a different publishAt than requested")
+                published_at = _instant(snippet.get("publishedAt"))
+                if published_at and published_at < expected_dt:
+                    raise RecoveryBlocked("YouTube publishedAt predates the immutable scheduled time")
+                verification_state = "verified_scheduled_published"
+            else:
+                raise RecoveryBlocked("Scheduled video has an unexpected privacy state")
+
         tags = snippet.get("tags", [])
         known_tags = [marker_tag(identity["content_id"]), "wd-id-" + identity["content_id"]]
         seen_tags = [tag for tag in known_tags if tag in tags]
-        # Tags are supplementary. The immutable GitHub blob binds request bytes,
-        # original workflow and exact returned video ID even during tag lag.
         return {
-            "passed": True, "state": "verified_private", "verified_at": now(),
+            "passed": True, "state": verification_state, "verified_at": now(),
             **identity, "youtube_video_id": video_id, "channel_id": channel["id"],
             "channel_title": channel.get("snippet", {}).get("title"),
             "channel_handle": channel.get("snippet", {}).get("customUrl"),
-            "privacy_status": "private", "publish_at_absent": True,
+            "privacy_status": privacy, "publish_at": expected_publish_at,
+            "publish_at_absent": publish_at_absent,
             "upload_status": status["uploadStatus"], "association_method": "immutable_github_upload_record",
-            "observed_marker_tags": seen_tags,
-            # Recovery metadata intentionally lives in non-viewer-facing tags.
-            # Keep the receipt field for backward-compatible diagnostics, but
-            # new uploads must never place the old marker in the description.
-            "description_marker_observed": False,
+            "observed_marker_tags": seen_tags, "description_marker_observed": False,
             "attempts": attempt, "prior_observations": observations,
         }
-    raise RecoveryBlocked(f"Private verification incomplete after {len(RETRY_DELAYS)} bounded attempts: {last}")
+    raise RecoveryBlocked(f"YouTube verification incomplete after {len(RETRY_DELAYS)} bounded attempts: {last}")
+
+
+def expected_publication_for_verification(request):
+    publication = request.get("publication")
+    if not publication:
+        return {"mode": "private", "publish_at": None}
+    # Unlike fresh-upload validation, verification must work after publish time.
+    raw = str(publication.get("publish_at", ""))
+    if publication.get("mode") != "scheduled" or _instant(raw) is None:
+        raise RecoveryBlocked("Invalid immutable publication contract")
+    return {"mode": "scheduled", "publish_at": raw}
 
 
 def main():
@@ -88,12 +140,19 @@ def main():
     upload = load_json(path)
     check_identity(upload, identity)
     verification = verify_video(make_client(), request, identity, upload["upload_evidence"])
-    upload.update({"privacy_status": "private", "publish_at": None, "publish_at_absent": True,
-                   "youtube_verified_at": verification["verified_at"], "verification": verification,
-                   "content_id_tag_verified": bool(verification["observed_marker_tags"])})
+    upload.update({
+        "privacy_status": verification["privacy_status"],
+        "publish_at": verification["publish_at"],
+        "publish_at_absent": verification["publish_at_absent"],
+        "youtube_verified_at": verification["verified_at"], "verification": verification,
+        "content_id_tag_verified": bool(verification["observed_marker_tags"]),
+    })
     atomic_write_json(path, upload)
     atomic_write_json(OUTPUT_DIR / "youtube-verification.json", verification)
-    print(f"YouTube PRIVATE verified: {upload['youtube_video_id']}; publishAt absent; immutable evidence verified; tags={verification['observed_marker_tags']}")
+    print(
+        f"YouTube verified: {upload['youtube_video_id']}; state={verification['state']}; "
+        f"publishAt={verification['publish_at']}; tags={verification['observed_marker_tags']}"
+    )
 
 
 if __name__ == "__main__":

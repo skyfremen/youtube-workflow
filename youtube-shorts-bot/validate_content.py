@@ -1,7 +1,20 @@
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
+from growth_config import (
+    ANTAGONIST_ROLES,
+    CANONICAL_TIMEZONE,
+    CATEGORIES,
+    EDITORIAL_WEIGHTS,
+    EMOTIONS,
+    ENDING_STYLES,
+    OPENING_STYLES,
+    PROTAGONIST_ROLES,
+    TITLE_STYLES,
+    TITLE_WEIGHTS,
+)
 from workflow_common import ensure_request_path_matches, load_json
 
 FORBIDDEN_KEYS = {
@@ -10,18 +23,27 @@ FORBIDDEN_KEYS = {
     "duration_seconds", "background_url", "background_source_url",
     "background_license", "background_creator", "privacy_status", "publishAt",
     "publish_at", "music_url", "music_source_url", "music_title", "music_artist",
-    "music_license",
+    "music_license", "queue_slot",
 }
-TOP_LEVEL_KEYS = {
+BASE_TOP_LEVEL_KEYS = {
     "schema_version", "content_id", "channel", "story", "narration", "visual", "youtube"
 }
 STORY_KEYS = {"category", "story_type", "hook", "script", "card_emojis"}
 NARRATION_KEYS = {"engine", "voice", "speed"}
 VISUAL_KEYS = {"background_primary_id", "background_backup_id"}
 YOUTUBE_KEYS = {"title", "description", "hashtags", "category_id", "made_for_kids"}
+PUBLICATION_KEYS = {"mode", "timezone", "publish_at"}
+PLANNING_KEYS = {
+    "plan_date", "editorial_score", "editorial_components", "analytics_score", "analytics_weight",
+    "final_score", "title_candidates", "selected_title_score", "hook_score", "selection_class",
+    "selection_reason", "similarity", "attributes", "target_duration_seconds",
+}
+ATTRIBUTE_KEYS = {
+    "subtype", "conflict", "primary_emotion", "protagonist_role", "antagonist_role",
+    "opening_style", "title_style", "ending_style",
+}
+TITLE_CANDIDATE_KEYS = {"title", "style", "truthful", "score", "score_components"}
 
-# Keep legacy-brand rejection as an anti-regression rule without leaving the old
-# brand as a live/stale literal in the canonical Wacky Dramas source tree.
 LEGACY_NAME = "Wacky " + "Insights"
 LEGACY_HANDLE = "@WACKY" + "INSIGHTS"
 LEGACY_HASHTAG = "#wacky" + "insights"
@@ -32,18 +54,161 @@ def _nonempty(value):
     return bool(str(value or "").strip())
 
 
+def _score(value, label, errors, allow_none=False):
+    if value is None and allow_none:
+        return
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        errors.append(f"{label} must be numeric" + (" or null" if allow_none else ""))
+        return
+    if not 0 <= value <= 100:
+        errors.append(f"{label} must be between 0 and 100")
+
+
+def _validate_component_scores(components, expected_keys, label, errors):
+    if not isinstance(components, dict) or set(components) != set(expected_keys):
+        errors.append(f"{label} must contain exactly the configured score components")
+        return
+    for key in expected_keys:
+        _score(components.get(key), f"{label}.{key}", errors)
+
+
+def _validate_publication(publication, errors):
+    if not isinstance(publication, dict) or set(publication) != PUBLICATION_KEYS:
+        errors.append("schema v3 publication must contain exactly mode, timezone, publish_at")
+        return
+    if publication.get("mode") != "scheduled":
+        errors.append("publication.mode must be scheduled")
+    if publication.get("timezone") != CANONICAL_TIMEZONE:
+        errors.append(f"publication.timezone must be {CANONICAL_TIMEZONE}")
+    raw = str(publication.get("publish_at", ""))
+    if not raw.endswith("Z"):
+        errors.append("publication.publish_at must be an RFC3339 UTC timestamp ending Z")
+        return
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+            raise ValueError
+    except ValueError:
+        errors.append("publication.publish_at must be a valid UTC timestamp")
+
+
+def _validate_planning(planning, yt_title, errors):
+    if not isinstance(planning, dict):
+        errors.append("schema v3 planning must be an object")
+        return
+    missing = PLANNING_KEYS - set(planning)
+    extra = set(planning) - PLANNING_KEYS
+    if missing:
+        errors.append("planning missing fields: " + ", ".join(sorted(missing)))
+    if extra:
+        errors.append("planning unexpected fields: " + ", ".join(sorted(extra)))
+
+    for key in ("editorial_score", "final_score", "selected_title_score", "hook_score"):
+        _score(planning.get(key), f"planning.{key}", errors)
+    _score(planning.get("analytics_score"), "planning.analytics_score", errors, allow_none=True)
+    _validate_component_scores(
+        planning.get("editorial_components"), EDITORIAL_WEIGHTS,
+        "planning.editorial_components", errors,
+    )
+
+    try:
+        aw = float(planning.get("analytics_weight"))
+        if not 0 <= aw <= 0.75:
+            errors.append("planning.analytics_weight must be between 0 and 0.75")
+    except (TypeError, ValueError):
+        errors.append("planning.analytics_weight must be numeric")
+
+    if planning.get("selection_class") not in {"exploit", "explore"}:
+        errors.append("planning.selection_class must be exploit or explore")
+    if not _nonempty(planning.get("selection_reason")):
+        errors.append("planning.selection_reason must be non-empty")
+
+    similarity = planning.get("similarity")
+    if not isinstance(similarity, dict) or "max_recent_similarity" not in similarity:
+        errors.append("planning.similarity must record max_recent_similarity")
+    else:
+        try:
+            value = float(similarity["max_recent_similarity"])
+            if not 0 <= value <= 1:
+                errors.append("planning.similarity.max_recent_similarity must be between 0 and 1")
+        except (TypeError, ValueError):
+            errors.append("planning.similarity.max_recent_similarity must be numeric")
+
+    try:
+        duration = float(planning.get("target_duration_seconds"))
+        if not 120 <= duration <= 175:
+            errors.append("planning.target_duration_seconds must be between 120 and 175")
+    except (TypeError, ValueError):
+        errors.append("planning.target_duration_seconds must be numeric")
+
+    attrs = planning.get("attributes")
+    if not isinstance(attrs, dict) or set(attrs) != ATTRIBUTE_KEYS:
+        errors.append("planning.attributes must contain the controlled attribute fields")
+    else:
+        if not _nonempty(attrs.get("subtype")) or not _nonempty(attrs.get("conflict")):
+            errors.append("planning subtype/conflict must be non-empty")
+        if attrs.get("primary_emotion") not in EMOTIONS:
+            errors.append("planning.attributes.primary_emotion is not a controlled value")
+        if attrs.get("protagonist_role") not in PROTAGONIST_ROLES:
+            errors.append("planning.attributes.protagonist_role is not a controlled value")
+        if attrs.get("antagonist_role") not in ANTAGONIST_ROLES:
+            errors.append("planning.attributes.antagonist_role is not a controlled value")
+        if attrs.get("opening_style") not in OPENING_STYLES:
+            errors.append("planning.attributes.opening_style is not a controlled value")
+        if attrs.get("title_style") not in TITLE_STYLES:
+            errors.append("planning.attributes.title_style is not a controlled value")
+        if attrs.get("ending_style") not in ENDING_STYLES:
+            errors.append("planning.attributes.ending_style is not a controlled value")
+
+    titles = planning.get("title_candidates")
+    if not isinstance(titles, list) or len(titles) < 5:
+        errors.append("planning.title_candidates must contain at least 5 candidates")
+    else:
+        selected_seen = False
+        styles_seen = set()
+        for index, item in enumerate(titles):
+            if not isinstance(item, dict) or set(item) != TITLE_CANDIDATE_KEYS:
+                errors.append(f"planning.title_candidates[{index}] has invalid fields")
+                continue
+            if item.get("truthful") is not True:
+                errors.append(f"planning.title_candidates[{index}] must be truthful")
+            style = item.get("style")
+            if style not in TITLE_STYLES:
+                errors.append(f"planning.title_candidates[{index}].style is not controlled")
+            styles_seen.add(style)
+            _score(item.get("score"), f"planning.title_candidates[{index}].score", errors)
+            _validate_component_scores(
+                item.get("score_components"), TITLE_WEIGHTS,
+                f"planning.title_candidates[{index}].score_components", errors,
+            )
+            if item.get("title") == yt_title:
+                selected_seen = True
+        if len(styles_seen) < 3:
+            errors.append("planning.title_candidates must explore at least 3 materially different title styles")
+        if not selected_seen:
+            errors.append("youtube.title must exactly match one planning.title_candidates entry")
+
+
 def validate_request_data(data, request_path=None):
     errors = []
     if not isinstance(data, dict):
         return ["request root must be an object"]
-    if data.get("schema_version") != 2:
-        errors.append("schema_version must be 2")
-    unknown = set(data) - TOP_LEVEL_KEYS
+    schema = data.get("schema_version")
+    if schema not in {2, 3}:
+        errors.append("schema_version must be 2 or 3")
+    allowed_top = BASE_TOP_LEVEL_KEYS if schema == 2 else BASE_TOP_LEVEL_KEYS | {"publication", "planning"}
+    unknown = set(data) - allowed_top
     if unknown:
         errors.append("unexpected top-level fields: " + ", ".join(sorted(unknown)))
     forbidden = set(data) & FORBIDDEN_KEYS
     if forbidden:
         errors.append("obsolete/forbidden fields present: " + ", ".join(sorted(forbidden)))
+    if schema == 2 and ({"publication", "planning"} & set(data)):
+        errors.append("schema v2 must remain private/unscheduled and cannot contain planning/publication")
+    if schema == 3:
+        _validate_publication(data.get("publication"), errors)
 
     channel = data.get("channel")
     if not isinstance(channel, dict):
@@ -69,6 +234,8 @@ def validate_request_data(data, request_path=None):
         for key in ("category", "story_type", "hook", "script"):
             if not _nonempty(story.get(key)):
                 errors.append(f"story.{key} must be non-empty")
+        if schema == 3 and story.get("category") not in CATEGORIES:
+            errors.append("schema v3 story.category is not a controlled growth category")
         emojis = story.get("card_emojis")
         if not isinstance(emojis, list) or not 4 <= len(emojis) <= 6:
             errors.append("story.card_emojis must contain 4-6 emojis")
@@ -88,10 +255,14 @@ def validate_request_data(data, request_path=None):
             errors.append("narration.engine must be kokoro")
         if not _nonempty(narration.get("voice")):
             errors.append("narration.voice must be non-empty")
+        if schema == 3 and narration.get("voice") != "af_heart":
+            errors.append("schema v3 narration.voice must be af_heart")
         try:
             speed = float(narration.get("speed"))
             if not 0.5 <= speed <= 2.5:
                 errors.append("narration.speed must be between 0.5 and 2.5")
+            if schema == 3 and abs(speed - 1.75) > 0.001:
+                errors.append("schema v3 narration.speed must be 1.75")
         except (TypeError, ValueError):
             errors.append("narration.speed must be numeric")
 
@@ -109,6 +280,7 @@ def validate_request_data(data, request_path=None):
             errors.append("visual primary and backup background IDs must differ")
 
     yt = data.get("youtube")
+    yt_title = ""
     if not isinstance(yt, dict):
         errors.append("youtube must be an object")
     else:
@@ -118,8 +290,8 @@ def validate_request_data(data, request_path=None):
             errors.append("youtube missing fields: " + ", ".join(sorted(missing)))
         if extra:
             errors.append("youtube unexpected fields: " + ", ".join(sorted(extra)))
-        title = str(yt.get("title", "")).strip()
-        if not title or len(title) > 100 or "#Shorts" not in title:
+        yt_title = str(yt.get("title", "")).strip()
+        if not yt_title or len(yt_title) > 100 or "#Shorts" not in yt_title:
             errors.append("youtube.title must be non-empty, <=100 chars, and contain #Shorts")
         if not _nonempty(yt.get("description")):
             errors.append("youtube.description must be non-empty")
@@ -132,6 +304,9 @@ def validate_request_data(data, request_path=None):
             errors.append("youtube.category_id must be non-empty")
         if yt.get("made_for_kids") is not False:
             errors.append("youtube.made_for_kids must be false for this workflow")
+
+    if schema == 3:
+        _validate_planning(data.get("planning"), yt_title, errors)
 
     serialized = json.dumps(data, ensure_ascii=False)
     for term in LEGACY_BRANDING:
@@ -151,7 +326,7 @@ def validate_request(path):
     errors = validate_request_data(data, request_path=path)
     if errors:
         raise SystemExit("Wacky Dramas request validation failed:\n- " + "\n- ".join(errors))
-    print(f"Request valid: {path.name}")
+    print(f"Request valid: {path.name}; schema={data.get('schema_version')}")
     return data
 
 
