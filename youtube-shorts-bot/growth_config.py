@@ -44,11 +44,24 @@ HOOK_WEIGHTS = {
     "immediate_comprehension": 5,
 }
 
-# The Studio "viewed vs swiped away" value is not exposed by the targeted
-# YouTube Analytics API. `engaged_view_rate` (engagedViews / views) is therefore
-# used as an explicitly named, API-available continuation proxy and is never
-# mislabeled as the Studio metric. Missing metrics are renormalized away.
+# Raw YouTube metrics are normalized against age-matched Wacky Dramas cohorts
+# before they influence future candidates. These weights describe the historical
+# row score, not the final editorial/analytics blend.
+RAW_ANALYTICS_WEIGHTS = {
+    "engaged_view_rate": 20,
+    "average_percentage_viewed": 20,
+    "net_subscribers_per_1000_views": 20,
+    "shares_per_1000_views": 15,
+    "qualified_shorts_views": 10,
+    "likes_per_1000_views": 7.5,
+    "comments_per_1000_views": 7.5,
+}
+
+# growth_planner.normalized_performance_score remains backward-compatible with
+# direct normalized metrics used by tests/older callers. New production planning
+# should pass only historical_attribute_fit, produced by analytics_learning.py.
 PERFORMANCE_WEIGHTS = {
+    "historical_attribute_fit": 100,
     "engaged_view_rate": 25,
     "average_percentage_viewed": 25,
     "average_view_duration_relative": 15,
@@ -64,8 +77,6 @@ DIVERSITY_LIMITS = {
     "title_style": 3,
 }
 
-# These are deliberately compact controlled vocabularies. New values should be
-# added intentionally rather than allowing unbounded free-text labels.
 CATEGORIES = {
     "RELATIONSHIP", "DATING", "MARRIAGE", "BETRAYAL", "FAMILY", "INHERITANCE",
     "MONEY", "WORKPLACE", "REVENGE", "FRIENDSHIP", "WEDDING", "ENTITLED_PERSON",
@@ -109,11 +120,17 @@ MIN_HOOK_SCORE = 70.0
 NEAR_DUPLICATE_THRESHOLD = 0.82
 SOFT_SIMILARITY_THRESHOLD = 0.62
 
-# Confidence curve: analytics influence rises gradually and never removes the
-# editorial/exploration contribution. 0 videos => 0%; ~10 => 30%; ~30 => 55%;
-# ~60+ approaches the 75% mature cap.
-MAX_ANALYTICS_WEIGHT = 0.75
-ANALYTICS_CONFIDENCE_SCALE = 22.0
+# Fresh-start analytics must mature before it can steer creative selection.
+# growth_video_count in analytics/latest.json is an evidence-equivalent count:
+# it is zero until >=10 videos have a 24h cohort snapshot, then is capped by
+# both mature video count and one evidence unit per 500 comparable views.
+MAX_ANALYTICS_WEIGHT = 0.60
+ANALYTICS_CONFIDENCE_SCALE = 50.0
+ANALYTICS_MIN_MATURE_VIDEOS = 10
+ANALYTICS_VIEWS_PER_EVIDENCE_UNIT = 500
+ANALYTICS_MATURITY_HOURS = 24
+ANALYTICS_ATTRIBUTE_PRIOR_STRENGTH = 4.0
+MILESTONE_CAPTURE_TOLERANCE_HOURS = 6.5
 
 MILESTONE_HOURS = {
     "24h": 24,
