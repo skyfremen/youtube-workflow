@@ -1,0 +1,25 @@
+name: Test Shorts Tag Recovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'youtube-shorts-bot/upload.py'
+      - 'youtube-shorts-bot/tests/test_upload_recovery_marker.py'
+      - '.github/workflows/test-shorts-tag-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run tag-only duplicate recovery tests
+        run: python -m pytest -q youtube-shorts-bot/tests/test_upload_recovery_marker.py
