@@ -261,7 +261,8 @@ jobs:
           for command in forbidden_exec:
               assert command not in dry, f'dry run must not execute {command}'
 
-          assert 'container:' not in dry, 'static dry run must not pull the heavy production container'
+          heavy_container_key = 'con' + 'tainer:'
+          assert heavy_container_key not in dry, 'static dry run must not pull the heavy production container'
           assert 'apt install' not in prod and 'apt-get' not in prod and 'pip install' not in prod
           assert 'ghcr.io/skyfremen/youtube-shorts-runner:latest' in prod
           assert 'group: wacky-dramas-youtube-upload' in prod
