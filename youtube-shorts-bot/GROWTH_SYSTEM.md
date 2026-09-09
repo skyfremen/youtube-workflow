@@ -122,6 +122,10 @@ The external daily planner follows `planner/DAILY_GROWTH_PROMPT.md` and creates 
 
 That commit is routed to the batch workflow. The ad-hoc workflow explicitly ignores it.
 
+## Repository state hygiene
+
+Transient Python caches, local environment files, render outputs, and preview outputs are ignored by the root `.gitignore`. Durable requests, recovery evidence, result receipts, planning/background-sourcing audits, analytics state, and the verified media registry are intentionally tracked and must not be treated as disposable generated files.
+
 ## Acceptance and safe rollout
 
 Before a production change is merged:
