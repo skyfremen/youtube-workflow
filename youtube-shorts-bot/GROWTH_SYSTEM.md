@@ -15,6 +15,7 @@ The production channel runtime state was intentionally reset on **10 Sep 2026** 
 - Pre-launch dated analytics snapshots are removed from the current repository tree.
 - Analytics epoch `wacky-dramas-fresh-channel-2026-09-10` begins at `2026-09-09T16:19:00Z` (`10 Sep 2026 00:19 Asia/Singapore`).
 - Reusable production code, tests, channel assets, and the verified background media library are retained.
+- The one authorized reset commit necessarily trips the normal immutable-history deletion guard; every subsequent commit must pass the guard again from this clean baseline.
 
 ## Architecture
 
