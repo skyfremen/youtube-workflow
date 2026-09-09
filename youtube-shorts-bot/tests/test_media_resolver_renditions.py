@@ -2,6 +2,7 @@ import json
 import sys
 import tempfile
 import unittest
+from email.message import Message
 from pathlib import Path
 from unittest import mock
 
@@ -73,6 +74,22 @@ class RenditionSelectionTests(unittest.TestCase):
 
     def test_insufficient_source_is_rejected(self):
         self.assertIsNone(media_resolver.select_best_rendition(asset(1, [rendition("small", 719, 1279)])))
+
+
+class HttpTransportTests(unittest.TestCase):
+    def test_preflight_uses_bounded_range_request_without_curl(self):
+        headers = Message()
+        headers["Content-Type"] = "video/mp4"
+        response = mock.MagicMock(status=206, headers=headers)
+        response.__enter__.return_value = response
+        response.read.return_value = b"x"
+        with mock.patch.object(media_resolver.urllib.request, "urlopen", return_value=response) as opener:
+            ok, detail, _elapsed = media_resolver.preflight("https://example.test/video.mp4")
+        self.assertTrue(ok)
+        self.assertIn("video/mp4", detail)
+        request_value = opener.call_args.args[0]
+        self.assertEqual(request_value.get_header("Range"), "bytes=0-0")
+        response.read.assert_called_once_with(1)
 
 
 class ResolverFallbackTests(unittest.TestCase):

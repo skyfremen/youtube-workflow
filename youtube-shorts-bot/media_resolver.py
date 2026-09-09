@@ -10,6 +10,8 @@ import json
 import math
 import subprocess
 import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -17,8 +19,11 @@ from validate_media_library import load_registry, validate_request_backgrounds
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
 BASE = Path(__file__).parent
-TMP = Path("/tmp/wacky-dramas-media-preflight.bin")
 SUPPORTED_TYPES = {"video/mp4"}
+HTTP_HEADERS = {
+    "User-Agent": "WackyDramasMediaResolver/1.0",
+    "Accept": "video/mp4,video/*;q=0.9,*/*;q=0.1",
+}
 
 
 def parse_rate(value):
@@ -122,23 +127,24 @@ def generic_fallback(asset):
 
 
 def preflight(url):
-    cmd = [
-        "curl", "-L", "--fail-with-body", "--silent", "--show-error",
-        "--connect-timeout", "15", "--max-time", "35", "--range", "0-0",
-        "--max-filesize", "1048576", "-A", "Mozilla/5.0", "-o", str(TMP),
-        "-w", "%{http_code} %{content_type} %{url_effective}", str(url),
-    ]
     started = time.monotonic()
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    request = urllib.request.Request(
+        str(url), headers={**HTTP_HEADERS, "Range": "bytes=0-0"}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=35) as response:
+            # Some origins ignore Range. Read one byte only and close so preflight
+            # can never become an accidental full background download.
+            response.read(1)
+            code = int(response.status)
+            content_type = str(response.headers.get_content_type() or "").lower()
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        elapsed = round(time.monotonic() - started, 6)
+        return False, f"HTTP preflight failed: {exc}", elapsed
     elapsed = round(time.monotonic() - started, 6)
-    if result.returncode != 0:
-        return False, (result.stderr or result.stdout or "curl failed").strip(), elapsed
-    parts = (result.stdout or "").strip().split(" ", 2)
-    code = parts[0] if parts else ""
-    content_type = parts[1].lower() if len(parts) > 1 else ""
-    if not code.startswith("2"):
+    if not 200 <= code < 300:
         return False, f"HTTP {code}", elapsed
-    if "text/html" in content_type:
+    if content_type == "text/html":
         return False, "returned HTML instead of video media", elapsed
     return True, f"HTTP {code}, {content_type or 'unknown content-type'}", elapsed
 
@@ -178,15 +184,29 @@ def sha256_file(path):
 def download(asset, rendition, target, target_width=720, target_height=1280):
     target = Path(target)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.unlink(missing_ok=True)
-    cmd = [
-        "curl", "-L", "--fail-with-body", "--silent", "--show-error",
-        "--retry", "3", "--retry-delay", "2", "--retry-all-errors",
-        "--connect-timeout", "20", "--max-time", "180", "-A", "Mozilla/5.0",
-        "-o", str(target), str(rendition["direct_url"]),
-    ]
     started = time.monotonic()
-    subprocess.run(cmd, check=True)
+    last_error = None
+    for attempt in range(1, 4):
+        target.unlink(missing_ok=True)
+        request = urllib.request.Request(
+            str(rendition["direct_url"]), headers=HTTP_HEADERS
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=180) as response:
+                if not 200 <= int(response.status) < 300:
+                    raise RuntimeError(f"HTTP {response.status}")
+                with target.open("wb") as output:
+                    while chunk := response.read(1024 * 1024):
+                        output.write(chunk)
+            last_error = None
+            break
+        except (urllib.error.URLError, TimeoutError, OSError, RuntimeError) as exc:
+            last_error = exc
+            if attempt < 3:
+                time.sleep(2)
+    if last_error is not None:
+        target.unlink(missing_ok=True)
+        raise RuntimeError(f"download failed after 3 attempts: {last_error}")
     elapsed = round(time.monotonic() - started, 6)
     if not target.exists() or target.stat().st_size < 10000:
         raise RuntimeError(f"Downloaded background {asset['id']} is suspiciously small")
