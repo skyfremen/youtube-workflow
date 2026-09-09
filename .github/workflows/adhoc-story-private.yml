@@ -29,6 +29,10 @@ permissions:
 
 jobs:
   private-story:
+    # First-attempt uploads and explicit render previews need Kokoro, TorchAudio
+    # and FFmpeg. Recovery-only execution is handled by the lightweight job
+    # below so it does not pull the multi-GB production image.
+    if: ${{ github.run_attempt == 1 && (github.event_name != 'workflow_dispatch' || inputs.recovery_only != true || inputs.render_preview == true) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -165,5 +169,86 @@ jobs:
             youtube-shorts-bot/preview/*.json
             youtube-shorts-bot/preview/captions.ass
             youtube-shorts-bot/preview/short.mp4
+          if-no-files-found: ignore
+          retention-days: 7
+
+  recovery-story:
+    # A rerun or explicit recovery-only dispatch is forbidden from inserting a
+    # new video. It needs Git, JSON validation and YouTube/GitHub API clients,
+    # but not Kokoro, Torch, TorchAudio, Wav2Vec2, FFmpeg or media downloads.
+    if: ${{ github.run_attempt > 1 || (github.event_name == 'workflow_dispatch' && inputs.recovery_only == true && inputs.render_preview != true) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      YOUTUBE_PRIVACY: private
+      YOUTUBE_SCHEDULED_UPLOAD: 'false'
+      VIDEO_WIDTH: '720'
+      VIDEO_HEIGHT: '1280'
+      VIDEO_FPS: '30'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install recovery-only YouTube dependencies
+        run: |
+          # Deliberately excludes every ML/render dependency from requirements.txt.
+          python -m pip --disable-pip-version-check --no-input install \
+            google-api-python-client==2.179.0 \
+            google-auth==2.40.3
+
+      - name: Resolve immutable request with current recovery code
+        id: request
+        shell: bash
+        env:
+          INPUT_CONTENT_ID: ${{ inputs.content_id }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_CONTENT_ID" ]; then
+            python youtube-shorts-bot/request_guard.py --event manual --content-id "$INPUT_CONTENT_ID"
+          else
+            python youtube-shorts-bot/request_guard.py --event push --commit "$GITHUB_SHA"
+          fi
+
+      - name: Pin immutable request source and validate contracts
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          REQUEST_SOURCE: ${{ steps.request.outputs.source_commit_sha }}
+        run: |
+          set -euo pipefail
+          echo "SOURCE_COMMIT_SHA=$REQUEST_SOURCE" >> "$GITHUB_ENV"
+          python youtube-shorts-bot/validate_content.py --request "$REQUEST_PATH"
+          python youtube-shorts-bot/validate_media_library.py
+
+      - name: Recover durable upload without rendering or insertion
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/publish.py --stage prepare --request "$REQUEST_PATH" --recovery-only
+
+      - name: Verify recovered private video
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/verify_youtube_private.py --request "$REQUEST_PATH"
+
+      - name: Persist verified immutable receipt or reuse unchanged receipt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+        run: python youtube-shorts-bot/finalize.py --request "$REQUEST_PATH"
+
+      - name: Preserve lightweight recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wacky-dramas-recovery-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: youtube-shorts-bot/output/*.json
           if-no-files-found: ignore
           retention-days: 7
