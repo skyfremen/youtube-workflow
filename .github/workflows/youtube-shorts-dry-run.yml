@@ -242,7 +242,7 @@ jobs:
           set -euo pipefail
           benchmark_dir="$GITHUB_WORKSPACE/youtube-shorts-bot/benchmark-output"
           mkdir -p "$benchmark_dir"
-          git show f6e3bdcbfd4368fde8e2e8b552d3915002727188:youtube-shorts-bot/content/requests/wd-20260909T004900-unpaid-overtime-c84f2a.json > "$benchmark_dir/request.json"
+          git show f6e3bdcbfd4368fde8e2e8b552d3915002727188:youtube-shorts-bot/content/requests/wd-20260909T004900-unpaid-overtime-c84f2a.json > "$benchmark_dir/wd-20260909T004900-unpaid-overtime-c84f2a.json"
           cp youtube-shorts-bot/render.py "$benchmark_dir/render-optimized.py"
           git show 83ba45c17260acd56964a5405b024d6e61eee4cf:youtube-shorts-bot/render.py > "$benchmark_dir/render-baseline.py"
 
@@ -257,7 +257,7 @@ jobs:
             bash -lc '
               set -euo pipefail
               benchmark_dir=/work/youtube-shorts-bot/benchmark-output
-              request="$benchmark_dir/request.json"
+              request="$benchmark_dir/wd-20260909T004900-unpaid-overtime-c84f2a.json"
               python youtube-shorts-bot/validate_content.py --request "$request"
 
               export STORY_OUTPUT_DIR="$benchmark_dir/source"
