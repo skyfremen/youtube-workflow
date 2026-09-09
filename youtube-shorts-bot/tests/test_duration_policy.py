@@ -7,7 +7,13 @@ from unittest.mock import patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from workflow_common import END_TAIL_SECONDS, START_LEAD_SECONDS, PRODUCTION_MAX_SECONDS, expected_video_config
+from workflow_common import (
+    END_TAIL_SECONDS,
+    START_LEAD_SECONDS,
+    PRODUCTION_ENCODE_SAFETY_SECONDS,
+    PRODUCTION_MAX_SECONDS,
+    expected_video_config,
+)
 
 
 class DurationPolicyTests(unittest.TestCase):
@@ -15,6 +21,8 @@ class DurationPolicyTests(unittest.TestCase):
         self.assertEqual(PRODUCTION_MAX_SECONDS, 179.0)
         self.assertEqual(START_LEAD_SECONDS, 0.50)
         self.assertEqual(END_TAIL_SECONDS, 0.50)
+        self.assertEqual(PRODUCTION_ENCODE_SAFETY_SECONDS, 0.10)
+        self.assertLess(PRODUCTION_MAX_SECONDS - PRODUCTION_ENCODE_SAFETY_SECONDS, 179.0)
 
     def test_default_canvas(self):
         with patch.dict(os.environ, {}, clear=True):
