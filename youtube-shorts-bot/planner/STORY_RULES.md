@@ -37,8 +37,8 @@ Planning rules:
 - Open the story body with immediate context or action so the transition from title into story feels continuous.
 - Narrate in first person.
 - Make the conflict easy to follow on first listen.
-- Default Kokoro configuration: `voice=af_heart`, `speed=1.75`.
-- Aim for **120–175 seconds of total rendered narration sequence** at the configured voice/speed, accounting for the spoken card title and transition as part of the final timing budget.
+- Default Kokoro configuration: `voice=af_heart`, `speed=1.75`. The production primary backend is ONNX FP32; the request contract remains `engine=kokoro`.
+- Aim for **120–170 seconds of total rendered narration sequence** at the configured voice/speed, accounting for the spoken card title and transition as part of the final timing budget. The ONNX FP32 benchmark produced about 2.5% longer audio than the former PyTorch primary for the same story, so this target deliberately leaves headroom.
 - **178 seconds is a hard production ceiling** including the opening sequence and natural ending tail.
 - The planner should target natural spoken length, not an arbitrary word count.
 - If a production render would exceed the ceiling, do not trim the ending. Rewrite/regenerate as a **new request/content ID**.
