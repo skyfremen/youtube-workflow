@@ -26,21 +26,27 @@ jobs:
           ref: main
 
       - name: Require planning-only Pexels API key
+        id: pexels-key
         shell: bash
         run: |
           set -euo pipefail
           if [ -z "$PEXELS_API_KEY" ]; then
-            echo "::error::PEXELS_API_KEY is required to retrieve official Pexels video_files metadata."
-            exit 2
+            echo "::warning::PEXELS_API_KEY is absent; official Pexels video_files migration is blocked and was not attempted."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Populate exact rendition metadata
+        if: steps.pexels-key.outputs.available == 'true'
         run: python youtube-shorts-bot/pexels_registry.py enrich-existing
 
       - name: Validate migrated registry
+        if: steps.pexels-key.outputs.available == 'true'
         run: python youtube-shorts-bot/validate_media_library.py
 
       - name: Commit metadata-only migration
+        if: steps.pexels-key.outputs.available == 'true'
         shell: bash
         run: |
           set -euo pipefail
