@@ -93,6 +93,30 @@ The title creates the first unanswered question. The first spoken story-body lin
 
 The renderer narrates the short opening card hook separately. `story.script` must still begin strongly after the card disappears and must not repeat the card wording.
 
+## YouTube metadata limits — hard planner gate
+
+ChatGPT must account for YouTube metadata limits **while generating every winning request**, not leave them for the backend to discover after planning.
+
+Hard limits for the final production payload:
+
+- `youtube.title`: maximum **100 characters total**, including `#Shorts`. Prefer meaningful titles comfortably below the hard ceiling instead of targeting exactly 100.
+- Final YouTube description: maximum **5,000 UTF-8 bytes** after production appends any missing request hashtags. Keep the authored `youtube.description` concise and leave generous headroom; do not approach the 5,000-byte ceiling intentionally.
+- Final YouTube `snippet.tags`: maximum **500 combined characters/cost** across all tags. This includes the deterministic hidden Wacky Dramas recovery marker plus every request hashtag after the leading `#` is removed. Tags containing spaces consume extra encoded cost in the production calculation.
+- Keep `youtube.hashtags` to the schema-allowed **3–8 concise, relevant hashtags**. Do not pad tags for SEO or consume the 500-character budget unnecessarily.
+
+Before writing or committing **any** immutable winner request, validate the exact local upload payload using the same production code:
+
+```python
+from upload import build_upload_body
+build_upload_body(request_data, require_future=False)
+```
+
+This validation is local/read-only. It must happen during planning before the content-only commit and does not contact YouTube.
+
+`build_upload_body(..., require_future=False)` is authoritative for the final description/tag cost because it applies the same deterministic hashtag appending and hidden recovery marker used by production. If it raises for description length, tag length, privacy/publication metadata, or another upload-contract error, **fix or reject that winner before committing it**. Never create an over-limit immutable request and rely on the GitHub production batch to fail later.
+
+The backend still repeats these checks as a fail-fast safety net before expensive generation and again at upload time; planner-side validation is the first line of defense.
+
 ## Analytics learning
 
 Use `analytics/latest.json` only when valid and current enough to help. The collector records API-available public views, `engagedViews` (used as qualified/engaged Shorts views), average view duration, average view percentage, likes, comments, shares and subscribers when exposed.
@@ -248,6 +272,7 @@ Do not preflight/download production media, run TTS, render or upload for reject
 - Fewer than 24 qualified winners: create fewer, never lower hard gates.
 - Missing analytics: editorial fallback with reason.
 - One malformed winner: reject it before request creation.
+- YouTube metadata over limit or invalid upload contract: repair/reject the winner during planning before immutable request creation; never defer this to production.
 - Cache miss: source reviewed Pexels candidate(s), write the immutable sourcing manifest, and let backend ingestion validate/store them before rendering.
 - Pexels ingestion/key/rendition failure: fail closed before TTS/render/upload; never pick a random background.
 - Partial batch failure: do not alter another immutable request or blindly retry an upload. Durable per-content intent/recovery evidence remains authoritative.
