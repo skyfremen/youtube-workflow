@@ -1,28 +1,66 @@
+"""Cheap read-only YouTube readiness preflight for production workflows.
+
+This deliberately reuses the production OAuth/client/channel code. It never
+creates or mutates a YouTube resource; one channels.list request proves token
+refresh, Data API access, and the pinned production channel before expensive
+media/TTS/render work begins.
+"""
 import os
+import socket
 
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
-required = ('YOUTUBE_CLIENT_ID', 'YOUTUBE_CLIENT_SECRET', 'YOUTUBE_REFRESH_TOKEN')
-missing = [name for name in required if not str(os.environ.get(name, '')).strip()]
-if missing:
-    raise SystemExit('YouTube credential preflight failed: missing ' + ', '.join(missing))
+from recovery_state import RecoveryBlocked
+from upload import authenticated_channel, make_client
 
-creds = Credentials(
-    token=None,
-    refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
-    token_uri='https://oauth2.googleapis.com/token',
-    client_id=os.environ['YOUTUBE_CLIENT_ID'],
-    client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
-    scopes=[
-        'https://www.googleapis.com/auth/youtube.upload',
-        'https://www.googleapis.com/auth/youtube.readonly',
-    ],
-)
+REQUIRED = ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")
 
-youtube = build('youtube', 'v3', credentials=creds, cache_discovery=False)
-response = youtube.channels().list(part='id', mine=True).execute()
-if not response.get('items'):
-    raise SystemExit('YouTube credential preflight failed: authenticated account has no accessible YouTube channel.')
 
-print('YouTube OAuth preflight OK: credentials are valid and channel access is available.')
+def _http_detail(exc):
+    status = getattr(getattr(exc, "resp", None), "status", None)
+    text = str(exc)
+    lowered = text.lower()
+    if status == 401:
+        kind = "authentication"
+    elif status == 403 and any(token in lowered for token in ("quota", "dailylimit", "rate limit")):
+        kind = "quota"
+    elif status == 403:
+        kind = "permission/API configuration"
+    elif status == 429 or (status is not None and status >= 500):
+        kind = "transient YouTube API"
+    else:
+        kind = "YouTube API"
+    return f"{kind} failure" + (f" (HTTP {status})" if status is not None else "")
+
+
+def run_preflight():
+    missing = [name for name in REQUIRED if not str(os.environ.get(name, "")).strip()]
+    if missing:
+        raise SystemExit("YouTube credential preflight failed: missing " + ", ".join(missing))
+
+    try:
+        channel = authenticated_channel(make_client())
+    except RecoveryBlocked as exc:
+        raise SystemExit(f"YouTube channel readiness preflight failed: {exc}") from None
+    except HttpError as exc:
+        raise SystemExit(f"YouTube readiness preflight failed: {_http_detail(exc)}") from None
+    except (TimeoutError, OSError, socket.timeout) as exc:
+        raise SystemExit(
+            f"YouTube readiness preflight failed: transient network failure ({type(exc).__name__})"
+        ) from None
+    except Exception as exc:
+        # OAuth refresh failures commonly surface through google-auth exceptions;
+        # preserve the type without leaking credential values.
+        raise SystemExit(
+            f"YouTube readiness preflight failed during OAuth/client setup: {type(exc).__name__}: {exc}"
+        ) from None
+
+    print(
+        "YouTube readiness preflight OK: OAuth refresh/Data API read succeeded; "
+        f"pinned channel={channel['id']}."
+    )
+    return channel
+
+
+if __name__ == "__main__":
+    run_preflight()
