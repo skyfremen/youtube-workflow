@@ -4,11 +4,47 @@ This is the single canonical daily planning instruction for the aggressive Wacky
 
 ## Objective
 
-Plan **up to 24 strong Wacky Dramas Shorts** for the next `Asia/Singapore` calendar day, one intended YouTube publication slot per hour from `00:00` through `23:00`.
+Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day resolved by the planning-mode rules below, using exact top-of-hour YouTube publication slots.
 
-Optimize for **24 strong opportunities**, not quota filling. If fewer than 24 stories pass hard quality, safety, originality, duration, truthfulness and background gates, create fewer requests and explain the shortfall in the planning audit.
+Optimize for **24 strong opportunities**, not quota filling. If fewer than 24 stories pass hard quality, safety, originality, duration, truthfulness, background, or catch-up slot-availability gates, create fewer requests and explain the shortfall in the planning audit.
 
 Planning must never upload, render, synthesize TTS, or download production media.
+
+## Planning date and same-day catch-up mode
+
+Resolve the plan date **before generating candidates** using the current `Asia/Singapore` date and time.
+
+### Normal scheduled mode
+
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. When the planner runs at or after 20:00 Singapore time, plan the **next Singapore calendar day**.
+
+- All exact hourly slots from `00:00` through `23:00` on the next day are eligible before normal quality/diversity gates.
+- This preserves the standard 8 PM planning flow unchanged.
+- The GitHub production batch still runs once after the content commit; YouTube `publishAt` owns the hourly release cadence.
+
+### Same-day catch-up mode
+
+When the planner is manually run **after midnight and before 20:00 Asia/Singapore**, treat it as a same-day catch-up for the **current Singapore calendar day**.
+
+Immediately before assigning publication slots and again immediately before the content-only commit:
+
+1. Re-read the current Singapore time. Do not rely on the time when planning first started.
+2. Keep only exact top-of-hour slots on the current day that are at least **30 minutes in the future** at that moment.
+3. Never recreate, backfill, or shift elapsed/too-close hours to arbitrary minute values. Catch-up releases remain on exact hourly boundaries.
+4. Select at most the number of still-eligible hourly slots. Fewer available hours means fewer requests; never lower story-quality gates to fill them.
+5. If no hourly slot remains at least 30 minutes in the future, do not create a daily growth content commit. Report that there are no safe same-day slots left.
+6. The backend's existing 10-minute fresh-generation guard remains authoritative. The planner's 30-minute catch-up lead is deliberately more conservative so the first request has room for commit, global preflight, generation, upload, and YouTube scheduling.
+
+Example: at `01:20` Singapore time, `02:00` through `23:00` are eligible. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+
+### Existing plan versus missed plan
+
+Before creating a same-day catch-up plan, check whether `youtube-shorts-bot/content/planning/YYYY-MM-DD.json` already exists for the current Singapore date.
+
+- **No existing daily planning audit:** this is a genuinely missed planner run; same-day catch-up may create a new content-only daily growth commit for the remaining safe hourly slots.
+- **Existing daily planning audit:** do **not** create a second plan, do not modify the existing audit, and do not create replacement immutable requests. This is a production recovery case, not a planning case. Recover/process the existing immutable `content_id` values through the canonical `daily-growth-batch.yml` manual `workflow_dispatch` path instead.
+
+The planning audit must record `planning_mode` as `normal_next_day` or `same_day_catch_up`. For catch-up, also record the Singapore reference time used for final slot assignment, eligible hourly slots, and omitted elapsed/too-close slots so the reduced count is auditable.
 
 ## Canonical production contract
 
@@ -228,7 +264,7 @@ Only after final story selection and background resolution planning write full s
 }
 ```
 
-Assign unique local hourly slots `00:00` through `23:00`; convert them to exact UTC timestamps. The schedule lives inside the immutable request—there is no mutable publication queue.
+Assign unique exact local hourly slots from the eligible set resolved by the planning-mode rules, then convert them to exact UTC timestamps. In normal mode this is `00:00` through `23:00` on the next day. In same-day catch-up mode this is only the remaining current-day hourly slots that are at least 30 minutes in the future at final assignment time. The schedule lives inside the immutable request—there is no mutable publication queue.
 
 Each request also includes a compact `planning` object containing:
 
@@ -253,7 +289,7 @@ Create exactly one compact immutable daily audit:
 
 `youtube-shorts-bot/content/planning/YYYY-MM-DD.json`
 
-It must at minimum record the funnel counts, analytics confidence/weight/fallback reason, duplicate rejections, diversity substitutions, exploit/explore counts, final selected count, exact `content_ids`, background cache-hit count, background sourced count, and any background shortfall reason.
+It must at minimum record the funnel counts, analytics confidence/weight/fallback reason, duplicate rejections, diversity substitutions, exploit/explore counts, final selected count, exact `content_ids`, background cache-hit count, background sourced count, any background shortfall reason, and the resolved `planning_mode`. For same-day catch-up also record the final Singapore reference time, eligible hourly slots, and omitted elapsed/too-close slots.
 
 Create 1–24 new immutable request files in the same **content-only** commit. Add the optional same-day background sourcing manifest only when the cache genuinely misses. Never modify an existing request, result, recovery record, prior planning audit or prior sourcing manifest. Never mix implementation/code changes into that content commit.
 
@@ -270,6 +306,9 @@ Do not preflight/download production media, run TTS, render or upload for reject
 ## Failure behavior
 
 - Fewer than 24 qualified winners: create fewer, never lower hard gates.
+- Same-day catch-up has fewer safe hourly slots: create at most that many winners; never backfill elapsed/too-close hours.
+- Same-day catch-up has no safe hourly slots: create no content commit and report the condition.
+- Today's immutable planning audit already exists: do not re-plan or mutate it; use canonical batch recovery for its existing `content_id` values.
 - Missing analytics: editorial fallback with reason.
 - One malformed winner: reject it before request creation.
 - YouTube metadata over limit or invalid upload contract: repair/reject the winner during planning before immutable request creation; never defer this to production.
