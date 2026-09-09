@@ -10,6 +10,13 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFile, ImageFont, ImageOps, ImageStat
 
+from tts_backend import (
+    ONNX_BACKEND,
+    PYTORCH_FALLBACK_BACKEND,
+    OnnxKokoroSynthesizer,
+    PytorchKokoroSynthesizer,
+    audio_metrics,
+)
 from workflow_common import (
     END_TAIL_SECONDS, OUTPUT_DIR, PRODUCTION_MAX_SECONDS, atomic_write_json,
     env_bool, expected_video_config, load_json,
@@ -27,13 +34,11 @@ EMOJI_FONT_CANDIDATES = [
 ]
 CARD_TRANSITION_SECONDS = 0.30
 
-# Wacky Dramas production layout is permanently 720x1280. Keep all UI
-# geometry in native output pixels so safe-space rules are explicit.
 VIDEO_WIDTH = 720
 VIDEO_HEIGHT = 1280
 
 CAPTION_MARGIN_X = 85
-CAPTION_MAX_WIDTH = VIDEO_WIDTH - (2 * CAPTION_MARGIN_X)  # 550px
+CAPTION_MAX_WIDTH = VIDEO_WIDTH - (2 * CAPTION_MARGIN_X)
 CAPTION_FONT_SIZE = 52
 CAPTION_MIN_FONT_SIZE = 39
 CAPTION_MAX_LINES = 3
@@ -78,12 +83,22 @@ PILL_OUTLINE_WIDTH = 1
 CARD_BOB_AMPLITUDE = 4
 X264_PRESET = "superfast"
 X264_CRF = 19
+BLACKDETECT_FILTER = "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10"
+BLACKDETECT_MAX_ALLOWED_SECONDS = 0.75
 
 
-def run(cmd):
+def run_capture(cmd):
     started = time.monotonic()
-    subprocess.run(cmd, check=True)
-    return round(time.monotonic() - started, 6)
+    process = subprocess.run(cmd, capture_output=True, text=True)
+    if process.stdout:
+        print(process.stdout, end="")
+    if process.stderr:
+        print(process.stderr, end="", file=os.sys.stderr)
+    if process.returncode != 0:
+        raise subprocess.CalledProcessError(
+            process.returncode, cmd, output=process.stdout, stderr=process.stderr
+        )
+    return round(time.monotonic() - started, 6), process.stderr or ""
 
 
 def ass_time(seconds):
@@ -122,25 +137,17 @@ def sentence_prefixes(text, max_words=42):
     return prefixes
 
 
-def synthesize(pipeline, text, voice, speed):
-    audio_parts, segments = [], []
-    for gs, _ps, segment_audio in pipeline(text, voice=voice, speed=speed):
-        part = np.asarray(segment_audio, dtype=np.float32)
-        if not part.size:
-            continue
-        audio_parts.append(part)
-        segments.append((str(gs).strip() if gs is not None else "", len(part)))
-    if not audio_parts:
-        raise RuntimeError("Kokoro produced no audio")
-    return np.concatenate(audio_parts), segments
+def synthesize(synthesizer, text, voice, speed):
+    audio, segments, _metrics = synthesizer.synthesize(text, voice, speed)
+    return audio, segments
 
 
-def choose_test_narration(pipeline, script, voice, speed, max_seconds):
+def choose_test_narration(synthesizer, script, voice, speed, max_seconds):
     prefixes = sentence_prefixes(script, max_words=42)
     target_low = max(1.5, max_seconds - 0.8)
     best = None
     for excerpt in prefixes:
-        audio, segments = synthesize(pipeline, excerpt, voice, speed)
+        audio, segments = synthesize(synthesizer, excerpt, voice, speed)
         duration = len(audio) / 24000.0
         best = (excerpt, audio, segments, duration)
         if duration >= target_low:
@@ -154,17 +161,43 @@ def choose_test_narration(pipeline, script, voice, speed, max_seconds):
     words = excerpt.split()
     keep = max(3, int(len(words) * (max_seconds - 0.15) / duration))
     shorter = " ".join(words[:keep]).rstrip(",;:-")
-    audio, segments = synthesize(pipeline, shorter, voice, speed)
+    audio, segments = synthesize(synthesizer, shorter, voice, speed)
     duration = len(audio) / 24000.0
     if duration > max_seconds:
         keep = max(3, int(keep * (max_seconds - 0.15) / duration))
         shorter = " ".join(words[:keep]).rstrip(",;:-")
-        audio, segments = synthesize(pipeline, shorter, voice, speed)
+        audio, segments = synthesize(synthesizer, shorter, voice, speed)
     return shorter, audio, segments
 
 
+def generate_narration(synthesizer, hook, story_text, voice, speed, test_mode, test_max):
+    started = time.monotonic()
+    intro_audio, _intro_segments = synthesize(synthesizer, hook, voice, speed)
+    intro_duration = len(intro_audio) / 24000.0
+    story_budget = test_max - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None
+    if test_mode:
+        if story_budget < 1.0:
+            raise RuntimeError(
+                f"Opening card narration ({intro_duration:.3f}s) leaves too little room for a story excerpt "
+                f"inside STORY_RENDER_MAX_SECONDS={test_max:.3f}s; shorten story.hook for testability."
+            )
+        narration_text, story_audio, tts_segments = choose_test_narration(
+            synthesizer, story_text, voice, speed, story_budget
+        )
+    else:
+        narration_text = story_text
+        story_audio, tts_segments = synthesize(synthesizer, story_text, voice, speed)
+    return {
+        "narration_text": narration_text,
+        "intro_audio": intro_audio,
+        "story_audio": story_audio,
+        "tts_segments": tts_segments,
+        "intro_duration": intro_duration,
+        "tts_generation_duration_seconds": round(time.monotonic() - started, 6),
+    }
+
+
 def story_body_without_repeated_hook(script, hook):
-    """Return the story body without re-reading an identical opening card hook."""
     script = str(script).strip()
     hook = str(hook).strip()
     if hook and script.startswith(hook):
@@ -183,6 +216,7 @@ def pick_existing(paths):
 
 def font_px(path, size):
     return ImageFont.truetype(path, max(12, int(size)))
+
 
 def wrap_pixels(draw, text, fnt, max_width, max_lines=3):
     lines, current = [], ""
@@ -264,6 +298,7 @@ Style: Main,DejaVu Sans,{CAPTION_FONT_SIZE},&H00FFFFFF,&H00FFFFFF,&H00101010,&H3
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
 """
 
+
 def centered_text(draw, box, text, fnt, fill):
     x1, y1, x2, y2 = box
     bb = draw.textbbox((0, 0), text, font=fnt)
@@ -299,11 +334,6 @@ def draw_text_centered_y(draw, x, center_y, text, fnt, fill):
 
 
 def render_emoji(icon, target_size):
-    # NotoColorEmoji on Debian is a bitmap font with a native 109px strike.
-    # Render at that supported size first, then downscale the bitmap for
-    # the fixed 720p canvas. Scaling the font size itself makes Pillow
-    # reject the strike at 720p and previously caused every emoji to fall
-    # back to an identical dot.
     for emoji_font in EMOJI_FONT_CANDIDATES:
         if not Path(emoji_font).exists():
             continue
@@ -324,6 +354,7 @@ def render_emoji(icon, target_size):
         except (OSError, ValueError):
             continue
     raise RuntimeError(f"Unable to render requested card emoji: {icon}")
+
 
 def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
     events = []
@@ -394,38 +425,44 @@ def main():
     if test_mode and not 1.0 <= test_max <= 15.0:
         raise SystemExit("STORY_RENDER_MAX_SECONDS must be 1-15 seconds in test mode")
 
-    pipeline_init_started = time.monotonic()
-    from kokoro import KPipeline
     import soundfile as sf
 
-    pipeline = KPipeline(lang_code="a")
-    pipeline_init_duration_seconds = round(time.monotonic() - pipeline_init_started, 6)
     story_text = story_body_without_repeated_hook(script, hook)
     if not story_text:
         raise SystemExit("story.script must contain story narration after the opening card hook")
 
-    # Phase 1: read the complete card hook while the card is fully visible.
-    # There are deliberately no subtitle events for this audio.
-    tts_started = time.monotonic()
-    intro_audio, _intro_segments = synthesize(pipeline, hook, voice, speed)
-    intro_duration = len(intro_audio) / 24000.0
+    narration_backend_requested = ONNX_BACKEND
+    narration_backend_used = ONNX_BACKEND
+    narration_fallback_used = False
+    narration_fallback_reason = None
+    onnx_init_duration_seconds = 0.0
+    pytorch_fallback_init_duration_seconds = 0.0
 
-    # Phase 2: reserve a short silent transition while the card fades away.
-    # Phase 3 begins only after the card has completely left the frame.
-    story_budget = test_max - intro_duration - CARD_TRANSITION_SECONDS if test_mode else None
-    if test_mode:
-        if story_budget < 1.0:
-            raise SystemExit(
-                f"Opening card narration ({intro_duration:.3f}s) leaves too little room for a story excerpt "
-                f"inside STORY_RENDER_MAX_SECONDS={test_max:.3f}s; shorten story.hook for testability."
-            )
-        narration_text, story_audio, tts_segments = choose_test_narration(
-            pipeline, story_text, voice, speed, story_budget
+    onnx_init_started = time.monotonic()
+    try:
+        synthesizer = OnnxKokoroSynthesizer()
+        onnx_init_duration_seconds = synthesizer.init_seconds
+        generated = generate_narration(
+            synthesizer, hook, story_text, voice, speed, test_mode, test_max
         )
-    else:
-        narration_text = story_text
-        story_audio, tts_segments = synthesize(pipeline, story_text, voice, speed)
-    tts_generation_duration_seconds = round(time.monotonic() - tts_started, 6)
+    except Exception as exc:
+        onnx_init_duration_seconds = round(time.monotonic() - onnx_init_started, 6)
+        narration_backend_used = PYTORCH_FALLBACK_BACKEND
+        narration_fallback_used = True
+        narration_fallback_reason = f"{type(exc).__name__}: {exc}"[:500]
+        print(f"::warning::Kokoro ONNX FP32 failed; using PyTorch fallback: {narration_fallback_reason}", file=os.sys.stderr)
+        fallback = PytorchKokoroSynthesizer()
+        pytorch_fallback_init_duration_seconds = fallback.init_seconds
+        generated = generate_narration(
+            fallback, hook, story_text, voice, speed, test_mode, test_max
+        )
+
+    narration_text = generated["narration_text"]
+    intro_audio = generated["intro_audio"]
+    story_audio = generated["story_audio"]
+    tts_segments = generated["tts_segments"]
+    intro_duration = generated["intro_duration"]
+    tts_generation_duration_seconds = generated["tts_generation_duration_seconds"]
 
     story_duration = len(story_audio) / 24000.0
     transition_samples = int(round(CARD_TRANSITION_SECONDS * 24000))
@@ -557,9 +594,9 @@ def main():
         "[2:v]format=rgba[brand];"
         f"[bg][card]overlay=x=0:y='-{CARD_BOB_AMPLITUDE}*sin(PI*t/2)'[tmp1];"
         "[tmp1][brand]overlay=0:0[tmp2];"
-        f"[tmp2]subtitles='{ass.as_posix()}'[v]"
+        f"[tmp2]subtitles='{ass.as_posix()}',{BLACKDETECT_FILTER}[v]"
     )
-    ffmpeg_duration_seconds = run([
+    ffmpeg_duration_seconds, ffmpeg_stderr = run_capture([
         "ffmpeg", "-y",
         "-stream_loop", "-1", "-i", str(background),
         "-loop", "1", "-i", str(card_path),
@@ -571,6 +608,17 @@ def main():
         "-c:v", "libx264", "-preset", X264_PRESET, "-crf", str(X264_CRF), "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(video),
     ])
+    black_durations = [
+        float(value)
+        for value in re.findall(r"black_duration:([0-9]+(?:\.[0-9]+)?)", ffmpeg_stderr)
+    ]
+    inline_blackdetect_max = max(black_durations, default=0.0)
+    inline_blackdetect_passed = inline_blackdetect_max < BLACKDETECT_MAX_ALLOWED_SECONDS
+    if not inline_blackdetect_passed:
+        raise SystemExit(
+            f"Render failed: sustained near-black section detected during encoding ({inline_blackdetect_max:.3f}s)"
+        )
+
     resolution_started = selection.get("metrics", {}).get("resolution_started_at")
     try:
         production_elapsed = (
@@ -579,11 +627,18 @@ def main():
         ).total_seconds()
     except (TypeError, ValueError):
         production_elapsed = None
+    speech_metrics = audio_metrics(speech_audio)
     meta = {
         "content_id": request["content_id"],
+        "narration_engine": narration_cfg["engine"],
+        "narration_backend_requested": narration_backend_requested,
+        "narration_backend_used": narration_backend_used,
+        "narration_fallback_used": narration_fallback_used,
+        "narration_fallback_reason": narration_fallback_reason,
         "narration_voice": voice,
         "narration_speed": speed,
         "narration_seconds": round(speech_duration, 6),
+        "narration_audio_metrics": speech_metrics,
         "card_title_text": hook,
         "card_title_seconds": round(intro_duration, 6),
         "card_transition_seconds": CARD_TRANSITION_SECONDS,
@@ -600,7 +655,13 @@ def main():
         "ffmpeg_duration_seconds": ffmpeg_duration_seconds,
         "x264_preset": X264_PRESET,
         "x264_crf": X264_CRF,
-        "kokoro_pipeline_init_duration_seconds": pipeline_init_duration_seconds,
+        "inline_blackdetect_passed": inline_blackdetect_passed,
+        "inline_blackdetect_max_duration_seconds": round(inline_blackdetect_max, 6),
+        "inline_blackdetect_filter": BLACKDETECT_FILTER,
+        "inline_blackdetect_fail_threshold_seconds": BLACKDETECT_MAX_ALLOWED_SECONDS,
+        "onnx_init_duration_seconds": onnx_init_duration_seconds,
+        "pytorch_fallback_init_duration_seconds": pytorch_fallback_init_duration_seconds,
+        "kokoro_pipeline_init_duration_seconds": pytorch_fallback_init_duration_seconds,
         "tts_generation_duration_seconds": tts_generation_duration_seconds,
         "render_process_duration_seconds": round(time.monotonic() - render_timer, 6),
         "render_started_at": render_started_at.isoformat(),

@@ -14,6 +14,10 @@ permissions:
 
 jobs:
   build-image:
+    # Only main is allowed to publish the canonical production runner tags.
+    # Migration/experiment branches are validated by the lightweight dry run
+    # and must never replace ghcr.io/...:latest before merge acceptance.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

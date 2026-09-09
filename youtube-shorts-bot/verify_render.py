@@ -5,6 +5,7 @@ import json
 import os
 import re
 import subprocess
+import time
 
 from workflow_common import atomic_write_json, OUTPUT_DIR, PRODUCTION_MAX_SECONDS, env_bool, expected_video_config, load_json
 
@@ -26,7 +27,39 @@ def parse_rate(value):
         return 0.0
 
 
+def parse_black_durations(stderr):
+    return [float(x) for x in re.findall(r"black_duration:([0-9]+(?:\.[0-9]+)?)", stderr or "")]
+
+
+def legacy_blackdetect(video):
+    """Compatibility fallback for renders created before inline blackdetect existed."""
+    black = subprocess.run([
+        "ffmpeg", "-hide_banner", "-v", "info", "-i", str(video),
+        "-vf", "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10", "-an", "-f", "null", "-"
+    ], capture_output=True, text=True)
+    if black.returncode != 0:
+        raise SystemExit("Render verification failed: fallback blackdetect could not decode short.mp4")
+    maximum = max(parse_black_durations(black.stderr), default=0.0)
+    if maximum >= 0.75:
+        raise SystemExit("Render verification failed: sustained near-black section detected")
+    return maximum
+
+
+def resolve_blackdetect(render_meta, video, legacy_runner=legacy_blackdetect):
+    """Use render-pass evidence when present; decode the full video only for legacy metadata."""
+    inline_blackdetect = render_meta.get("inline_blackdetect_passed")
+    if inline_blackdetect is False:
+        raise SystemExit("Render verification failed: inline black detection reported a sustained near-black section")
+    if inline_blackdetect is True:
+        maximum = float(render_meta.get("inline_blackdetect_max_duration_seconds") or 0.0)
+        if maximum >= 0.75:
+            raise SystemExit("Render verification failed: inline blackdetect metadata exceeds safety threshold")
+        return "inline_during_render", maximum
+    return "legacy_second_pass", float(legacy_runner(video))
+
+
 def main():
+    verification_started = time.monotonic()
     parser = argparse.ArgumentParser()
     parser.add_argument("--request", required=True)
     args = parser.parse_args()
@@ -89,30 +122,33 @@ def main():
         if check.returncode != 0:
             raise SystemExit(f"Render verification failed: frame at {ts:.2f}s cannot be decoded")
 
-    black = subprocess.run([
-        "ffmpeg", "-hide_banner", "-v", "info", "-i", str(video),
-        "-vf", "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10", "-an", "-f", "null", "-"
-    ], capture_output=True, text=True)
-    durations = [float(x) for x in re.findall(r"black_duration:([0-9]+(?:\.[0-9]+)?)", black.stderr or "")]
-    if max(durations, default=0.0) >= 0.75:
-        raise SystemExit("Render verification failed: sustained near-black section detected")
-
     render_meta = load_json(metadata_path)
+    blackdetect_mode, blackdetect_max = resolve_blackdetect(render_meta, video)
+
     if abs(float(render_meta["video_seconds"]) - duration) > 0.25:
         raise SystemExit("Render verification failed: metadata/video duration mismatch")
     render_meta.update({
-        "render_verified": True, "render_verified_at": datetime.now(timezone.utc).isoformat(),
-        "render_verification_source": "ffprobe_and_frame_decode",
-        "configured_video_seconds": render_meta["video_seconds"], "video_seconds": duration,
-        "fps": actual_fps, "video_codec": vs["codec_name"], "audio_codec": audios[0]["codec_name"],
-        "audio_stream_count": len(audios), "video_stream_count": len(videos),
-        "narration_engine": _request["narration"]["engine"], "audio_source": "narration.wav only (input 3:a:0)",
+        "render_verified": True,
+        "render_verified_at": datetime.now(timezone.utc).isoformat(),
+        "render_verification_source": "ffprobe_frame_decode_and_blackdetect",
+        "render_verification_duration_seconds": round(time.monotonic() - verification_started, 6),
+        "blackdetect_verification_mode": blackdetect_mode,
+        "verified_blackdetect_max_duration_seconds": round(blackdetect_max, 6),
+        "configured_video_seconds": render_meta["video_seconds"],
+        "video_seconds": duration,
+        "fps": actual_fps,
+        "video_codec": vs["codec_name"],
+        "audio_codec": audios[0]["codec_name"],
+        "audio_stream_count": len(audios),
+        "video_stream_count": len(videos),
+        "narration_engine": _request["narration"]["engine"],
+        "audio_source": "narration.wav only (input 3:a:0)",
         "video_sha256": hashlib.sha256(video.read_bytes()).hexdigest(),
     })
     atomic_write_json(metadata_path, render_meta)
     print(
         f"Render verified: {duration:.3f}s, {cfg['width']}x{cfg['height']}, "
-        f"{actual_fps:.3f} fps, H.264 + one AAC narration stream."
+        f"{actual_fps:.3f} fps, H.264 + one AAC narration stream; blackdetect={blackdetect_mode}."
     )
 
 
