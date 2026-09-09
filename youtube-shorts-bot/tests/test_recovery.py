@@ -51,7 +51,7 @@ def fixture():
               'upload_body': build_upload_body(request, identity=identity),
               'association': {'kind': 'youtube_insert_response', 'response': {'id': VID}}}
     item = {'id': VID, 'snippet': {**record['upload_body']['snippet'], 'channelId': CHANNEL['id'], 'publishedAt': '2026-09-08T16:50:40Z'},
-            'status': {'privacyStatus': 'private', 'uploadStatus': 'processed'}}
+            'status': {'privacyStatus': 'public', 'uploadStatus': 'processed'}}
     return request, identity, record, item
 
 
@@ -84,6 +84,15 @@ class VerificationTests(unittest.TestCase):
         result = verify_video(client_for([[], [pending], [item]]), request, identity, record, sleep=sleep)
         self.assertEqual(result['attempts'], 3)
         self.assertEqual(sleep.call_count, 2)
+        self.assertEqual(result['state'], 'verified_public')
+
+    def test_historical_private_upload_still_verifies_from_durable_evidence(self):
+        request, identity, record, item = fixture()
+        record['upload_body']['status']['privacyStatus'] = 'private'
+        item['status']['privacyStatus'] = 'private'
+        result = verify_video(client_for([[item]]), request, identity, record, sleep=Mock())
+        self.assertEqual(result['state'], 'verified_private')
+        self.assertEqual(result['privacy_status'], 'private')
 
     def test_read_delay_is_bounded(self):
         request, identity, record, item = fixture()
@@ -93,12 +102,12 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(sleep.call_count, len(RETRY_DELAYS) - 1)
 
     def test_real_mismatches_fail_without_retry(self):
-        for field, value in [('public', None), ('unlisted', None), ('publishAt', None), ('publishAt', ''),
+        for field, value in [('private', None), ('unlisted', None), ('publishAt', None), ('publishAt', ''),
                              ('publishAt', '2099-01-01T00:00:00Z'), ('id', 'another0000'), ('owner', 'foreign'),
                              ('title', 'Other story'), ('description', 'Changed'), ('failed', None)]:
             with self.subTest(field=field, value=value):
                 request, identity, record, item = fixture()
-                if field in {'public', 'unlisted'}: item['status']['privacyStatus'] = field
+                if field in {'private', 'unlisted'}: item['status']['privacyStatus'] = field
                 elif field == 'publishAt': item['status'][field] = value
                 elif field == 'id': item['id'] = value
                 elif field == 'owner': item['snippet']['channelId'] = value
@@ -140,6 +149,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertFalse(recovered)
         self.assertTrue(recovered_again)
         self.assertEqual(first.data['youtube_video_id'], second.data['youtube_video_id'])
+        self.assertEqual(first.data['upload_body']['status']['privacyStatus'], 'public')
         insert.assert_called_once()
         self.assertEqual(len(self.state.writes), 2)
 
