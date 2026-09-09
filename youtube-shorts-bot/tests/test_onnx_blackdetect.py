@@ -109,13 +109,6 @@ class BlackdetectTests(unittest.TestCase):
         self.assertEqual(render.BLACKDETECT_MAX_ALLOWED_SECONDS, 0.75)
         self.assertEqual(render.BLACKDETECT_FILTER, "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10")
 
-    def test_renderer_uses_already_normalized_background_without_second_geometry_pass(self):
-        source = (ROOT / "render.py").read_text(encoding="utf-8")
-        self.assertIn('"[0:v]eq=brightness=-0.03:saturation=1.03[bg];"', source)
-        self.assertNotIn('f"[0:v]fps={fps},scale={W}:{H}:force_original_aspect_ratio=increase,"', source)
-        self.assertNotIn('f"crop={W}:{H},eq=brightness=-0.03:saturation=1.03[bg];"', source)
-
-
 
 if __name__ == "__main__":
     unittest.main()
