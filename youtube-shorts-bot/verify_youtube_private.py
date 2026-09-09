@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timezone
 
 from recovery_state import RecoveryBlocked, check_identity, identity_for, now
-from upload import authenticated_channel, expected_publication, make_client
+from upload import authenticated_channel, make_client
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
 
 RETRY_DELAYS = (0, 2, 4, 8, 8, 4, 4, 10, 10, 10)
@@ -22,6 +22,26 @@ def _same_instant(left, right):
     return _instant(left) is not None and _instant(left) == _instant(right)
 
 
+def expected_publication_for_verification(request, evidence):
+    publication = request.get("publication")
+    if publication:
+        raw = str(publication.get("publish_at", ""))
+        if publication.get("mode") != "scheduled" or _instant(raw) is None:
+            raise RecoveryBlocked("Invalid immutable publication contract")
+        return {"mode": "scheduled", "publish_at": raw}
+
+    # Schema-v2 did not encode publication in the request. New uploads are
+    # immediate public, but historical private uploads must continue to recover
+    # exactly as originally recorded in durable pre-insert evidence.
+    status = evidence.get("upload_body", {}).get("status", {})
+    privacy = status.get("privacyStatus")
+    if "publishAt" in status:
+        raise RecoveryBlocked("Unscheduled durable upload evidence unexpectedly contains publishAt")
+    if privacy not in {"public", "private"}:
+        raise RecoveryBlocked("Unscheduled durable upload evidence has unexpected privacy state")
+    return {"mode": privacy, "publish_at": None}
+
+
 def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
     check_identity(evidence, identity)
     video_id = evidence.get("youtube_video_id")
@@ -31,7 +51,7 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
     if channel["id"] != evidence.get("expected_channel_id"):
         raise RecoveryBlocked("Authenticated channel differs from upload evidence")
     expected_snippet = evidence["upload_body"]["snippet"]
-    publication = expected_publication_for_verification(request)
+    publication = expected_publication_for_verification(request, evidence)
     expected_publish_at = publication.get("publish_at")
     if publication["mode"] == "scheduled":
         intent_publish_at = evidence.get("upload_body", {}).get("status", {}).get("publishAt")
@@ -73,11 +93,17 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
         publish_at = status.get("publishAt")
         verification_state = None
         publish_at_absent = "publishAt" not in status
-        if publication["mode"] == "private":
-            if privacy != "private":
-                raise RecoveryBlocked("Ad-hoc video is not exactly PRIVATE")
+        if publication["mode"] == "public":
+            if privacy != "public":
+                raise RecoveryBlocked("Ad-hoc video is not exactly PUBLIC")
             if not publish_at_absent:
-                raise RecoveryBlocked("Ad-hoc private video must not contain publishAt")
+                raise RecoveryBlocked("Immediate public video must not contain publishAt")
+            verification_state = "verified_public"
+        elif publication["mode"] == "private":
+            if privacy != "private":
+                raise RecoveryBlocked("Historical ad-hoc video is not exactly PRIVATE")
+            if not publish_at_absent:
+                raise RecoveryBlocked("Historical private video must not contain publishAt")
             verification_state = "verified_private"
         else:
             expected_dt = _instant(expected_publish_at)
@@ -117,17 +143,6 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
             "attempts": attempt, "prior_observations": observations,
         }
     raise RecoveryBlocked(f"YouTube verification incomplete after {len(RETRY_DELAYS)} bounded attempts: {last}")
-
-
-def expected_publication_for_verification(request):
-    publication = request.get("publication")
-    if not publication:
-        return {"mode": "private", "publish_at": None}
-    # Unlike fresh-upload validation, verification must work after publish time.
-    raw = str(publication.get("publish_at", ""))
-    if publication.get("mode") != "scheduled" or _instant(raw) is None:
-        raise RecoveryBlocked("Invalid immutable publication contract")
-    return {"mode": "scheduled", "publish_at": raw}
 
 
 def main():
