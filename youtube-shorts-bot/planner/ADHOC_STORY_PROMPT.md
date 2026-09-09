@@ -6,7 +6,11 @@ Generate exactly **one** original Wacky Dramas request and commit it as one new 
 
 Never edit, overwrite, or reuse an existing request. A correction or regenerated story requires a new `content_id`.
 
-Before writing the request, read `STORY_RULES.md`, the verified `media-library/backgrounds.json`, and recent successful `content/results/*.json` receipts. Choose a strong, recently underused primary satisfying background and a different backup. Prefer the cache; research the public web only when the library lacks sufficient quality/diversity. Any newly added media must have current license/source metadata verified before it enters the registry.
+Before writing the request, read `STORY_RULES.md`, the verified `media-library/backgrounds.json`, and recent successful `content/results/*.json` receipts. Analyze the story's visual requirements, then run the planning-only `background_selector.py` (or apply its exact centralized policy) to choose a strong, fresh primary and different backup. The immutable request stores logical IDs only.
+
+Cache-first does not mean repetition-first. Only verified successful receipts count as usage. Normally hard-avoid any asset used in the latest 10 successful Shorts, apply the centralized strong penalty through the latest 30, and prefer genuinely strong never-used candidates. Never choose a clearly poor semantic match merely because it is old.
+
+If the selector reports `expansion_required`, do not create the request yet. Use planning-only `pexels_registry.py search`, visually verify a candidate for content, satisfying motion, caption readability, no watermark and no embedded text, then register it with `pexels_registry.py register --verified-preview`. Registration records official Pexels `video_files` rendition metadata using `PEXELS_API_KEY`; commit the registry before creating the immutable request. Production never searches Pexels, calls its API, grows the registry, modifies a request, or chooses another logical asset.
 
 The content ID format is:
 
@@ -60,4 +64,4 @@ The request must use schema version 2:
 }
 ```
 
-Do not include privacy, `publishAt`, direct media URLs, license/creator data, usage counters, fixed `duration_seconds`, old setup/payoff/CTA fields, music fields, queue slots, series fields, or Part 2 fields. The production workflow owns private-upload policy and runtime duration.
+Do not include privacy, `publishAt`, direct media URLs, rendition data, license/creator data, usage counters, fixed `duration_seconds`, old setup/payoff/CTA fields, music fields, queue slots, series fields, or Part 2 fields. The production workflow owns private-upload policy, physical rendition resolution, and runtime duration.

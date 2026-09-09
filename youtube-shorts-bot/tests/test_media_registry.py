@@ -34,8 +34,9 @@ def registry():
             "caption_readability_score": 90,
             "has_embedded_text": False,
             "has_watermark": False,
+            "renditions": [],
         }
-    return {"schema_version": 2, "assets": [asset(1), asset(2)]}
+    return {"schema_version": 3, "assets": [asset(1), asset(2)]}
 
 
 class MediaRegistryTests(unittest.TestCase):
@@ -51,6 +52,17 @@ class MediaRegistryTests(unittest.TestCase):
         primary, backup = validate_request_backgrounds(valid_request(), registry())
         self.assertEqual(primary["id"], "satisfying-001")
         self.assertEqual(backup["id"], "satisfying-002")
+
+    def test_registry_scales_beyond_999_logical_assets(self):
+        data = registry()
+        extra = dict(data["assets"][0])
+        extra.update({
+            "id": "satisfying-1000",
+            "source_page": "https://www.pexels.com/video/9999999/",
+            "direct_url": "https://www.pexels.com/download/video/9999999/",
+        })
+        data["assets"].append(extra)
+        self.assertEqual(validate_registry_data(data), [])
 
 
 if __name__ == "__main__":

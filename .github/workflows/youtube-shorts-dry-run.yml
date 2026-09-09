@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/youtube-shorts-dry-run.yml'
       - '.github/workflows/adhoc-story-private.yml'
+      - '.github/workflows/background-library-renditions.yml'
       - '.github/workflows/youtube-analytics.yml'
       - 'youtube-shorts-bot/*.py'
       - 'youtube-shorts-bot/tests/**'
@@ -49,6 +50,8 @@ jobs:
             youtube-shorts-bot/request_guard.py \
             youtube-shorts-bot/validate_content.py \
             youtube-shorts-bot/validate_media_library.py \
+            youtube-shorts-bot/background_selector.py \
+            youtube-shorts-bot/pexels_registry.py \
             youtube-shorts-bot/media_resolver.py \
             youtube-shorts-bot/render.py \
             youtube-shorts-bot/render_aligned.py \
@@ -102,6 +105,7 @@ jobs:
 
           expected_workflows = {
               'adhoc-story-private.yml',
+              'background-library-renditions.yml',
               'build-shorts-image.yml',
               'youtube-analytics.yml',
               'youtube-shorts-dry-run.yml',
@@ -255,6 +259,7 @@ jobs:
               'python youtube-shorts-bot/' + 'render.py',
               'python youtube-shorts-bot/' + 'publish.py',
               'python youtube-shorts-bot/' + 'verify_youtube_private.py',
+              'python youtube-shorts-bot/' + 'pexels_registry.py',
           ]
           for secret in secret_names:
               assert secret not in dry, f'dry run must not expose {secret}'

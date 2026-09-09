@@ -1,0 +1,55 @@
+name: Wacky Dramas Background Rendition Maintenance
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'youtube-shorts-bot/pexels_registry.py'
+      - '.github/workflows/background-library-renditions.yml'
+
+concurrency:
+  group: wacky-dramas-background-registry-maintenance
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  enrich-existing:
+    runs-on: ubuntu-latest
+    env:
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Require planning-only Pexels API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$PEXELS_API_KEY" ]; then
+            echo "::error::PEXELS_API_KEY is required to retrieve official Pexels video_files metadata."
+            exit 2
+          fi
+
+      - name: Populate exact rendition metadata
+        run: python youtube-shorts-bot/pexels_registry.py enrich-existing
+
+      - name: Validate migrated registry
+        run: python youtube-shorts-bot/validate_media_library.py
+
+      - name: Commit metadata-only migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
+            echo "Registry rendition metadata is already current."
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add youtube-shorts-bot/media-library/backgrounds.json
+          git commit -m "populate Pexels background rendition metadata"
+          git push origin HEAD:main

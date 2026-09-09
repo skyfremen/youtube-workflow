@@ -66,12 +66,17 @@ Never output:
 
 ## Background selection
 
-The background is a retention layer, not a literal reenactment. Prefer verified, visually satisfying, loopable, low-distraction motion with strong caption readability. Rank primarily by:
-1. visual satisfaction
-2. loopability
-3. caption readability
-4. moderate motion intensity
-5. recent usage derived from successful result receipts
-6. variety
+The request creator owns the logical content/diversity decision; `media_resolver.py` does not. The background is a retention layer, not necessarily a literal reenactment. Describe visual requirements using relevant tags, motion type/intensity and orientation, then use `background_selector.py` against the registry and successful receipts.
 
-Primary and backup IDs must always differ. Do not mutate background usage counters; successful `content/results/*.json` receipts are the authoritative usage history.
+The centralized policy balances semantic fit with visual satisfaction, loopability and caption readability:
+
+- Normally hard-avoid an asset used in the latest 10 successful Shorts.
+- Apply a strong recency penalty to uses 10–19 Shorts ago and a tapering penalty through 29 Shorts ago.
+- Prefer never-used assets only when they are genuinely strong matches.
+- Require two strong, fresh candidates for primary and backup.
+- If fewer than two exist, stop request creation and expand the registry through the planning-only Pexels tooling.
+- Never select a poor match solely for age or novelty.
+
+Primary and backup logical IDs must always differ. Do not put mutable usage counters in the registry; only successfully verified immutable `content/results/*.json` receipts are authoritative. Failed requests, renders and uploads do not count.
+
+Registry expansion happens before the immutable request is created. Search the official Pexels API using a planning-only `PEXELS_API_KEY`, visually verify quality/license/readability/no text/no watermark, capture all usable `video_files`, assign the next stable `satisfying-NNN` ID under the registry lock, commit it, then create the request. Production reads checked-in metadata only and may resolve only the request's primary and backup.

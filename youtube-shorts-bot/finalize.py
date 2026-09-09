@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime, timezone
 from pathlib import Path
 
 from recovery_state import GitHubState, RecoveryBlocked, blob_sha, check_identity, identity_for, now, receipt_path, workflow_identity
@@ -41,6 +42,15 @@ def build_receipt(request_path, request, upload, selection, render_meta):
     for key in ("name", "run_id", "run_attempt", "code_commit_sha"):
         if not workflow.get(key) or not origin.get(key):
             raise RecoveryBlocked("Complete original and verification workflow provenance is required")
+    receipt_created_at = now()
+    resolution_started_at = selection.get("metrics", {}).get("resolution_started_at")
+    try:
+        total_production_seconds = round((
+            datetime.fromisoformat(receipt_created_at.replace("Z", "+00:00"))
+            - datetime.fromisoformat(str(resolution_started_at).replace("Z", "+00:00"))
+        ).total_seconds(), 6)
+    except (TypeError, ValueError):
+        total_production_seconds = None
     return {
         "schema_version": 2, **identity, "youtube_video_id": upload['youtube_video_id'],
         "youtube_url": upload['youtube_url'], "youtube_channel_id": verification['channel_id'],
@@ -49,6 +59,17 @@ def build_receipt(request_path, request, upload, selection, render_meta):
         "background_requested_primary_id": request['visual']['background_primary_id'],
         "background_requested_backup_id": request['visual']['background_backup_id'],
         "background_asset_id": selection['background_asset_id'], "background_selection": slot,
+        "background_usage": {
+            "logical_asset_id": selection['background_asset_id'],
+            "selection": slot,
+            "counts_for_diversity": True,
+            "source": "verified_immutable_success_receipt",
+        },
+        "background_rendition": selection.get("rendition"),
+        "background_target": selection.get("target"),
+        "background_rendition_fallback_used": selection.get("rendition_fallback_used", False),
+        "background_logical_fallback_used": selection.get("logical_fallback_used", slot == "backup"),
+        "background_generic_source_fallback_used": selection.get("generic_source_fallback_used", False),
         "narration_engine": render_meta['narration_engine'], "narration_voice": render_meta['narration_voice'],
         "narration_speed": render_meta['narration_speed'], "narration_seconds": render_meta['narration_seconds'],
         "video_seconds": render_meta['video_seconds'], "resolution": render_meta['resolution'], "fps": render_meta['fps'],
@@ -57,7 +78,15 @@ def build_receipt(request_path, request, upload, selection, render_meta):
         "renderer_source_commit": origin['code_commit_sha'], "upload_workflow": origin,
         "workflow_name": workflow['name'], "workflow_run_id": workflow['run_id'],
         "workflow_run_attempt": workflow['run_attempt'], "verification_source_commit": workflow['code_commit_sha'],
-        "uploaded_at": upload['uploaded_at'], "youtube_verified_at": verification['verified_at'], "receipt_created_at": now(),
+        "uploaded_at": upload['uploaded_at'], "youtube_verified_at": verification['verified_at'],
+        "receipt_created_at": receipt_created_at,
+        "production_metrics": {
+            **selection.get("metrics", {}),
+            "ffmpeg_duration_seconds": render_meta.get("ffmpeg_duration_seconds"),
+            "render_process_duration_seconds": render_meta.get("render_process_duration_seconds"),
+            "production_elapsed_through_render_seconds": render_meta.get("production_elapsed_through_render_seconds"),
+            "total_production_duration_seconds": total_production_seconds,
+        },
         "test_mode": render_meta['test_mode'],
         "test_kind": "migration_acceptance" if render_meta['test_mode'] else None,
         "recovery": {"record_path": upload['recovery_record_path'], "record_blob_sha": upload['recovery_record_blob_sha'],

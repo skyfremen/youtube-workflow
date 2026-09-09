@@ -3,6 +3,8 @@ import json
 import os
 import re
 import subprocess
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -77,7 +79,9 @@ CARD_BOB_AMPLITUDE = 4
 
 
 def run(cmd):
+    started = time.monotonic()
     subprocess.run(cmd, check=True)
+    return round(time.monotonic() - started, 6)
 
 
 def ass_time(seconds):
@@ -355,6 +359,8 @@ def caption_events(text, tts_segments, speech_duration, start_offset=0.0):
 
 
 def main():
+    render_started_at = datetime.now(timezone.utc)
+    render_timer = time.monotonic()
     parser = argparse.ArgumentParser()
     parser.add_argument("--request", required=True)
     args = parser.parse_args()
@@ -363,6 +369,7 @@ def main():
     background = OUTPUT_DIR / "background.asset"
     if not selection_path.exists() or not background.exists():
         raise SystemExit("Render requires resolved output/background_selection.json and background.asset")
+    selection = load_json(selection_path)
 
     cfg = expected_video_config()
     fps = cfg["fps"]
@@ -546,7 +553,7 @@ def main():
         "[tmp1][brand]overlay=0:0[tmp2];"
         f"[tmp2]subtitles='{ass.as_posix()}'[v]"
     )
-    run([
+    ffmpeg_duration_seconds = run([
         "ffmpeg", "-y",
         "-stream_loop", "-1", "-i", str(background),
         "-loop", "1", "-i", str(card_path),
@@ -558,6 +565,14 @@ def main():
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(video),
     ])
+    resolution_started = selection.get("metrics", {}).get("resolution_started_at")
+    try:
+        production_elapsed = (
+            datetime.now(timezone.utc)
+            - datetime.fromisoformat(str(resolution_started).replace("Z", "+00:00"))
+        ).total_seconds()
+    except (TypeError, ValueError):
+        production_elapsed = None
     meta = {
         "content_id": request["content_id"],
         "narration_voice": voice,
@@ -576,6 +591,12 @@ def main():
         "test_mode": test_mode,
         "test_render_max_seconds": test_max if test_mode else None,
         "narration_excerpt": narration_text if test_mode else None,
+        "ffmpeg_duration_seconds": ffmpeg_duration_seconds,
+        "render_process_duration_seconds": round(time.monotonic() - render_timer, 6),
+        "render_started_at": render_started_at.isoformat(),
+        "production_elapsed_through_render_seconds": (
+            round(production_elapsed, 6) if production_elapsed is not None else None
+        ),
     }
     atomic_write_json(OUTPUT_DIR / "render-metadata.json", meta)
     print(json.dumps(meta, ensure_ascii=False))

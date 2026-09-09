@@ -5,10 +5,12 @@ from urllib.parse import urlparse
 
 BASE = Path(__file__).parent
 REGISTRY_PATH = BASE / "media-library" / "backgrounds.json"
-ID_RE = re.compile(r"^satisfying-\d{3}$")
+ID_RE = re.compile(r"^satisfying-\d{3,}$")
 ALLOWED_STATUS = {"active", "inactive"}
 ALLOWED_INTENSITY = {"low", "medium", "high"}
 ALLOWED_ORIENTATION = {"vertical", "horizontal", "square", "unknown"}
+ALLOWED_RENDITION_TYPES = {"video/mp4"}
+PEXELS_MEDIA_HOSTS = {"videos.pexels.com", "player.vimeo.com"}
 
 
 def _url(value):
@@ -36,13 +38,13 @@ def validate_registry_data(data):
     errors = []
     if not isinstance(data, dict):
         return ["background registry root must be an object"]
-    if data.get("schema_version") != 2:
-        errors.append("schema_version must be 2")
+    if data.get("schema_version") != 3:
+        errors.append("schema_version must be 3")
     assets = data.get("assets")
     if not isinstance(assets, list) or not assets:
         return errors + ["assets must be a non-empty list"]
 
-    seen_ids, seen_direct = set(), set()
+    seen_ids, seen_direct, seen_provider, seen_rendition_urls = set(), set(), set(), set()
     for idx, asset in enumerate(assets, 1):
         label = f"asset {idx}"
         if not isinstance(asset, dict):
@@ -53,7 +55,7 @@ def validate_registry_data(data):
             "commercial_use", "attribution_required", "verified", "last_verified_at",
             "status", "orientation", "visual_tags", "motion_type", "motion_intensity",
             "loopability_score", "visual_satisfaction_score", "caption_readability_score",
-            "has_embedded_text", "has_watermark",
+            "has_embedded_text", "has_watermark", "renditions",
         )
         missing = [k for k in required if k not in asset]
         if missing:
@@ -61,10 +63,17 @@ def validate_registry_data(data):
             continue
         asset_id = str(asset["id"]).strip()
         if not ID_RE.fullmatch(asset_id):
-            errors.append(f"{label}: id must match satisfying-NNN")
+            errors.append(f"{label}: id must match satisfying-NNN (three or more digits)")
         elif asset_id in seen_ids:
             errors.append(f"{label}: duplicate id {asset_id}")
         seen_ids.add(asset_id)
+        if "provider_asset_id" in asset:
+            provider_key = (str(asset.get("source", "")).strip(), str(asset.get("provider_asset_id", "")).strip())
+            if not provider_key[1]:
+                errors.append(f"{label}: provider_asset_id must be non-empty when present")
+            elif provider_key in seen_provider:
+                errors.append(f"{label}: duplicate provider asset {provider_key[0]}:{provider_key[1]}")
+            seen_provider.add(provider_key)
         if asset.get("type") != "video":
             errors.append(f"{label}: type must be video")
         for key in ("title", "source", "license", "last_verified_at", "motion_type"):
@@ -106,6 +115,61 @@ def validate_registry_data(data):
                     errors.append(f"{label}: duration_seconds must be positive when present")
             except (TypeError, ValueError):
                 errors.append(f"{label}: duration_seconds must be numeric when present")
+        renditions = asset.get("renditions")
+        if not isinstance(renditions, list):
+            errors.append(f"{label}: renditions must be a list")
+        else:
+            rendition_ids = set()
+            for r_index, rendition in enumerate(renditions, 1):
+                r_label = f"{label} rendition {r_index}"
+                if not isinstance(rendition, dict):
+                    errors.append(f"{r_label}: must be an object")
+                    continue
+                required_rendition = ("id", "width", "height", "fps", "file_type", "direct_url")
+                missing_rendition = [key for key in required_rendition if key not in rendition]
+                if missing_rendition:
+                    errors.append(f"{r_label}: missing fields: {', '.join(missing_rendition)}")
+                    continue
+                rendition_id = str(rendition.get("id", "")).strip()
+                if not rendition_id:
+                    errors.append(f"{r_label}: id must be non-empty")
+                elif rendition_id in rendition_ids:
+                    errors.append(f"{r_label}: duplicate rendition id {rendition_id}")
+                rendition_ids.add(rendition_id)
+                for field in ("width", "height"):
+                    value = rendition.get(field)
+                    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                        errors.append(f"{r_label}: {field} must be a positive integer")
+                fps = rendition.get("fps")
+                if fps is not None:
+                    try:
+                        if isinstance(fps, bool) or float(fps) <= 0:
+                            raise ValueError
+                    except (TypeError, ValueError):
+                        errors.append(f"{r_label}: fps must be positive or null")
+                if rendition.get("file_type") not in ALLOWED_RENDITION_TYPES:
+                    errors.append(f"{r_label}: unsupported file_type")
+                direct_url = str(rendition.get("direct_url", "")).strip()
+                if not _url(direct_url):
+                    errors.append(f"{r_label}: direct_url must be an http(s) URL")
+                elif asset.get("source") == "Pexels" and urlparse(direct_url).hostname not in PEXELS_MEDIA_HOSTS:
+                    errors.append(f"{r_label}: Pexels rendition must use an official API media host")
+                elif direct_url in seen_rendition_urls:
+                    errors.append(f"{r_label}: duplicate rendition direct_url")
+                seen_rendition_urls.add(direct_url)
+                if "file_size_bytes" in rendition:
+                    size = rendition.get("file_size_bytes")
+                    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
+                        errors.append(f"{r_label}: file_size_bytes must be a positive integer")
+            if renditions and not any(
+                rendition.get("file_type") in ALLOWED_RENDITION_TYPES
+                and isinstance(rendition.get("width"), int)
+                and isinstance(rendition.get("height"), int)
+                and rendition["width"] >= 720
+                and rendition["height"] >= 1280
+                for rendition in renditions if isinstance(rendition, dict)
+            ):
+                errors.append(f"{label}: no rendition can fill 720x1280 without upscaling")
         if any(k in asset for k in ("usage_count", "last_used_at", "last_used_short_id")):
             errors.append(f"{label}: usage history belongs in result receipts, not the registry")
         if asset.get("status") == "active":
