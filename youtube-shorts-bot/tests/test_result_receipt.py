@@ -48,6 +48,20 @@ class ResultReceiptTests(unittest.TestCase):
         self.assertTrue(receipt['publish_at_absent'])
         self.assertEqual(receipt['audio_stream_count'],1)
 
+    def test_performance_metrics_are_carried_into_receipt(self):
+        self.render.update({
+            'x264_preset': 'superfast', 'x264_crf': 19,
+            'kokoro_pipeline_init_duration_seconds': 1.2,
+            'tts_generation_duration_seconds': 2.3,
+            'caption_alignment_duration_seconds': 3.4,
+            'ffmpeg_duration_seconds': 4.5,
+        })
+        metrics = self.build()['production_metrics']
+        self.assertEqual(metrics['x264_preset'], 'superfast')
+        self.assertEqual(metrics['x264_crf'], 19)
+        self.assertEqual(metrics['tts_generation_duration_seconds'], 2.3)
+        self.assertEqual(metrics['caption_alignment_duration_seconds'], 3.4)
+
     def test_private_label_without_verification_cannot_create_receipt(self):
         self.upload['privacy_status']='private';self.upload['verification']['passed']=False
         with self.assertRaises(RecoveryBlocked):self.build()

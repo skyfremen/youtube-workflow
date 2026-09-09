@@ -37,5 +37,9 @@ jobs:
           tags: |
             ghcr.io/skyfremen/youtube-shorts-runner:latest
             ghcr.io/skyfremen/youtube-shorts-runner:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Reuse the already-pushed image layers and embed compact cache
+          # metadata in the image manifest. The former mode=max GHA cache
+          # uploaded the large ML/model layer graph a second time and added
+          # about 87 seconds to measured runner builds.
+          cache-from: type=registry,ref=ghcr.io/skyfremen/youtube-shorts-runner:latest
+          cache-to: type=inline

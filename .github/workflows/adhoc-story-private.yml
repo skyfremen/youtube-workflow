@@ -57,7 +57,6 @@ jobs:
         run: |
           set -euo pipefail
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git fetch origin main
           if [ -n "$INPUT_CONTENT_ID" ]; then
             python youtube-shorts-bot/request_guard.py --event manual --content-id "$INPUT_CONTENT_ID"
           else

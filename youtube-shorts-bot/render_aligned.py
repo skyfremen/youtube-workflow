@@ -1,5 +1,6 @@
 import json
 import sys
+import time
 
 import render
 from caption_alignment import (
@@ -42,6 +43,7 @@ def aligned_caption_events(words, start_offset=0.0):
 def build_caption_events(text, tts_segments, speech_duration, start_offset=0.0, narration_path=None, aligner=None):
     aligner = aligner or align_story_words
     narration_path = narration_path or (render.OUTPUT_DIR / "narration.wav")
+    alignment_started = time.monotonic()
     try:
         words, align_meta = aligner(
             narration_path=narration_path,
@@ -59,6 +61,7 @@ def build_caption_events(text, tts_segments, speech_duration, start_offset=0.0, 
             "caption_alignment_backend": align_meta.get("caption_alignment_backend", ALIGNMENT_BACKEND),
             "caption_alignment_word_count": int(align_meta.get("caption_alignment_word_count", len(words))),
             "caption_alignment_coverage": round(float(coverage), 6),
+            "caption_alignment_duration_seconds": round(time.monotonic() - alignment_started, 6),
             "caption_alignment_error": None,
         }
         for key, value in align_meta.items():
@@ -73,6 +76,7 @@ def build_caption_events(text, tts_segments, speech_duration, start_offset=0.0, 
             "caption_alignment_backend": ALIGNMENT_BACKEND,
             "caption_alignment_word_count": 0,
             "caption_alignment_coverage": 0.0,
+            "caption_alignment_duration_seconds": round(time.monotonic() - alignment_started, 6),
             "caption_alignment_error": str(exc)[:500],
         }
         return events, metadata

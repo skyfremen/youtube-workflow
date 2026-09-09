@@ -7,10 +7,11 @@ on:
       - '.github/workflows/adhoc-story-private.yml'
       - '.github/workflows/background-library-renditions.yml'
       - '.github/workflows/youtube-analytics.yml'
+      - '.github/workflows/build-shorts-image.yml'
+      - 'youtube-shorts-bot/Dockerfile'
+      - 'youtube-shorts-bot/requirements.txt'
       - 'youtube-shorts-bot/*.py'
       - 'youtube-shorts-bot/tests/**'
-      - 'youtube-shorts-bot/planner/**'
-      - 'youtube-shorts-bot/RECOVERY.md'
       - 'youtube-shorts-bot/media-library/backgrounds.json'
   workflow_dispatch:
 
@@ -234,6 +235,8 @@ jobs:
           assert workflow_common.expected_video_config() == {'width':720,'height':1280,'fps':30}
           text=Path('youtube-shorts-bot/render.py').read_text()
           assert 'KPipeline' in text
+          assert 'X264_PRESET = "superfast"' in text
+          assert 'X264_CRF = 19' in text
           assert 'STORY_TEST_MODE' in text
           assert 'STORY_RENDER_MAX_SECONDS' in text
           assert 'PRODUCTION_MAX_SECONDS' in text

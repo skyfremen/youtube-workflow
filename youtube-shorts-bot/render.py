@@ -76,6 +76,8 @@ HANDLE_FONT_SIZE = 28
 SUBSCRIBE_FONT_SIZE = 25
 PILL_OUTLINE_WIDTH = 1
 CARD_BOB_AMPLITUDE = 4
+X264_PRESET = "superfast"
+X264_CRF = 19
 
 
 def run(cmd):
@@ -392,16 +394,19 @@ def main():
     if test_mode and not 1.0 <= test_max <= 15.0:
         raise SystemExit("STORY_RENDER_MAX_SECONDS must be 1-15 seconds in test mode")
 
+    pipeline_init_started = time.monotonic()
     from kokoro import KPipeline
     import soundfile as sf
 
     pipeline = KPipeline(lang_code="a")
+    pipeline_init_duration_seconds = round(time.monotonic() - pipeline_init_started, 6)
     story_text = story_body_without_repeated_hook(script, hook)
     if not story_text:
         raise SystemExit("story.script must contain story narration after the opening card hook")
 
     # Phase 1: read the complete card hook while the card is fully visible.
     # There are deliberately no subtitle events for this audio.
+    tts_started = time.monotonic()
     intro_audio, _intro_segments = synthesize(pipeline, hook, voice, speed)
     intro_duration = len(intro_audio) / 24000.0
 
@@ -420,6 +425,7 @@ def main():
     else:
         narration_text = story_text
         story_audio, tts_segments = synthesize(pipeline, story_text, voice, speed)
+    tts_generation_duration_seconds = round(time.monotonic() - tts_started, 6)
 
     story_duration = len(story_audio) / 24000.0
     transition_samples = int(round(CARD_TRANSITION_SECONDS * 24000))
@@ -562,7 +568,7 @@ def main():
         "-filter_complex", filter_complex,
         "-map", "[v]", "-map", "3:a:0",
         "-t", f"{final_duration:.3f}",
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", X264_PRESET, "-crf", str(X264_CRF), "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(video),
     ])
     resolution_started = selection.get("metrics", {}).get("resolution_started_at")
@@ -592,6 +598,10 @@ def main():
         "test_render_max_seconds": test_max if test_mode else None,
         "narration_excerpt": narration_text if test_mode else None,
         "ffmpeg_duration_seconds": ffmpeg_duration_seconds,
+        "x264_preset": X264_PRESET,
+        "x264_crf": X264_CRF,
+        "kokoro_pipeline_init_duration_seconds": pipeline_init_duration_seconds,
+        "tts_generation_duration_seconds": tts_generation_duration_seconds,
         "render_process_duration_seconds": round(time.monotonic() - render_timer, 6),
         "render_started_at": render_started_at.isoformat(),
         "production_elapsed_through_render_seconds": (

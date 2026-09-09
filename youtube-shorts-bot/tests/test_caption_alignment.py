@@ -35,6 +35,7 @@ class CaptionAlignmentTests(unittest.TestCase):
         self.assertEqual(metadata["caption_timing_mode"], "word_aligned")
         self.assertEqual(metadata["caption_alignment_backend"], "fake-ctc")
         self.assertEqual(metadata["caption_alignment_word_count"], 3)
+        self.assertGreaterEqual(metadata["caption_alignment_duration_seconds"], 0)
 
     def test_grouping_prefers_natural_boundaries_over_rigid_three_words(self):
         words = [
@@ -75,6 +76,7 @@ class CaptionAlignmentTests(unittest.TestCase):
         self.assertIn("0:00:02.80", events[0])
         self.assertEqual(metadata["caption_timing_mode"], "estimated_fallback")
         self.assertEqual(metadata["caption_alignment_word_count"], 0)
+        self.assertGreaterEqual(metadata["caption_alignment_duration_seconds"], 0)
         self.assertIn("synthetic failure", metadata["caption_alignment_error"])
 
     def test_aligned_story_subtitles_start_only_after_card_transition(self):

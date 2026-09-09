@@ -5,7 +5,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from render import CARD_TRANSITION_SECONDS, caption_events, story_body_without_repeated_hook
+from render import (
+    CARD_TRANSITION_SECONDS, X264_CRF, X264_PRESET, caption_events,
+    story_body_without_repeated_hook,
+)
 
 
 class IntroSequenceTests(unittest.TestCase):
@@ -52,6 +55,10 @@ class IntroSequenceTests(unittest.TestCase):
         self.assertIn("card_fade_dur = CARD_TRANSITION_SECONDS", source)
         self.assertIn("start_offset=story_start", source)
         self.assertIn("transition_audio = np.zeros", source)
+
+    def test_encoder_uses_measured_quality_preserving_fast_profile(self):
+        self.assertEqual(X264_PRESET, "superfast")
+        self.assertEqual(X264_CRF, 19)
 
 
 if __name__ == "__main__":

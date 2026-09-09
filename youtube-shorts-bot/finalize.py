@@ -83,6 +83,11 @@ def build_receipt(request_path, request, upload, selection, render_meta):
         "production_metrics": {
             **selection.get("metrics", {}),
             "ffmpeg_duration_seconds": render_meta.get("ffmpeg_duration_seconds"),
+            "x264_preset": render_meta.get("x264_preset"),
+            "x264_crf": render_meta.get("x264_crf"),
+            "kokoro_pipeline_init_duration_seconds": render_meta.get("kokoro_pipeline_init_duration_seconds"),
+            "tts_generation_duration_seconds": render_meta.get("tts_generation_duration_seconds"),
+            "caption_alignment_duration_seconds": render_meta.get("caption_alignment_duration_seconds"),
             "render_process_duration_seconds": render_meta.get("render_process_duration_seconds"),
             "production_elapsed_through_render_seconds": render_meta.get("production_elapsed_through_render_seconds"),
             "total_production_duration_seconds": total_production_seconds,
