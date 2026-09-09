@@ -8,6 +8,7 @@ on:
       - '.github/workflows/background-library-renditions.yml'
       - '.github/workflows/youtube-analytics.yml'
       - '.github/workflows/build-shorts-image.yml'
+      - '.github/workflows/test-shorts-tag-recovery.yml'
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
       - 'youtube-shorts-bot/*.py'
@@ -90,7 +91,7 @@ jobs:
           ]
           present = [p for p in forbidden_paths if Path(p).exists()]
           assert not present, 'retired paths still present: ' + ', '.join(present)
-          expected_workflows = {'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml'}
+          expected_workflows = {'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml','test-shorts-tag-recovery.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml'}
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
           active_files = [*Path('youtube-shorts-bot').glob('*.py'),*Path('youtube-shorts-bot/planner').glob('*.md'),Path('youtube-shorts-bot/RECOVERY.md'),Path('.github/workflows/adhoc-story-private.yml'),Path('.github/workflows/build-shorts-image.yml'),Path('.github/workflows/youtube-analytics.yml')]
