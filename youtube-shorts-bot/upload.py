@@ -11,9 +11,6 @@ YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www
 def expected_publication(request_data, *, require_future=True, now_utc=None):
     publication = request_data.get("publication")
     if not publication:
-        # Schema-v2 / ad-hoc uploads are immediate public releases. Historical
-        # durable upload records remain recoverable because verification reads
-        # the immutable recorded upload body rather than rewriting old intent.
         return {"mode": "public", "publish_at": None}
     if publication.get("mode") != "scheduled":
         raise ValueError("Unknown publication mode")
@@ -33,6 +30,13 @@ def expected_publication(request_data, *, require_future=True, now_utc=None):
     if require_future and parsed <= current:
         raise ValueError("Scheduled publish_at must be in the future at upload time")
     return {"mode": "scheduled", "publish_at": raw}
+
+
+def _append_unique_tag(tags, seen, value):
+    clean = str(value or "").strip().lstrip("#")
+    if clean and clean.lower() not in seen:
+        tags.append(clean)
+        seen.add(clean.lower())
 
 
 def build_upload_body(request_data, privacy=None, identity=None, *, require_future=True, now_utc=None):
@@ -63,11 +67,16 @@ def build_upload_body(request_data, privacy=None, identity=None, *, require_futu
         description += "\n\n" + " ".join(extras)
     if len(description.encode("utf-8")) > 5000:
         raise ValueError("Description exceeds YouTube's 5000-byte limit")
+
     tags = [marker]
+    seen = {marker.lower()}
+    # Schema-v3 growth requests explicitly plan semantic backend tags. Legacy
+    # schema-v2 requests remain recoverable because this field is optional.
+    for tag in yt.get("tags", []):
+        _append_unique_tag(tags, seen, tag)
+    # Hashtags also remain backend tags for continuity and discoverability.
     for hashtag in yt.get("hashtags", []):
-        clean = str(hashtag).strip().lstrip("#")
-        if clean and clean.lower() not in {x.lower() for x in tags}:
-            tags.append(clean)
+        _append_unique_tag(tags, seen, hashtag)
     cost = sum(len(tag) + (2 if " " in tag else 0) for tag in tags) + max(0, len(tags) - 1)
     if cost > 500:
         raise ValueError("Tags exceed YouTube's combined 500-character limit")
@@ -185,8 +194,6 @@ def execute_upload(request_data, video_path, *, state, identity, channel, select
     recovered = recover_record(youtube, state, identity, channel)
     if recovered:
         return recovered, True
-    # Pure/local upload contract checks are cheaper than scanning the channel's
-    # upload inventory, so fail on stale scheduling/metadata before that read.
     body = build_upload_body(request_data, identity=identity)
     authorize_fresh_upload(youtube, state, identity, channel)
     intent = {"schema_version": 1, "record_type": "intent", **identity,
