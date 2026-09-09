@@ -20,7 +20,6 @@ from growth_planner import (
     select_diverse,
     similarity,
     title_score,
-    weighted_score,
 )
 from growth_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
 
@@ -34,9 +33,10 @@ class GrowthPlannerTests(unittest.TestCase):
 
     def test_malformed_and_duplicate_candidates_reject(self):
         raw, _ = build_acceptance_fixture("2026-09-10")
-        malformed = dict(raw[1]); malformed.pop("premise")
-        duplicate = dict(raw[2]); duplicate["candidate_id"] = raw[0]["candidate_id"]
-        accepted, rejected = filter_candidates([raw[0], malformed, duplicate])
+        valid = raw[1]
+        malformed = dict(raw[2]); malformed.pop("premise")
+        duplicate = dict(raw[3]); duplicate["candidate_id"] = valid["candidate_id"]
+        accepted, rejected = filter_candidates([valid, malformed, duplicate])
         self.assertEqual(len(accepted), 1)
         reasons = [x["reason"] for x in rejected]
         self.assertIn("malformed_candidate", reasons)
