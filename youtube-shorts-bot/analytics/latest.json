@@ -1,16 +1,11 @@
 {
-  "captured_at": "2026-09-09T16:06:13Z",
+  "captured_at": "2026-09-09T16:19:00Z",
   "analytics_epoch": {
     "schema_version": 1,
-    "epoch_id": "wacky-dramas-fresh-start-2026-09-10",
-    "start_at": "2026-09-09T16:06:13Z",
+    "epoch_id": "wacky-dramas-fresh-channel-2026-09-10",
+    "start_at": "2026-09-09T16:19:00Z",
     "timezone": "Asia/Singapore",
-    "local_start_at": "2026-09-10T00:06:13+08:00",
-    "reason": "Fresh channel restart after deleting pre-launch/test videos; pre-epoch receipts remain immutable but are excluded from analytics learning."
-  },
-  "window": {
-    "start_date": "2026-09-10",
-    "end_date": "2026-09-10"
+    "note": "Clean-slate Wacky Dramas launch. All pre-launch runtime requests, results, recovery evidence and analytics snapshots were removed from the current repository state."
   },
   "result_receipt_video_count": 0,
   "video_count": 0,
@@ -18,27 +13,19 @@
   "mature_growth_video_count": 0,
   "growth_video_count": 0,
   "analytics_evidence_views": 0,
-  "metrics_note": {
-    "growth_video_count": "planner evidence-equivalent count: zero until >=10 24h snapshots, then min(mature videos, comparable views/500)",
-    "qualified_shorts_views": "engagedViews when available from YouTube Analytics",
-    "viewed_vs_swiped_away": "not exposed by this targeted API path; never fabricated",
-    "engaged_view_rate": "engagedViews/views continuation proxy; not labeled as viewed-vs-swiped",
-    "net_subscribers_per_1000_views": "(subscribersGained-subscribersLost)/views*1000"
-  },
-  "videos": [],
   "analytics_model": {
     "schema_version": 2,
     "epoch": {
       "schema_version": 1,
-      "epoch_id": "wacky-dramas-fresh-start-2026-09-10",
-      "start_at": "2026-09-09T16:06:13Z",
+      "epoch_id": "wacky-dramas-fresh-channel-2026-09-10",
+      "start_at": "2026-09-09T16:19:00Z",
       "timezone": "Asia/Singapore",
-      "local_start_at": "2026-09-10T00:06:13+08:00",
-      "reason": "Fresh channel restart after deleting pre-launch/test videos; pre-epoch receipts remain immutable but are excluded from analytics learning."
+      "note": "Clean-slate Wacky Dramas launch. All pre-launch runtime requests, results, recovery evidence and analytics snapshots were removed from the current repository state."
     },
     "active_cohort": null,
     "analytics_evidence_count": 0,
     "analytics_enabled": false,
     "cohorts": {}
-  }
+  },
+  "videos": []
 }

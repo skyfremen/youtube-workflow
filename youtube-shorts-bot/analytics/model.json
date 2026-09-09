@@ -2,11 +2,10 @@
   "schema_version": 2,
   "epoch": {
     "schema_version": 1,
-    "epoch_id": "wacky-dramas-fresh-start-2026-09-10",
-    "start_at": "2026-09-09T16:06:13Z",
+    "epoch_id": "wacky-dramas-fresh-channel-2026-09-10",
+    "start_at": "2026-09-09T16:19:00Z",
     "timezone": "Asia/Singapore",
-    "local_start_at": "2026-09-10T00:06:13+08:00",
-    "reason": "Fresh channel restart after deleting pre-launch/test videos; pre-epoch receipts remain immutable but are excluded from analytics learning."
+    "note": "Clean-slate Wacky Dramas launch. All pre-launch runtime requests, results, recovery evidence and analytics snapshots were removed from the current repository state."
   },
   "active_cohort": null,
   "analytics_evidence_count": 0,
