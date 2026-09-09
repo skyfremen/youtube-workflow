@@ -105,7 +105,7 @@ class RenditionSelectionTests(unittest.TestCase):
             self.assertEqual(target.read_bytes(), b"n" * 12000)
             command = runner.call_args.args[0]
             self.assertIn("libx264", command)
-            self.assertIn("superfast", command)
+            self.assertIn("ultrafast", command)
             self.assertIn("fps=30,scale=720:1280", command[command.index("-vf") + 1])
 
 

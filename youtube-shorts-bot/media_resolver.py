@@ -21,7 +21,7 @@ from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 BASE = Path(__file__).parent
 SUPPORTED_TYPES = {"video/mp4"}
 NORMALIZED_VIDEO_CODEC = "h264"
-NORMALIZED_PRESET = "superfast"
+NORMALIZED_PRESET = "ultrafast"
 NORMALIZED_CRF = 18
 HTTP_HEADERS = {
     "User-Agent": "WackyDramasMediaResolver/1.0",
