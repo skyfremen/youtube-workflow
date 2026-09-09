@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "content_id": "wd-20260909T191100-landlord-deposit-r8m4qz",
+  "channel": {
+    "name": "Wacky Dramas",
+    "handle": "@WACKYDRAMAS"
+  },
+  "story": {
+    "category": "RENTING",
+    "story_type": "deposit evidence backfire",
+    "hook": "My Landlord Sent Fake Move-Out Photos",
+    "script": "My landlord told me I was losing my entire security deposit before I had even handed over the keys. I had rented the apartment for three years, never missed a payment, and spent my last weekend cleaning everything. I patched the nail holes, scrubbed the kitchen, washed the balcony, and hired a professional cleaner for the carpets. At the final inspection, the landlord walked around for five minutes, took a few photos, and said the place looked fine. Two days later he emailed me an itemized list claiming I owed more than the deposit. He charged for repainting every wall, replacing the living-room floor, buying a new refrigerator door, deep cleaning the bathroom, and repairing scratches on a bedroom cabinet. The total was almost twice my deposit, but he wrote that he would waive the extra amount if I agreed not to dispute anything. That line made me suspicious. I asked for dated photos of the damage and copies of the repair invoices. He replied that the photos were attached to the move-out report and that invoices would come after the work was finished. When I opened the report, I noticed something strange. The picture showing a long scratch across the living-room floor had a small blue rug in the corner. I had never owned that rug. The refrigerator photo showed a dent near the handle, but my refrigerator had a different handle because maintenance replaced the entire unit during my second year. Then I checked the cabinet photo. A stack of boxes was reflected in the mirror, and one box had the previous tenant's name written on it. I went back through the folder the landlord had emailed me when I first moved in. It contained the original condition report from three years earlier. The same scratch was already on the floor. The same cabinet marks were there. The dented refrigerator was the old unit that maintenance had removed. Even better, several of the landlord's new move-out photos were literally identical to the old move-in photos. Same sunlight, same furniture, same angle, same file dimensions. He had renamed the files and placed them in a new PDF. I downloaded everything before he could change it. Then I checked the image metadata. The supposed move-out photos had creation dates from three years earlier. I sent the landlord one email asking whether he was certain those photographs were taken during my final inspection. He replied yes and said his property manager had personally documented the damage. I asked whether that was his final position. He answered that continued questions would delay my refund. So I submitted a deposit dispute through the tenancy service and attached both inspection reports, the metadata, the refrigerator replacement work order, my cleaning receipt, and his email confirming the photos were current. The tenancy officer scheduled a mediation call. At the start, my landlord repeated that I had left the apartment in unusually poor condition. The officer asked him to identify the date each photo was taken. He gave the date of my move-out inspection. Then the officer shared her screen and placed the old and new reports side by side. The floor photos were pixel-for-pixel identical. So were the cabinet photos. When she opened the refrigerator maintenance record, the landlord stopped talking. He tried to say his property manager had assembled the wrong evidence by mistake. The officer asked why he had personally confirmed the photos were current after I questioned them. He had no answer. The cleaning charge also collapsed because my cleaner had timestamped photos from the final morning, including the bathroom he claimed needed emergency deep cleaning. The mediation ended with the landlord agreeing to return my full deposit within five business days and withdraw every extra charge. A month later, the tenancy service contacted me again because another former tenant had submitted a suspiciously similar inspection report. My landlord tried to keep my deposit using old damage photos. The problem was, his own move-in report had already proved every one of them belonged to someone else.",
+    "card_emojis": ["🏠", "📸", "🧾", "😳", "✅"]
+  },
+  "narration": {
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "speed": 1.75
+  },
+  "visual": {
+    "background_primary_id": "satisfying-001",
+    "background_backup_id": "satisfying-002"
+  },
+  "youtube": {
+    "title": "My Landlord Sent Fake Move-Out Photos — Then Metadata Exposed Him #Shorts",
+    "description": "My landlord tried to keep my deposit with old damage photos until the file metadata exposed everything.",
+    "hashtags": ["#shorts", "#storytime", "#renting", "#landlord", "#backfire", "#wackydramas"],
+    "category_id": "24",
+    "made_for_kids": false
+  }
+}
