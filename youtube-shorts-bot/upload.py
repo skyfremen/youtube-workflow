@@ -7,10 +7,6 @@ from workflow_common import EXPECTED_YOUTUBE_CHANNEL_ID, OUTPUT_DIR, atomic_writ
 YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly"]
 
 
-def description_marker(identity):
-    return f"[WackyDramas content_id={identity['content_id']} request_blob_sha={identity['request_blob_sha']}]"
-
-
 def build_upload_body(request_data, privacy="private", identity=None):
     if privacy != "private":
         raise ValueError("Wacky Dramas ad-hoc workflow only supports private uploads")
@@ -26,10 +22,8 @@ def build_upload_body(request_data, privacy="private", identity=None):
             existing.add(tag.lower())
     if extras:
         description += "\n\n" + " ".join(extras)
-    if identity:
-        description += "\n\n" + description_marker(identity)
     if len(description.encode("utf-8")) > 5000:
-        raise ValueError("Description including recovery identity exceeds YouTube's 5000-byte limit")
+        raise ValueError("Description exceeds YouTube's 5000-byte limit")
     tags = [marker]
     for hashtag in yt.get("hashtags", []):
         clean = str(hashtag).strip().lstrip("#")
@@ -83,8 +77,7 @@ def find_existing_by_marker(youtube, content_id, max_videos=5000, identity=None,
         for item in response.get("items", []):
             snippet = item.get("snippet", {})
             tagged = bool(markers.intersection(snippet.get("tags", [])))
-            described = identity and description_marker(identity) in snippet.get("description", "")
-            if tagged or described:
+            if tagged:
                 if snippet.get("channelId") != channel["id"]:
                     raise RecoveryBlocked("Recovery candidate channel mismatch")
                 matches[item["id"]] = item
