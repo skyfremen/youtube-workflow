@@ -591,9 +591,11 @@ def main():
     video = OUTPUT_DIR / "short.mp4"
     card_fade_start = START_LEAD_SECONDS + intro_duration
     card_fade_dur = CARD_TRANSITION_SECONDS
+    # media_resolver has already normalized background.asset to the exact
+    # 720x1280/30 H.264 render contract. Do not scale/crop/fps-convert the
+    # same frames a second time here; keep only the required visual adjustment.
     filter_complex = (
-        f"[0:v]fps={fps},scale={W}:{H}:force_original_aspect_ratio=increase,"
-        f"crop={W}:{H},eq=brightness=-0.03:saturation=1.03[bg];"
+        "[0:v]eq=brightness=-0.03:saturation=1.03[bg];"
         f"[1:v]format=rgba,fade=t=out:st={card_fade_start:.2f}:d={card_fade_dur:.2f}:alpha=1[card];"
         "[2:v]format=rgba[brand];"
         f"[bg][card]overlay=x=0:y='-{CARD_BOB_AMPLITUDE}*sin(PI*t/2)'[tmp1];"
