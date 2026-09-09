@@ -111,6 +111,19 @@ def quality_score(asset):
     return round(0.40 * visual + 0.25 * loop + 0.35 * captions, 6)
 
 
+def rendition_ready(asset, target_width=720, target_height=1280):
+    """Planning safety gate only; the resolver still chooses the physical file."""
+    return any(
+        isinstance(item, dict)
+        and item.get("file_type") == "video/mp4"
+        and isinstance(item.get("width"), int)
+        and isinstance(item.get("height"), int)
+        and item["width"] >= target_width
+        and item["height"] >= target_height
+        for item in asset.get("renditions", [])
+    )
+
+
 def recency_penalty(shorts_ago):
     if shorts_ago is None:
         return -NEVER_USED_BONUS
@@ -134,7 +147,12 @@ def rank_assets(registry, requirements, receipts):
         recent = usage.get(asset["id"])
         shorts_ago = recent["shorts_ago"] if recent else None
         penalty = recency_penalty(shorts_ago)
-        strong = semantic >= MIN_SEMANTIC_SCORE and quality >= MIN_QUALITY_SCORE
+        technically_ready = rendition_ready(asset)
+        strong = (
+            semantic >= MIN_SEMANTIC_SCORE
+            and quality >= MIN_QUALITY_SCORE
+            and technically_ready
+        )
         hard_avoided = shorts_ago is not None and shorts_ago < HARD_AVOID_SHORTS
         base = (semantic * 62.0) + (quality * 38.0)
         ranked.append({
@@ -142,6 +160,7 @@ def rank_assets(registry, requirements, receipts):
             "semantic_score": semantic,
             "quality_score": quality,
             "strong_match": strong,
+            "rendition_ready": technically_ready,
             "shorts_ago": shorts_ago,
             "never_used": recent is None,
             "hard_avoided": hard_avoided,

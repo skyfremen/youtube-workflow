@@ -20,6 +20,10 @@ def asset(n, tags=("fluid", "calm"), quality=90):
         "motion_type": "loop", "motion_intensity": "medium", "orientation": "vertical",
         "loopability_score": quality, "visual_satisfaction_score": quality,
         "caption_readability_score": quality,
+        "renditions": [{
+            "id": f"r{n}", "width": 1080, "height": 1920, "fps": 30,
+            "file_type": "video/mp4", "direct_url": f"https://videos.pexels.com/{n}.mp4",
+        }],
     }
 
 
@@ -85,6 +89,16 @@ class BackgroundSelectorTests(unittest.TestCase):
         history = derive_usage_history(records)
         self.assertNotIn("satisfying-001", history)
         self.assertEqual(history["satisfying-002"]["shorts_ago"], 0)
+
+    def test_new_requests_exclude_assets_without_sufficient_registered_rendition(self):
+        ready = asset(1)
+        generic_only = asset(2)
+        generic_only["renditions"] = []
+        decision = select_logical_backgrounds({"assets": [ready, generic_only]}, REQ, [])
+        self.assertTrue(decision["expansion_required"])
+        generic_rank = next(x for x in decision["ranked_candidates"] if x["id"] == generic_only["id"])
+        self.assertFalse(generic_rank["rendition_ready"])
+        self.assertFalse(generic_rank["strong_match"])
 
 
 if __name__ == "__main__":

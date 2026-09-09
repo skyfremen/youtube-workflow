@@ -74,6 +74,7 @@ The centralized policy balances semantic fit with visual satisfaction, loopabili
 - Apply a strong recency penalty to uses 10–19 Shorts ago and a tapering penalty through 29 Shorts ago.
 - Prefer never-used assets only when they are genuinely strong matches.
 - Require two strong, fresh candidates for primary and backup.
+- Require each new selection to have at least one registered rendition capable of 720×1280 crop-fill without upscaling; this is an availability gate, not rendition selection.
 - If fewer than two exist, stop request creation and expand the registry through the planning-only Pexels tooling.
 - Never select a poor match solely for age or novelty.
 

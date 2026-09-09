@@ -78,4 +78,8 @@ The live YouTube channel rename is user-managed and may be completed later. Reco
 
 For a new story, add exactly one new immutable request file under `content/requests/` in its own commit. The push-triggered **Wacky Dramas Ad-hoc Private Publish** workflow is the only Shorts publishing path and uploads PRIVATE only.
 
+## Background rendition migration
+
+The schema-v3 Pexels migration populated official `video_files` metadata for 17 of the 30 existing logical backgrounds. The remaining 13 stay registered for historical generic-fallback compatibility because Pexels exposes no rendition large enough to crop-fill 720×1280 without upscaling. Planning excludes those generic-only assets from new requests; it does not change their stable logical IDs or provenance.
+
 For recovery of an existing content ID, manually run **Wacky Dramas Ad-hoc Private Publish** with that `content_id` and `recovery_only=true`.
