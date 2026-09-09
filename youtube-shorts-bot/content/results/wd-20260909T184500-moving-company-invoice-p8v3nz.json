@@ -1,0 +1,290 @@
+{
+  "schema_version": 2,
+  "content_id": "wd-20260909T184500-moving-company-invoice-p8v3nz",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260909T184500-moving-company-invoice-p8v3nz.json",
+  "request_blob_sha": "84c8fe98a332f5f066db381232b2f5ad7c7aae92",
+  "source_commit_sha": "338d93bb0f604f07c5987259f809afe96ad3bac7",
+  "youtube_video_id": "mZPlsqDvKH8",
+  "youtube_url": "https://www.youtube.com/watch?v=mZPlsqDvKH8",
+  "youtube_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "privacy_status": "private",
+  "publish_at": null,
+  "publish_at_absent": true,
+  "verification_state": "verified_private",
+  "verification": {
+    "passed": true,
+    "state": "verified_private",
+    "verified_at": "2026-09-09T10:49:04.739684+00:00",
+    "content_id": "wd-20260909T184500-moving-company-invoice-p8v3nz",
+    "request_path": "youtube-shorts-bot/content/requests/wd-20260909T184500-moving-company-invoice-p8v3nz.json",
+    "request_blob_sha": "84c8fe98a332f5f066db381232b2f5ad7c7aae92",
+    "source_commit_sha": "338d93bb0f604f07c5987259f809afe96ad3bac7",
+    "youtube_video_id": "mZPlsqDvKH8",
+    "channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+    "channel_title": "Wacky Insights",
+    "channel_handle": "@wackyinsights",
+    "privacy_status": "private",
+    "publish_at_absent": true,
+    "upload_status": "processed",
+    "association_method": "immutable_github_upload_record",
+    "observed_marker_tags": [
+      "wd-id-fca1570e3d5e0aadeb61"
+    ],
+    "description_marker_observed": false,
+    "attempts": 8,
+    "prior_observations": [
+      {
+        "attempt": 1,
+        "observed_at": "2026-09-09T10:48:24.047429+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 2,
+        "observed_at": "2026-09-09T10:48:26.164146+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 3,
+        "observed_at": "2026-09-09T10:48:30.262010+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 4,
+        "observed_at": "2026-09-09T10:48:38.342333+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 5,
+        "observed_at": "2026-09-09T10:48:46.469628+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 6,
+        "observed_at": "2026-09-09T10:48:50.545891+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 7,
+        "observed_at": "2026-09-09T10:48:54.642198+00:00",
+        "state": "YouTube processing not complete"
+      }
+    ]
+  },
+  "background_requested_primary_id": "satisfying-006",
+  "background_requested_backup_id": "satisfying-007",
+  "background_asset_id": "satisfying-006",
+  "background_selection": "primary",
+  "background_usage": {
+    "logical_asset_id": "satisfying-006",
+    "selection": "primary",
+    "counts_for_diversity": true,
+    "source": "verified_immutable_success_receipt"
+  },
+  "background_rendition": {
+    "id": "6781435",
+    "width": 2560,
+    "height": 1440,
+    "fps": 29.97003,
+    "file_type": "video/mp4",
+    "quality": "uhd",
+    "direct_url": "https://videos.pexels.com/video-files/16458935/16458935-uhd_2560_1440_30fps.mp4",
+    "file_size_bytes": 19655253,
+    "codec": "h264",
+    "selection_reason": "smallest_sufficient_rendition"
+  },
+  "background_target": {
+    "width": 720,
+    "height": 1280,
+    "fps": 30
+  },
+  "background_rendition_fallback_used": false,
+  "background_logical_fallback_used": false,
+  "background_generic_source_fallback_used": false,
+  "narration_engine": "kokoro",
+  "narration_voice": "af_heart",
+  "narration_speed": 1.75,
+  "narration_seconds": 132.064,
+  "video_seconds": 132.4,
+  "resolution": "720x1280",
+  "fps": 30.0,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "audio_stream_count": 1,
+  "render_verification": {
+    "content_id": "wd-20260909T184500-moving-company-invoice-p8v3nz",
+    "narration_engine": "kokoro",
+    "narration_backend_requested": "onnx-fp32",
+    "narration_backend_used": "onnx-fp32",
+    "narration_fallback_used": false,
+    "narration_fallback_reason": null,
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 132.064,
+    "narration_audio_metrics": {
+      "peak": 0.781461,
+      "rms": 0.074274,
+      "clipped_fraction": 0.0
+    },
+    "card_title_text": "The Movers Locked My Furniture in Their Truck",
+    "start_lead_seconds": 0.5,
+    "card_title_seconds": 1.450667,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 2.250667,
+    "story_narration_seconds": 129.813333,
+    "video_seconds": 132.4,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "ffmpeg_duration_seconds": 113.201147,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "inline_blackdetect_passed": true,
+    "inline_blackdetect_max_duration_seconds": 0.0,
+    "inline_blackdetect_filter": "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10",
+    "inline_blackdetect_fail_threshold_seconds": 0.75,
+    "onnx_init_duration_seconds": 0.782698,
+    "pytorch_fallback_init_duration_seconds": 0.0,
+    "kokoro_pipeline_init_duration_seconds": 0.0,
+    "tts_generation_duration_seconds": 106.436612,
+    "render_process_duration_seconds": 246.484416,
+    "render_started_at": "2026-09-09T10:44:05.156097+00:00",
+    "production_elapsed_through_render_seconds": 256.490617,
+    "caption_timing_mode": "word_aligned",
+    "caption_alignment_backend": "torchaudio-2.8.0/wav2vec2-base-960h-ctc",
+    "caption_alignment_word_count": 615,
+    "caption_alignment_coverage": 1.0,
+    "caption_alignment_duration_seconds": 25.629218,
+    "caption_alignment_error": null,
+    "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
+    "caption_alignment_torch_version": "2.8.0+cpu",
+    "caption_alignment_torchaudio_version": "2.8.0+cpu",
+    "render_verified": true,
+    "render_verified_at": "2026-09-09T10:48:14.948306+00:00",
+    "render_verification_source": "ffprobe_frame_decode_and_blackdetect",
+    "render_verification_duration_seconds": 2.915848,
+    "blackdetect_verification_mode": "inline_during_render",
+    "verified_blackdetect_max_duration_seconds": 0.0,
+    "configured_video_seconds": 132.414,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "3857801e7c52ca26589c4bdf7d792f58bacf68f841bc0f5d989392ef796f7a15"
+  },
+  "renderer_source_commit": "338d93bb0f604f07c5987259f809afe96ad3bac7",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34341685561",
+    "run_attempt": "1",
+    "code_commit_sha": "338d93bb0f604f07c5987259f809afe96ad3bac7"
+  },
+  "workflow_name": "Wacky Dramas Ad-hoc Private Publish",
+  "workflow_run_id": "34341685561",
+  "workflow_run_attempt": "1",
+  "verification_source_commit": "338d93bb0f604f07c5987259f809afe96ad3bac7",
+  "uploaded_at": "2026-09-09T10:48:22.450445+00:00",
+  "youtube_verified_at": "2026-09-09T10:49:04.739684+00:00",
+  "receipt_created_at": "2026-09-09T10:49:04.920267+00:00",
+  "production_metrics": {
+    "resolution_started_at": "2026-09-09T10:43:55.143136+00:00",
+    "preflight_duration_seconds": 0.12332,
+    "background_resolution_duration_seconds": 9.758783,
+    "downloaded_bytes": 19654772,
+    "download_duration_seconds": 0.100684,
+    "background_sha256": "a79e1c8d612e1ae49f82d926096b33d74cadf1f0a8563a36295e6541a7baaf77",
+    "render_background_bytes": 29582783,
+    "render_background_sha256": "8580bb21445bd5dbc4f989606a15bec7f81aa1225e176f0c479e423daff2b444",
+    "source_probe": {
+      "codec": "h264",
+      "width": 2560,
+      "height": 1440,
+      "fps": 29.97003
+    },
+    "background_normalization_applied": true,
+    "background_normalization_duration_seconds": 9.386125,
+    "render_probe": {
+      "codec": "h264",
+      "width": 720,
+      "height": 1280,
+      "fps": 30.0
+    },
+    "ffmpeg_duration_seconds": 113.201147,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "kokoro_pipeline_init_duration_seconds": 0.0,
+    "tts_generation_duration_seconds": 106.436612,
+    "caption_alignment_duration_seconds": 25.629218,
+    "render_process_duration_seconds": 246.484416,
+    "production_elapsed_through_render_seconds": 256.490617,
+    "total_production_duration_seconds": 309.777131
+  },
+  "test_mode": false,
+  "test_kind": null,
+  "recovery": {
+    "record_path": "youtube-shorts-bot/content/recovery/wd-20260909T184500-moving-company-invoice-p8v3nz/upload.json",
+    "record_blob_sha": "f0a14049342aaa6859ccc0a7f67399ec6db8186e",
+    "recovered": false,
+    "association": {
+      "kind": "youtube_insert_response",
+      "intent_blob_sha": "4259f7d0a7bfb7f03451812cea803915cef08a00",
+      "intent_commit_sha": "7e1b1af9349b0a5a1016783e6d3eb0950c0bb873",
+      "response": {
+        "kind": "youtube#video",
+        "etag": "UMk-rUBZ8sI6uD1dlHs8Bioow3o",
+        "id": "mZPlsqDvKH8",
+        "snippet": {
+          "publishedAt": "2026-09-09T10:48:20Z",
+          "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+          "title": "The Movers Locked My Furniture in Their Truck #Shorts",
+          "description": "The movers demanded surprise fees while everything I owned sat locked in their truck.\n\n#shorts #storytime #moving #consumer #backfire #wackydramas",
+          "thumbnails": {
+            "default": {
+              "url": "https://i9.ytimg.com/vi/mZPlsqDvKH8/default.jpg?sqp=CKzxhNUG&rs=AOn4CLDqx3CS4GgOLcpBa8zEVygKny3L7w",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i9.ytimg.com/vi/mZPlsqDvKH8/mqdefault.jpg?sqp=CKzxhNUG&rs=AOn4CLCh4xYU-zAfjGyQjGkRPlJW-PVcPA",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i9.ytimg.com/vi/mZPlsqDvKH8/hqdefault.jpg?sqp=CKzxhNUG&rs=AOn4CLCtJtB7R54x7iQEbymoBIdRO7ZZ0w",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Wacky Insights",
+          "tags": [
+            "backfire",
+            "consumer",
+            "moving",
+            "shorts",
+            "storytime",
+            "wackydramas",
+            "wd-id-fca1570e3d5e0aadeb61"
+          ],
+          "categoryId": "24",
+          "liveBroadcastContent": "none",
+          "localized": {
+            "title": "The Movers Locked My Furniture in Their Truck #Shorts",
+            "description": "The movers demanded surprise fees while everything I owned sat locked in their truck.\n\n#shorts #storytime #moving #consumer #backfire #wackydramas"
+          }
+        },
+        "status": {
+          "uploadStatus": "uploaded",
+          "privacyStatus": "private",
+          "license": "youtube",
+          "embeddable": true,
+          "publicStatsViewable": true,
+          "selfDeclaredMadeForKids": false
+        }
+      }
+    }
+  }
+}
