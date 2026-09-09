@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Resolve and fail-fast validate immutable daily batch
+      - name: Validate global batch integrity and shared dependencies
         id: batch
         shell: bash
         env:
@@ -81,9 +81,14 @@ jobs:
 
               # Recovery can re-ingest the original immutable sourcing manifest if
               # the cache append failed before rendering on the first attempt.
+              # A malformed individual request is not a global batch failure; it is
+              # allowed to reach per-video validation below.
               needed = set()
               for path in requests:
-                  data = json.loads(Path(path).read_text())
+                  try:
+                      data = json.loads(Path(path).read_text())
+                  except Exception:
+                      continue
                   needed.update((data.get('visual') or {}).values())
               source_dir = Path('youtube-shorts-bot/content/background-sourcing')
               candidates = sorted(source_dir.glob('*.json')) if source_dir.exists() else []
@@ -169,57 +174,55 @@ jobs:
           print(f'Resolved {len(requests)} immutable growth requests; sourcing manifests={len(sourcing_paths)}')
           PY
 
-          # CHEAP / LOCAL boundary: validate every immutable request and the exact
-          # YouTube metadata contract before any external cache mutation, media
-          # download, TTS or render work.
-          while IFS= read -r req; do
-            [ -n "$req" ] || continue
-            python youtube-shorts-bot/validate_content.py --request "$req"
-          done < /tmp/batch-requests.txt
-
+          # GLOBAL / LOCAL: publication-slot collisions are a batch-level planning
+          # contradiction, so they fail the whole batch. Individual malformed
+          # requests are deliberately left for per-video validation and do not stop
+          # otherwise valid Shorts from being processed.
           python - <<'PY'
-          import json, sys
+          import json
           from pathlib import Path
-          sys.path.insert(0, 'youtube-shorts-bot')
-          from upload import build_upload_body
 
-          rows=[]
+          scheduled = []
+          deferred = []
           for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
               if not path:
                   continue
-              data=json.loads(Path(path).read_text())
-              if data.get('schema_version') != 3:
-                  raise SystemExit(f'Daily growth request must be schema v3: {path}')
               try:
-                  # Static validation deliberately does not reject a now-past slot;
-                  # recovery + the 10-minute warning/skip guard own that decision.
-                  build_upload_body(data, require_future=False)
-              except (KeyError, TypeError, ValueError) as exc:
-                  raise SystemExit(f'Invalid YouTube upload contract for {path}: {exc}') from None
-              rows.append((data['publication']['publish_at'], path))
-          slots=[slot for slot,_path in rows]
+                  data = json.loads(Path(path).read_text())
+                  raw = str((data.get('publication') or {}).get('publish_at') or '').strip()
+              except Exception:
+                  raw = ''
+              if raw:
+                  scheduled.append((raw, path))
+              else:
+                  deferred.append(path)
+          slots = [slot for slot, _path in scheduled]
           if len(slots) != len(set(slots)):
               raise SystemExit('Duplicate publication slot in daily batch')
-          Path('/tmp/batch-requests.txt').write_text(
-              '\n'.join(path for _slot,path in sorted(rows))+'\n'
+          ordered = [path for _slot, path in sorted(scheduled)] + deferred
+          Path('/tmp/batch-requests.txt').write_text('\n'.join(ordered) + '\n')
+          print(
+              f'Global slot check passed: {len(scheduled)} sortable requests; '
+              f'{len(deferred)} request(s) deferred to per-video validation.'
           )
-          print('Request schemas/upload bodies valid; scheduled slots unique; processing order fixed by publish_at')
           PY
 
-          # Secret presence is deterministic and cheaper than a network call.
+          # GLOBAL / LOCAL: the shared registry itself must be sound before any
+          # external call. Request-to-background compatibility is per-video below.
+          python youtube-shorts-bot/validate_media_library.py
+
+          # GLOBAL / LOCAL: a sourcing batch cannot succeed without its shared key.
           if [ -s /tmp/background-sourcing-manifests.txt ] && [ -z "${PEXELS_API_KEY:-}" ]; then
-            echo "::error::PEXELS_API_KEY is required because this batch contains new AI-sourced backgrounds."
+            echo "::error title=Global failure::PEXELS_API_KEY is required because this batch contains new AI-sourced backgrounds."
             exit 1
           fi
 
-          # CHEAP / NETWORK boundary: one read-only OAuth/Data API/channel check
-          # for the whole batch. This must pass before Pexels ingestion or any
-          # background/TTS/render work starts.
+          # GLOBAL / NETWORK: one read-only OAuth/Data API/channel readiness check
+          # protects the entire batch before Pexels ingestion or any rendering.
           python youtube-shorts-bot/auth_check.py
 
-          # ChatGPT has already performed semantic cache lookup. If it had to
-          # source new Pexels backgrounds, ingest exact official rendition metadata
-          # now and persist the append-only cache before any TTS/render/upload work.
+          # GLOBAL / SHARED STATE: source-manifest/cache ingestion is atomic shared
+          # state. If it fails, do not render against an incomplete common registry.
           if [ -s /tmp/background-sourcing-manifests.txt ]; then
             while IFS= read -r manifest; do
               [ -n "$manifest" ] || continue
@@ -238,23 +241,9 @@ jobs:
             fi
           fi
 
-          # Final cache-dependent validation must happen after optional ingestion,
-          # but still before the expensive production phase.
-          python - <<'PY'
-          import json, sys
-          from pathlib import Path
-          sys.path.insert(0, 'youtube-shorts-bot')
-          from validate_media_library import load_registry, validate_request_backgrounds
+          echo "Global batch preflight passed. Individual request failures will be isolated per video."
 
-          registry = load_registry()
-          for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
-              if not path:
-                  continue
-              validate_request_backgrounds(json.loads(Path(path).read_text()), registry)
-          print('All requested background IDs are cached, active, verified and production-suitable.')
-          PY
-
-      - name: Render upload schedule verify and finalize selected stories
+      - name: Process videos with isolated per-video failures
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -262,6 +251,8 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
+          # Intentionally do not use `set -e` at loop scope: process_one failures
+          # are isolated, counted, and the next immutable request must continue.
           set -uo pipefail
           success=0
           skipped=0
@@ -284,6 +275,11 @@ jobs:
             export STORY_OUTPUT_DIR="youtube-shorts-bot/output/$cid"
             rm -rf "$STORY_OUTPUT_DIR"
             mkdir -p "$STORY_OUTPUT_DIR"
+
+            # PER-VIDEO / LOCAL: malformed schema or story metadata fails only this
+            # request and happens before its network recovery/authorization work.
+            python youtube-shorts-bot/validate_content.py --request "$req"
+
             local status_file
             status_file="$(mktemp)"
             GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publish.py --stage prepare --request "$req"
@@ -301,10 +297,24 @@ jobs:
               return 10
             fi
 
-            # ==============================
-            # EXPENSIVE GENERATION PHASE
-            # ==============================
             if [ "$upload_required" = "true" ]; then
+              # PER-VIDEO / LOCAL: background IDs/status/rendition compatibility is
+              # specific to this request. A bad background must not block the other
+              # valid Shorts in the same daily batch.
+              python - "$req" <<'PY'
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from validate_media_library import load_registry, validate_request_backgrounds
+          path = sys.argv[1]
+          registry = load_registry()
+          validate_request_backgrounds(json.loads(Path(path).read_text()), registry)
+          print(f'Per-video background contract valid: {path}')
+          PY
+
+              # ==============================
+              # EXPENSIVE GENERATION PHASE
+              # ==============================
               python youtube-shorts-bot/media_resolver.py --request "$req"
               python youtube-shorts-bot/render_aligned.py --request "$req"
               python youtube-shorts-bot/verify_render.py --request "$req"
@@ -327,8 +337,8 @@ jobs:
                 echo "Skipped: $req"
               else
                 failed=$((failed+1))
-                echo "$req" >> /tmp/batch-failures.txt
-                echo "::error::Failed: $req — durable intent/recovery rules remain authoritative"
+                echo "$req | per-video failure | exit_code=$rc" >> /tmp/batch-failures.txt
+                echo "::error title=Per-video failure::Failed: $req — continuing remaining Shorts; durable intent/recovery rules remain authoritative"
               fi
             fi
             echo "::endgroup::"
@@ -340,8 +350,10 @@ jobs:
             cat /tmp/batch-skipped.txt
           fi
           if [ "$failed" -gt 0 ]; then
-            echo "Failed requests:"
+            echo "Per-video failed requests (other valid Shorts were allowed to continue):"
             cat /tmp/batch-failures.txt
+            # Surface the partial failure after all processable Shorts had a chance
+            # to complete. This keeps alerting visible without sacrificing the day.
             exit 1
           fi
 
