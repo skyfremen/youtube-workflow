@@ -37,18 +37,28 @@ class RequestImmutabilityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "sensitive"):
                 request_guard.resolve_push_request("deadbeef")
 
-    def test_result_and_recovery_edits_are_rejected(self):
+    def test_result_recovery_planning_and_sourcing_edits_are_rejected(self):
         from types import SimpleNamespace
+        protected = (
+            'youtube-shorts-bot/content/results/test.json',
+            'youtube-shorts-bot/content/recovery/test/upload.json',
+            'youtube-shorts-bot/content/planning/2099-01-01.json',
+            'youtube-shorts-bot/content/background-sourcing/2099-01-01.json',
+        )
         for status in ('M', 'D'):
-            for path in ('youtube-shorts-bot/content/results/test.json', 'youtube-shorts-bot/content/recovery/test/upload.json'):
+            for path in protected:
                 with patch.object(request_guard, 'git', return_value=SimpleNamespace(stdout=f"{status}\t{path}\n")):
                     with self.assertRaisesRegex(ValueError, 'Immutable'):
                         request_guard.check_immutable_changes('base', 'head')
 
-    def test_new_recovery_evidence_is_allowed(self):
+    def test_new_recovery_and_sourcing_evidence_is_allowed(self):
         from types import SimpleNamespace
-        with patch.object(request_guard, 'git', return_value=SimpleNamespace(stdout='A\tyoutube-shorts-bot/content/recovery/test/upload.json\n')):
-            request_guard.check_immutable_changes('base', 'head')
+        for path in (
+            'youtube-shorts-bot/content/recovery/test/upload.json',
+            'youtube-shorts-bot/content/background-sourcing/2099-01-01.json',
+        ):
+            with patch.object(request_guard, 'git', return_value=SimpleNamespace(stdout=f'A\t{path}\n')):
+                request_guard.check_immutable_changes('base', 'head')
 
 
 if __name__ == "__main__":

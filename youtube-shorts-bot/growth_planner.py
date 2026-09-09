@@ -92,7 +92,7 @@ def similarity(a, b):
         1 for key in ("category", "conflict", "protagonist_role", "antagonist_role", "ending_style")
         if a.get(key) and a.get(key) == b.get(key)
     ) / 5.0
-    return round((0.75 * jaccard) + (0.25 * structural), 4)
+    return round((0.72 * jaccard) + (0.28 * structural), 4)
 
 
 def hard_reject(candidate, accepted_today=(), recent=()):

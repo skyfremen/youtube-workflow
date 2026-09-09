@@ -64,6 +64,32 @@ class MediaRegistryTests(unittest.TestCase):
         data["assets"].append(extra)
         self.assertEqual(validate_registry_data(data), [])
 
+    def test_deterministic_ai_sourced_pexels_id_is_valid(self):
+        data = registry()
+        sourced = dict(data["assets"][0])
+        sourced.update({
+            "id": "satisfying-px-424242",
+            "provider_asset_id": "424242",
+            "source_page": "https://www.pexels.com/video/sample-424242/",
+            "direct_url": "https://www.pexels.com/download/video/424242/",
+            "orientation": "vertical",
+            "renditions": [{
+                "id": "hd", "width": 1080, "height": 1920, "fps": 30,
+                "file_type": "video/mp4", "direct_url": "https://videos.pexels.com/424242-hd.mp4",
+            }],
+        })
+        data["assets"].append(sourced)
+        self.assertEqual(validate_registry_data(data), [])
+
+    def test_registry_rejects_4k_only_active_asset_for_production(self):
+        data = registry()
+        data["assets"][0]["renditions"] = [{
+            "id": "4k", "width": 3840, "height": 2160, "fps": 30,
+            "file_type": "video/mp4", "direct_url": "https://videos.pexels.com/4k-only.mp4",
+        }]
+        errors = validate_registry_data(data)
+        self.assertTrue(any("<=1080p production rendition" in x for x in errors))
+
 
 if __name__ == "__main__":
     unittest.main()

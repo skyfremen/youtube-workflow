@@ -3,9 +3,11 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
+from background_policy import rendition_is_production_suitable
+
 BASE = Path(__file__).parent
 REGISTRY_PATH = BASE / "media-library" / "backgrounds.json"
-ID_RE = re.compile(r"^satisfying-\d{3,}$")
+ID_RE = re.compile(r"^satisfying-(?:\d{3,}|px-\d{5,})$")
 ALLOWED_STATUS = {"active", "inactive"}
 ALLOWED_INTENSITY = {"low", "medium", "high"}
 ALLOWED_ORIENTATION = {"vertical", "horizontal", "square", "unknown"}
@@ -63,16 +65,23 @@ def validate_registry_data(data):
             continue
         asset_id = str(asset["id"]).strip()
         if not ID_RE.fullmatch(asset_id):
-            errors.append(f"{label}: id must match satisfying-NNN (three or more digits)")
+            errors.append(
+                f"{label}: id must match satisfying-NNN or deterministic satisfying-px-<PexelsID>"
+            )
         elif asset_id in seen_ids:
             errors.append(f"{label}: duplicate id {asset_id}")
         seen_ids.add(asset_id)
         if "provider_asset_id" in asset:
-            provider_key = (str(asset.get("source", "")).strip(), str(asset.get("provider_asset_id", "")).strip())
+            provider_key = (
+                str(asset.get("source", "")).strip(),
+                str(asset.get("provider_asset_id", "")).strip(),
+            )
             if not provider_key[1]:
                 errors.append(f"{label}: provider_asset_id must be non-empty when present")
             elif provider_key in seen_provider:
-                errors.append(f"{label}: duplicate provider asset {provider_key[0]}:{provider_key[1]}")
+                errors.append(
+                    f"{label}: duplicate provider asset {provider_key[0]}:{provider_key[1]}"
+                )
             seen_provider.add(provider_key)
         if asset.get("type") != "video":
             errors.append(f"{label}: type must be video")
@@ -107,7 +116,11 @@ def validate_registry_data(data):
             _score(asset.get(field), field, label, errors)
         for field in ("width", "height"):
             if field in asset and asset[field] is not None:
-                if isinstance(asset[field], bool) or not isinstance(asset[field], int) or asset[field] <= 0:
+                if (
+                    isinstance(asset[field], bool)
+                    or not isinstance(asset[field], int)
+                    or asset[field] <= 0
+                ):
                     errors.append(f"{label}: {field} must be a positive integer when present")
         if "duration_seconds" in asset and asset["duration_seconds"] is not None:
             try:
@@ -125,10 +138,16 @@ def validate_registry_data(data):
                 if not isinstance(rendition, dict):
                     errors.append(f"{r_label}: must be an object")
                     continue
-                required_rendition = ("id", "width", "height", "fps", "file_type", "direct_url")
-                missing_rendition = [key for key in required_rendition if key not in rendition]
+                required_rendition = (
+                    "id", "width", "height", "fps", "file_type", "direct_url"
+                )
+                missing_rendition = [
+                    key for key in required_rendition if key not in rendition
+                ]
                 if missing_rendition:
-                    errors.append(f"{r_label}: missing fields: {', '.join(missing_rendition)}")
+                    errors.append(
+                        f"{r_label}: missing fields: {', '.join(missing_rendition)}"
+                    )
                     continue
                 rendition_id = str(rendition.get("id", "")).strip()
                 if not rendition_id:
@@ -152,26 +171,34 @@ def validate_registry_data(data):
                 direct_url = str(rendition.get("direct_url", "")).strip()
                 if not _url(direct_url):
                     errors.append(f"{r_label}: direct_url must be an http(s) URL")
-                elif asset.get("source") == "Pexels" and urlparse(direct_url).hostname not in PEXELS_MEDIA_HOSTS:
-                    errors.append(f"{r_label}: Pexels rendition must use an official API media host")
+                elif (
+                    asset.get("source") == "Pexels"
+                    and urlparse(direct_url).hostname not in PEXELS_MEDIA_HOSTS
+                ):
+                    errors.append(
+                        f"{r_label}: Pexels rendition must use an official API media host"
+                    )
                 elif direct_url in seen_rendition_urls:
                     errors.append(f"{r_label}: duplicate rendition direct_url")
                 seen_rendition_urls.add(direct_url)
                 if "file_size_bytes" in rendition:
                     size = rendition.get("file_size_bytes")
                     if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
-                        errors.append(f"{r_label}: file_size_bytes must be a positive integer")
+                        errors.append(
+                            f"{r_label}: file_size_bytes must be a positive integer"
+                        )
             if renditions and not any(
-                rendition.get("file_type") in ALLOWED_RENDITION_TYPES
-                and isinstance(rendition.get("width"), int)
-                and isinstance(rendition.get("height"), int)
-                and rendition["width"] >= 720
-                and rendition["height"] >= 1280
-                for rendition in renditions if isinstance(rendition, dict)
+                rendition_is_production_suitable(rendition)
+                for rendition in renditions
+                if isinstance(rendition, dict)
             ):
-                errors.append(f"{label}: no rendition can fill 720x1280 without upscaling")
+                errors.append(
+                    f"{label}: no <=1080p production rendition can fill 720x1280 within bounded upscale"
+                )
         if any(k in asset for k in ("usage_count", "last_used_at", "last_used_short_id")):
-            errors.append(f"{label}: usage history belongs in result receipts, not the registry")
+            errors.append(
+                f"{label}: usage history belongs in result receipts, not the registry"
+            )
         if asset.get("status") == "active":
             if asset.get("verified") is not True:
                 errors.append(f"{label}: active assets must be verified")
@@ -219,7 +246,9 @@ def main():
     except ValueError as exc:
         raise SystemExit(str(exc))
     active = sum(1 for x in data["assets"] if x.get("status") == "active")
-    print(f"Satisfying background registry valid: {len(data['assets'])} assets, {active} active.")
+    print(
+        f"Satisfying background registry valid: {len(data['assets'])} assets, {active} active."
+    )
 
 
 if __name__ == "__main__":

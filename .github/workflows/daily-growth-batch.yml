@@ -6,6 +6,7 @@ on:
     paths:
       - 'youtube-shorts-bot/content/requests/*.json'
       - 'youtube-shorts-bot/content/planning/*.json'
+      - 'youtube-shorts-bot/content/background-sourcing/*.json'
   workflow_dispatch:
     inputs:
       content_ids:
@@ -42,72 +43,184 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Resolve and validate immutable daily batch
+      - name: Resolve cache expansion and validate immutable daily batch
         id: batch
         shell: bash
         env:
           MANUAL_CONTENT_IDS: ${{ inputs.content_ids }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
           set -euo pipefail
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           python - <<'PY'
-          import json, os, re, subprocess
+          import json, os, subprocess
           from pathlib import Path
 
           manual = os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch'
           requests = []
           source_sha = os.environ['GITHUB_SHA']
+          sourcing_paths = []
+          planning = []
+
           if manual:
               ids = [x.strip() for x in os.environ.get('MANUAL_CONTENT_IDS','').split(',') if x.strip()]
               if not ids or len(ids) > 24:
                   raise SystemExit('Manual batch requires 1-24 content IDs')
               requests = [f'youtube-shorts-bot/content/requests/{x}.json' for x in ids]
               for path in requests:
-                  if not Path(path).exists(): raise SystemExit(f'Missing request: {path}')
-                  commits = subprocess.check_output(['git','log','--diff-filter=A','--format=%H','--',path], text=True).splitlines()
-                  if not commits: raise SystemExit(f'Cannot determine immutable source for {path}')
-              # Each manual item resolves its own source later.
+                  if not Path(path).exists():
+                      raise SystemExit(f'Missing request: {path}')
+                  commits = subprocess.check_output(
+                      ['git','log','--diff-filter=A','--format=%H','--',path], text=True
+                  ).splitlines()
+                  if not commits:
+                      raise SystemExit(f'Cannot determine immutable source for {path}')
+
+              # Recovery can re-ingest the original immutable sourcing manifest if
+              # the cache append failed before rendering on the first attempt.
+              needed = set()
+              for path in requests:
+                  data = json.loads(Path(path).read_text())
+                  needed.update((data.get('visual') or {}).values())
+              source_dir = Path('youtube-shorts-bot/content/background-sourcing')
+              candidates = sorted(source_dir.glob('*.json')) if source_dir.exists() else []
+              for candidate_path in candidates:
+                  try:
+                      payload = json.loads(candidate_path.read_text())
+                  except Exception:
+                      continue
+                  ids_in_manifest = {
+                      str(x.get('logical_id'))
+                      for x in payload.get('candidates', [])
+                      if isinstance(x, dict)
+                  }
+                  if needed & ids_in_manifest:
+                      sourcing_paths.append(candidate_path.as_posix())
           else:
-              rows = subprocess.check_output(['git','diff-tree','--no-commit-id','--name-status','-r',source_sha], text=True).splitlines()
+              rows = subprocess.check_output(
+                  ['git','diff-tree','--no-commit-id','--name-status','-r',source_sha], text=True
+              ).splitlines()
               changed = [(r.split('\t')[0], r.split('\t')[-1]) for r in rows if '\t' in r]
-              requests = [p for s,p in changed if s == 'A' and p.startswith('youtube-shorts-bot/content/requests/') and p.endswith('.json')]
-              planning = [p for s,p in changed if s == 'A' and p.startswith('youtube-shorts-bot/content/planning/') and p.endswith('.json')]
-              if not 1 <= len(requests) <= 24: raise SystemExit(f'Daily growth commit must add 1-24 requests; got {len(requests)}')
-              if len(planning) != 1: raise SystemExit('Daily growth commit must add exactly one immutable planning audit artifact')
-              allowed = set(requests + planning)
+              requests = [
+                  p for s,p in changed
+                  if s == 'A' and p.startswith('youtube-shorts-bot/content/requests/') and p.endswith('.json')
+              ]
+              planning = [
+                  p for s,p in changed
+                  if s == 'A' and p.startswith('youtube-shorts-bot/content/planning/') and p.endswith('.json')
+              ]
+              sourcing_paths = [
+                  p for s,p in changed
+                  if s == 'A' and p.startswith('youtube-shorts-bot/content/background-sourcing/') and p.endswith('.json')
+              ]
+              if not 1 <= len(requests) <= 24:
+                  raise SystemExit(f'Daily growth commit must add 1-24 requests; got {len(requests)}')
+              if len(planning) != 1:
+                  raise SystemExit('Daily growth commit must add exactly one immutable planning audit artifact')
+              if len(sourcing_paths) > 1:
+                  raise SystemExit('Daily growth commit may add at most one background sourcing manifest')
+              allowed = set(requests + planning + sourcing_paths)
               other = [p for _s,p in changed if p not in allowed]
-              if other: raise SystemExit('Daily growth content commit changes non-content files: ' + ', '.join(other))
+              if other:
+                  raise SystemExit('Daily growth content commit changes non-content files: ' + ', '.join(other))
 
               payload = json.loads(Path(planning[0]).read_text())
               expected = set(payload.get('content_ids') or [])
               actual = {Path(p).stem for p in requests}
-              if expected != actual: raise SystemExit('Planning audit content_ids do not exactly match request files')
-              if payload.get('final_selected') != len(requests): raise SystemExit('Planning audit final_selected does not match request count')
+              if expected != actual:
+                  raise SystemExit('Planning audit content_ids do not exactly match request files')
+              if payload.get('final_selected') != len(requests):
+                  raise SystemExit('Planning audit final_selected does not match request count')
+
+              if sourcing_paths:
+                  sourcing = json.loads(Path(sourcing_paths[0]).read_text())
+                  if sourcing.get('plan_date') != payload.get('plan_date'):
+                      raise SystemExit('Background sourcing plan_date must match planning audit')
+                  request_by_id = {
+                      Path(path).stem: json.loads(Path(path).read_text()) for path in requests
+                  }
+                  referenced = {
+                      value
+                      for data in request_by_id.values()
+                      for value in (data.get('visual') or {}).values()
+                  }
+                  for item in sourcing.get('candidates') or []:
+                      logical_id = item.get('logical_id')
+                      required_by = set(item.get('required_by_content_ids') or [])
+                      if logical_id not in referenced:
+                          raise SystemExit(f'Unreferenced sourced background in content commit: {logical_id}')
+                      if not required_by or not required_by <= actual:
+                          raise SystemExit(f'Invalid required_by_content_ids for sourced background {logical_id}')
+                      for cid in required_by:
+                          visuals = set((request_by_id[cid].get('visual') or {}).values())
+                          if logical_id not in visuals:
+                              raise SystemExit(f'Sourcing manifest says {cid} needs {logical_id}, but request does not reference it')
 
           Path('/tmp/batch-requests.txt').write_text('\n'.join(requests) + '\n')
+          Path('/tmp/background-sourcing-manifests.txt').write_text(
+              '\n'.join(dict.fromkeys(sourcing_paths)) + ('\n' if sourcing_paths else '')
+          )
           with open(os.environ['GITHUB_OUTPUT'],'a') as out:
               out.write(f'request_count={len(requests)}\n')
-          print(f'Resolved {len(requests)} immutable growth requests')
+              out.write(f'sourcing_manifest_count={len(sourcing_paths)}\n')
+          print(f'Resolved {len(requests)} immutable growth requests; sourcing manifests={len(sourcing_paths)}')
           PY
 
-          # Validate every request and enforce unique scheduled slots before any media/TTS work.
+          # ChatGPT has already performed semantic cache lookup. If it had to
+          # source new Pexels backgrounds, ingest exact official rendition metadata
+          # now and persist the append-only cache before any TTS/render/upload work.
+          if [ -s /tmp/background-sourcing-manifests.txt ]; then
+            if [ -z "${PEXELS_API_KEY:-}" ]; then
+              echo "::error::PEXELS_API_KEY is required because this batch contains new AI-sourced backgrounds."
+              exit 1
+            fi
+            while IFS= read -r manifest; do
+              [ -n "$manifest" ] || continue
+              python youtube-shorts-bot/pexels_registry.py ingest-manifest --manifest "$manifest"
+            done < /tmp/background-sourcing-manifests.txt
+            python youtube-shorts-bot/validate_media_library.py
+
+            if ! git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
+              git config user.name github-actions[bot]
+              git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+              git add youtube-shorts-bot/media-library/backgrounds.json
+              git commit -m "cache AI-sourced Wacky Dramas backgrounds"
+              # Fail closed on a concurrent cache update rather than silently losing
+              # a source or rendering against an unpersisted library state.
+              git push origin HEAD:main
+            fi
+          fi
+
+          # Validate every immutable request only after optional cache ingestion.
           while IFS= read -r req; do
+            [ -n "$req" ] || continue
             python youtube-shorts-bot/validate_content.py --request "$req"
           done < /tmp/batch-requests.txt
+
           python - <<'PY'
-          import json
+          import json, sys
           from pathlib import Path
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from validate_media_library import load_registry, validate_request_backgrounds
+
+          registry = load_registry()
           rows=[]
           for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
+              if not path:
+                  continue
               d=json.loads(Path(path).read_text())
-              if d.get('schema_version') != 3: raise SystemExit(f'Daily growth request must be schema v3: {path}')
+              if d.get('schema_version') != 3:
+                  raise SystemExit(f'Daily growth request must be schema v3: {path}')
+              validate_request_backgrounds(d, registry)
               rows.append((d['publication']['publish_at'], path))
           slots=[x[0] for x in rows]
-          if len(slots) != len(set(slots)): raise SystemExit('Duplicate publication slot in daily batch')
-          Path('/tmp/batch-requests.txt').write_text('\n'.join(path for _slot,path in sorted(rows))+'\n')
-          print('Scheduled slots unique; processing order fixed by publish_at')
+          if len(slots) != len(set(slots)):
+              raise SystemExit('Duplicate publication slot in daily batch')
+          Path('/tmp/batch-requests.txt').write_text(
+              '\n'.join(path for _slot,path in sorted(rows))+'\n'
+          )
+          print('Background IDs cached; scheduled slots unique; processing order fixed by publish_at')
           PY
-          python youtube-shorts-bot/validate_media_library.py
 
       - name: Render upload schedule verify and finalize selected stories
         shell: bash

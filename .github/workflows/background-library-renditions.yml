@@ -3,8 +3,10 @@ name: Wacky Dramas Background Rendition Maintenance
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'youtube-shorts-bot/pexels_registry.py'
+      - 'youtube-shorts-bot/background_policy.py'
       - '.github/workflows/background-library-renditions.yml'
 
 concurrency:

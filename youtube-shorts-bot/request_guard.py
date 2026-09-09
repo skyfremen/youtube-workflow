@@ -82,11 +82,14 @@ def check_immutable_changes(base, head):
         "diff", "--name-status", "--no-renames", base, head, "--",
         "youtube-shorts-bot/content/requests", "youtube-shorts-bot/content/results",
         "youtube-shorts-bot/content/recovery", "youtube-shorts-bot/content/planning",
+        "youtube-shorts-bot/content/background-sourcing",
     ])
     for line in result.stdout.splitlines():
         status, path = line.split("\t", 1)
         if path.endswith(".json") and status != "A":
-            raise ValueError(f"Immutable request/result/recovery/planning file changed: {path}")
+            raise ValueError(
+                f"Immutable request/result/recovery/planning/background-sourcing file changed: {path}"
+            )
 
 
 def main():
