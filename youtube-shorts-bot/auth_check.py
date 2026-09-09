@@ -8,8 +8,6 @@ media/TTS/render work begins.
 import os
 import socket
 
-from googleapiclient.errors import HttpError
-
 from recovery_state import RecoveryBlocked
 from upload import authenticated_channel, make_client
 
@@ -42,13 +40,16 @@ def run_preflight():
         channel = authenticated_channel(make_client())
     except RecoveryBlocked as exc:
         raise SystemExit(f"YouTube channel readiness preflight failed: {exc}") from None
-    except HttpError as exc:
-        raise SystemExit(f"YouTube readiness preflight failed: {_http_detail(exc)}") from None
     except (TimeoutError, OSError, socket.timeout) as exc:
         raise SystemExit(
             f"YouTube readiness preflight failed: transient network failure ({type(exc).__name__})"
         ) from None
     except Exception as exc:
+        # googleapiclient HttpError exposes resp.status. Avoid importing the Google
+        # package at module import time so this tiny guard remains unit-testable
+        # in the lightweight dry-run environment.
+        if getattr(getattr(exc, "resp", None), "status", None) is not None:
+            raise SystemExit(f"YouTube readiness preflight failed: {_http_detail(exc)}") from None
         # OAuth refresh failures commonly surface through google-auth exceptions;
         # preserve the type without leaking credential values.
         raise SystemExit(
