@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "record_type": "upload",
+  "content_id": "wd-20260909T031000-perf-acceptance-m8q2kx",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260909T031000-perf-acceptance-m8q2kx.json",
+  "request_blob_sha": "3c17f8403ce1b0ea3e8a9e3e2d88928ca81bcbd2",
+  "source_commit_sha": "ae6796802b1dbe597c512d9a240b1dd6aad1198e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "created_at": "2026-09-09T03:08:58.896885+00:00",
+  "upload_workflow": {
+    "name": "Wacky Dramas Ad-hoc Private Publish",
+    "run_id": "34305558847",
+    "run_attempt": "1",
+    "code_commit_sha": "ae6796802b1dbe597c512d9a240b1dd6aad1198e"
+  },
+  "background": {
+    "requested_primary_id": "satisfying-022",
+    "requested_backup_id": "satisfying-030",
+    "background_asset_id": "satisfying-022",
+    "background_selection": "primary",
+    "source": "Pexels",
+    "source_page": "https://www.pexels.com/video/waves-on-water-surface-14961366/",
+    "creator": "Airam Dato-on",
+    "license": "Pexels License",
+    "commercial_use": true,
+    "attribution_required": false,
+    "rendition": {
+      "id": "6245738",
+      "width": 720,
+      "height": 1280,
+      "fps": 60.0,
+      "file_type": "video/mp4",
+      "quality": "hd",
+      "direct_url": "https://videos.pexels.com/video-files/14961366/14961366-hd_720_1280_60fps.mp4",
+      "file_size_bytes": 4927121,
+      "codec": "h264",
+      "selection_reason": "smallest_sufficient_rendition"
+    },
+    "direct_url": "https://videos.pexels.com/video-files/14961366/14961366-hd_720_1280_60fps.mp4",
+    "target": {
+      "width": 720,
+      "height": 1280,
+      "fps": 30
+    },
+    "rendition_fallback_used": false,
+    "logical_fallback_used": false,
+    "generic_source_fallback_used": false,
+    "preflight": "HTTP 206, video/mp4",
+    "failures_before_selection": [],
+    "metrics": {
+      "resolution_started_at": "2026-09-09T03:03:22.031294+00:00",
+      "preflight_duration_seconds": 0.659408,
+      "background_resolution_duration_seconds": 0.850855,
+      "downloaded_bytes": 4927121,
+      "download_duration_seconds": 0.106248,
+      "background_sha256": "ecd686ac3ca919da4f5644653d1319b05278cbefcbc5e55e88d544c6ae467b3a",
+      "source_probe": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "fps": 60.0
+      }
+    }
+  },
+  "render": {
+    "content_id": "wd-20260909T031000-perf-acceptance-m8q2kx",
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 142.05,
+    "card_title_text": "My Boss Tried to Charge Me for His Mistake",
+    "card_title_seconds": 1.675,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 1.975,
+    "story_narration_seconds": 140.075,
+    "video_seconds": 142.4,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "ffmpeg_duration_seconds": 133.652142,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "kokoro_pipeline_init_duration_seconds": 5.924013,
+    "tts_generation_duration_seconds": 145.049421,
+    "render_process_duration_seconds": 312.678855,
+    "render_started_at": "2026-09-09T03:03:23.128346+00:00",
+    "production_elapsed_through_render_seconds": 313.775889,
+    "caption_timing_mode": "word_aligned",
+    "caption_alignment_backend": "torchaudio-2.8.0/wav2vec2-base-960h-ctc",
+    "caption_alignment_word_count": 679,
+    "caption_alignment_coverage": 1.0,
+    "caption_alignment_duration_seconds": 27.944931,
+    "caption_alignment_error": null,
+    "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
+    "caption_alignment_torch_version": "2.8.0+cpu",
+    "caption_alignment_torchaudio_version": "2.8.0+cpu",
+    "render_verified": true,
+    "render_verified_at": "2026-09-09T03:08:54.629302+00:00",
+    "render_verification_source": "ffprobe_and_frame_decode",
+    "configured_video_seconds": 142.4,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "narration_engine": "kokoro",
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "059aa34da59b33d12ee4545f33b89c3dd9095ed0704120d76902d00097cee47d"
+  },
+  "upload_body": {
+    "snippet": {
+      "title": "My Boss Tried to Charge Me for His Mistake — Then HR Checked the File #Shorts",
+      "description": "My boss blamed me for his edit until the audit history told the whole story.\n\n#shorts #storytime #work #backfire #wackydramas\n\n[WackyDramas content_id=wd-20260909T031000-perf-acceptance-m8q2kx request_blob_sha=3c17f8403ce1b0ea3e8a9e3e2d88928ca81bcbd2]",
+      "tags": [
+        "wd-id-c0b166892793a798808d",
+        "shorts",
+        "storytime",
+        "work",
+        "backfire",
+        "wackydramas"
+      ],
+      "categoryId": "24"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "youtube_video_id": "yUDh1hFCAz4",
+  "uploaded_at": "2026-09-09T03:09:03.482976+00:00",
+  "association": {
+    "kind": "youtube_insert_response",
+    "intent_blob_sha": "c64bb73761512dbc59263126b7201d01ff350b6a",
+    "intent_commit_sha": "e494ea06404417404919eea2a1aeee3ae015dc0c",
+    "response": {
+      "kind": "youtube#video",
+      "etag": "gSUcg4YVhCdXCPpZV_uHq7MuTxk",
+      "id": "yUDh1hFCAz4",
+      "snippet": {
+        "publishedAt": "2026-09-09T03:09:00Z",
+        "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+        "title": "My Boss Tried to Charge Me for His Mistake — Then HR Checked the File #Shorts",
+        "description": "My boss blamed me for his edit until the audit history told the whole story.\n\n#shorts #storytime #work #backfire #wackydramas\n\n[WackyDramas content_id=wd-20260909T031000-perf-acceptance-m8q2kx request_blob_sha=3c17f8403ce1b0ea3e8a9e3e2d88928ca81bcbd2]",
+        "thumbnails": {
+          "default": {
+            "url": "https://i9.ytimg.com/vi/yUDh1hFCAz4/default.jpg?sqp=CNyZg9UG&rs=AOn4CLBz_z5UpYtZtlWjOcayn8Byx_L4AQ",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i9.ytimg.com/vi/yUDh1hFCAz4/mqdefault.jpg?sqp=CNyZg9UG&rs=AOn4CLAJE6XudugoWjUWSHRtOorvdvY0Ug",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i9.ytimg.com/vi/yUDh1hFCAz4/hqdefault.jpg?sqp=CNyZg9UG&rs=AOn4CLDb4NpAyi_h1ISFe0nFE57Sh2mrgg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Wacky Insights",
+        "tags": [
+          "backfire",
+          "shorts",
+          "storytime",
+          "wackydramas",
+          "wd-id-c0b166892793a798808d",
+          "work"
+        ],
+        "categoryId": "24",
+        "liveBroadcastContent": "none",
+        "localized": {
+          "title": "My Boss Tried to Charge Me for His Mistake — Then HR Checked the File #Shorts",
+          "description": "My boss blamed me for his edit until the audit history told the whole story.\n\n#shorts #storytime #work #backfire #wackydramas\n\n[WackyDramas content_id=wd-20260909T031000-perf-acceptance-m8q2kx request_blob_sha=3c17f8403ce1b0ea3e8a9e3e2d88928ca81bcbd2]"
+        }
+      },
+      "status": {
+        "uploadStatus": "uploaded",
+        "privacyStatus": "private",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "selfDeclaredMadeForKids": false
+      }
+    }
+  }
+}
