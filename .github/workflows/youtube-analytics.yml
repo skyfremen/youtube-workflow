@@ -2,7 +2,9 @@ name: Collect YouTube Shorts analytics
 
 on:
   schedule:
-    - cron: '30 11 * * *'
+    # Every 6 hours in Singapore time: 01:30, 07:30, 13:30, 19:30.
+    # 19:30 remains the final pre-planner refresh for the 20:00 daily planner.
+    - cron: '30 5,11,17,23 * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,9 +26,9 @@ jobs:
             google-api-python-client==2.187.0 \
             google-auth-httplib2==0.2.0 \
             google-auth-oauthlib==1.2.2
-      - name: Collect 90-day video analytics
+      - name: Collect fresh-start age-matched video analytics
         run: python youtube-shorts-bot/analytics.py
-      - name: Commit analytics snapshot
+      - name: Commit analytics snapshot and learning model
         shell: bash
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
