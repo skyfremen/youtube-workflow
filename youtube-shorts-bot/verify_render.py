@@ -45,6 +45,19 @@ def legacy_blackdetect(video):
     return maximum
 
 
+def resolve_blackdetect(render_meta, video, legacy_runner=legacy_blackdetect):
+    """Use render-pass evidence when present; decode the full video only for legacy metadata."""
+    inline_blackdetect = render_meta.get("inline_blackdetect_passed")
+    if inline_blackdetect is False:
+        raise SystemExit("Render verification failed: inline black detection reported a sustained near-black section")
+    if inline_blackdetect is True:
+        maximum = float(render_meta.get("inline_blackdetect_max_duration_seconds") or 0.0)
+        if maximum >= 0.75:
+            raise SystemExit("Render verification failed: inline blackdetect metadata exceeds safety threshold")
+        return "inline_during_render", maximum
+    return "legacy_second_pass", float(legacy_runner(video))
+
+
 def main():
     verification_started = time.monotonic()
     parser = argparse.ArgumentParser()
@@ -110,17 +123,7 @@ def main():
             raise SystemExit(f"Render verification failed: frame at {ts:.2f}s cannot be decoded")
 
     render_meta = load_json(metadata_path)
-    inline_blackdetect = render_meta.get("inline_blackdetect_passed")
-    if inline_blackdetect is False:
-        raise SystemExit("Render verification failed: inline black detection reported a sustained near-black section")
-    if inline_blackdetect is True:
-        blackdetect_mode = "inline_during_render"
-        blackdetect_max = float(render_meta.get("inline_blackdetect_max_duration_seconds") or 0.0)
-        if blackdetect_max >= 0.75:
-            raise SystemExit("Render verification failed: inline blackdetect metadata exceeds safety threshold")
-    else:
-        blackdetect_mode = "legacy_second_pass"
-        blackdetect_max = legacy_blackdetect(video)
+    blackdetect_mode, blackdetect_max = resolve_blackdetect(render_meta, video)
 
     if abs(float(render_meta["video_seconds"]) - duration) > 0.25:
         raise SystemExit("Render verification failed: metadata/video duration mismatch")
