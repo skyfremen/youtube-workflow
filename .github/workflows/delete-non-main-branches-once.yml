@@ -1,0 +1,59 @@
+name: Delete Non-Main Branches Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/delete-non-main-branches-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  delete-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete all non-main branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          branches=(
+            'cleanup/wacky-dramas-repo-audit-20260910'
+            'feature/analytics-v2-fresh-start-20260910'
+            'feature/fail-fast-preflight-20260909'
+            'feature/fresh-channel-clean-slate-20260910'
+            'feature/global-vs-per-video-failure-policy-20260909'
+            'feature/planner-explicit-youtube-tags-20260910'
+            'feature/planner-youtube-metadata-limits-20260909'
+            'feature/public-adhoc-upload-20260909'
+            'feature/same-day-planner-catchup-20260909'
+            'feature/scheduled-slot-10m-guard-20260909'
+            'feature/skip-warning-annotation-20260909'
+            'feature/wacky-dramas-growth-funnel-20260909'
+            'perf/recovery-lightweight-20260909'
+            'perf/shorts-three-optimizations-20260909'
+            'prod/onnx-fp32-inline-blackdetect-20260909'
+          )
+
+          for branch in "${branches[@]}"; do
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+              echo "Deleting $branch"
+              git push origin --delete "$branch"
+            else
+              echo "Already absent: $branch"
+            fi
+          done
+
+      - name: Verify only main remains
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t branches < <(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort)
+          printf 'Remote branches after cleanup:\n%s\n' "${branches[*]}"
+          test "${#branches[@]}" -eq 1
+          test "${branches[0]}" = 'main'
