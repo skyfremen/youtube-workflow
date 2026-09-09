@@ -47,3 +47,42 @@ jobs:
           # about 87 seconds to measured runner builds.
           cache-from: type=registry,ref=ghcr.io/skyfremen/youtube-shorts-runner:latest
           cache-to: type=inline
+
+      - name: Report compressed production image layers
+        shell: bash
+        env:
+          RUNNER_IMAGE: ghcr.io/skyfremen/youtube-shorts-runner:${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          image = os.environ['RUNNER_IMAGE']
+
+          def manifest(reference):
+              return json.loads(subprocess.check_output(
+                  ['docker', 'buildx', 'imagetools', 'inspect', '--raw', reference],
+                  text=True,
+              ))
+
+          data = manifest(image)
+          if 'layers' not in data:
+              candidates = [
+                  item for item in data.get('manifests', [])
+                  if item.get('platform', {}).get('os') == 'linux'
+                  and item.get('platform', {}).get('architecture') == 'amd64'
+              ]
+              if len(candidates) != 1:
+                  raise SystemExit(f'Expected one linux/amd64 manifest, found {len(candidates)}')
+              data = manifest(f"{image}@{candidates[0]['digest']}")
+
+          layers = sorted(data.get('layers', []), key=lambda item: item['size'], reverse=True)
+          if not layers:
+              raise SystemExit('No runtime layers found in published image manifest')
+          total = sum(item['size'] for item in layers)
+          print(f'compressed_runtime_image_bytes={total}')
+          print(f'compressed_runtime_image_mib={total / 1024 / 1024:.2f}')
+          for rank, layer in enumerate(layers[:10], 1):
+              print(f"layer_{rank}_mib={layer['size'] / 1024 / 1024:.2f} digest={layer['digest']}")
+          PY
