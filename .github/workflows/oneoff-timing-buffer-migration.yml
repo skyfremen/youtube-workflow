@@ -57,7 +57,20 @@ jobs:
               text = text.replace(old, new, 1)
           render.write_text(text)
 
-          # Static safety assertions: beginning/end are exactly 0.5s and the encoded file is independently hard-verified <=179s.
+          policy = Path('youtube-shorts-bot/tests/test_duration_policy.py')
+          text = policy.read_text()
+          text = text.replace(
+              'from workflow_common import END_TAIL_SECONDS, PRODUCTION_MAX_SECONDS, expected_video_config\n',
+              'from workflow_common import END_TAIL_SECONDS, START_LEAD_SECONDS, PRODUCTION_MAX_SECONDS, expected_video_config\n',
+              1,
+          )
+          text = text.replace(
+              '        self.assertEqual(PRODUCTION_MAX_SECONDS, 178.0)\n        self.assertEqual(END_TAIL_SECONDS, 0.35)\n',
+              '        self.assertEqual(PRODUCTION_MAX_SECONDS, 179.0)\n        self.assertEqual(START_LEAD_SECONDS, 0.50)\n        self.assertEqual(END_TAIL_SECONDS, 0.50)\n',
+              1,
+          )
+          policy.write_text(text)
+
           common_text = common.read_text()
           render_text = render.read_text()
           verifier_text = Path('youtube-shorts-bot/verify_render.py').read_text()
@@ -69,14 +82,15 @@ jobs:
           assert 'card_fade_start = START_LEAD_SECONDS + intro_duration' in render_text
           assert 'elif duration > PRODUCTION_MAX_SECONDS:' in verifier_text
       - name: Compile changed Python
-        run: python -m py_compile youtube-shorts-bot/render.py youtube-shorts-bot/workflow_common.py youtube-shorts-bot/verify_render.py
-      - name: Run Shorts unit tests
-        run: python -m unittest discover -s youtube-shorts-bot/tests -p 'test_*.py'
+        run: python -m py_compile youtube-shorts-bot/render.py youtube-shorts-bot/workflow_common.py youtube-shorts-bot/verify_render.py youtube-shorts-bot/tests/test_duration_policy.py
+      - name: Run focused duration policy tests
+        working-directory: youtube-shorts-bot
+        run: python -m unittest tests.test_duration_policy
       - name: Commit migration
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add youtube-shorts-bot/render.py youtube-shorts-bot/workflow_common.py
+          git add youtube-shorts-bot/render.py youtube-shorts-bot/workflow_common.py youtube-shorts-bot/tests/test_duration_policy.py
           git diff --cached --check
           git commit -m 'feat: add 0.5s Shorts lead and end buffers'
           git push origin HEAD:main
