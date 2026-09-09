@@ -30,7 +30,7 @@ class ResultReceiptTests(unittest.TestCase):
         self.upload = {**identity, 'youtube_video_id': record['youtube_video_id'], 'youtube_url': 'https://www.youtube.com/watch?v='+record['youtube_video_id'],
                        'upload_evidence': record, 'uploaded_at': record['uploaded_at'], 'recovered': True,
                        'recovery_record_path': 'evidence', 'recovery_record_blob_sha': 'c'*40,
-                       'verification': {**identity, 'passed': True, 'state': 'verified_private', 'privacy_status': 'private',
+                       'verification': {**identity, 'passed': True, 'state': 'verified_public', 'privacy_status': 'public',
                                         'publish_at_absent': True, 'youtube_video_id': record['youtube_video_id'],
                                         'channel_id': record['expected_channel_id'], 'verified_at': '2026-09-08T17:08:24Z'}}
         p=patch('finalize.workflow_identity',return_value={'name':'Recovery','run_id':'20','run_attempt':'2','code_commit_sha':'d'*40});p.start();self.addCleanup(p.stop)
@@ -46,6 +46,8 @@ class ResultReceiptTests(unittest.TestCase):
         self.assertEqual(receipt['workflow_run_id'],'20')
         self.assertEqual(receipt['workflow_run_attempt'],'2')
         self.assertTrue(receipt['publish_at_absent'])
+        self.assertEqual(receipt['publication_mode'],'public')
+        self.assertEqual(receipt['privacy_status'],'public')
         self.assertEqual(receipt['audio_stream_count'],1)
 
     def test_performance_metrics_are_carried_into_receipt(self):
@@ -62,9 +64,17 @@ class ResultReceiptTests(unittest.TestCase):
         self.assertEqual(metrics['tts_generation_duration_seconds'], 2.3)
         self.assertEqual(metrics['caption_alignment_duration_seconds'], 3.4)
 
-    def test_private_label_without_verification_cannot_create_receipt(self):
-        self.upload['privacy_status']='private';self.upload['verification']['passed']=False
+    def test_public_label_without_verification_cannot_create_receipt(self):
+        self.upload['privacy_status']='public';self.upload['verification']['passed']=False
         with self.assertRaises(RecoveryBlocked):self.build()
+
+    def test_historical_private_receipt_still_finalizes_from_recorded_evidence(self):
+        self.upload['upload_evidence']['upload_body']['status']['privacyStatus']='private'
+        self.upload['verification']['state']='verified_private'
+        self.upload['verification']['privacy_status']='private'
+        receipt=self.build()
+        self.assertEqual(receipt['publication_mode'],'private')
+        self.assertEqual(receipt['privacy_status'],'private')
 
     def test_changed_request_cannot_create_receipt(self):
         self.path.write_text(self.path.read_text()+' ')
