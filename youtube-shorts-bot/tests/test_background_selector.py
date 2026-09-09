@@ -120,10 +120,12 @@ class BackgroundSelectorTests(unittest.TestCase):
 
     def test_ai_selection_is_semantic_owner_but_mechanical_safety_is_hard(self):
         first, second = asset(1, tags=("traffic",), quality=92), asset(2, tags=("cooking",), quality=91)
+        first["title"] = "Night traffic time lapse"
+        second["title"] = "Cake decorating close up"
         audit = audit_ai_selection({"assets": [first, second]}, first["id"], second["id"], [], REQ)
         self.assertTrue(audit["passed"])
-        # Sparse tags may score poorly; the AI's semantic judgment is still allowed
-        # provided quality, cache identity, recency and rendition safety pass.
+        # Sparse cache tags may score poorly; the AI's semantic judgment is still
+        # allowed if quality, cache identity, recency and rendition safety pass.
         self.assertLess(audit["primary"]["semantic_score"], 0.45)
 
     def test_ai_selection_rejects_recent_or_oversized_only_asset(self):

@@ -2,8 +2,9 @@
 
 The rendered Short is permanently 720x1280 at 30 fps. Production should therefore
 prefer the cheapest provider rendition that is visually sufficient for that target,
-not a 1440p/4K original. A bounded crop-fill upscale is allowed so a normal 1080p
-landscape source can be used instead of forcing a much larger UHD rendition.
+not a 1440p/4K original. A bounded crop-fill upscale is allowed for landscape or
+square clips so a normal 1080p landscape source can be used instead of forcing UHD.
+Portrait clips must already cover the native 720x1280 canvas without upscaling.
 """
 
 import math
@@ -17,7 +18,6 @@ SUPPORTED_TYPES = {"video/mp4"}
 # are allowed; 1440p/4K sources are not production candidates.
 MAX_SOURCE_PIXELS = 1920 * 1080
 # 1920x1080 landscape needs ~1.185x scale to fill a 720x1280 portrait crop.
-# Permit that modest upscale, but reject much smaller landscape renditions.
 MAX_CROP_FILL_UPSCALE = 1.25
 
 
@@ -48,6 +48,11 @@ def rendition_is_production_suitable(
     try:
         width, height = int(rendition["width"]), int(rendition["height"])
         if width <= 0 or height <= 0 or width * height > int(max_source_pixels):
+            return False
+        # A portrait source should not be upscaled when an exact/1080p portrait
+        # rendition can be requested from the provider. The bounded-upscale rule
+        # exists for landscape/square crop-fill, where some scaling is inherent.
+        if height > width and (width < target_width or height < target_height):
             return False
         geometry = crop_fill_geometry(width, height, target_width, target_height)
     except (KeyError, TypeError, ValueError):
@@ -85,7 +90,6 @@ def rendition_sort_key(
     reliable_size = isinstance(size, int) and not isinstance(size, bool) and size > 0
     physical_size = size if reliable_size else pixel_area
     geometry = crop_fill_geometry(width, height, target_width, target_height)
-    # Smaller normalization work is preferred after exact/fps/source-pixel cost.
     scale_distance = abs(math.log(max(geometry["scale_factor"], 1e-9)))
     return (
         exact,
@@ -105,6 +109,7 @@ def production_rendition_policy():
         "target_fps": TARGET_FPS,
         "max_source_pixels": MAX_SOURCE_PIXELS,
         "max_crop_fill_upscale": MAX_CROP_FILL_UPSCALE,
-        "selection": "exact_target_then_lowest_cost_1080p_bounded_crop_fill",
+        "portrait_upscaling_allowed": False,
+        "selection": "exact_target_then_lowest_cost_1080p_bounded_landscape_crop_fill",
         "uhd_downloads_allowed": False,
     }
