@@ -265,7 +265,7 @@ jobs:
             # Recovery was already attempted by publish.py before this guard fired.
             if [ "$schedule_skipped" = "true" ]; then
               echo "$req | $schedule_skip_reason" >> /tmp/batch-skipped.txt
-              echo "::notice::Skipped fresh generation: $req — $schedule_skip_reason"
+              echo "::warning::Skipped fresh generation: $req — $schedule_skip_reason"
               return 10
             fi
 
