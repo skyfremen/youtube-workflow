@@ -11,7 +11,10 @@ YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www
 def expected_publication(request_data):
     publication = request_data.get("publication")
     if not publication:
-        return {"mode": "private", "publish_at": None}
+        # Schema-v2 / ad-hoc uploads are immediate public releases. Historical
+        # durable upload records remain recoverable because verification reads
+        # the immutable recorded upload body rather than rewriting old intent.
+        return {"mode": "public", "publish_at": None}
     if publication.get("mode") != "scheduled":
         raise ValueError("Unknown publication mode")
     raw = str(publication.get("publish_at", ""))
@@ -28,9 +31,13 @@ def expected_publication(request_data):
     return {"mode": "scheduled", "publish_at": raw}
 
 
-def build_upload_body(request_data, privacy="private", identity=None):
-    if privacy != "private":
-        raise ValueError("Wacky Dramas uploads must enter YouTube as private")
+def build_upload_body(request_data, privacy=None, identity=None):
+    publication = expected_publication(request_data)
+    required_privacy = "private" if publication["mode"] == "scheduled" else "public"
+    if privacy is not None and privacy != required_privacy:
+        raise ValueError(
+            f"Wacky Dramas {publication['mode']} upload requires privacyStatus={required_privacy}"
+        )
     marker = marker_tag(request_content_id(request_data))
     yt = request_data["youtube"]
     description = str(yt["description"]).strip()
@@ -53,8 +60,7 @@ def build_upload_body(request_data, privacy="private", identity=None):
     cost = sum(len(tag) + (2 if " " in tag else 0) for tag in tags) + max(0, len(tags) - 1)
     if cost > 500:
         raise ValueError("Tags exceed YouTube's combined 500-character limit")
-    status = {"privacyStatus": "private", "selfDeclaredMadeForKids": bool(yt["made_for_kids"])}
-    publication = expected_publication(request_data)
+    status = {"privacyStatus": required_privacy, "selfDeclaredMadeForKids": bool(yt["made_for_kids"])}
     if publication["mode"] == "scheduled":
         status["publishAt"] = publication["publish_at"]
     return {"snippet": {"title": str(yt["title"]), "description": description,
@@ -115,13 +121,16 @@ def upload_new(youtube, request_data, video_path, body):
     from googleapiclient.http import MediaFileUpload
     expected = expected_publication(request_data)
     status = body.get("status", {})
-    if status.get("privacyStatus") != "private":
-        raise RecoveryBlocked("Upload body violates private-entry policy")
-    if expected["mode"] == "private":
+    if expected["mode"] == "public":
+        if status.get("privacyStatus") != "public":
+            raise RecoveryBlocked("Ad-hoc upload body violates immediate-public policy")
         if "publishAt" in status:
-            raise RecoveryBlocked("Ad-hoc private upload unexpectedly contains publishAt")
-    elif status.get("publishAt") != expected["publish_at"]:
-        raise RecoveryBlocked("Scheduled upload body does not match immutable publication time")
+            raise RecoveryBlocked("Immediate public upload unexpectedly contains publishAt")
+    else:
+        if status.get("privacyStatus") != "private":
+            raise RecoveryBlocked("Scheduled upload must enter YouTube as private")
+        if status.get("publishAt") != expected["publish_at"]:
+            raise RecoveryBlocked("Scheduled upload body does not match immutable publication time")
     media = MediaFileUpload(str(video_path), mimetype="video/mp4", resumable=True)
     request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
     response = None
