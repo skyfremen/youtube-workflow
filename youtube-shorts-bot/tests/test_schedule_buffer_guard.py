@@ -12,6 +12,7 @@ from publish import (
     pre_generation_authorization,
     scheduled_slot_guard,
 )
+from recovery_state import RecoveryBlocked
 from test_request_schema import valid_request
 
 
@@ -24,7 +25,9 @@ class ScheduledSlotGuardTests(unittest.TestCase):
             "publication": {
                 "mode": "scheduled",
                 "timezone": "Asia/Singapore",
-                "publish_at": when.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "publish_at": when.astimezone(timezone.utc)
+                .isoformat()
+                .replace("+00:00", "Z"),
             }
         }
 
@@ -37,33 +40,44 @@ class ScheduledSlotGuardTests(unittest.TestCase):
         self.assertEqual(SCHEDULE_FRESHNESS_BUFFER_MINUTES, 10)
 
     def test_past_slot_is_skipped(self):
-        result = scheduled_slot_guard(self.request_at(self.now - timedelta(minutes=1)), now_utc=self.now)
+        result = scheduled_slot_guard(
+            self.request_at(self.now - timedelta(minutes=1)), now_utc=self.now
+        )
         self.assertTrue(result["skip"])
         self.assertLess(result["remaining_seconds"], 0)
 
     def test_exactly_ten_minutes_is_skipped(self):
-        result = scheduled_slot_guard(self.request_at(self.now + timedelta(minutes=10)), now_utc=self.now)
+        result = scheduled_slot_guard(
+            self.request_at(self.now + timedelta(minutes=10)), now_utc=self.now
+        )
         self.assertTrue(result["skip"])
         self.assertEqual(result["remaining_seconds"], 600)
 
     def test_less_than_ten_minutes_is_skipped(self):
-        result = scheduled_slot_guard(self.request_at(self.now + timedelta(minutes=9, seconds=59)), now_utc=self.now)
+        result = scheduled_slot_guard(
+            self.request_at(self.now + timedelta(minutes=9, seconds=59)),
+            now_utc=self.now,
+        )
         self.assertTrue(result["skip"])
 
     def test_more_than_ten_minutes_can_generate(self):
-        result = scheduled_slot_guard(self.request_at(self.now + timedelta(minutes=10, seconds=1)), now_utc=self.now)
+        result = scheduled_slot_guard(
+            self.request_at(self.now + timedelta(minutes=10, seconds=1)),
+            now_utc=self.now,
+        )
         self.assertFalse(result["skip"])
         self.assertIsNone(result["reason"])
 
-    def test_unscheduled_ad_hoc_is_not_guarded(self):
-        result = scheduled_slot_guard({}, now_utc=self.now)
-        self.assertFalse(result["skip"])
-        self.assertIsNone(result["remaining_seconds"])
+    def test_missing_publication_is_rejected(self):
+        with self.assertRaisesRegex(RecoveryBlocked, "Scheduled publication contract"):
+            scheduled_slot_guard({}, now_utc=self.now)
 
     def test_skipped_slot_avoids_upload_contract_and_inventory_scan(self):
         request = self.full_request_at(self.now + timedelta(minutes=5))
-        with patch("publish.build_upload_body") as body, \
-             patch("publish.authorize_fresh_upload") as authorize:
+        with (
+            patch("publish.build_upload_body") as body,
+            patch("publish.authorize_fresh_upload") as authorize,
+        ):
             result = pre_generation_authorization(
                 request, {}, Mock(), Mock(), Mock(), now_utc=self.now
             )
@@ -74,8 +88,16 @@ class ScheduledSlotGuardTests(unittest.TestCase):
     def test_valid_fresh_slot_checks_contract_before_inventory_authorization(self):
         request = self.full_request_at(self.now + timedelta(minutes=11))
         events = []
-        with patch("publish.build_upload_body", side_effect=lambda *a, **k: events.append("body") or {}), \
-             patch("publish.authorize_fresh_upload", side_effect=lambda *a, **k: events.append("authorize")):
+        with (
+            patch(
+                "publish.build_upload_body",
+                side_effect=lambda *args, **kwargs: events.append("body") or {},
+            ),
+            patch(
+                "publish.authorize_fresh_upload",
+                side_effect=lambda *args, **kwargs: events.append("authorize"),
+            ),
+        ):
             result = pre_generation_authorization(
                 request, {}, Mock(), Mock(), Mock(), now_utc=self.now
             )
