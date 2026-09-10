@@ -559,11 +559,19 @@ def render_smoke(request_path, root):
 def verify_workflow_drift_contract():
     daily = DAILY_WORKFLOW.read_text(encoding="utf-8")
     dry = DRY_WORKFLOW.read_text(encoding="utf-8")
-    shared = "python youtube-shorts-bot/production/batch.py"
-    if shared not in daily:
-        raise AssertionError("Daily Production no longer invokes shared production batch orchestration")
+    for token in ("actions/workflows/run.yml/dispatches", "batch_id", "source_sha"):
+        if token not in daily:
+            raise AssertionError("Daily Production no longer implements the opaque public dispatch contract")
     if "python youtube-shorts-bot/production/dry_run.py" not in dry:
         raise AssertionError("Dry Run no longer executes the production-equivalence harness")
+
+    forbidden_daily = (
+        "youtube-shorts-runner", "media_resolver.py", "render_aligned.py",
+        "verify_publication.py", "finalize_receipt.py", "upload-artifact",
+    )
+    found_daily = [token for token in forbidden_daily if token in daily]
+    if found_daily:
+        raise AssertionError(f"Private dispatcher contains heavy execution path(s): {found_daily}")
 
     forbidden_dry = (
         "publishing/publish.py --stage upload",

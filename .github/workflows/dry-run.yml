@@ -189,16 +189,17 @@ jobs:
           for secret in secret_names:
               assert secret not in dry
           assert ('container' + ':') not in dry
-          assert 'group: wacky-dramas-youtube-upload' in batch
+          assert 'group: private-production-dispatch-' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
-          assert 'python youtube-shorts-bot/production/batch.py' in batch
-          assert 'python youtube-shorts-bot/production/pipeline.py' in batch
+          assert 'actions/workflows/run.yml/dispatches' in batch
+          assert "'inputs': {'batch_id':" in batch
+          assert "'source_sha':" in batch
           assert 'python youtube-shorts-bot/production/dry_run.py' in dry
-          assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
-          assert batch.index('ingest-manifest') < batch.index('production/pipeline.py')
+          for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
+              assert forbidden not in batch
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, shared batch orchestration, upload serialization and production routing verified.')
+          print('Dry-run isolation and opaque public production routing verified.')
           PY
 
       - name: Confirm zero expensive production side effects
