@@ -19,6 +19,7 @@ concurrency:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   dry-run:
@@ -217,21 +218,23 @@ jobs:
           echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, immutable planning mutation, or background-sourcing mutation.'
 
 
+
   alignment-model-benchmark:
     name: Wav2Vec2 reuse benchmark
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      GHCR_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Pull the existing production runner image
+        shell: bash
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker pull ghcr.io/skyfremen/youtube-shorts-runner:latest
 
       - name: Measure cold Wav2Vec2 initialization versus in-process reuse
         shell: bash
         run: |
-          python - <<'PY'
+          docker run --rm -i ghcr.io/skyfremen/youtube-shorts-runner:latest python - <<'PY'
           import json
           import statistics
           import subprocess
@@ -266,9 +269,6 @@ jobs:
           model = bundle.get_model()
           model.eval()
           ready = time.monotonic()
-
-          # The retained model is intentionally exercised twice to prove the
-          # benchmark measures a usable inference object, not just deserialization.
           waveform = torch.zeros((1, 16000), dtype=torch.float32)
           with torch.inference_mode():
               model(waveform)
