@@ -16,9 +16,9 @@ The request bytes are bound to the exact commit that first added them. Productio
 Two current publication modes share the same recovery guarantees:
 
 - **Ad-hoc request:** no `publication` object. The uploader requires an immediate `privacyStatus=public` body and no `publishAt`.
-- **Daily-growth schema-v3 request:** immutable `publication.mode=scheduled`. The uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
+- **Scheduled schema-v3 request:** immutable `publication.mode=scheduled`. The uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
-The workflow file `single-production.yml` retains a historical filename, but its current workflow name and production behavior are **Wacky Dramas Ad-hoc Public Publish**. The filename is not a publication contract.
+The canonical ad-hoc workflow is `single-production.yml` (**Single Production**). The canonical daily batch workflow is `daily-production.yml` (**Daily Production**). Publication behavior is determined by the immutable request contract, not by historical workflow naming.
 
 ## Retry and idempotency contract
 
@@ -69,13 +69,13 @@ The receipt itself is create-only. A rerun may reuse an existing verified receip
 
 ## Operator recovery
 
-For an existing ad-hoc content ID, manually run **Wacky Dramas Ad-hoc Public Publish** with:
+For an existing ad-hoc content ID, manually run **Single Production** with:
 
 - `content_id=<existing immutable content_id>`
 - `recovery_only=true`
 - `render_preview=false` unless a separate debug preview is explicitly needed
 
-For a daily-growth content ID, use `daily-production.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
+For a scheduled daily content ID, use `daily-production.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
 
 If recovery reports conflicting videos, mismatched evidence, an intent with no observable video, or any other ambiguous state, stop automated insertion and reconcile the durable GitHub/YouTube evidence. Never delete an intent, edit an immutable request/receipt, or add a force-reupload path to clear ambiguity.
 

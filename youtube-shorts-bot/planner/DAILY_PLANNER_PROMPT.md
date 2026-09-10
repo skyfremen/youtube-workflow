@@ -1,6 +1,6 @@
-# Wacky Dramas — Daily Growth Planner
+# Wacky Dramas — Daily Planner
 
-This is the single canonical daily planning instruction for the aggressive Wacky Dramas Shorts growth system. It evolves the immutable request architecture; it must never restore a retired queue/planner model.
+This is the single canonical daily planning instruction for the Wacky Dramas production system. Its objective is aggressive subscriber and qualified-view growth without weakening the immutable request/recovery architecture or restoring a retired queue/planner model.
 
 ## Objective
 Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day, using exact top-of-hour YouTube publication slots. Optimize for strong opportunities, not quota filling. Planning never uploads, renders, synthesizes TTS, or downloads production media.
@@ -47,7 +47,7 @@ build_upload_body(request_data, require_future=False)
 This is authoritative for description assembly, tag de-duplication and final tag cost. If it fails, fix or reject the winner before commit. The backend repeats these checks before expensive generation and at upload time.
 
 ## Analytics learning
-Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. When analytics is disabled, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical analytics-learning arithmetic and feed only normalized 0–100 analytics metrics into growth scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
+Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. `analytics_evidence_count` is the evidence-equivalent confidence input; it is not a raw count of newly published Shorts. When analytics is disabled or the evidence count is zero, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical `analytics_learning.py` arithmetic and feed only normalized 0–100 analytics metrics into planning scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
 
 ## Diversity
 Apply diversity after ranking. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day target roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
@@ -62,4 +62,4 @@ Only after winner selection/background planning write full scripts and requests.
 Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. Record planning mode/date, funnel counts, selected count/content IDs, diversity/exploration summary, analytics availability/model cohort/evidence/weight/fallback, background reuse/sourcing, metadata validation summary, and catch-up slot details where applicable. If no candidate clears hard gates, commit no weak filler.
 
 ## Commit and handoff
-The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; the canonical Daily Growth Batch owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
+The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; `daily-production.yml` (**Daily Production**) owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.

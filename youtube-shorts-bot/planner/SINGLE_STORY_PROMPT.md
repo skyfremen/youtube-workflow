@@ -64,4 +64,4 @@ The request must use schema version 2:
 }
 ```
 
-Do not include privacy, `publishAt`, direct media URLs, rendition data, license/creator data, usage counters, fixed `duration_seconds`, old setup/payoff/CTA fields, music fields, queue slots, series fields, or Part 2 fields. The production workflow owns private-upload policy, physical rendition resolution, and runtime duration.
+Do not include privacy, `publishAt`, direct media URLs, rendition data, license/creator data, usage counters, fixed `duration_seconds`, old setup/payoff/CTA fields, music fields, queue slots, series fields, or Part 2 fields. `single-production.yml` owns the immediate-public upload policy, physical rendition resolution, and runtime duration.

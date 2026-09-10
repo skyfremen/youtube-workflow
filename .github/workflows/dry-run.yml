@@ -3,6 +3,7 @@ name: Dry Run
 on:
   push:
     paths:
+      - 'README.md'
       - '.github/workflows/**'
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
@@ -73,8 +74,9 @@ jobs:
           }
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
-          active_files = [*Path('youtube-shorts-bot').glob('*.py'),*Path('youtube-shorts-bot/planner').glob('*.md'),
-                          *Path('youtube-shorts-bot').glob('*.md'),*Path('.github/workflows').glob('*.yml')]
+          active_files = [*Path('youtube-shorts-bot').glob('*.py'),
+                          *Path('youtube-shorts-bot/planner').glob('*.md'),*Path('youtube-shorts-bot').glob('*.md'),
+                          *Path('.github/workflows').glob('*.yml')]
           forbidden_terms = ['Wacky Insights','@WACKYINSIGHTS','youtube-story-bot','youtube-shorts-bot-backup',
                              'content/latest.json','content/plans/','queue_manager.py','media-library/music.json']
           hits=[]

@@ -51,7 +51,7 @@ Raw candidates are cheap structured premises. They do not trigger media download
 
 Central strategy values live in `planning_config.py`. `planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change the weighting.
 
-With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap of **60%** so editorial judgment and exploration always remain material.
+With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap of **60%** so editorial judgment and exploration always remain material.
 
 Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning_engine.py` only as the normalized `historical_attribute_fit` score.
 
@@ -69,7 +69,7 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 
 Schema v2 remains the ad-hoc compatibility path. It has no scheduled `publication` object and therefore follows the current immediate-public ad-hoc upload contract.
 
-Schema v3 is the daily-growth path. It keeps the same canonical story/narration/visual/YouTube fields and adds:
+Schema v3 is the scheduled daily-planning path. It keeps the same canonical story/narration/visual/YouTube fields and adds:
 
 - immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, exact UTC `publish_at`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
@@ -120,7 +120,7 @@ The external daily planner follows `planner/DAILY_PLANNER_PROMPT.md` and creates
 
 `[daily production] YYYY-MM-DD`
 
-That commit is routed to the batch workflow. The ad-hoc workflow explicitly ignores it.
+That commit is routed to `daily-production.yml`. `single-production.yml` explicitly ignores it.
 
 ## Repository state hygiene
 
@@ -131,7 +131,7 @@ Transient Python caches, local environment files, render outputs, and preview ou
 Before a production change is merged:
 
 1. branch/static compilation and all unit tests must pass
-2. growth acceptance must generate at least 120 raw premises
+2. planning acceptance must generate at least 120 raw premises
 3. hard rejection, title/hook scoring, analytics cold-start and diversity must execute
 4. selected requests must have unique Singapore hourly slots
 5. dry-run must prove no TTS, render, upload or false receipt side effects

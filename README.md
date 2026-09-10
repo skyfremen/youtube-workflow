@@ -12,10 +12,10 @@ The production path is request-driven and append-only:
 4. Primary/backup logical background IDs are resolved through the verified media registry, with rendition preflight and controlled fallback.
 5. Kokoro generates narration using the approved voice/speed contract; captions are aligned and the video is rendered at 720×1280 / 30 fps / H.264 + AAC.
 6. Upload recovery is checked before generation or insertion. A durable upload intent is an irreversible retry fence.
-7. Ad-hoc requests publish immediately public. Scheduled growth requests upload private with the immutable YouTube `publishAt` value.
+7. Ad-hoc requests publish immediately public. Scheduled daily requests upload private with the immutable YouTube `publishAt` value.
 8. YouTube state is verified through the authenticated owner API.
 9. A success receipt is written only after verification succeeds and is immutable thereafter.
-10. Scheduled growth receipts feed age-matched analytics and future candidate scoring.
+10. Scheduled daily receipts feed age-matched analytics and future candidate scoring.
 
 Canonical durable paths:
 
@@ -34,14 +34,14 @@ The supported workflow set is deliberately small:
 
 | Workflow | Purpose |
 | --- | --- |
-| `single-production.yml` | Ad-hoc public publish plus recovery-only reruns and optional debug preview. The historical filename is retained to avoid an unnecessary workflow-identity rename; the workflow name and current behavior are public publish. |
+| `single-production.yml` | Ad-hoc immediate-public publish, recovery-only reruns, and optional debug preview. |
 | `daily-production.yml` | Processes a daily selected batch, isolates per-video failures, preserves shared-state safety, and delegates hourly release timing to YouTube scheduling. |
 | `analytics-collection.yml` | Collects age-matched Shorts analytics and updates the learning snapshot/model. |
 | `background-management.yml` | Maintains official Pexels rendition metadata in the verified background registry. |
 | `build-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
-| `dry-run.yml` | Static, unit, contract, growth-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
+| `dry-run.yml` | Static, unit, contract, planning-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
 
-The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, and migration workflow paths do not reappear.
+The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, migration, and stale pre-refactor naming do not reappear in active files.
 
 ## Publication and recovery invariants
 
@@ -57,7 +57,7 @@ See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-
 
 ## Development and verification
 
-The canonical lightweight validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises request compatibility and the 120-premise growth acceptance path, checks renderer constants, enforces workflow safety, and proves the dry run creates no TTS/render/upload side effects.
+The canonical lightweight validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises request compatibility and the 120-premise planning acceptance path, checks renderer constants, enforces workflow safety and naming contracts, and proves the dry run creates no TTS/render/upload side effects.
 
 A production upload is **not** required to validate repository cleanup or ordinary code changes. Do not use public YouTube publishing as a cleanup test.
 

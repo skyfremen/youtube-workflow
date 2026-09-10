@@ -50,7 +50,7 @@ Planning rules:
 
 The YouTube title and the first spoken story-body line should cooperate rather than repeat each other.
 
-Titles should create a truthful curiosity gap with specific tension. Prefer concrete contradiction/discovery structures over generic descriptions. Generate materially different title patterns during daily-growth planning, score them independently, and choose only an accurate title.
+Titles should create a truthful curiosity gap with specific tension. Prefer concrete contradiction/discovery structures over generic descriptions. Generate materially different title patterns during daily planning, score them independently, and choose only an accurate title.
 
 Never promise a reveal, person, crime, consequence or emotional event that does not actually occur in the script.
 
@@ -71,9 +71,9 @@ Always use:
 
 Never output retired branding, old CTA fields, series/Part-2 fields, music requirements, or a mutable publication queue.
 
-## Daily growth planning
+## Daily planning
 
-`SINGLE_STORY_PROMPT.md` remains the one-story private/unscheduled path. `DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v3 scheduled requests.
+`SINGLE_STORY_PROMPT.md` is the one-story immediate-public path through `single-production.yml`. `DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v3 scheduled requests through `daily-production.yml`.
 
 The daily funnel generates at least 120 meaningfully distinct raw premises, rejects weak/duplicate ideas cheaply, develops only semifinalists, competes at least five truthful titles per semifinalist, applies cold-start/analytics scoring plus diversity, and creates at most 24 immutable production requests.
 
