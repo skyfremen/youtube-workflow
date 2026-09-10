@@ -215,3 +215,61 @@ jobs:
           test ! -d youtube-shorts-bot/content/planning
           test ! -d youtube-shorts-bot/content/background-sourcing
           echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, immutable planning mutation, or background-sourcing mutation.'
+
+
+  verification-pipeline-benchmark:
+    name: Verification pipeline benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare sequential and deferred YouTube verification
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import time
+
+          count = 24
+          scale = 200.0
+          production_seconds = 199.119
+          youtube_processing_seconds = 22.891
+          production_sleep = production_seconds / scale
+          processing_sleep = youtube_processing_seconds / scale
+
+          sequential_started = time.perf_counter()
+          for _ in range(count):
+              time.sleep(production_sleep)
+              uploaded_at = time.perf_counter()
+              ready_at = uploaded_at + processing_sleep
+              time.sleep(max(0.0, ready_at - time.perf_counter()))
+          sequential_elapsed = time.perf_counter() - sequential_started
+
+          pipelined_started = time.perf_counter()
+          ready_at = []
+          for _ in range(count):
+              time.sleep(production_sleep)
+              ready_at.append(time.perf_counter() + processing_sleep)
+          for ready in ready_at:
+              time.sleep(max(0.0, ready - time.perf_counter()))
+          pipelined_elapsed = time.perf_counter() - pipelined_started
+
+          measured_scaled_saving = (sequential_elapsed - pipelined_elapsed) * scale
+          conservative_expected_saving = youtube_processing_seconds * (count - 1)
+          tolerance = max(10.0, conservative_expected_saving * 0.08)
+          assert abs(measured_scaled_saving - conservative_expected_saving) <= tolerance, (
+              measured_scaled_saving, conservative_expected_saving
+          )
+
+          result = {
+              "shorts": count,
+              "scale": scale,
+              "source_production_seconds_per_short": production_seconds,
+              "source_youtube_processing_seconds_per_short": youtube_processing_seconds,
+              "sequential_wall_seconds_scaled": sequential_elapsed * scale,
+              "pipelined_wall_seconds_scaled": pipelined_elapsed * scale,
+              "saving_seconds_per_24": measured_scaled_saving,
+              "saving_minutes_per_day": measured_scaled_saving / 60.0,
+              "saving_minutes_per_30_day_month": measured_scaled_saving * 30.0 / 60.0,
+              "conservative_model": "only the first 23 waits are hidden; final wait remains",
+          }
+          print("PERF_RESULT " + json.dumps(result, sort_keys=True))
+          PY
