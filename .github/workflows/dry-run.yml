@@ -24,10 +24,16 @@ concurrency:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   dry-run:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     env:
       VIDEO_WIDTH: '720'
       VIDEO_HEIGHT: '1280'
@@ -39,13 +45,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install lightweight dry-run dependencies
+      - name: Verify production container dependencies
+        shell: bash
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends ffmpeg
-          python -m pip install --disable-pip-version-check --no-input \
-            'numpy>=2.0.2,<2.3' \
-            'Pillow>=10,<12'
+          python --version
+          ffmpeg -version | head -n 1
+          python - <<'PY'
+          import numpy
+          from PIL import Image
+          print(f'Production container dependencies ready: numpy={numpy.__version__}, Pillow={Image.__version__}')
+          PY
 
       - name: Compile production Python
         run: find youtube-shorts-bot -type f -name '*.py' -print0 | xargs -0 python -m py_compile
@@ -184,7 +193,9 @@ jobs:
           )
           for secret in secret_names:
               assert secret not in dry
-          assert ('container' + ':') not in dry
+          assert 'image: ghcr.io/skyfremen/youtube-shorts-runner:latest' in dry
+          assert 'sudo apt-get' not in dry
+          assert 'python -m pip install' not in dry
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
@@ -193,7 +204,7 @@ jobs:
           assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
           assert batch.index('ingest-manifest') < batch.index('render_aligned.py')
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, shared batch orchestration, upload serialization and production routing verified.')
+          print('Dry-run isolation, production-container parity, shared batch orchestration, upload serialization and production routing verified.')
           PY
 
       - name: Confirm zero expensive production side effects
