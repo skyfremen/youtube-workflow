@@ -14,11 +14,13 @@ class WorkflowFailFastContracts(unittest.TestCase):
     def test_daily_batch_runs_one_shared_youtube_preflight_before_external_cache_and_generation(self):
         batch = self.batch()
         preflight = "python youtube-shorts-bot/auth_preflight.py"
-        self.assertEqual(batch.count(preflight), 1)
-        self.assertLess(batch.index("python youtube-shorts-bot/validate_media_library.py"), batch.index(preflight))
-        self.assertLess(batch.index(preflight), batch.index("ingest-manifest"))
-        self.assertLess(batch.index(preflight), batch.index("media_resolver.py"))
-        self.assertLess(batch.index(preflight), batch.index("render_aligned.py"))
+        # One production preflight plus one conditional analytics fallback path.
+        self.assertEqual(batch.count(preflight), 2)
+        first_preflight = batch.index(preflight)
+        self.assertLess(batch.index("python youtube-shorts-bot/validate_media_library.py"), first_preflight)
+        self.assertLess(first_preflight, batch.index("ingest-manifest"))
+        self.assertLess(first_preflight, batch.index("media_resolver.py"))
+        self.assertLess(first_preflight, batch.index("render_aligned.py"))
 
     def test_global_duplicate_slot_contradiction_fails_before_shared_network_preflight(self):
         batch = self.batch()
@@ -32,6 +34,24 @@ class WorkflowFailFastContracts(unittest.TestCase):
         self.assertIn(missing_pexels, batch)
         self.assertIn("Global failure", batch)
         self.assertLess(batch.index(missing_pexels), batch.index("python youtube-shorts-bot/auth_preflight.py"))
+
+    def test_shared_youtube_preflight_exports_tri_state_for_independent_analytics(self):
+        batch = self.batch()
+        initial = 'echo "youtube_preflight_status=not_run" >> "$GITHUB_OUTPUT"'
+        passed = 'echo "youtube_preflight_status=passed" >> "$GITHUB_OUTPUT"'
+        failed = 'echo "youtube_preflight_status=failed" >> "$GITHUB_OUTPUT"'
+        preflight = "python youtube-shorts-bot/auth_preflight.py"
+        analytics = batch.index("- name: Collect analytics for next planning cycle")
+        self.assertIn(initial, batch)
+        self.assertIn(passed, batch)
+        self.assertIn(failed, batch)
+        self.assertLess(batch.index(initial), batch.index(preflight))
+        self.assertLess(batch.index(preflight), batch.index(passed))
+        self.assertLess(batch.index(passed), analytics)
+        self.assertIn(
+            "PRODUCTION_YOUTUBE_PREFLIGHT_STATUS: ${{ steps.batch.outputs.youtube_preflight_status }}",
+            batch[analytics:],
+        )
 
     def test_individual_schema_validation_is_inside_process_one_not_global_preflight(self):
         batch = self.batch()
@@ -109,6 +129,59 @@ class WorkflowFailFastContracts(unittest.TestCase):
         skip_at = batch.index(skip)
         for command in ("media_resolver.py", "render_aligned.py", "verify_render.py", "publish.py --stage upload"):
             self.assertLess(skip_at, batch.index(command, skip_at))
+
+    def test_analytics_is_non_blocking_and_fail_first_guards_precede_collection(self):
+        batch = self.batch()
+        start = batch.index("- name: Collect analytics for next planning cycle")
+        analytics = batch[start:]
+        self.assertIn("if: ${{ always() && github.event_name == 'push' }}", analytics)
+        self.assertIn("continue-on-error: true", analytics)
+
+        credentials = analytics.index("ANALYTICS FAIL-FIRST 1")
+        duplicate = analytics.index("ANALYTICS FAIL-FIRST 2")
+        auth = analytics.index("ANALYTICS FAIL-FIRST 3")
+        eligible = analytics.index("ANALYTICS FAIL-FIRST 4")
+        collect = analytics.index("python youtube-shorts-bot/analytics_collection.py")
+        validate = analytics.index("ANALYTICS FAIL-CLOSED")
+        commit = analytics.index('git commit -m "[skip upload] update YouTube analytics ${analytics_marker}"')
+
+        self.assertLess(credentials, duplicate)
+        self.assertLess(duplicate, auth)
+        self.assertLess(auth, eligible)
+        self.assertLess(eligible, collect)
+        self.assertLess(collect, validate)
+        self.assertLess(validate, commit)
+
+    def test_analytics_reuses_known_good_auth_and_does_not_repeat_known_failure(self):
+        batch = self.batch()
+        analytics = batch[batch.index("- name: Collect analytics for next planning cycle"):]
+        self.assertIn('case "${PRODUCTION_YOUTUBE_PREFLIGHT_STATUS:-not_run}" in', analytics)
+        self.assertIn("passed)", analytics)
+        self.assertIn("Reusing successful production YouTube preflight", analytics)
+        self.assertIn("failed)", analytics)
+        self.assertIn("Production already proved YouTube authentication/readiness failed", analytics)
+        self.assertIn("Production did not reach YouTube preflight", analytics)
+        self.assertEqual(analytics.count("python youtube-shorts-bot/auth_preflight.py"), 1)
+
+    def test_analytics_rerun_guard_uses_stable_run_id(self):
+        batch = self.batch()
+        analytics = batch[batch.index("- name: Collect analytics for next planning cycle"):]
+        self.assertIn('analytics_marker="[analytics run ${GITHUB_RUN_ID}]"', analytics)
+        self.assertIn("git log -1 --fixed-strings --grep=\"$analytics_marker\"", analytics)
+        self.assertIn("skipping duplicate collection", analytics)
+        self.assertIn("${analytics_marker}", analytics)
+
+    def test_invalid_analytics_output_is_restored_before_any_commit(self):
+        batch = self.batch()
+        analytics = batch[batch.index("- name: Collect analytics for next planning cycle"):]
+        validation = analytics.index("Analytics output validation passed")
+        restore = analytics.index("git restore --source=HEAD --staged --worktree -- youtube-shorts-bot/analytics/")
+        commit = analytics.index('git commit -m "[skip upload] update YouTube analytics ${analytics_marker}"')
+        self.assertLess(validation, restore)
+        self.assertLess(restore, commit)
+        self.assertIn("retaining previous committed model", analytics)
+        self.assertIn("dated analytics snapshot differs from latest.json", analytics)
+        self.assertIn("analytics/latest.json embedded model differs from model.json", analytics)
 
 
 if __name__ == "__main__":
