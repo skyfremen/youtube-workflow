@@ -251,7 +251,7 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          # Intentionally do not use `set -e` at loop scope: process_one failures
+          # Intentionally do not use `set -e` at loop scope: per-video failures
           # are isolated, counted, and the next immutable request must continue.
           set -uo pipefail
           success=0
@@ -259,6 +259,13 @@ jobs:
           failed=0
           : > /tmp/batch-failures.txt
           : > /tmp/batch-skipped.txt
+          : > /tmp/batch-pending-verification.txt
+          : > /tmp/batch-pipeline-metrics.tsv
+          printf 'content_id\tevent\tepoch_seconds\n' >> /tmp/batch-pipeline-metrics.tsv
+
+          epoch_seconds() {
+            python -c 'import time; print(f"{time.time():.6f}")'
+          }
 
           source_for_request() {
             local req="$1"
@@ -266,13 +273,18 @@ jobs:
             git log --diff-filter=A --format=%H -- "$req" | tail -1
           }
 
-          process_one() {
-            set -euo pipefail
+          set_request_context() {
             local req="$1"
             local cid
             cid="$(basename "$req" .json)"
             export SOURCE_COMMIT_SHA="$(source_for_request "$req")"
             export STORY_OUTPUT_DIR="youtube-shorts-bot/output/$cid"
+          }
+
+          process_one() {
+            set -euo pipefail
+            local req="$1"
+            set_request_context "$req"
             rm -rf "$STORY_OUTPUT_DIR"
             mkdir -p "$STORY_OUTPUT_DIR"
 
@@ -320,16 +332,50 @@ jobs:
               python youtube-shorts-bot/verify_render.py --request "$req"
               python youtube-shorts-bot/publish.py --stage upload --request "$req"
             fi
-            python youtube-shorts-bot/verify_youtube_private.py --request "$req"
-            python youtube-shorts-bot/finalize.py --request "$req"
+
+            # YouTube processing is asynchronous. Defer the read-only processing
+            # check and immutable receipt commit until all eligible uploads have
+            # started, allowing later renders to cover the platform processing wait.
+            local queued_at
+            queued_at="$(epoch_seconds)"
+            printf '%s\t%s\n' "$req" "$queued_at" >> /tmp/batch-pending-verification.txt
+            printf '%s\tverification_deferred\t%s\n' "$(basename "$req" .json)" "$queued_at" >> /tmp/batch-pipeline-metrics.tsv
           }
 
+          verify_one() {
+            set -euo pipefail
+            local req="$1"
+            local deferred_at="$2"
+            local cid started_at completed_at
+            cid="$(basename "$req" .json)"
+            set_request_context "$req"
+            started_at="$(epoch_seconds)"
+            printf '%s\tverification_started\t%s\n' "$cid" "$started_at" >> /tmp/batch-pipeline-metrics.tsv
+            python youtube-shorts-bot/verify_youtube_private.py --request "$req"
+            python youtube-shorts-bot/finalize.py --request "$req"
+            completed_at="$(epoch_seconds)"
+            printf '%s\tverification_completed\t%s\n' "$cid" "$completed_at" >> /tmp/batch-pipeline-metrics.tsv
+            python - "$cid" "$deferred_at" "$started_at" "$completed_at" <<'PY'
+          import sys
+          cid, deferred_at, started_at, completed_at = sys.argv[1], *map(float, sys.argv[2:])
+          print(
+              f"PERF_METRIC content_id={cid} "
+              f"youtube_processing_overlap_seconds={started_at - deferred_at:.3f} "
+              f"verification_finalize_seconds={completed_at - started_at:.3f}"
+          )
+          PY
+          }
+
+          batch_started_at="$(epoch_seconds)"
+          printf -- '-\tproduction_started\t%s\n' "$batch_started_at" >> /tmp/batch-pipeline-metrics.tsv
+
+          # Phase 1: preserve the existing recovery/validation/render/upload order,
+          # but do not wait for YouTube processing before starting the next Short.
           while IFS= read -r req; do
             [ -n "$req" ] || continue
-            echo "::group::$(basename "$req" .json)"
+            echo "::group::$(basename "$req" .json) — production"
             if process_one "$req"; then
-              success=$((success+1))
-              echo "Completed: $req"
+              echo "Queued for exact YouTube verification: $req"
             else
               rc=$?
               if [ "$rc" -eq 10 ]; then
@@ -337,12 +383,44 @@ jobs:
                 echo "Skipped: $req"
               else
                 failed=$((failed+1))
-                echo "$req | per-video failure | exit_code=$rc" >> /tmp/batch-failures.txt
-                echo "::error title=Per-video failure::Failed: $req — continuing remaining Shorts; durable intent/recovery rules remain authoritative"
+                echo "$req | production/upload failure | exit_code=$rc" >> /tmp/batch-failures.txt
+                echo "::error title=Per-video production failure::Failed: $req — continuing remaining Shorts; durable intent/recovery rules remain authoritative"
               fi
             fi
             echo "::endgroup::"
           done < /tmp/batch-requests.txt
+
+          verification_started_at="$(epoch_seconds)"
+          printf -- '-\tverification_phase_started\t%s\n' "$verification_started_at" >> /tmp/batch-pipeline-metrics.tsv
+
+          # Phase 2: every successfully uploaded or recovered request still receives
+          # the identical bounded exact-state verification and immutable receipt.
+          while IFS=$'\t' read -r req deferred_at; do
+            [ -n "$req" ] || continue
+            echo "::group::$(basename "$req" .json) — verification"
+            if verify_one "$req" "$deferred_at"; then
+              success=$((success+1))
+              echo "Completed: $req"
+            else
+              rc=$?
+              failed=$((failed+1))
+              echo "$req | verification/finalization failure | exit_code=$rc" >> /tmp/batch-failures.txt
+              echo "::error title=Per-video verification failure::Failed: $req — continuing remaining receipts; rerun recovery remains authoritative"
+            fi
+            echo "::endgroup::"
+          done < /tmp/batch-pending-verification.txt
+
+          batch_completed_at="$(epoch_seconds)"
+          printf -- '-\tbatch_completed\t%s\n' "$batch_completed_at" >> /tmp/batch-pipeline-metrics.tsv
+          python - "$batch_started_at" "$verification_started_at" "$batch_completed_at" <<'PY'
+          import sys
+          started, verification_started, completed = map(float, sys.argv[1:])
+          print(
+              f"PERF_METRIC production_phase_seconds={verification_started - started:.3f} "
+              f"verification_phase_seconds={completed - verification_started:.3f} "
+              f"batch_process_seconds={completed - started:.3f}"
+          )
+          PY
 
           echo "Batch complete: success=$success skipped=$skipped failed=$failed total=$((success+skipped+failed))"
           if [ "$skipped" -gt 0 ]; then
@@ -352,8 +430,9 @@ jobs:
           if [ "$failed" -gt 0 ]; then
             echo "Per-video failed requests (other valid Shorts were allowed to continue):"
             cat /tmp/batch-failures.txt
-            # Surface the partial failure after all processable Shorts had a chance
-            # to complete. This keeps alerting visible without sacrificing the day.
+            # Surface partial failures after every processable upload and receipt had
+            # a chance to complete. This keeps alerting visible without sacrificing
+            # the day or weakening immutable recovery.
             exit 1
           fi
 
@@ -366,5 +445,6 @@ jobs:
             youtube-shorts-bot/output/**/*.json
             /tmp/batch-failures.txt
             /tmp/batch-skipped.txt
+            /tmp/batch-pipeline-metrics.tsv
           if-no-files-found: ignore
           retention-days: 7
