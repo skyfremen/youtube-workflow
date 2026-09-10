@@ -100,6 +100,9 @@ jobs:
       - name: Run unit and contract tests
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
 
+      - name: Run production-equivalence dry run
+        run: python youtube-shorts-bot/production/dry_run.py
+
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/media/validate_media_library.py
 
@@ -183,10 +186,12 @@ jobs:
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
+          assert 'python youtube-shorts-bot/production/batch.py' in batch
+          assert 'python youtube-shorts-bot/production/dry_run.py' in dry
           assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
           assert batch.index('ingest-manifest') < batch.index('render_aligned.py')
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, upload serialization and production routing verified.')
+          print('Dry-run isolation, shared batch orchestration, upload serialization and production routing verified.')
           PY
 
       - name: Confirm zero expensive production side effects
@@ -197,4 +202,4 @@ jobs:
           test ! -f youtube-shorts-bot/output/upload_result.json
           test ! -d youtube-shorts-bot/content/planning
           test ! -d youtube-shorts-bot/content/background-sourcing
-          echo 'Dry run passed with no TTS, render, upload, receipt, planning, or sourcing side effects.'
+          echo 'Dry run passed with no TTS, production render, upload, receipt, planning, or sourcing side effects.'
