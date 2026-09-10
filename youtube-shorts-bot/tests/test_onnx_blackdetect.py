@@ -9,7 +9,7 @@ sys.path.insert(0, str(ROOT))
 
 import render
 from tts_backend import OnnxKokoroSynthesizer, sentence_chunks, validate_audio
-from verify_render import parse_black_durations, resolve_blackdetect
+from verify_render import inline_blackdetect_max
 
 
 class FakeOnnxEngine:
@@ -34,8 +34,13 @@ class OnnxNarrationTests(unittest.TestCase):
         text = "One short sentence. Another short sentence. Final sentence."
         audio, segments, metrics = synth.synthesize(text, "af_heart", 1.75)
         self.assertGreater(audio.size, 0)
-        self.assertEqual([text for text, _samples in segments], [call[0] for call in synth.engine.calls])
-        self.assertTrue(all(call[1:] == ("af_heart", 1.75, "en-us") for call in synth.engine.calls))
+        self.assertEqual(
+            [text for text, _samples in segments],
+            [call[0] for call in synth.engine.calls],
+        )
+        self.assertTrue(
+            all(call[1:] == ("af_heart", 1.75, "en-us") for call in synth.engine.calls)
+        )
         self.assertEqual(metrics["clipped_fraction"], 0.0)
 
     def test_audio_validation_rejects_wrong_sample_rate(self):
@@ -63,51 +68,36 @@ class OnnxNarrationTests(unittest.TestCase):
 
 
 class BlackdetectTests(unittest.TestCase):
-    def test_black_duration_parser(self):
-        stderr = "black_start:1 black_end:1.4 black_duration:0.4\nblack_duration:0.72"
-        self.assertEqual(parse_black_durations(stderr), [0.4, 0.72])
-
-    def test_inline_evidence_skips_legacy_full_decode(self):
-        def must_not_run(_video):
-            raise AssertionError("legacy full-video blackdetect must not run")
-
-        mode, maximum = resolve_blackdetect(
-            {
-                "inline_blackdetect_passed": True,
-                "inline_blackdetect_max_duration_seconds": 0.0,
-            },
-            Path("unused.mp4"),
-            legacy_runner=must_not_run,
-        )
-        self.assertEqual(mode, "inline_during_render")
-        self.assertEqual(maximum, 0.0)
+    def test_inline_evidence_is_required(self):
+        with self.assertRaisesRegex(SystemExit, "missing or failed"):
+            inline_blackdetect_max({})
+        with self.assertRaisesRegex(SystemExit, "missing or failed"):
+            inline_blackdetect_max({"inline_blackdetect_passed": False})
 
     def test_inline_evidence_at_threshold_fails_closed(self):
         with self.assertRaises(SystemExit):
-            resolve_blackdetect(
+            inline_blackdetect_max(
                 {
                     "inline_blackdetect_passed": True,
                     "inline_blackdetect_max_duration_seconds": 0.75,
-                },
-                Path("unused.mp4"),
+                }
             )
 
-    def test_legacy_metadata_uses_compatibility_full_decode(self):
-        seen = []
-
-        def legacy(video):
-            seen.append(video)
-            return 0.10
-
-        video = Path("legacy.mp4")
-        mode, maximum = resolve_blackdetect({}, video, legacy_runner=legacy)
-        self.assertEqual(mode, "legacy_second_pass")
-        self.assertEqual(maximum, 0.10)
-        self.assertEqual(seen, [video])
+    def test_inline_evidence_below_threshold_passes(self):
+        maximum = inline_blackdetect_max(
+            {
+                "inline_blackdetect_passed": True,
+                "inline_blackdetect_max_duration_seconds": 0.1,
+            }
+        )
+        self.assertEqual(maximum, 0.1)
 
     def test_renderer_blackdetect_threshold_is_unchanged(self):
         self.assertEqual(render.BLACKDETECT_MAX_ALLOWED_SECONDS, 0.75)
-        self.assertEqual(render.BLACKDETECT_FILTER, "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10")
+        self.assertEqual(
+            render.BLACKDETECT_FILTER,
+            "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10",
+        )
 
 
 if __name__ == "__main__":
