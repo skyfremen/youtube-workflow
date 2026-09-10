@@ -36,7 +36,7 @@ jobs:
       STORY_RENDER_MAX_SECONDS: '5'
       DRY_RUN_ARTIFACT_DIR: /tmp/wacky-dramas-dry-run-visual
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -213,7 +213,7 @@ jobs:
 
       - name: Upload Dry Run visual artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dry-run-visual-${{ github.run_number }}
           path: /tmp/wacky-dramas-dry-run-visual/

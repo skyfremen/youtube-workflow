@@ -128,25 +128,18 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn(token, prompt)
         self.assertIn("name: Daily Production", batch)
         self.assertIn("contains(github.event.head_commit.message, '[daily production]')", batch)
-        self.assertIn("payload.get('content_ids')", batch)
-        self.assertIn("payload.get('final_selected')", batch)
+        self.assertIn("actions/workflows/run.yml/dispatches", batch)
+        self.assertIn("'inputs': {'batch_id':", batch)
+        self.assertIn("'source_sha':", batch)
 
     def test_execution_chain_uses_current_components(self):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        pipeline = (BOT_ROOT / "production/pipeline.py").read_text(encoding="utf-8")
-        combined = batch + pipeline
+        self.assertIn("actions/workflows/run.yml/dispatches", batch)
         for token in (
-            "validation/validate_content.py",
-            "publishing/auth_preflight.py",
-            "media/media_resolver.py",
-            "rendering/render_aligned.py",
-            "rendering/verify_render.py",
-            "publishing/publish.py",
-            "publishing/verify_publication.py",
-            "publishing/finalize_receipt.py",
+            "media/media_resolver.py", "rendering/render_aligned.py",
+            "publishing/verify_publication.py", "publishing/finalize_receipt.py",
         ):
-            self.assertIn(token, combined)
-        self.assertIn('"upload"', pipeline)
+            self.assertNotIn(token, batch)
 
         analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
         backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")

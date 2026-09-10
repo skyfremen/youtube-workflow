@@ -8,6 +8,7 @@ PROTECTED_PATHS = (
     "youtube-shorts-bot/content/recovery",
     "youtube-shorts-bot/content/planning",
     "youtube-shorts-bot/content/background-sourcing",
+    "youtube-shorts-bot/content/completions",
 )
 
 

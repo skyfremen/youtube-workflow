@@ -4,8 +4,10 @@ env:
   PYTHONPATH: youtube-shorts-bot
 
 on:
-  # Manual fallback only. Scheduled collection now runs inside Daily Production
-  # so it reuses the already-running production runner.
+  push:
+    branches: [main]
+    paths:
+      - 'youtube-shorts-bot/content/completions/*.json'
   workflow_dispatch:
 
 jobs:
@@ -18,7 +20,7 @@ jobs:
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
       - name: Install analytics-only dependencies
