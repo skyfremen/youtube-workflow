@@ -73,7 +73,7 @@ Never output retired branding, old CTA fields, series/Part-2 fields, music requi
 
 ## Daily planning
 
-`SINGLE_STORY_PROMPT.md` is the one-story immediate-public path through `single-production.yml`. `DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v3 scheduled requests through `daily-production.yml`.
+`DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v3 scheduled requests through `daily-production.yml`.
 
 The daily funnel generates at least 120 meaningfully distinct raw premises, rejects weak/duplicate ideas cheaply, develops only semifinalists, competes at least five truthful titles per semifinalist, applies cold-start/analytics scoring plus diversity, and creates at most 24 immutable production requests.
 
