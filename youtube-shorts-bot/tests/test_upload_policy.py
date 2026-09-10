@@ -7,33 +7,37 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
 from test_request_schema import valid_request
-from upload import build_upload_body
+from upload import build_upload_body, expected_publication
 from workflow_common import marker_tag
 
 
-class AdhocUploadTests(unittest.TestCase):
-    def test_payload_is_public_and_unscheduled(self):
+class ScheduledUploadPolicyTests(unittest.TestCase):
+    def test_payload_is_private_and_scheduled(self):
         request = valid_request()
-        body = build_upload_body(request)
-        self.assertEqual(body["status"]["privacyStatus"], "public")
+        body = build_upload_body(request, require_future=False)
+        self.assertEqual(body["status"]["privacyStatus"], "private")
         self.assertFalse(body["status"]["selfDeclaredMadeForKids"])
-        self.assertNotIn("publishAt", body["status"])
-        self.assertNotIn("publishAt", str(body))
+        self.assertEqual(body["status"]["publishAt"], request["publication"]["publish_at"])
         self.assertIn(marker_tag(request["content_id"]), body["snippet"]["tags"])
 
-    def test_explicit_private_policy_rejected_for_new_adhoc_upload(self):
-        with self.assertRaises(ValueError):
-            build_upload_body(valid_request(), privacy="private")
+    def test_missing_publication_is_rejected(self):
+        request = valid_request()
+        request.pop("publication")
+        with self.assertRaisesRegex(ValueError, "Scheduled publication contract is required"):
+            build_upload_body(request, require_future=False)
 
-    def test_static_scheduled_validation_can_check_metadata_without_rejecting_elapsed_slot(self):
+    def test_non_scheduled_publication_mode_is_rejected(self):
+        request = valid_request()
+        request["publication"]["mode"] = "public"
+        with self.assertRaisesRegex(ValueError, "must be scheduled"):
+            expected_publication(request, require_future=False)
+
+    def test_static_validation_can_check_elapsed_slot_without_authorizing_upload(self):
         now = datetime(2026, 9, 10, 0, 0, tzinfo=timezone.utc)
         request = valid_request()
         publish_at = (now - timedelta(minutes=1)).isoformat().replace("+00:00", "Z")
-        request["publication"] = {
-            "mode": "scheduled", "timezone": "Asia/Singapore", "publish_at": publish_at
-        }
+        request["publication"]["publish_at"] = publish_at
         body = build_upload_body(request, require_future=False, now_utc=now)
-        self.assertEqual(body["status"]["privacyStatus"], "private")
         self.assertEqual(body["status"]["publishAt"], publish_at)
         with self.assertRaisesRegex(ValueError, "future"):
             build_upload_body(request, now_utc=now)
