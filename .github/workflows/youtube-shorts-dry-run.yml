@@ -215,5 +215,3 @@ jobs:
           test ! -d youtube-shorts-bot/content/planning
           test ! -d youtube-shorts-bot/content/background-sourcing
           echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, immutable planning mutation, or background-sourcing mutation.'
-
-
