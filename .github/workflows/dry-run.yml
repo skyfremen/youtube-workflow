@@ -51,6 +51,8 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          retired_single_workflow = '.github/workflows/' + 'single-' + 'production.yml'
+          retired_single_prompt = 'youtube-shorts-bot/planner/' + 'SINGLE_' + 'STORY_PROMPT.md'
           forbidden_paths = [
               'youtube-story-bot','youtube-shorts-bot-backup','youtube-longform-bot',
               '.github/workflows/backup-shorts-once.yml','.github/workflows/build-story-image.yml',
@@ -64,12 +66,12 @@ jobs:
               'youtube-shorts-bot/planner/PLANNER_INSTRUCTIONS.md','youtube-shorts-bot/queue_manager.py',
               'youtube-shorts-bot/schedule_guard.py','youtube-shorts-bot/schedule_utils.py',
               'youtube-shorts-bot/validate_backup_metadata.py','youtube-shorts-bot/validate_series_plan.py',
-              'youtube-shorts-bot/verify_youtube_schedule.py',
+              'youtube-shorts-bot/verify_youtube_schedule.py',retired_single_workflow,retired_single_prompt,
           ]
           present = [p for p in forbidden_paths if Path(p).exists()]
           assert not present, 'retired paths still present: ' + ', '.join(present)
           expected_workflows = {
-              'single-production.yml','background-management.yml','build-image.yml',
+              'background-management.yml','build-image.yml',
               'daily-production.yml','analytics-collection.yml','dry-run.yml',
           }
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
@@ -80,14 +82,13 @@ jobs:
           forbidden_terms = ['Wacky Insights','@WACKYINSIGHTS','youtube-story-bot','youtube-shorts-bot-backup',
                              'content/latest.json','content/plans/','queue_manager.py','media-library/music.json']
           hits=[]
-          # Cleanup workflow itself lists retired names intentionally; do not scan this file.
           for path in active_files:
               if path.name == 'dry-run.yml': continue
               text=path.read_text(encoding='utf-8')
               for term in forbidden_terms:
                   if term in text: hits.append(f'{path}: {term}')
           assert not hits, 'stale active references: ' + '; '.join(hits)
-          print('Retired architecture remains absent; canonical Wacky Dramas paths preserved.')
+          print('Retired architecture and one-off production entry points remain absent; canonical daily Wacky Dramas paths preserved.')
           PY
 
       - name: Check immutable request result and recovery history
@@ -112,7 +113,7 @@ jobs:
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/validate_media_library.py
 
-      - name: Exercise legacy ad-hoc schema v2 compatibility
+      - name: Exercise legacy schema v2 parser compatibility
         shell: bash
         run: |
           cat > /tmp/wd-20260908T161000-dry-run-abc123.json <<'JSON'
@@ -183,10 +184,8 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           dry=Path('.github/workflows/dry-run.yml').read_text()
-          adhoc=Path('.github/workflows/single-production.yml').read_text()
           batch=Path('.github/workflows/daily-production.yml').read_text()
           maintenance=Path('.github/workflows/background-management.yml').read_text()
-          # Build self-search tokens dynamically so the test does not match its own source.
           secret_names=[
               'YOUTUBE_' + 'CLIENT_ID',
               'YOUTUBE_' + 'CLIENT_SECRET',
@@ -195,17 +194,14 @@ jobs:
           for secret in secret_names:
               assert secret not in dry
           assert ('container' + ':') not in dry
-          assert 'group: wacky-dramas-youtube-upload' in adhoc
           assert 'group: wacky-dramas-youtube-upload' in batch
-          assert "[daily production]" in adhoc and "[daily production]" in batch
+          assert "[daily production]" in batch
           assert 'schedule:' not in batch.split('jobs:')[0], 'batch must not wake hourly; YouTube scheduling owns cadence'
-          assert 'for req in' not in adhoc and 'content/latest.json' not in adhoc
           assert 'queue_manager.py' not in batch and 'content/latest.json' not in batch
-          # Cache ingestion must happen before any expensive media/TTS/render work.
           assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
           assert batch.index('ingest-manifest') < batch.index('render_aligned.py')
           assert 'branches: [main]' in maintenance
-          print('Dry-run has no production secrets/container; AI-sourced cache ingestion precedes rendering; upload paths serialize; no hourly render cron exists.')
+          print('Dry-run has no production secrets/container; AI-sourced cache ingestion precedes rendering; daily upload path is serialized; no hourly render cron exists.')
           PY
 
       - name: Confirm zero expensive production side effects
