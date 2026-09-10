@@ -43,6 +43,8 @@ jobs:
           tags: |
             ghcr.io/skyfremen/youtube-shorts-runner:latest
             ghcr.io/skyfremen/youtube-shorts-runner:${{ github.sha }}
+            ghcr.io/skyfremen/runtime-base:latest
+            ghcr.io/skyfremen/runtime-base:${{ github.sha }}
           # Reuse the already-pushed image layers and embed compact cache
           # metadata in the image manifest. The former mode=max GHA cache
           # uploaded the large ML/model layer graph a second time and added
