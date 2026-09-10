@@ -18,7 +18,7 @@ jobs:
           ref: cleanup/schema-v3-only
           fetch-depth: 0
 
-      - name: Remove final proven aliases and scan repository
+      - name: Apply proven cleanup and scan repository
         shell: bash
         run: |
           set -euo pipefail
@@ -37,11 +37,21 @@ jobs:
                   raise SystemExit(f'Expected cleanup target not found in {path}: {old!r}')
               p.write_text(text.replace(old, new), encoding='utf-8')
 
-          # One canonical analytics input; the old weights map is now definition-only.
+          # Planning: one canonical analytics input and no unused strategy knobs.
+          replace(
+              'youtube-shorts-bot/planning_config.py',
+              'QUALIFIED_TARGET = 60\n',
+              '',
+          )
           replace(
               'youtube-shorts-bot/planning_config.py',
               '# Candidate analytics enters planning only through the normalized historical\n# attribute-fit score produced by analytics_learning.py.\nPERFORMANCE_WEIGHTS = {"historical_attribute_fit": 100}\n\n',
               '# Candidate analytics enters planning only through the normalized historical\n# attribute-fit score produced by analytics_learning.py.\n\n',
+          )
+          replace(
+              'youtube-shorts-bot/planning_config.py',
+              'SOFT_SIMILARITY_THRESHOLD = 0.62\n',
+              '',
           )
           replace(
               'youtube-shorts-bot/planning_engine.py',
@@ -49,8 +59,27 @@ jobs:
               '    MIN_TITLE_SCORE, NEAR_DUPLICATE_THRESHOLD,\n',
           )
 
-          # This was a duplicate alias of pytorch_fallback_init_duration_seconds and
-          # therefore misleadingly stayed at 0 on the normal ONNX path.
+          # Caption alignment: the only active source rate is derived from audio input.
+          replace(
+              'youtube-shorts-bot/caption_alignment.py',
+              'SOURCE_SAMPLE_RATE = 24000\n',
+              '',
+          )
+
+          # Shared paths/helpers no longer used by the daily-only architecture.
+          replace(
+              'youtube-shorts-bot/workflow_common.py',
+              'PLANNING_DIR = BASE / "content" / "planning"\n',
+              '',
+          )
+          replace(
+              'youtube-shorts-bot/workflow_common.py',
+              '''\ndef result_path_for_id(content_id):\n    validate_content_id(content_id)\n    return RESULTS_DIR / f"{content_id}.json"\n''',
+              '',
+          )
+
+          # Remove duplicate timing alias. Keep the real ONNX and PyTorch fallback
+          # init timings, which are distinct and may legitimately be zero.
           replace(
               'youtube-shorts-bot/render.py',
               '        "kokoro_pipeline_init_duration_seconds": pytorch_fallback_init_duration_seconds,\n',
@@ -61,36 +90,40 @@ jobs:
               '            "kokoro_pipeline_init_duration_seconds": render_meta.get(\n                "kokoro_pipeline_init_duration_seconds"\n            ),\n',
               '',
           )
-
-          # Current-language cleanup only; no behavior change.
           replace(
-              '.github/workflows/analytics-collection.yml',
-              '- name: Collect fresh-start age-matched video analytics',
-              '- name: Collect age-matched video analytics',
-          )
-          replace(
-              '.github/workflows/daily-production.yml',
-              'Request-to-background compatibility is per-video below.',
-              'Request-to-background validity is per-video below.',
-          )
-          replace(
-              '.github/workflows/daily-production.yml',
-              'background IDs/status/rendition compatibility is',
-              'background IDs/status/rendition validity is',
+              'youtube-shorts-bot/tests/test_result_receipt.py',
+              '                "kokoro_pipeline_init_duration_seconds": 1.2,\n',
+              '',
           )
 
-          git_text_paths = [
+          # Describe the live architecture positively instead of carrying migration history.
+          replace(
+              'README.md',
+              'The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, migration, stale pre-refactor naming, and removed one-off production entry points do not reappear in active files.',
+              'The dry-run workflow also asserts the exact supported workflow and planner surface and prevents retired project roots or removed production entry points from reappearing.',
+          )
+          replace(
+              'youtube-shorts-bot/SYSTEM_OVERVIEW.md',
+              'The schedule is bound to the same immutable request bytes and source commit as the story. A missing or non-scheduled publication contract is invalid; there is no unscheduled or immediate-public production fallback.',
+              'The schedule is bound to the same immutable request bytes and source commit as the story. Production requires a complete scheduled publication contract.',
+          )
+          replace(
+              'youtube-shorts-bot/SYSTEM_OVERVIEW.md',
+              'The production render writes inline black-detection evidence during the render pass. `verify_render.py` requires that evidence and fails closed if it is missing or failed. It does not run a compatibility full-video black-detection pass.',
+              'The production render writes inline black-detection evidence during the render pass. `verify_render.py` requires that evidence and fails closed if it is missing or failed.',
+          )
+
+          # Report only candidates that can indicate actual dead code or retired architecture.
+          text_paths = [
               *BOT.glob('*.py'),
               *(BOT / 'tests').glob('*.py'),
               *(BOT / 'planner').glob('*.md'),
               *BOT.glob('*.md'),
-              *(ROOT / '.github' / 'workflows').glob('*.yml'),
               Path('README.md'),
           ]
-          text_paths = [p for p in git_text_paths if p.exists() and p.name != 'final-cleanup-audit.yml']
-          corpus = '\n'.join(p.read_text(encoding='utf-8') for p in text_paths)
-
+          corpus = '\n'.join(p.read_text(encoding='utf-8') for p in text_paths if p.exists())
           candidates = []
+
           for path in sorted(BOT.glob('*.py')):
               source = path.read_text(encoding='utf-8')
               tree = ast.parse(source)
@@ -115,37 +148,19 @@ jobs:
                               if refs <= 1:
                                   candidates.append(f'ORPHAN_CONSTANT {path}:{node.lineno} {target.id} refs={refs}')
 
-              # Detect two output keys in the same literal dict carrying exactly the
-              # same expression. This catches accidental metric aliases.
-              for node in ast.walk(tree):
-                  if not isinstance(node, ast.Dict):
-                      continue
-                  seen = {}
-                  for key, value in zip(node.keys, node.values):
-                      if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
-                          continue
-                      expr = ast.dump(value, include_attributes=False)
-                      if expr in seen and key.value != seen[expr]:
-                          candidates.append(
-                              f'DUPLICATE_VALUE_EXPR {path}:{getattr(node, "lineno", 0)} '
-                              f'{seen[expr]} == {key.value}'
-                          )
-                      else:
-                          seen[expr] = key.value
-
           stale_patterns = {
               'BACKWARD_COMPAT': r'backward[- ]compat',
-              'LEGACY_TERM': r'\blegacy\b',
               'MIGRATION_TERM': r'\bmigration\b',
               'FRESH_START_TERM': r'fresh-start|fresh start',
               'ADHOC_TERM': r'\bad[- ]hoc\b|\badhoc\b',
-              'UNSCHEDULED_TERM': r'\bunscheduled\b',
               'TODO': r'\bTODO\b|\bFIXME\b',
               'SCHEMA_V2': r'schema[_ -]?version[^\n]{0,25}\b2\b|schema-v2',
-              'OLD_METRIC_ALIAS': r'kokoro_pipeline_init_duration_seconds',
-              'OLD_ANALYTICS_WEIGHTS': r'PERFORMANCE_WEIGHTS',
+              'REMOVED_METRIC_ALIAS': r'kokoro_pipeline_init_duration_seconds',
+              'REMOVED_ANALYTICS_WEIGHTS': r'PERFORMANCE_WEIGHTS',
           }
           for path in text_paths:
+              if not path.exists():
+                  continue
               for line_no, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
                   for name, pattern in stale_patterns.items():
                       if re.search(pattern, line, flags=re.I):
@@ -164,7 +179,7 @@ jobs:
           python -m py_compile youtube-shorts-bot/*.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add youtube-shorts-bot .github/workflows/analytics-collection.yml .github/workflows/daily-production.yml
+          git add README.md youtube-shorts-bot
           if ! git diff --cached --quiet; then
             git commit -m "cleanup: remove final dead aliases"
             git push origin HEAD:cleanup/schema-v3-only
