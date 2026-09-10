@@ -85,23 +85,7 @@ class WorkflowFailFastContracts(unittest.TestCase):
 
     def test_deferred_verification_preserves_failure_isolation_and_receipt_attempts(self):
         batch = self.batch()
-        verification_loop = batch.index("done < /tmp/batch-requests.txt")
-        verification_loop = batch.index("while IFS=        batch = self.batch()
-        skip = 'if [ "$schedule_skipped" = "true" ]'
-        self.assertIn(skip, batch)
-        skip_at = batch.index(skip)
-        for command in ("media_resolver.py", "render_aligned.py", "verify_render.py", "publish.py --stage upload"):
-            self.assertLess(skip_at, batch.index(command, skip_at))
-
-    def test_adhoc_does_not_add_redundant_second_auth_preflight(self):
-        adhoc = (ROOT / ".github/workflows/adhoc-story-private.yml").read_text(encoding="utf-8")
-        self.assertNotIn("auth_check.py", adhoc)
-        self.assertLess(adhoc.index("publish.py --stage prepare"), adhoc.index("media_resolver.py"))
-
-
-if __name__ == "__main__":
-    unittest.main()
-\\t' read -r req deferred_at", verification_loop)
+        verification_loop = batch.index("# Phase 2:")
         caught = batch.index('if verify_one "$req" "$deferred_at"; then', verification_loop)
         continued = batch.index("continuing remaining receipts", caught)
         verification_done = batch.index("done < /tmp/batch-pending-verification.txt", continued)
