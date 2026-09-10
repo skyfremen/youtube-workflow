@@ -1,0 +1,397 @@
+{
+  "schema_version": 3,
+  "content_id": "wd-20260911T183000-acceptance-b9d72e",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260911T183000-acceptance-b9d72e.json",
+  "request_blob_sha": "3e0d2a09689044d6d0f2b97b7c3b3395f68187e0",
+  "source_commit_sha": "ba7bc60c50f47c2f820be67ababb1cfaea6ddfd1",
+  "youtube_video_id": "Nkjof9luJeg",
+  "youtube_url": "https://www.youtube.com/watch?v=Nkjof9luJeg",
+  "youtube_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "publication_mode": "scheduled",
+  "privacy_status": "private",
+  "publish_at": "2026-09-11T18:30:00Z",
+  "publish_at_absent": false,
+  "verification_state": "verified_scheduled",
+  "verification": {
+    "passed": true,
+    "state": "verified_scheduled",
+    "verified_at": "2026-09-10T18:38:08.361635+00:00",
+    "content_id": "wd-20260911T183000-acceptance-b9d72e",
+    "request_path": "youtube-shorts-bot/content/requests/wd-20260911T183000-acceptance-b9d72e.json",
+    "request_blob_sha": "3e0d2a09689044d6d0f2b97b7c3b3395f68187e0",
+    "source_commit_sha": "ba7bc60c50f47c2f820be67ababb1cfaea6ddfd1",
+    "youtube_video_id": "Nkjof9luJeg",
+    "channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+    "channel_title": "Wacky Dramas",
+    "channel_handle": "@wackydramas",
+    "privacy_status": "private",
+    "publish_at": "2026-09-11T18:30:00Z",
+    "publish_at_absent": false,
+    "upload_status": "processed",
+    "association_method": "immutable_github_upload_record",
+    "observed_marker_tags": [
+      "wd-id-7367986b6d2525acb6ef"
+    ],
+    "attempts": 5,
+    "prior_observations": [
+      {
+        "attempt": 1,
+        "observed_at": "2026-09-10T18:37:45.920868+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 2,
+        "observed_at": "2026-09-10T18:37:47.999322+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 3,
+        "observed_at": "2026-09-10T18:37:52.129659+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 4,
+        "observed_at": "2026-09-10T18:38:00.249850+00:00",
+        "state": "YouTube processing not complete"
+      }
+    ]
+  },
+  "planning": {
+    "plan_date": "2026-09-12",
+    "editorial_score": 88,
+    "editorial_components": {
+      "opening_hook_potential": 88,
+      "curiosity_gap": 88,
+      "emotional_stakes": 88,
+      "escalation_potential": 88,
+      "payoff_quality": 88,
+      "title_potential": 88,
+      "broad_relatability": 88,
+      "originality": 88,
+      "narration_suitability": 88
+    },
+    "analytics_score": null,
+    "analytics_weight": 0,
+    "final_score": 87.5,
+    "title_candidates": [
+      {
+        "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+        "style": "HIDDEN_REVELATION",
+        "truthful": true,
+        "score": 91,
+        "score_components": {
+          "curiosity_gap": 91,
+          "emotional_impact": 91,
+          "unanswered_question": 91,
+          "immediate_comprehension": 91,
+          "specificity": 91,
+          "natural_phrasing": 91,
+          "conciseness": 91,
+          "truthful_reflection": 91
+        }
+      },
+      {
+        "title": "I Checked the Archive and Found the Proof #Shorts",
+        "style": "DISCOVERY",
+        "truthful": true,
+        "score": 86,
+        "score_components": {
+          "curiosity_gap": 86,
+          "emotional_impact": 86,
+          "unanswered_question": 86,
+          "immediate_comprehension": 86,
+          "specificity": 86,
+          "natural_phrasing": 86,
+          "conciseness": 86,
+          "truthful_reflection": 86
+        }
+      },
+      {
+        "title": "It Looked Normal Until the Timestamp Appeared #Shorts",
+        "style": "NORMAL_TO_ABNORMAL",
+        "truthful": true,
+        "score": 84,
+        "score_components": {
+          "curiosity_gap": 84,
+          "emotional_impact": 84,
+          "unanswered_question": 84,
+          "immediate_comprehension": 84,
+          "specificity": 84,
+          "natural_phrasing": 84,
+          "conciseness": 84,
+          "truthful_reflection": 84
+        }
+      },
+      {
+        "title": "I Kept the Archive and the Story Changed #Shorts",
+        "style": "DECISION_CONSEQUENCE",
+        "truthful": true,
+        "score": 83,
+        "score_components": {
+          "curiosity_gap": 83,
+          "emotional_impact": 83,
+          "unanswered_question": 83,
+          "immediate_comprehension": 83,
+          "specificity": 83,
+          "natural_phrasing": 83,
+          "conciseness": 83,
+          "truthful_reflection": 83
+        }
+      },
+      {
+        "title": "Hours Before the Audit, I Found the Backup #Shorts",
+        "style": "COUNTDOWN",
+        "truthful": true,
+        "score": 82,
+        "score_components": {
+          "curiosity_gap": 82,
+          "emotional_impact": 82,
+          "unanswered_question": 82,
+          "immediate_comprehension": 82,
+          "specificity": 82,
+          "natural_phrasing": 82,
+          "conciseness": 82,
+          "truthful_reflection": 82
+        }
+      }
+    ],
+    "selected_title_score": 91,
+    "hook_score": 90,
+    "selection_class": "exploit",
+    "selection_reason": "Strong contradiction, proof-driven escalation and clear reversal.",
+    "similarity": {
+      "max_recent_similarity": 0.21
+    },
+    "attributes": {
+      "subtype": "EVIDENCE_BACKFIRE",
+      "conflict": "HIDDEN_FILE",
+      "primary_emotion": "INJUSTICE",
+      "protagonist_role": "EMPLOYEE",
+      "antagonist_role": "BOSS",
+      "opening_style": "CONTRADICTION",
+      "title_style": "HIDDEN_REVELATION",
+      "ending_style": "REVERSAL"
+    },
+    "target_duration_seconds": 151
+  },
+  "background_requested_primary_id": "satisfying-001",
+  "background_requested_backup_id": "satisfying-002",
+  "background_asset_id": "satisfying-001",
+  "background_selection": "primary",
+  "background_usage": {
+    "logical_asset_id": "satisfying-001",
+    "selection": "primary",
+    "counts_for_diversity": true,
+    "source": "verified_immutable_success_receipt"
+  },
+  "background_rendition": {
+    "id": "6781456",
+    "width": 1920,
+    "height": 1080,
+    "fps": 29.97003,
+    "file_type": "video/mp4",
+    "quality": "hd",
+    "direct_url": "https://videos.pexels.com/video-files/16458942/16458942-hd_1920_1080_30fps.mp4",
+    "file_size_bytes": 12184308,
+    "codec": "h264",
+    "selection_reason": "lowest_cost_production_suitable_rendition"
+  },
+  "background_target": {
+    "width": 720,
+    "height": 1280,
+    "fps": 30
+  },
+  "background_rendition_fallback_used": false,
+  "background_logical_fallback_used": false,
+  "background_generic_source_fallback_used": false,
+  "narration_engine": "kokoro",
+  "narration_voice": "af_heart",
+  "narration_speed": 1.75,
+  "narration_seconds": 5.429333,
+  "video_seconds": 5.766667,
+  "resolution": "720x1280",
+  "fps": 30.0,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "audio_stream_count": 1,
+  "render_verification": {
+    "content_id": "wd-20260911T183000-acceptance-b9d72e",
+    "narration_engine": "kokoro",
+    "narration_backend_requested": "onnx-fp32",
+    "narration_backend_used": "onnx-fp32",
+    "narration_fallback_used": false,
+    "narration_fallback_reason": null,
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 5.429333,
+    "narration_audio_metrics": {
+      "peak": 0.554045,
+      "rms": 0.067395,
+      "clipped_fraction": 0.0
+    },
+    "card_title_text": "The Backup He Forgot About",
+    "start_lead_seconds": 0.5,
+    "card_title_seconds": 0.917333,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 1.717333,
+    "story_narration_seconds": 3.712,
+    "video_seconds": 5.766667,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "ffmpeg_duration_seconds": 2.122561,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "ffmpeg_threads": 2,
+    "inline_blackdetect_passed": true,
+    "inline_blackdetect_max_duration_seconds": 0.0,
+    "inline_blackdetect_filter": "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10",
+    "inline_blackdetect_fail_threshold_seconds": 0.75,
+    "onnx_init_duration_seconds": 0.62883,
+    "pytorch_fallback_init_duration_seconds": 0.0,
+    "tts_generation_duration_seconds": 1.508738,
+    "render_process_duration_seconds": 6.283404,
+    "render_started_at": "2026-09-10T18:37:31.084619+00:00",
+    "production_elapsed_through_render_seconds": 9.837324,
+    "caption_timing_mode": "word_aligned",
+    "caption_alignment_backend": "torchaudio-2.8.0/wav2vec2-base-960h-ctc",
+    "caption_alignment_word_count": 18,
+    "caption_alignment_coverage": 1.0,
+    "caption_alignment_duration_seconds": 1.631338,
+    "caption_alignment_error": null,
+    "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
+    "caption_alignment_torch_version": "2.8.0+cpu",
+    "caption_alignment_torchaudio_version": "2.8.0+cpu",
+    "caption_alignment_torch_threads": 2,
+    "caption_alignment_torch_interop_threads": 1,
+    "render_verified": true,
+    "render_verified_at": "2026-09-10T18:37:38.448696+00:00",
+    "render_verification_source": "ffprobe_frame_decode_and_inline_blackdetect",
+    "render_verification_duration_seconds": 0.779779,
+    "verified_blackdetect_max_duration_seconds": 0.0,
+    "configured_video_seconds": 5.779333,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "99465a3a9f3bc424775dd2454b28afb70eb3ef50434c85fe478904753ed684df"
+  },
+  "renderer_source_commit": "5db54600a742b03d2973e8926ef79be904f226e7",
+  "upload_workflow": {
+    "name": "Production Execution",
+    "run_id": "34515346323",
+    "run_attempt": "1",
+    "code_commit_sha": "5db54600a742b03d2973e8926ef79be904f226e7"
+  },
+  "workflow_name": "Production Execution",
+  "workflow_run_id": "34515346323",
+  "workflow_run_attempt": "1",
+  "verification_source_commit": "5db54600a742b03d2973e8926ef79be904f226e7",
+  "uploaded_at": "2026-09-10T18:37:43.955031+00:00",
+  "youtube_verified_at": "2026-09-10T18:38:08.361635+00:00",
+  "receipt_created_at": "2026-09-10T18:38:08.468639+00:00",
+  "production_metrics": {
+    "resolution_started_at": "2026-09-10T18:37:27.530295+00:00",
+    "preflight_duration_seconds": 0.103553,
+    "background_resolution_duration_seconds": 3.438119,
+    "downloaded_bytes": 12183515,
+    "download_duration_seconds": 0.236248,
+    "background_sha256": "d4a431501d29c8abc956ac3ca959d720d2a84e6928768dd96aab33ac8d432754",
+    "render_background_bytes": 20383433,
+    "render_background_sha256": "a877749eeb328d9e0628e000e2be1d6cdf57e3e31bf63160c3c88b9450536c59",
+    "source_probe": {
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.97003
+    },
+    "background_normalization_applied": true,
+    "background_normalization_duration_seconds": 2.991027,
+    "render_probe": {
+      "codec": "h264",
+      "width": 720,
+      "height": 1280,
+      "fps": 30.0
+    },
+    "ffmpeg_duration_seconds": 2.122561,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "tts_generation_duration_seconds": 1.508738,
+    "caption_alignment_duration_seconds": 1.631338,
+    "render_process_duration_seconds": 6.283404,
+    "production_elapsed_through_render_seconds": 9.837324,
+    "total_production_duration_seconds": 40.938344
+  },
+  "test_mode": false,
+  "recovery": {
+    "record_path": "youtube-shorts-bot/content/recovery/wd-20260911T183000-acceptance-b9d72e/upload.json",
+    "record_blob_sha": "4f7a03a70decf071f8ebcf45e5cbd81897b6d849",
+    "recovered": false,
+    "association": {
+      "kind": "youtube_insert_response",
+      "intent_blob_sha": "49bb8279df4f86fda9d804384ffc5c45fac25657",
+      "intent_commit_sha": "955bc5398dee5f876f9f8e2ab54f422a34aca609",
+      "response": {
+        "kind": "youtube#video",
+        "etag": "aEtdq06ITnlJC0TTz2AsY7phChU",
+        "id": "Nkjof9luJeg",
+        "snippet": {
+          "publishedAt": "2026-09-10T18:37:41Z",
+          "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+          "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+          "description": "The archived timestamp changed the whole argument. Would you have confronted the person who denied it?\n\n#Shorts #WackyDramas #WorkplaceDrama #Storytime",
+          "thumbnails": {
+            "default": {
+              "url": "https://i9.ytimg.com/vi/Nkjof9luJeg/default.jpg?sqp=CNTwi9UG&rs=AOn4CLDyc21iwoLFm4Ugo0-C-loqcshtpQ",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i9.ytimg.com/vi/Nkjof9luJeg/mqdefault.jpg?sqp=CNTwi9UG&rs=AOn4CLCXcozdQQanFyh50ztsr9e4dDGpxA",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i9.ytimg.com/vi/Nkjof9luJeg/hqdefault.jpg?sqp=CNTwi9UG&rs=AOn4CLANPQhgwODP_oaArB7bX1qHGlO0Eg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Wacky Dramas",
+          "tags": [
+            "Shorts",
+            "WackyDramas",
+            "WorkplaceDrama",
+            "boss story",
+            "evidence backfire",
+            "office conflict",
+            "storytime",
+            "wacky dramas",
+            "wd-id-7367986b6d2525acb6ef",
+            "workplace drama"
+          ],
+          "categoryId": "24",
+          "liveBroadcastContent": "none",
+          "localized": {
+            "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+            "description": "The archived timestamp changed the whole argument. Would you have confronted the person who denied it?\n\n#Shorts #WackyDramas #WorkplaceDrama #Storytime"
+          }
+        },
+        "status": {
+          "uploadStatus": "uploaded",
+          "privacyStatus": "private",
+          "publishAt": "2026-09-11T18:30:00Z",
+          "license": "youtube",
+          "embeddable": true,
+          "publicStatsViewable": true,
+          "selfDeclaredMadeForKids": false
+        }
+      }
+    }
+  }
+}
