@@ -145,8 +145,6 @@ jobs:
               if not init.exists():
                   init.write_text(f'"""Wacky Dramas {package} package."""\n', encoding='utf-8')
 
-          # Each moved Python module is exactly one directory deeper. Preserve the
-          # former application-root meaning of __file__-relative path calculations.
           for new in moves.values():
               if not new.endswith('.py'):
                   continue
@@ -197,14 +195,13 @@ jobs:
               if old.endswith('.py')
           }
 
-          # Rewrite callers, imports, workflow command paths, tests and docs.
           for path in list(tracked_text_files()):
               if path == TEMP_WORKFLOW or not path.exists():
                   continue
               text = path.read_text(encoding='utf-8')
               original = text
 
-              text = text.replace('youtube-shorts-bot/planner/', 'youtube-shorts-bot/planning/')
+              text = text.replace('youtube-shorts-bot/planner', 'youtube-shorts-bot/planning')
               for old, new in moves.items():
                   text = text.replace(old, new)
               text = rewrite_imports(text)
@@ -214,27 +211,19 @@ jobs:
                   text = text.replace("'youtube-shorts-bot/*.md'", "'youtube-shorts-bot/**/*.md'")
 
               if path.parent == BOT / 'tests':
-                  # Rewrite source-file expectations first. Negative slash lookbehind
-                  # avoids re-rewriting an already-canonical category/path/file.py.
                   for old_name, new_rel in bare_file_map.items():
                       text = re.sub(
                           rf'(?<![A-Za-z0-9_/-]){re.escape(old_name)}',
                           new_rel,
                           text,
                       )
-
-                  # Then rewrite dynamic import/patch targets such as
-                  # patch("upload.OUTPUT_DIR", ...) to publishing.upload.OUTPUT_DIR.
                   for old_module, new_module in module_map.items():
                       text = text.replace(f'"{old_module}.', f'"{new_module}.')
                       text = text.replace(f"'{old_module}.", f"'{new_module}.")
-
-                  # One recovery test builds patch targets from module-name strings.
                   text = text.replace(
                       'for module in ("upload", "publish"):',
                       'for module in ("publishing.upload", "publishing.publish"):',
                   )
-
                   text = text.replace('BOT_ROOT / "planner"', 'BOT_ROOT / "planning"')
                   text = text.replace("BOT_ROOT / 'planner'", "BOT_ROOT / 'planning'")
                   text = text.replace(
@@ -253,17 +242,12 @@ jobs:
                       "BOT_ROOT / 'RECOVERY.md'",
                       "BOT_ROOT / 'docs' / 'RECOVERY.md'",
                   )
-
-                  # Keep architecture scans at least as strong after Python/Markdown
-                  # sources move below responsibility folders.
                   text = text.replace('*BOT_ROOT.glob("*.py")', '*BOT_ROOT.rglob("*.py")')
                   text = text.replace("*BOT_ROOT.glob('*.py')", "*BOT_ROOT.rglob('*.py')")
                   text = text.replace('*BOT_ROOT.glob("*.md")', '*BOT_ROOT.rglob("*.md")')
                   text = text.replace("*BOT_ROOT.glob('*.md')", "*BOT_ROOT.rglob('*.md')")
 
               if path.suffix.lower() == '.md':
-                  # Current docs previously referred to root modules by bare filename.
-                  # Convert only truly bare names, never a name already after '/'.
                   for old_name, new_rel in bare_file_map.items():
                       text = re.sub(
                           rf'(?<![A-Za-z0-9_/-]){re.escape(old_name)}',
@@ -281,8 +265,6 @@ jobs:
           )
           dry.write_text(text, encoding='utf-8')
 
-          # Absolute package imports need one stable application-root search path.
-          # This adds no jobs, subprocesses, setup steps, model loads, or runtime work.
           for workflow in Path('.github/workflows').glob('*.yml'):
               if workflow == TEMP_WORKFLOW:
                   continue
@@ -297,10 +279,8 @@ jobs:
                   text = text[:name.end()] + '\n\nenv:\n  PYTHONPATH: youtube-shorts-bot' + text[name.end():]
               workflow.write_text(text, encoding='utf-8')
 
-          # Migration helper is never part of the canonical repository surface.
           TEMP_WORKFLOW.unlink()
 
-          # No old executable locations, planner path, or bare source imports remain.
           stale = []
           for path in tracked_text_files():
               if not path.exists():
@@ -309,8 +289,8 @@ jobs:
               for old in moves:
                   if old in text:
                       stale.append(f'{path}: {old}')
-              if 'youtube-shorts-bot/planner/' in text:
-                  stale.append(f'{path}: youtube-shorts-bot/planner/')
+              if 'youtube-shorts-bot/planner' in text:
+                  stale.append(f'{path}: youtube-shorts-bot/planner')
               for old_module in module_map:
                   if re.search(
                       rf'(?m)^\s*(?:from\s+{re.escape(old_module)}\s+import\b|import\s+{re.escape(old_module)}(?:\s|$))',
