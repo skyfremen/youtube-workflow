@@ -69,6 +69,56 @@ class WorkflowFailFastContracts(unittest.TestCase):
         self.assertLess(continue_message, done)
         self.assertLess(done, final_exit)
 
+    def test_youtube_verification_is_deferred_until_all_production_attempts_finish(self):
+        batch = self.batch()
+        process_one = batch.index("process_one()")
+        upload = batch.index("publish.py --stage upload", process_one)
+        deferred = batch.index("verification_deferred", upload)
+        production_done = batch.index("done < /tmp/batch-requests.txt", deferred)
+        verify_one = batch.index("verify_one()", production_done)
+        verify = batch.index("verify_youtube_private.py --request", verify_one)
+        finalize = batch.index("finalize.py --request", verify)
+        self.assertLess(upload, deferred)
+        self.assertLess(deferred, production_done)
+        self.assertLess(production_done, verify)
+        self.assertLess(verify, finalize)
+
+    def test_deferred_verification_preserves_failure_isolation_and_receipt_attempts(self):
+        batch = self.batch()
+        verification_loop = batch.index("done < /tmp/batch-requests.txt")
+        verification_loop = batch.index("while IFS=        batch = self.batch()
+        skip = 'if [ "$schedule_skipped" = "true" ]'
+        self.assertIn(skip, batch)
+        skip_at = batch.index(skip)
+        for command in ("media_resolver.py", "render_aligned.py", "verify_render.py", "publish.py --stage upload"):
+            self.assertLess(skip_at, batch.index(command, skip_at))
+
+    def test_adhoc_does_not_add_redundant_second_auth_preflight(self):
+        adhoc = (ROOT / ".github/workflows/adhoc-story-private.yml").read_text(encoding="utf-8")
+        self.assertNotIn("auth_check.py", adhoc)
+        self.assertLess(adhoc.index("publish.py --stage prepare"), adhoc.index("media_resolver.py"))
+
+
+if __name__ == "__main__":
+    unittest.main()
+\\t' read -r req deferred_at", verification_loop)
+        caught = batch.index('if verify_one "$req" "$deferred_at"; then', verification_loop)
+        continued = batch.index("continuing remaining receipts", caught)
+        verification_done = batch.index("done < /tmp/batch-pending-verification.txt", continued)
+        final_exit = batch.index("exit 1", verification_done)
+        self.assertLess(caught, continued)
+        self.assertLess(continued, verification_done)
+        self.assertLess(verification_done, final_exit)
+
+    def test_pipeline_metrics_are_lightweight_and_preserved(self):
+        batch = self.batch()
+        self.assertIn("/tmp/batch-pipeline-metrics.tsv", batch)
+        self.assertIn("youtube_processing_overlap_seconds=", batch)
+        artifact = batch[batch.index("- name: Preserve lightweight per-story evidence"):]
+        self.assertIn("/tmp/batch-pipeline-metrics.tsv", artifact)
+        for heavy in ("short.mp4", "narration.wav", "background.mp4"):
+            self.assertNotIn(heavy, artifact)
+
     def test_schedule_skip_branch_precedes_every_expensive_per_story_command(self):
         batch = self.batch()
         skip = 'if [ "$schedule_skipped" = "true" ]'
