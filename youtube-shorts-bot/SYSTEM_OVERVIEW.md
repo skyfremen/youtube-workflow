@@ -4,6 +4,8 @@
 
 The canonical Shorts system uses a competitive daily funnel: generate broadly, reject cheaply, develop selectively, publish only winners, then feed comparable public performance back into future selection.
 
+The business objective remains aggressive subscriber and qualified-view growth, including the current target of **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**. In this repository, growth is business-purpose language only; technical architecture uses functional names such as planning, production, publication, verification, analytics, and learning.
+
 The system targets up to **24 Shorts per day**, one scheduled publication per hour in **Asia/Singapore**, while preserving one immutable `content_id` per story and the existing durable upload/recovery guarantees.
 
 ## Fresh-channel baseline

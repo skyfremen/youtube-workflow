@@ -2,6 +2,8 @@
 
 This is the single canonical daily planning instruction for the Wacky Dramas production system. Its objective is aggressive subscriber and qualified-view growth without weakening the immutable request/recovery architecture or restoring a retired queue/planner model.
 
+Business target: work aggressively toward **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**. Naming cleanup must never dilute this business objective; growth is business-purpose language here, not a technical component or architecture name.
+
 ## Objective
 Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day, using exact top-of-hour YouTube publication slots. Optimize for strong opportunities, not quota filling. Planning never uploads, renders, synthesizes TTS, or downloads production media.
 
@@ -49,17 +51,21 @@ This is authoritative for description assembly, tag de-duplication and final tag
 ## Analytics learning
 Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. `analytics_evidence_count` is the evidence-equivalent confidence input; it is not a raw count of newly published Shorts. When analytics is disabled or the evidence count is zero, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical `analytics_learning.py` arithmetic and feed only normalized 0–100 analytics metrics into planning scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
 
+When invoking the deterministic planning engine or equivalent arithmetic, use `analytics_evidence_count` as the confidence-count input. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for it.
+
 ## Diversity
 Apply diversity after ranking. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day target roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
 
 ## AI-owned cache-first backgrounds
 For every winner read `media-library/backgrounds.json`, successful receipts and `background_selector.py` recency/quality helpers. Semantically select two genuinely suitable, verified, fresh cached assets whenever possible; primary and backup must differ. Use `audit_ai_selection()` for mechanical quality/freshness/rendition safety. If fewer than two suitable cached assets exist, source only the missing Pexels assets, visually verify them, and create exactly one immutable `content/background-sourcing/YYYY-MM-DD.json` manifest for the day. Never invent provider IDs/URLs. Production ingestion uses PEXELS_API_KEY and fails closed before TTS/render/upload if ingestion fails. Respect `background_policy.py`: prefer 720×1280, then 30fps/lowest decode cost; max 1920×1080 or 1080×1920 equivalent; reject UHD/4K production selection.
 
+If a sourcing manifest is required, its `plan_date` must exactly equal the daily planning audit `plan_date`. Every item in `candidates` must contain the exact `logical_id` being introduced and a non-empty `required_by_content_ids` list. Every listed content ID must be one of that day's new requests and must actually reference that `logical_id` as its primary or backup background.
+
 ## Immutable schema-v3 request
 Only after winner selection/background planning write full scripts and requests. Add scheduled `publication` with timezone `Asia/Singapore` and exact UTC RFC3339 `publish_at`. Include the canonical compact `planning` object: plan_date, editorial components/score, analytics score/weight, final score, >=5 title candidates, selected title score, hook score, exploit/explore class, reason, similarity, controlled attributes and target duration. `visual.background_primary_id` and backup are the AI-selected cache IDs. `youtube.title`, `description`, `hashtags`, and `tags` are immutable planned metadata and must match the exact payload validated before commit.
 
 ## Daily planning audit
-Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. Record planning mode/date, funnel counts, selected count/content IDs, diversity/exploration summary, analytics availability/model cohort/evidence/weight/fallback, background reuse/sourcing, metadata validation summary, and catch-up slot details where applicable. If no candidate clears hard gates, commit no weak filler.
+Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. It must contain the exact top-level keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`, in addition to the existing funnel/diversity/analytics/background/metadata audit details. `content_ids` must exactly equal the stems of the new request filenames in the same commit, with no extra or missing IDs, and `final_selected` must equal the number of those requests. Record catch-up reference time, eligible slots, and omitted elapsed/too-close slots when applicable. If no candidate clears hard gates, commit no weak filler.
 
 ## Commit and handoff
 The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; `daily-production.yml` (**Daily Production**) owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
