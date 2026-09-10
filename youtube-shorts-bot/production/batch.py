@@ -160,9 +160,16 @@ def validate_explicit_batch(requests, planning, sourcing=()):
 
 
 def order_requests(requests):
+    paths = tuple(str(path) for path in requests)
+    content_ids = [Path(path).stem for path in paths]
+    duplicates = sorted({content_id for content_id in content_ids if content_ids.count(content_id) > 1})
+    if duplicates:
+        raise BatchError(
+            "Duplicate content_id in daily batch: " + ", ".join(duplicates)
+        )
     scheduled = []
     deferred = []
-    for path in requests:
+    for path in paths:
         try:
             data = _read_json(path)
             raw = str((data.get("publication") or {}).get("publish_at") or "").strip()

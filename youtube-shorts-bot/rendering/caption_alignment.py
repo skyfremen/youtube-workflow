@@ -1,4 +1,5 @@
 import math
+import os
 import re
 import unicodedata
 from pathlib import Path
@@ -309,6 +310,11 @@ def align_story_words(narration_path, text, tts_segments, story_start, speech_du
     import torch
     import torchaudio
 
+    torch_threads = max(1, int(os.getenv("TORCH_NUM_THREADS", os.cpu_count() or 1)))
+    torch_interop_threads = max(1, int(os.getenv("TORCH_INTEROP_THREADS", "1")))
+    torch.set_num_threads(torch_threads)
+    torch.set_num_interop_threads(torch_interop_threads)
+
     path = Path(narration_path)
     if not path.exists():
         raise AlignmentError(f"narration file does not exist: {path}")
@@ -389,4 +395,6 @@ def align_story_words(narration_path, text, tts_segments, story_start, speech_du
         "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
         "caption_alignment_torch_version": str(torch.__version__),
         "caption_alignment_torchaudio_version": str(torchaudio.__version__),
+        "caption_alignment_torch_threads": torch_threads,
+        "caption_alignment_torch_interop_threads": torch_interop_threads,
     }

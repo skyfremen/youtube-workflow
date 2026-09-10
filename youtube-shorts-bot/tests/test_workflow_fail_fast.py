@@ -11,6 +11,9 @@ class WorkflowFailFastContracts(unittest.TestCase):
     def batch(self):
         return (ROOT / ".github/workflows/daily-production.yml").read_text(encoding="utf-8")
 
+    def pipeline(self):
+        return (BASE / "production/pipeline.py").read_text(encoding="utf-8")
+
     def test_daily_batch_runs_one_shared_youtube_preflight_before_external_cache_and_generation(self):
         batch = self.batch()
         preflight = "python youtube-shorts-bot/publishing/auth_preflight.py"
@@ -19,8 +22,10 @@ class WorkflowFailFastContracts(unittest.TestCase):
         first_preflight = batch.index(preflight)
         self.assertLess(batch.index("python youtube-shorts-bot/media/validate_media_library.py"), first_preflight)
         self.assertLess(first_preflight, batch.index("ingest-manifest"))
-        self.assertLess(first_preflight, batch.index("media/media_resolver.py"))
-        self.assertLess(first_preflight, batch.index("rendering/render_aligned.py"))
+        self.assertLess(first_preflight, batch.index("production/pipeline.py"))
+        pipeline = self.pipeline()
+        self.assertIn("media/media_resolver.py", pipeline)
+        self.assertIn("rendering/render_aligned.py", pipeline)
 
     def test_global_duplicate_slot_contradiction_fails_before_shared_network_preflight(self):
         batch = self.batch()
@@ -53,52 +58,52 @@ class WorkflowFailFastContracts(unittest.TestCase):
             batch[analytics:],
         )
 
-    def test_individual_schema_validation_is_inside_process_one_not_global_preflight(self):
-        batch = self.batch()
-        process_one = batch.index("process_one()")
-        validate = batch.index("python youtube-shorts-bot/validation/validate_content.py --request \"$req\"")
-        self.assertGreater(validate, process_one)
-        self.assertEqual(batch.count("validation/validate_content.py"), 1)
+    def test_individual_schema_validation_is_inside_serial_prepare(self):
+        pipeline = self.pipeline()
+        prepare = pipeline.index("def prepare(")
+        validate = pipeline.index("youtube-shorts-bot/validation/validate_content.py", prepare)
+        submit = pipeline.index("executor.submit(self.generate", prepare)
+        self.assertLess(validate, submit)
+        self.assertEqual(pipeline.count("validation/validate_content.py"), 1)
 
     def test_individual_background_contract_is_per_video_before_expensive_media(self):
-        batch = self.batch()
-        process_one = batch.index("process_one()")
-        prepare = batch.index("publishing/publish.py --stage prepare", process_one)
-        background = batch.index("validate_request_backgrounds", process_one)
-        resolver = batch.index("media/media_resolver.py", process_one)
+        batch = self.pipeline()
+        prepare = batch.index("publishing/publish.py")
+        background = batch.index("validate_request_backgrounds", prepare)
+        resolver = batch.index("media/media_resolver.py", background)
         self.assertLess(prepare, background)
         self.assertLess(background, resolver)
 
     def test_upload_metadata_is_not_batch_fatal_anymore(self):
         batch = self.batch()
+        pipeline = self.pipeline()
         global_step = batch[:batch.index("- name: Process videos with isolated per-video failures")]
         self.assertNotIn("build_upload_body", global_step)
-        self.assertIn("publishing/publish.py --stage prepare", batch)
+        self.assertIn('"prepare"', pipeline)
 
     def test_per_video_failure_continues_loop_then_fails_job_at_end(self):
         batch = self.batch()
-        process = batch[batch.index("- name: Process videos with isolated per-video failures"):]
-        loop = process.index("while IFS= read -r req")
-        caught = process.index('if process_one "$req"; then', loop)
-        continue_message = process.index("continuing remaining Shorts", caught)
-        done = process.index("done < /tmp/batch-requests.txt", continue_message)
-        final_exit = process.index("exit 1", done)
-        self.assertLess(caught, continue_message)
-        self.assertLess(continue_message, done)
-        self.assertLess(done, final_exit)
+        pipeline = self.pipeline()
+        self.assertIn('self.record_failure(request, "prepare", exc)', pipeline)
+        self.assertIn("self.record_failure(item.request, stage, exc)", pipeline)
+        self.assertIn("continuing remaining Shorts", pipeline)
+        production_call = batch.index("production/pipeline.py")
+        verification_loop = batch.index("# Phase 2:", production_call)
+        final_exit = batch.index("exit 1", verification_loop)
+        self.assertLess(production_call, verification_loop)
+        self.assertLess(verification_loop, final_exit)
 
     def test_youtube_verification_is_deferred_until_all_production_attempts_finish(self):
         batch = self.batch()
-        process_one = batch.index("process_one()")
-        upload = batch.index("publishing/publish.py --stage upload", process_one)
-        deferred = batch.index("verification_deferred", upload)
-        verify_definition = batch.index("verify_one()", deferred)
+        pipeline = self.pipeline()
+        upload = pipeline.index('"upload"')
+        deferred = pipeline.index("self.defer_verification(item)", upload)
+        verify_definition = batch.index("verify_one()")
         verify = batch.index("publishing/verify_publication.py --request", verify_definition)
         finalize = batch.index("publishing/finalize_receipt.py --request", verify)
-        production_done = batch.index("done < /tmp/batch-requests.txt", finalize)
+        production_done = batch.index("production/pipeline.py")
         verify_call = batch.index('if verify_one "$req" "$deferred_at"; then', production_done)
         self.assertLess(upload, deferred)
-        self.assertLess(deferred, production_done)
         self.assertLess(verify, finalize)
         self.assertLess(production_done, verify_call)
 
@@ -123,12 +128,33 @@ class WorkflowFailFastContracts(unittest.TestCase):
             self.assertNotIn(heavy, artifact)
 
     def test_schedule_skip_branch_precedes_every_expensive_per_story_command(self):
-        batch = self.batch()
-        skip = 'if [ "$schedule_skipped" = "true" ]'
+        batch = self.pipeline()
+        skip = 'if status.get("schedule_skipped") == "true"'
         self.assertIn(skip, batch)
         skip_at = batch.index(skip)
-        for command in ("media/media_resolver.py", "rendering/render_aligned.py", "rendering/verify_render.py", "publishing/publish.py --stage upload"):
+        for command in ("media/media_resolver.py", "rendering/render_aligned.py", "rendering/verify_render.py"):
             self.assertLess(skip_at, batch.index(command, skip_at))
+
+    def test_local_generation_is_bounded_but_durable_upload_stays_on_coordinator(self):
+        batch = self.batch()
+        pipeline = self.pipeline()
+        self.assertIn("SHORTS_CONCURRENCY: '1'", batch)
+        self.assertIn("SUPPORTED_CONCURRENCY = (1, 2, 3, 4)", pipeline)
+        self.assertIn("executor.submit(self.generate, item)", pipeline)
+        self.assertNotIn("executor.submit(self.upload", pipeline)
+        self.assertLess(
+            pipeline.index("result = future.result()"),
+            pipeline.index("self.upload(result)"),
+        )
+
+    def test_worker_and_resource_metrics_are_preserved(self):
+        batch = self.batch()
+        for path in (
+            "/tmp/batch-worker-metrics.tsv",
+            "/tmp/batch-resource-metrics.tsv",
+            "/tmp/batch-production-summary.json",
+        ):
+            self.assertIn(path, batch)
 
     def test_analytics_is_non_blocking_and_fail_first_guards_precede_collection(self):
         batch = self.batch()

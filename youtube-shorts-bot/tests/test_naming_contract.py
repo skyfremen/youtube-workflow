@@ -133,17 +133,20 @@ class ArchitectureContractTests(unittest.TestCase):
 
     def test_execution_chain_uses_current_components(self):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
+        pipeline = (BOT_ROOT / "production/pipeline.py").read_text(encoding="utf-8")
+        combined = batch + pipeline
         for token in (
             "validation/validate_content.py",
             "publishing/auth_preflight.py",
             "media/media_resolver.py",
             "rendering/render_aligned.py",
             "rendering/verify_render.py",
-            "publishing/publish.py --stage upload",
+            "publishing/publish.py",
             "publishing/verify_publication.py",
             "publishing/finalize_receipt.py",
         ):
-            self.assertIn(token, batch)
+            self.assertIn(token, combined)
+        self.assertIn('"upload"', pipeline)
 
         analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
         backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")

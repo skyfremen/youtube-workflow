@@ -12,6 +12,12 @@ from production.dry_run import FIXTURE_DATE, build_synthetic_batch
 
 
 class ProductionBatchTests(unittest.TestCase):
+    def test_duplicate_content_id_is_rejected_before_processing(self):
+        _root, requests, _planning = self.fixture()
+        request = requests[0]
+        with self.assertRaisesRegex(BatchError, "Duplicate content_id"):
+            order_requests([request, request])
+
     def fixture(self):
         holder = tempfile.TemporaryDirectory()
         root = Path(holder.name)

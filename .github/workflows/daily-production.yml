@@ -40,11 +40,22 @@ jobs:
       VIDEO_HEIGHT: '1280'
       VIDEO_FPS: '30'
       STORY_TEST_MODE: 'false'
+      # Keep 1 until production-equivalent benchmark evidence supports promotion.
+      # Supported bounded values are 1, 2, 3 and 4.
+      SHORTS_CONCURRENCY: '1'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
+
+      - name: Start job telemetry
+        shell: bash
+        run: |
+          python -c 'import time; print(f"{time.time():.6f}")' > /tmp/daily-job-started-at.txt
+          echo "logical_cpu_count=$(nproc)"
+          free -h
+          cat /proc/loadavg
 
       - name: Validate global batch integrity and shared dependencies
         id: batch
@@ -128,13 +139,6 @@ jobs:
           # are isolated, counted, and the next immutable request must continue.
           set -uo pipefail
           success=0
-          skipped=0
-          failed=0
-          : > /tmp/batch-failures.txt
-          : > /tmp/batch-skipped.txt
-          : > /tmp/batch-pending-verification.txt
-          : > /tmp/batch-pipeline-metrics.tsv
-          printf 'content_id\tevent\tepoch_seconds\n' >> /tmp/batch-pipeline-metrics.tsv
 
           epoch_seconds() {
             python -c 'import time; print(f"{time.time():.6f}")'
@@ -152,67 +156,6 @@ jobs:
             cid="$(basename "$req" .json)"
             export SOURCE_COMMIT_SHA="$(source_for_request "$req")"
             export STORY_OUTPUT_DIR="youtube-shorts-bot/output/$cid"
-          }
-
-          process_one() {
-            set -euo pipefail
-            local req="$1"
-            set_request_context "$req"
-            rm -rf "$STORY_OUTPUT_DIR"
-            mkdir -p "$STORY_OUTPUT_DIR"
-
-            # PER-VIDEO / LOCAL: malformed schema or story metadata fails only this
-            # request and happens before its network recovery/authorization work.
-            python youtube-shorts-bot/validation/validate_content.py --request "$req"
-
-            local status_file
-            status_file="$(mktemp)"
-            GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publishing/publish.py --stage prepare --request "$req"
-            local upload_required schedule_skipped schedule_skip_reason
-            upload_required="$(sed -n 's/^upload_required=//p' "$status_file" | tail -1)"
-            schedule_skipped="$(sed -n 's/^schedule_skipped=//p' "$status_file" | tail -1)"
-            schedule_skip_reason="$(sed -n 's/^schedule_skip_reason=//p' "$status_file" | tail -1)"
-            rm -f "$status_file"
-
-            # A skipped fresh slot intentionally has no video to verify/finalize.
-            # Recovery was already attempted by publish.py before this guard fired.
-            if [ "$schedule_skipped" = "true" ]; then
-              echo "$req | $schedule_skip_reason" >> /tmp/batch-skipped.txt
-              echo "::warning::Skipped fresh generation: $req — $schedule_skip_reason"
-              return 10
-            fi
-
-            if [ "$upload_required" = "true" ]; then
-              # PER-VIDEO / LOCAL: background IDs/status/rendition compatibility is
-              # specific to this request. A bad background must not block the other
-              # valid Shorts in the same daily batch.
-              python - "$req" <<'PY'
-          import json, sys
-          from pathlib import Path
-          sys.path.insert(0, 'youtube-shorts-bot')
-          from media.validate_media_library import load_registry, validate_request_backgrounds
-          path = sys.argv[1]
-          registry = load_registry()
-          validate_request_backgrounds(json.loads(Path(path).read_text()), registry)
-          print(f'Per-video background contract valid: {path}')
-          PY
-
-              # ==============================
-              # EXPENSIVE GENERATION PHASE
-              # ==============================
-              python youtube-shorts-bot/media/media_resolver.py --request "$req"
-              python youtube-shorts-bot/rendering/render_aligned.py --request "$req"
-              python youtube-shorts-bot/rendering/verify_render.py --request "$req"
-              python youtube-shorts-bot/publishing/publish.py --stage upload --request "$req"
-            fi
-
-            # YouTube processing is asynchronous. Defer the read-only processing
-            # check and immutable receipt commit until all eligible uploads have
-            # started, allowing later renders to cover the platform processing wait.
-            local queued_at
-            queued_at="$(epoch_seconds)"
-            printf '%s\t%s\n' "$req" "$queued_at" >> /tmp/batch-pending-verification.txt
-            printf '%s\tverification_deferred\t%s\n' "$(basename "$req" .json)" "$queued_at" >> /tmp/batch-pipeline-metrics.tsv
           }
 
           verify_one() {
@@ -239,29 +182,21 @@ jobs:
           PY
           }
 
-          batch_started_at="$(epoch_seconds)"
-          printf -- '-\tproduction_started\t%s\n' "$batch_started_at" >> /tmp/batch-pipeline-metrics.tsv
+          # Phase 1: the coordinator keeps validation/recovery authorization,
+          # upload intent creation, YouTube insertion and GitHub writes serialized.
+          # Only isolated media/TTS/alignment/render/verify work uses the bounded
+          # internal worker pool. Uploads retain canonical request/schedule order.
+          python youtube-shorts-bot/production/pipeline.py \
+            --request-list /tmp/batch-requests.txt \
+            --concurrency "${SHORTS_CONCURRENCY:-1}"
 
-          # Phase 1: preserve the existing recovery/validation/render/upload order,
-          # but do not wait for YouTube processing before starting the next Short.
-          while IFS= read -r req; do
-            [ -n "$req" ] || continue
-            echo "::group::$(basename "$req" .json) — production"
-            if process_one "$req"; then
-              echo "Queued for exact YouTube verification: $req"
-            else
-              rc=$?
-              if [ "$rc" -eq 10 ]; then
-                skipped=$((skipped+1))
-                echo "Skipped: $req"
-              else
-                failed=$((failed+1))
-                echo "$req | production/upload failure | exit_code=$rc" >> /tmp/batch-failures.txt
-                echo "::error title=Per-video production failure::Failed: $req — continuing remaining Shorts; durable intent/recovery rules remain authoritative"
-              fi
-            fi
-            echo "::endgroup::"
-          done < /tmp/batch-requests.txt
+          read -r batch_started_at skipped failed < <(
+            python - <<'PY'
+          import json
+          summary = json.load(open('/tmp/batch-production-summary.json'))
+          print(summary['production_started_at'], summary['skipped'], summary['failed'])
+          PY
+          )
 
           verification_started_at="$(epoch_seconds)"
           printf -- '-\tverification_phase_started\t%s\n' "$verification_started_at" >> /tmp/batch-pipeline-metrics.tsv
@@ -319,6 +254,10 @@ jobs:
             /tmp/batch-failures.txt
             /tmp/batch-skipped.txt
             /tmp/batch-pipeline-metrics.tsv
+            /tmp/batch-worker-metrics.tsv
+            /tmp/batch-resource-metrics.tsv
+            /tmp/batch-production-summary.json
+            /tmp/wacky-dramas-workers/**/result.json
           if-no-files-found: ignore
           retention-days: 7
 
@@ -497,3 +436,21 @@ jobs:
           git commit -m "[skip upload] update YouTube analytics ${analytics_marker}"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Report elapsed runner time
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import math
+          import time
+          from pathlib import Path
+
+          path = Path('/tmp/daily-job-started-at.txt')
+          if path.exists():
+              elapsed = time.time() - float(path.read_text().strip())
+              print(
+                  f"PERF_METRIC measured_workflow_steps_seconds={elapsed:.3f} "
+                  f"job_level_billable_minute_proxy={math.ceil(elapsed / 60.0)}"
+              )
+          PY

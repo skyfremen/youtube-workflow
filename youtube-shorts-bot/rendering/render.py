@@ -37,6 +37,7 @@ CARD_TRANSITION_SECONDS = 0.30
 
 VIDEO_WIDTH = 720
 VIDEO_HEIGHT = 1280
+FFMPEG_THREADS = max(0, int(os.getenv("FFMPEG_THREADS", "0")))
 
 CAPTION_MARGIN_X = 85
 CAPTION_MAX_WIDTH = VIDEO_WIDTH - (2 * CAPTION_MARGIN_X)
@@ -584,7 +585,7 @@ def main():
         "[tmp1][brand]overlay=0:0[tmp2];"
         f"[tmp2]subtitles='{ass.as_posix()}',{BLACKDETECT_FILTER}[v]"
     )
-    ffmpeg_duration_seconds, ffmpeg_stderr = run_capture([
+    ffmpeg_command = [
         "ffmpeg", "-y",
         "-stream_loop", "-1", "-i", str(background),
         "-loop", "1", "-i", str(card_path),
@@ -594,8 +595,13 @@ def main():
         "-map", "[v]", "-map", "3:a:0",
         "-t", f"{final_duration:.3f}",
         "-c:v", "libx264", "-preset", X264_PRESET, "-crf", str(X264_CRF), "-pix_fmt", "yuv420p",
+    ]
+    if FFMPEG_THREADS:
+        ffmpeg_command.extend(["-threads", str(FFMPEG_THREADS)])
+    ffmpeg_command.extend([
         "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(video),
     ])
+    ffmpeg_duration_seconds, ffmpeg_stderr = run_capture(ffmpeg_command)
     black_durations = [
         float(value)
         for value in re.findall(r"black_duration:([0-9]+(?:\.[0-9]+)?)", ffmpeg_stderr)
@@ -644,6 +650,7 @@ def main():
         "ffmpeg_duration_seconds": ffmpeg_duration_seconds,
         "x264_preset": X264_PRESET,
         "x264_crf": X264_CRF,
+        "ffmpeg_threads": FFMPEG_THREADS or "auto",
         "inline_blackdetect_passed": inline_blackdetect_passed,
         "inline_blackdetect_max_duration_seconds": round(inline_blackdetect_max, 6),
         "inline_blackdetect_filter": BLACKDETECT_FILTER,

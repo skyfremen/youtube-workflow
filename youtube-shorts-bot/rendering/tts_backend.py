@@ -14,6 +14,19 @@ ONNX_MAX_CHUNK_WORDS = 55
 MAX_CLIPPED_FRACTION = 0.001
 
 
+def runtime_thread_count(name, default):
+    raw = os.getenv(name, "")
+    if not raw:
+        return max(1, int(default))
+    try:
+        value = int(raw)
+    except ValueError:
+        raise RuntimeError(f"{name} must be a positive integer") from None
+    if value < 1:
+        raise RuntimeError(f"{name} must be a positive integer")
+    return value
+
+
 def sentence_chunks(text, max_words=ONNX_MAX_CHUNK_WORDS):
     """Split narration on sentence boundaries, only splitting long sentences when unavoidable."""
     sentences = [x.strip() for x in re.split(r"(?<=[.!?])\s+", str(text).strip()) if x.strip()]
@@ -81,9 +94,12 @@ class OnnxKokoroSynthesizer:
         from kokoro_onnx import Kokoro
 
         options = onnxruntime.SessionOptions()
-        cpu_count = max(1, int(os.cpu_count() or 2))
-        options.intra_op_num_threads = cpu_count
-        options.inter_op_num_threads = 1
+        options.intra_op_num_threads = runtime_thread_count(
+            "KOKORO_ONNX_INTRA_OP_THREADS", os.cpu_count() or 2
+        )
+        options.inter_op_num_threads = runtime_thread_count(
+            "KOKORO_ONNX_INTER_OP_THREADS", 1
+        )
         started = time.monotonic()
         session = onnxruntime.InferenceSession(
             str(model_path), providers=["CPUExecutionProvider"], sess_options=options

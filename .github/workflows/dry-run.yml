@@ -193,9 +193,10 @@ jobs:
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
           assert 'python youtube-shorts-bot/production/batch.py' in batch
+          assert 'python youtube-shorts-bot/production/pipeline.py' in batch
           assert 'python youtube-shorts-bot/production/dry_run.py' in dry
           assert 'ingest-manifest' in batch and 'PEXELS_API_KEY' in batch
-          assert batch.index('ingest-manifest') < batch.index('render_aligned.py')
+          assert batch.index('ingest-manifest') < batch.index('production/pipeline.py')
           assert 'branches: [main]' in maintenance
           print('Dry-run isolation, shared batch orchestration, upload serialization and production routing verified.')
           PY
