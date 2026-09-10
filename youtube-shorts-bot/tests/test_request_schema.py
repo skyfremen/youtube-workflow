@@ -123,9 +123,9 @@ class RequestSchemaTests(unittest.TestCase):
     def test_valid_request_passes(self):
         self.assertEqual(validate_request_data(valid_request()), [])
 
-    def test_schema_v2_is_rejected(self):
+    def test_noncanonical_schema_is_rejected(self):
         data = valid_request()
-        data["schema_version"] = 2
+        data["schema_version"] = 99
         self.assertIn("schema_version must be 3", validate_request_data(data))
 
     def test_publication_and_planning_are_required(self):
