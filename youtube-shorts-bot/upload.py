@@ -2,18 +2,27 @@ import os
 import re
 from datetime import datetime, timezone
 
-from recovery_state import RecoveryBlocked, check_identity, now, record_path, workflow_identity, source_supports_intent
-from workflow_common import EXPECTED_YOUTUBE_CHANNEL_ID, OUTPUT_DIR, atomic_write_json, marker_tag, request_content_id
+from recovery_state import RecoveryBlocked, check_identity, now, record_path, workflow_identity
+from workflow_common import (
+    EXPECTED_YOUTUBE_CHANNEL_ID,
+    OUTPUT_DIR,
+    atomic_write_json,
+    marker_tag,
+    request_content_id,
+)
 
-YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly"]
+YOUTUBE_SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+]
 
 
 def expected_publication(request_data, *, require_future=True, now_utc=None):
     publication = request_data.get("publication")
-    if not publication:
-        return {"mode": "public", "publish_at": None}
+    if not isinstance(publication, dict):
+        raise ValueError("Scheduled publication contract is required")
     if publication.get("mode") != "scheduled":
-        raise ValueError("Unknown publication mode")
+        raise ValueError("publication.mode must be scheduled")
     raw = str(publication.get("publish_at", ""))
     if not raw.endswith("Z"):
         raise ValueError("Scheduled publish_at must be UTC RFC3339 ending Z")
@@ -29,7 +38,7 @@ def expected_publication(request_data, *, require_future=True, now_utc=None):
     current = current.astimezone(timezone.utc)
     if require_future and parsed <= current:
         raise ValueError("Scheduled publish_at must be in the future at upload time")
-    return {"mode": "scheduled", "publish_at": raw}
+    return raw
 
 
 def _append_unique_tag(tags, seen, value):
@@ -39,30 +48,24 @@ def _append_unique_tag(tags, seen, value):
         seen.add(clean.lower())
 
 
-def build_upload_body(request_data, privacy=None, identity=None, *, require_future=True, now_utc=None):
-    """Build and validate the exact YouTube metadata/status contract.
-
-    Callers may set require_future=False only for static pre-generation
-    validation. The real upload path always keeps the future-time requirement.
-    """
-    publication = expected_publication(
+def build_upload_body(request_data, *, require_future=True, now_utc=None):
+    """Build the canonical private + publishAt YouTube request body."""
+    publish_at = expected_publication(
         request_data, require_future=require_future, now_utc=now_utc
     )
-    required_privacy = "private" if publication["mode"] == "scheduled" else "public"
-    if privacy is not None and privacy != required_privacy:
-        raise ValueError(
-            f"Wacky Dramas {publication['mode']} upload requires privacyStatus={required_privacy}"
-        )
     marker = marker_tag(request_content_id(request_data))
-    yt = request_data["youtube"]
-    description = str(yt["description"]).strip()
-    existing = {x.lower() for x in re.findall(r"(?<!\w)#[A-Za-z0-9_]+", description)}
+    youtube = request_data["youtube"]
+    description = str(youtube["description"]).strip()
+    existing = {
+        value.lower()
+        for value in re.findall(r"(?<!\w)#[A-Za-z0-9_]+", description)
+    }
     extras = []
-    for tag in yt.get("hashtags", []):
-        tag = str(tag).strip()
-        if tag and tag.lower() not in existing:
-            extras.append(tag)
-            existing.add(tag.lower())
+    for hashtag in youtube["hashtags"]:
+        hashtag = str(hashtag).strip()
+        if hashtag and hashtag.lower() not in existing:
+            extras.append(hashtag)
+            existing.add(hashtag.lower())
     if extras:
         description += "\n\n" + " ".join(extras)
     if len(description.encode("utf-8")) > 5000:
@@ -70,89 +73,118 @@ def build_upload_body(request_data, privacy=None, identity=None, *, require_futu
 
     tags = [marker]
     seen = {marker.lower()}
-    # Schema-v3 planning requests explicitly plan semantic backend tags. Legacy
-    # schema-v2 requests remain recoverable because this field is optional.
-    for tag in yt.get("tags", []):
+    for tag in youtube["tags"]:
         _append_unique_tag(tags, seen, tag)
-    # Hashtags also remain backend tags for continuity and discoverability.
-    for hashtag in yt.get("hashtags", []):
+    for hashtag in youtube["hashtags"]:
         _append_unique_tag(tags, seen, hashtag)
-    cost = sum(len(tag) + (2 if " " in tag else 0) for tag in tags) + max(0, len(tags) - 1)
-    if cost > 500:
+    tag_cost = sum(len(tag) + (2 if " " in tag else 0) for tag in tags) + max(0, len(tags) - 1)
+    if tag_cost > 500:
         raise ValueError("Tags exceed YouTube's combined 500-character limit")
-    status = {"privacyStatus": required_privacy, "selfDeclaredMadeForKids": bool(yt["made_for_kids"])}
-    if publication["mode"] == "scheduled":
-        status["publishAt"] = publication["publish_at"]
-    return {"snippet": {"title": str(yt["title"]), "description": description,
-                        "tags": tags, "categoryId": str(yt["category_id"])},
-            "status": status}
+
+    return {
+        "snippet": {
+            "title": str(youtube["title"]),
+            "description": description,
+            "tags": tags,
+            "categoryId": str(youtube["category_id"]),
+        },
+        "status": {
+            "privacyStatus": "private",
+            "selfDeclaredMadeForKids": bool(youtube["made_for_kids"]),
+            "publishAt": publish_at,
+        },
+    }
 
 
 def make_client():
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
-    creds = Credentials(token=None, refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
-        token_uri="https://oauth2.googleapis.com/token", client_id=os.environ["YOUTUBE_CLIENT_ID"],
-        client_secret=os.environ["YOUTUBE_CLIENT_SECRET"], scopes=YOUTUBE_SCOPES)
-    return build("youtube", "v3", credentials=creds, cache_discovery=False)
+
+    credentials = Credentials(
+        token=None,
+        refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.environ["YOUTUBE_CLIENT_ID"],
+        client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+        scopes=YOUTUBE_SCOPES,
+    )
+    return build("youtube", "v3", credentials=credentials, cache_discovery=False)
 
 
 def authenticated_channel(youtube):
-    items = youtube.channels().list(part="id,snippet,contentDetails", mine=True).execute().get("items", [])
+    items = youtube.channels().list(
+        part="id,snippet,contentDetails", mine=True
+    ).execute().get("items", [])
     if len(items) != 1:
         raise RecoveryBlocked("Exactly one authenticated YouTube channel is required")
     if items[0].get("id") != EXPECTED_YOUTUBE_CHANNEL_ID:
-        raise RecoveryBlocked("Credentials resolve to a different channel than the pinned production channel")
+        raise RecoveryBlocked(
+            "Credentials resolve to a different channel than the pinned production channel"
+        )
     return items[0]
 
 
-def find_existing_by_marker(youtube, content_id, max_videos=5000, identity=None, channel=None):
+def find_existing_by_marker(youtube, content_id, max_videos=5000, channel=None):
     channel = channel or authenticated_channel(youtube)
     playlist = channel.get("contentDetails", {}).get("relatedPlaylists", {}).get("uploads")
     if not playlist:
         raise RecoveryBlocked("Cannot enumerate authenticated channel uploads")
-    ids, token = [], None
+
+    video_ids = []
+    token = None
     while True:
-        response = youtube.playlistItems().list(part="contentDetails", playlistId=playlist,
-                                               maxResults=50, pageToken=token).execute()
-        ids.extend(x["contentDetails"]["videoId"] for x in response.get("items", []))
+        response = youtube.playlistItems().list(
+            part="contentDetails",
+            playlistId=playlist,
+            maxResults=50,
+            pageToken=token,
+        ).execute()
+        video_ids.extend(item["contentDetails"]["videoId"] for item in response.get("items", []))
         token = response.get("nextPageToken")
         if not token:
             break
-        if len(ids) >= max_videos:
-            raise RecoveryBlocked("Upload inventory limit reached; absence cannot authorize another upload")
-    markers = {marker_tag(content_id), "wd-id-" + content_id}
+        if len(video_ids) >= max_videos:
+            raise RecoveryBlocked(
+                "Upload inventory limit reached; absence cannot authorize another upload"
+            )
+
+    marker = marker_tag(content_id)
     matches = {}
-    for start in range(0, len(ids), 50):
-        response = youtube.videos().list(part="snippet,status", id=",".join(ids[start:start + 50]), maxResults=50).execute()
+    for start in range(0, len(video_ids), 50):
+        response = youtube.videos().list(
+            part="snippet,status",
+            id=",".join(video_ids[start:start + 50]),
+            maxResults=50,
+        ).execute()
         for item in response.get("items", []):
             snippet = item.get("snippet", {})
-            tagged = bool(markers.intersection(snippet.get("tags", [])))
-            if tagged:
-                if snippet.get("channelId") != channel["id"]:
-                    raise RecoveryBlocked("Recovery candidate channel mismatch")
-                matches[item["id"]] = item
+            if marker not in snippet.get("tags", []):
+                continue
+            if snippet.get("channelId") != channel["id"]:
+                raise RecoveryBlocked("Recovery candidate channel mismatch")
+            matches[item["id"]] = item
     if len(matches) > 1:
-        raise RecoveryBlocked("Multiple videos match this immutable content ID; operator reconciliation required")
+        raise RecoveryBlocked(
+            "Multiple videos match this immutable content ID; operator reconciliation required"
+        )
     return next(iter(matches.values()), None)
 
 
 def upload_new(youtube, request_data, video_path, body):
     from googleapiclient.http import MediaFileUpload
-    expected = expected_publication(request_data)
+
+    publish_at = expected_publication(request_data)
     status = body.get("status", {})
-    if expected["mode"] == "public":
-        if status.get("privacyStatus") != "public":
-            raise RecoveryBlocked("Ad-hoc upload body violates immediate-public policy")
-        if "publishAt" in status:
-            raise RecoveryBlocked("Immediate public upload unexpectedly contains publishAt")
-    else:
-        if status.get("privacyStatus") != "private":
-            raise RecoveryBlocked("Scheduled upload must enter YouTube as private")
-        if status.get("publishAt") != expected["publish_at"]:
-            raise RecoveryBlocked("Scheduled upload body does not match immutable publication time")
+    if status.get("privacyStatus") != "private":
+        raise RecoveryBlocked("Scheduled upload must enter YouTube as private")
+    if status.get("publishAt") != publish_at:
+        raise RecoveryBlocked(
+            "Scheduled upload body does not match immutable publication time"
+        )
     media = MediaFileUpload(str(video_path), mimetype="video/mp4", resumable=True)
-    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+    request = youtube.videos().insert(
+        part="snippet,status", body=body, media_body=media
+    )
     response = None
     while response is None:
         _, response = request.next_chunk(num_retries=0)
@@ -165,44 +197,79 @@ def recover_record(youtube, state, identity, channel):
     if stored:
         check_identity(stored.data, identity)
         return stored
+
     intent = state.load(record_path(identity["content_id"], "intent"))
     if not intent:
         return None
     check_identity(intent.data, identity)
     if intent.data["expected_channel_id"] != channel["id"]:
         raise RecoveryBlocked("Upload intent belongs to another authenticated channel")
-    found = find_existing_by_marker(youtube, identity["content_id"], identity=identity, channel=channel)
+    found = find_existing_by_marker(
+        youtube, identity["content_id"], channel=channel
+    )
     if not found:
-        raise RecoveryBlocked("Upload intent exists but no video is observable yet; recovery only, never re-upload")
-    payload = {**intent.data, "record_type": "upload", "youtube_video_id": found["id"],
-               "uploaded_at": found["snippet"]["publishedAt"],
-               "association": {"kind": "metadata_lookup_after_durable_intent", "intent_blob_sha": intent.sha,
-                               "observed_at": now(), "video_item": found}}
+        raise RecoveryBlocked(
+            "Upload intent exists but no video is observable yet; recovery only, never re-upload"
+        )
+    payload = {
+        **intent.data,
+        "record_type": "upload",
+        "youtube_video_id": found["id"],
+        "uploaded_at": found["snippet"]["publishedAt"],
+        "association": {
+            "kind": "metadata_lookup_after_durable_intent",
+            "intent_blob_sha": intent.sha,
+            "observed_at": now(),
+            "video_item": found,
+        },
+    }
     return state.create(path, payload)
 
 
 def authorize_fresh_upload(youtube, state, identity, channel):
     if state.load(record_path(identity["content_id"], "intent")):
-        raise RecoveryBlocked("Upload intent exists; recovery must resolve it before any insert")
-    if not source_supports_intent(identity["source_commit_sha"]):
-        raise RecoveryBlocked("Request predates durable upload intents; import original run evidence, never re-upload")
-    if find_existing_by_marker(youtube, identity["content_id"], identity=identity, channel=channel):
-        raise RecoveryBlocked("Existing untracked upload found; import its provenance instead of uploading")
+        raise RecoveryBlocked(
+            "Upload intent exists; recovery must resolve it before any insert"
+        )
+    if find_existing_by_marker(youtube, identity["content_id"], channel=channel):
+        raise RecoveryBlocked(
+            "Existing untracked upload found; import its provenance instead of uploading"
+        )
 
 
-def execute_upload(request_data, video_path, *, state, identity, channel, selection, render_meta, youtube):
+def execute_upload(
+    request_data,
+    video_path,
+    *,
+    state,
+    identity,
+    channel,
+    selection,
+    render_meta,
+    youtube,
+):
     recovered = recover_record(youtube, state, identity, channel)
     if recovered:
         return recovered, True
-    body = build_upload_body(request_data, identity=identity)
+
+    body = build_upload_body(request_data)
     authorize_fresh_upload(youtube, state, identity, channel)
-    intent = {"schema_version": 1, "record_type": "intent", **identity,
-              "expected_channel_id": channel["id"], "created_at": now(),
-              "upload_workflow": workflow_identity(), "background": selection,
-              "render": render_meta, "upload_body": body}
+    intent = {
+        "schema_version": 1,
+        "record_type": "intent",
+        **identity,
+        "expected_channel_id": channel["id"],
+        "created_at": now(),
+        "upload_workflow": workflow_identity(),
+        "background": selection,
+        "render": render_meta,
+        "upload_body": body,
+    }
     claim = state.create(record_path(identity["content_id"], "intent"), intent)
     if not claim.created:
-        raise RecoveryBlocked("This attempt did not exclusively create the upload intent; insert forbidden")
+        raise RecoveryBlocked(
+            "This attempt did not exclusively create the upload intent; insert forbidden"
+        )
     try:
         response = upload_new(youtube, request_data, video_path, body)
     except Exception:
@@ -210,11 +277,23 @@ def execute_upload(request_data, video_path, *, state, identity, channel, select
         if recovered:
             return recovered, True
         raise
+
     atomic_write_json(OUTPUT_DIR / "upload-response.json", response)
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}", str(response.get("id", ""))):
-        raise RecoveryBlocked("Upload response lacks a valid video ID; existing intent prevents re-upload")
-    payload = {**intent, "record_type": "upload", "youtube_video_id": response["id"], "uploaded_at": now(),
-               "association": {"kind": "youtube_insert_response", "intent_blob_sha": claim.sha,
-                               "intent_commit_sha": claim.commit, "response": response}}
+        raise RecoveryBlocked(
+            "Upload response lacks a valid video ID; existing intent prevents re-upload"
+        )
+    payload = {
+        **intent,
+        "record_type": "upload",
+        "youtube_video_id": response["id"],
+        "uploaded_at": now(),
+        "association": {
+            "kind": "youtube_insert_response",
+            "intent_blob_sha": claim.sha,
+            "intent_commit_sha": claim.commit,
+            "response": response,
+        },
+    }
     atomic_write_json(OUTPUT_DIR / "upload-evidence.json", payload)
     return state.create(record_path(identity["content_id"], "upload"), payload), False
