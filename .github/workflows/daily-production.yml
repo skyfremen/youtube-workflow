@@ -448,3 +448,33 @@ jobs:
             /tmp/batch-pipeline-metrics.tsv
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Collect analytics for next planning cycle
+        if: ${{ always() && github.event_name == 'push' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Decouple analytics from any partial production workspace state and pull
+          # receipts/cache commits that may have been persisted during this run.
+          git fetch origin main
+          git reset --hard origin/main
+
+          python youtube-shorts-bot/analytics_collection.py
+          git add youtube-shorts-bot/analytics/
+          if git diff --cached --quiet; then
+            echo "No analytics changes to commit."
+            exit 0
+          fi
+
+          git commit -m "[skip upload] update YouTube analytics"
+          git pull --rebase origin main
+          git push origin HEAD:main
