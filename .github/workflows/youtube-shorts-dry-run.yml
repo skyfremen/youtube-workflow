@@ -215,3 +215,80 @@ jobs:
           test ! -d youtube-shorts-bot/content/planning
           test ! -d youtube-shorts-bot/content/background-sourcing
           echo 'Dry run passed with no TTS execution, MP4 render, YouTube upload, false receipt, immutable planning mutation, or background-sourcing mutation.'
+
+
+  alignment-model-benchmark:
+    name: Wav2Vec2 reuse benchmark
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Measure cold Wav2Vec2 initialization versus in-process reuse
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import statistics
+          import subprocess
+          import sys
+          import textwrap
+          import time
+
+          probe = textwrap.dedent("""
+              import json, time
+              started = time.monotonic()
+              import torch, torchaudio
+              imported = time.monotonic()
+              bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
+              model = bundle.get_model()
+              model.eval()
+              ready = time.monotonic()
+              print(json.dumps({
+                  "process_seconds": ready - started,
+                  "imports_seconds": imported - started,
+                  "model_load_seconds": ready - imported,
+              }))
+          """)
+          cold = [
+              json.loads(subprocess.check_output([sys.executable, "-c", probe], text=True))
+              for _ in range(3)
+          ]
+
+          started = time.monotonic()
+          import torch, torchaudio
+          imported = time.monotonic()
+          bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
+          model = bundle.get_model()
+          model.eval()
+          ready = time.monotonic()
+
+          # The retained model is intentionally exercised twice to prove the
+          # benchmark measures a usable inference object, not just deserialization.
+          waveform = torch.zeros((1, 16000), dtype=torch.float32)
+          with torch.inference_mode():
+              model(waveform)
+              model(waveform)
+          exercised = time.monotonic()
+
+          average_cold = {
+              key: statistics.mean(item[key] for item in cold)
+              for key in ("process_seconds", "imports_seconds", "model_load_seconds")
+          }
+          result = {
+              "cold_process_seconds_average": round(average_cold["process_seconds"], 6),
+              "cold_imports_seconds_average": round(average_cold["imports_seconds"], 6),
+              "cold_model_load_seconds_average": round(average_cold["model_load_seconds"], 6),
+              "persistent_worker_imports_seconds": round(imported - started, 6),
+              "persistent_worker_model_load_seconds": round(ready - imported, 6),
+              "persistent_worker_first_inference_seconds": round(exercised - ready, 6),
+              "avoidable_cold_start_seconds_per_24": round(average_cold["process_seconds"] * 23, 6),
+              "avoidable_model_load_seconds_per_24": round(average_cold["model_load_seconds"] * 23, 6),
+          }
+          assert result["cold_model_load_seconds_average"] > 0
+          print("PERF_RESULT " + json.dumps(result, sort_keys=True))
+          PY
