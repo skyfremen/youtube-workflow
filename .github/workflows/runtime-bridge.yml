@@ -26,4 +26,4 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/check.yml/dispatches \
             -d '{"ref":"main","inputs":{"fixture_id":"f8e8a2c9fef49424a74e4a177bbb270f","source_sha":"db52dca6f7afd62a6b36a6375127b3ad022876ea"}}'
-          echo "Public bridge check dispatched for production-equivalent rerun."
+          echo "Public bridge check dispatched for phase-diagnostic rerun."
