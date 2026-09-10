@@ -138,7 +138,7 @@ class WorkflowFailFastContracts(unittest.TestCase):
     def test_local_generation_is_bounded_but_durable_upload_stays_on_coordinator(self):
         batch = self.batch()
         pipeline = self.pipeline()
-        self.assertIn("SHORTS_CONCURRENCY: '1'", batch)
+        self.assertIn("SHORTS_CONCURRENCY: '2'", batch)
         self.assertIn("SUPPORTED_CONCURRENCY = (1, 2, 3, 4)", pipeline)
         self.assertIn("executor.submit(self.generate, item)", pipeline)
         self.assertNotIn("executor.submit(self.upload", pipeline)

@@ -40,9 +40,9 @@ jobs:
       VIDEO_HEIGHT: '1280'
       VIDEO_FPS: '30'
       STORY_TEST_MODE: 'false'
-      # Keep 1 until production-equivalent benchmark evidence supports promotion.
-      # Supported bounded values are 1, 2, 3 and 4.
-      SHORTS_CONCURRENCY: '1'
+      # Stage A and the 24-Short production-equivalent Stage B benchmark selected
+      # the lowest material winner. Supported bounded values remain 1, 2, 3, 4.
+      SHORTS_CONCURRENCY: '2'
     steps:
       - uses: actions/checkout@v4
         with:
