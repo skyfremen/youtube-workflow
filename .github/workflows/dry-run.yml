@@ -34,6 +34,7 @@ jobs:
       VIDEO_FPS: '30'
       STORY_TEST_MODE: 'true'
       STORY_RENDER_MAX_SECONDS: '5'
+      DRY_RUN_ARTIFACT_DIR: ${{ runner.temp }}/wacky-dramas-dry-run-visual
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,7 +104,10 @@ jobs:
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
 
       - name: Run production-equivalence dry run
-        run: python youtube-shorts-bot/production/dry_run.py
+        run: |
+          # Canonical harness: python youtube-shorts-bot/production/dry_run.py
+          # The adapter runs the same harness functions once and preserves validated visual outputs.
+          python youtube-shorts-bot/production/dry_run_artifact.py
 
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/media/validate_media_library.py
@@ -205,3 +209,12 @@ jobs:
           test ! -d youtube-shorts-bot/content/planning
           test ! -d youtube-shorts-bot/content/background-sourcing
           echo 'Dry run passed with no TTS, production render, upload, receipt, planning, or sourcing side effects.'
+
+      - name: Upload Dry Run visual artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dry-run-visual-${{ github.run_number }}
+          path: ${{ runner.temp }}/wacky-dramas-dry-run-visual/
+          if-no-files-found: warn
+          retention-days: 7
