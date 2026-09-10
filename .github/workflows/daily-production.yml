@@ -55,6 +55,11 @@ jobs:
         run: |
           set -euo pipefail
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # Analytics uses this tri-state result later. If production fails before
+          # reaching YouTube, analytics may perform its own cheap preflight. A known
+          # YouTube preflight failure is never repeated.
+          echo "youtube_preflight_status=not_run" >> "$GITHUB_OUTPUT"
+
           python - <<'PY'
           import json, os, subprocess
           from pathlib import Path
@@ -219,7 +224,12 @@ jobs:
 
           # GLOBAL / NETWORK: one read-only OAuth/Data API/channel readiness check
           # protects the entire batch before Pexels ingestion or any rendering.
-          python youtube-shorts-bot/auth_preflight.py
+          if python youtube-shorts-bot/auth_preflight.py; then
+            echo "youtube_preflight_status=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "youtube_preflight_status=failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
 
           # GLOBAL / SHARED STATE: source-manifest/cache ingestion is atomic shared
           # state. If it fails, do not render against an incomplete common registry.
@@ -457,24 +467,170 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          PRODUCTION_YOUTUBE_PREFLIGHT_STATUS: ${{ steps.batch.outputs.youtube_preflight_status }}
         run: |
           set -euo pipefail
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # ANALYTICS FAIL-FIRST 1: credentials are required. Do this before any
+          # fetch, API call or analytics computation.
+          missing_credentials=0
+          for name in YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN; do
+            if [ -z "${!name:-}" ]; then
+              echo "::warning title=Analytics skipped::Missing required credential: $name"
+              missing_credentials=1
+            fi
+          done
+          if [ "$missing_credentials" -ne 0 ]; then
+            exit 0
+          fi
+
           # Decouple analytics from any partial production workspace state and pull
           # receipts/cache commits that may have been persisted during this run.
           git fetch origin main
           git reset --hard origin/main
 
+          # ANALYTICS FAIL-FIRST 2: do not collect twice when the same Actions run
+          # is rerun. GITHUB_RUN_ID is stable across run attempts.
+          analytics_marker="[analytics run ${GITHUB_RUN_ID}]"
+          if git log -1 --fixed-strings --grep="$analytics_marker" --format=%H -- youtube-shorts-bot/analytics/ | grep -q .; then
+            echo "Analytics already collected for Actions run ${GITHUB_RUN_ID}; skipping duplicate collection."
+            exit 0
+          fi
+
+          # ANALYTICS FAIL-FIRST 3: reuse the production YouTube preflight whenever
+          # it passed. If production already proved auth broken, do not repeat the
+          # same network call. If production failed before reaching auth, analytics
+          # independently performs the cheap read-only preflight.
+          case "${PRODUCTION_YOUTUBE_PREFLIGHT_STATUS:-not_run}" in
+            passed)
+              echo "Reusing successful production YouTube preflight for analytics."
+              ;;
+            failed)
+              echo "::warning title=Analytics skipped::Production already proved YouTube authentication/readiness failed."
+              exit 0
+              ;;
+            *)
+              echo "Production did not reach YouTube preflight; checking analytics prerequisite independently."
+              if ! python youtube-shorts-bot/auth_preflight.py; then
+                echo "::warning title=Analytics skipped::Independent YouTube readiness preflight failed."
+                exit 0
+              fi
+              ;;
+          esac
+
+          # ANALYTICS FAIL-FIRST 4: with no already-published canonical receipts
+          # there is nothing useful to query or learn from yet.
+          published_receipt_count="$(python - <<'PY'
+          import sys
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from analytics_collection import load_receipts, public_age_hours
+
+          count = 0
+          for receipt in load_receipts().values():
+              age = public_age_hours(receipt)
+              if age is not None and age >= 0:
+                  count += 1
+          print(count)
+          PY
+          )"
+          if [ "$published_receipt_count" -eq 0 ]; then
+            echo "No published canonical receipts are eligible for analytics; skipping API collection."
+            exit 0
+          fi
+          echo "Analytics preflight found ${published_receipt_count} published canonical receipt(s)."
+
           python youtube-shorts-bot/analytics_collection.py
+
+          # ANALYTICS FAIL-CLOSED: validate every planner-facing output before it
+          # can replace the last known-good committed model.
+          if ! python - <<'PY'
+          import json
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from analytics_learning import DIMENSION_WEIGHTS, MODEL_VERSION
+
+          base = Path('youtube-shorts-bot/analytics')
+          latest = json.loads((base / 'latest.json').read_text(encoding='utf-8'))
+          model = json.loads((base / 'model.json').read_text(encoding='utf-8'))
+          milestones = json.loads((base / 'milestones.json').read_text(encoding='utf-8'))
+
+          if latest.get('analytics_model') != model:
+              raise SystemExit('analytics/latest.json embedded model differs from model.json')
+
+          captured_raw = str(latest.get('captured_at') or '')
+          captured = datetime.fromisoformat(captured_raw.replace('Z', '+00:00'))
+          if captured.tzinfo is None:
+              raise SystemExit('analytics captured_at is not timezone-aware')
+          if captured > datetime.now(timezone.utc):
+              raise SystemExit('analytics captured_at is unexpectedly in the future')
+
+          count_fields = (
+              'result_receipt_video_count', 'video_count', 'published_video_count',
+              'mature_video_count', 'analytics_evidence_count', 'analytics_evidence_views',
+          )
+          for key in count_fields:
+              value = latest.get(key)
+              if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                  raise SystemExit(f'invalid analytics count field: {key}={value!r}')
+          if not isinstance(latest.get('videos'), list):
+              raise SystemExit('analytics videos must be a list')
+
+          if model.get('model_version') != MODEL_VERSION:
+              raise SystemExit('unexpected analytics model version')
+          if model.get('active_cohort') not in (None, '24h', '72h', '7d'):
+              raise SystemExit('invalid active analytics cohort')
+          if not isinstance(model.get('analytics_enabled'), bool):
+              raise SystemExit('analytics_enabled must be boolean')
+          if model.get('analytics_evidence_count') != latest.get('analytics_evidence_count'):
+              raise SystemExit('analytics evidence count differs between snapshot and model')
+
+          cohorts = model.get('cohorts')
+          if not isinstance(cohorts, dict) or set(cohorts) != {'24h', '72h', '7d'}:
+              raise SystemExit('analytics model must contain exactly 24h/72h/7d cohorts')
+          for label, cohort in cohorts.items():
+              if not isinstance(cohort, dict):
+                  raise SystemExit(f'invalid cohort payload: {label}')
+              count = cohort.get('video_count')
+              if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+                  raise SystemExit(f'invalid cohort video_count: {label}')
+              if cohort.get('dimension_weights') != DIMENSION_WEIGHTS:
+                  raise SystemExit(f'analytics dimension weights changed unexpectedly: {label}')
+              dimensions = cohort.get('dimensions')
+              if not isinstance(dimensions, dict) or set(dimensions) != set(DIMENSION_WEIGHTS):
+                  raise SystemExit(f'invalid analytics dimensions: {label}')
+
+          if not isinstance(milestones, dict) or not isinstance(milestones.get('videos'), dict):
+              raise SystemExit('analytics milestones must contain a videos object')
+
+          sg_date = datetime.now(timezone.utc).astimezone(ZoneInfo('Asia/Singapore')).date().isoformat()
+          dated_path = base / f'{sg_date}.json'
+          if not dated_path.exists():
+              raise SystemExit(f'missing dated analytics snapshot: {dated_path}')
+          dated = json.loads(dated_path.read_text(encoding='utf-8'))
+          if dated != latest:
+              raise SystemExit('dated analytics snapshot differs from latest.json')
+
+          print('Analytics output validation passed; new model is safe to persist.')
+          PY
+          then
+            echo "::error title=Analytics rejected::Generated analytics state failed validation; retaining previous committed model."
+            git restore --source=HEAD --staged --worktree -- youtube-shorts-bot/analytics/
+            exit 1
+          fi
+
           git add youtube-shorts-bot/analytics/
           if git diff --cached --quiet; then
             echo "No analytics changes to commit."
             exit 0
           fi
 
-          git commit -m "[skip upload] update YouTube analytics"
+          git commit -m "[skip upload] update YouTube analytics ${analytics_marker}"
           git pull --rebase origin main
           git push origin HEAD:main
