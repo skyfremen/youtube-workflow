@@ -10,6 +10,7 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
 import media_resolver
+from background_policy import crop_fill_geometry, rendition_is_production_suitable
 
 
 def rendition(name, width, height, fps=30, size=None, url=None):
@@ -64,11 +65,11 @@ class RenditionSelectionTests(unittest.TestCase):
         full_hd = rendition("landscape-hd", 1920, 1080)
         qhd = rendition("landscape-qhd", 2560, 1440)
         four_k = rendition("landscape-4k", 3840, 2160)
-        self.assertFalse(media_resolver.rendition_is_suitable(hd720))
-        self.assertTrue(media_resolver.rendition_is_suitable(full_hd))
-        self.assertFalse(media_resolver.rendition_is_suitable(qhd))
-        self.assertFalse(media_resolver.rendition_is_suitable(four_k))
-        geometry = media_resolver.crop_fill_geometry(1920, 1080)
+        self.assertFalse(rendition_is_production_suitable(hd720))
+        self.assertTrue(rendition_is_production_suitable(full_hd))
+        self.assertFalse(rendition_is_production_suitable(qhd))
+        self.assertFalse(rendition_is_production_suitable(four_k))
+        geometry = crop_fill_geometry(1920, 1080)
         self.assertAlmostEqual(geometry["scale_factor"], 1280 / 1080, places=3)
         self.assertLess(geometry["scale_factor"], 1.25)
 

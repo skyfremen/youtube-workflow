@@ -1,7 +1,8 @@
 import json
 import os
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from analytics_learning import build_model
 from planning_config import (
@@ -20,6 +21,14 @@ ANALYTICS.mkdir(exist_ok=True)
 MILESTONES_PATH = ANALYTICS / "milestones.json"
 MODEL_PATH = ANALYTICS / "model.json"
 LATEST_PATH = ANALYTICS / "latest.json"
+SINGAPORE_TZ = ZoneInfo("Asia/Singapore")
+
+
+def singapore_date(now_utc=None):
+    current = now_utc or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        raise ValueError("now_utc must be timezone-aware")
+    return current.astimezone(SINGAPORE_TZ).date()
 
 
 def _instant(raw):
@@ -252,7 +261,7 @@ def write_snapshot(payload, dated=False):
         encoding="utf-8",
     )
     if dated:
-        (ANALYTICS / f"{date.today().isoformat()}.json").write_text(text, encoding="utf-8")
+        (ANALYTICS / f"{singapore_date().isoformat()}.json").write_text(text, encoding="utf-8")
 
 
 def main():
@@ -292,8 +301,9 @@ def main():
         ],
     )
     oldest_publish_date = min(_instant(receipt["publish_at"]).date() for receipt in receipts.values())
-    start_date = max(date.today() - timedelta(days=90), oldest_publish_date).isoformat()
-    end_date = date.today().isoformat()
+    today = singapore_date()
+    start_date = max(today - timedelta(days=90), oldest_publish_date).isoformat()
+    end_date = today.isoformat()
     metrics = (
         "views,engagedViews,likes,comments,shares,estimatedMinutesWatched,"
         "averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost"

@@ -65,11 +65,16 @@ class PlanningEngineTests(unittest.TestCase):
         self.assertLessEqual(weights[-1], 0.75)
         self.assertGreater(blend_scores(60, 95, weights[4]), blend_scores(60, 95, weights[1]))
 
-    def test_missing_metrics_are_renormalized_not_fabricated(self):
-        score = normalized_performance_score({"average_percentage_viewed": 80, "likes_per_1000_views": 20})
-        expected = (80 * 25 + 20 * 5) / 30
-        self.assertAlmostEqual(score, expected, places=3)
-        self.assertIsNone(normalized_performance_score({"average_percentage_viewed": None}))
+    def test_only_historical_attribute_fit_enters_candidate_scoring(self):
+        self.assertEqual(
+            normalized_performance_score({"historical_attribute_fit": 82}), 82.0
+        )
+        self.assertIsNone(
+            normalized_performance_score({"average_percentage_viewed": 82})
+        )
+        self.assertIsNone(
+            normalized_performance_score({"historical_attribute_fit": None})
+        )
 
     def test_untruthful_title_cannot_win(self):
         components = {k: 100 for k in TITLE_WEIGHTS}
@@ -141,7 +146,7 @@ class PlanningEngineTests(unittest.TestCase):
 
     def test_partial_analytics_does_not_break_plan(self):
         raw, semifinalists = build_acceptance_fixture("2026-09-10")
-        semifinalists[0]["analytics_metrics"] = {"average_percentage_viewed": 82}
+        semifinalists[0]["analytics_metrics"] = {"historical_attribute_fit": 82}
         result = evaluate(raw, semifinalists, "2026-09-10", analytics_video_count=5)
         self.assertGreater(result["analytics_weight"], 0)
         self.assertLess(result["analytics_weight"], 0.75)

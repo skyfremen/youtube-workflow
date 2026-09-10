@@ -57,19 +57,9 @@ RAW_ANALYTICS_WEIGHTS = {
     "comments_per_1000_views": 7.5,
 }
 
-# planning_engine.normalized_performance_score remains backward-compatible with
-# direct normalized metrics used by tests/older callers. New production planning
-# should pass only historical_attribute_fit, produced by analytics_learning.py.
-PERFORMANCE_WEIGHTS = {
-    "historical_attribute_fit": 100,
-    "engaged_view_rate": 25,
-    "average_percentage_viewed": 25,
-    "average_view_duration_relative": 15,
-    "subscribers_per_1000_views": 15,
-    "shares_per_1000_views": 10,
-    "likes_per_1000_views": 5,
-    "comments_per_1000_views": 5,
-}
+# Candidate analytics enters planning only through the normalized historical
+# attribute-fit score produced by analytics_learning.py.
+PERFORMANCE_WEIGHTS = {"historical_attribute_fit": 100}
 
 DIVERSITY_LIMITS = {
     "category": 4,
@@ -120,7 +110,7 @@ MIN_HOOK_SCORE = 70.0
 NEAR_DUPLICATE_THRESHOLD = 0.82
 SOFT_SIMILARITY_THRESHOLD = 0.62
 
-# Fresh-start analytics must mature before it can steer creative selection.
+# Analytics must mature before it can steer creative selection.
 # analytics_evidence_count in analytics/latest.json is an evidence-equivalent count:
 # it is zero until >=10 videos have a 24h cohort snapshot, then is capped by
 # both mature video count and one evidence unit per 500 comparable views.

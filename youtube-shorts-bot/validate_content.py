@@ -45,10 +45,10 @@ ATTRIBUTE_KEYS = {
     "opening_style", "title_style", "ending_style",
 }
 TITLE_CANDIDATE_KEYS = {"title", "style", "truthful", "score", "score_components"}
-LEGACY_NAME = "Wacky " + "Insights"
-LEGACY_HANDLE = "@WACKY" + "INSIGHTS"
-LEGACY_HASHTAG = "#wacky" + "insights"
-LEGACY_BRANDING = (LEGACY_HANDLE, LEGACY_HASHTAG, LEGACY_NAME)
+RETIRED_NAME = "Wacky " + "Insights"
+RETIRED_HANDLE = "@WACKY" + "INSIGHTS"
+RETIRED_HASHTAG = "#wacky" + "insights"
+RETIRED_BRANDING = (RETIRED_HANDLE, RETIRED_HASHTAG, RETIRED_NAME)
 
 
 def _nonempty(value):
@@ -229,6 +229,10 @@ def validate_request_data(data, request_path=None):
         for key in ("category", "story_type", "hook", "script"):
             if not _nonempty(story.get(key)):
                 errors.append(f"story.{key} must be non-empty")
+        hook = str(story.get("hook") or "").strip()
+        script = str(story.get("script") or "").strip()
+        if hook and script.startswith(hook):
+            errors.append("story.script must not repeat story.hook at the beginning")
         if story.get("category") not in CATEGORIES:
             errors.append("story.category is not a controlled planning category")
         emojis = story.get("card_emojis")
@@ -236,7 +240,7 @@ def validate_request_data(data, request_path=None):
             errors.append("story.card_emojis must contain 4-6 emojis")
         elif any(not _nonempty(x) for x in emojis):
             errors.append("story.card_emojis entries must be non-empty")
-        if any(term.lower() in str(story.get("script", "")).lower() for term in LEGACY_BRANDING):
+        if any(term.lower() in str(story.get("script", "")).lower() for term in RETIRED_BRANDING):
             errors.append("story script contains obsolete channel branding")
 
     narration = data.get("narration")
@@ -304,7 +308,7 @@ def validate_request_data(data, request_path=None):
     _validate_planning(data.get("planning"), youtube_title, errors)
 
     serialized = json.dumps(data, ensure_ascii=False)
-    for term in LEGACY_BRANDING:
+    for term in RETIRED_BRANDING:
         if term.lower() in serialized.lower():
             errors.append("request contains obsolete channel branding")
     if request_path and not errors:

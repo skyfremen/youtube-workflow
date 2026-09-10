@@ -198,22 +198,6 @@ def generate_narration(synthesizer, hook, story_text, voice, speed, test_mode, t
     }
 
 
-def story_body_without_repeated_hook(script, hook):
-    script = str(script).strip()
-    hook = str(hook).strip()
-    if hook and script.startswith(hook):
-        remainder = script[len(hook):].lstrip()
-        if remainder:
-            return remainder
-    return script
-
-
-def pick_existing(paths):
-    for path in paths:
-        if Path(path).exists():
-            return path
-    return None
-
 
 def font_px(path, size):
     return ImageFont.truetype(path, max(12, int(size)))
@@ -428,9 +412,9 @@ def main():
 
     import soundfile as sf
 
-    story_text = story_body_without_repeated_hook(script, hook)
+    story_text = str(script).strip()
     if not story_text:
-        raise SystemExit("story.script must contain story narration after the opening card hook")
+        raise SystemExit("story.script must contain story narration")
 
     narration_backend_requested = ONNX_BACKEND
     narration_backend_used = ONNX_BACKEND

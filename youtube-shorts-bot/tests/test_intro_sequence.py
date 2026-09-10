@@ -7,23 +7,10 @@ sys.path.insert(0, str(ROOT))
 
 from render import (
     CARD_TRANSITION_SECONDS, START_LEAD_SECONDS, X264_CRF, X264_PRESET, caption_events,
-    story_body_without_repeated_hook,
 )
 
 
 class IntroSequenceTests(unittest.TestCase):
-    def test_repeated_card_hook_is_not_repeated_in_story(self):
-        hook = "My manager put the rule in writing."
-        script = hook + "\n\nThen payroll saw the email and everything changed."
-        self.assertEqual(
-            story_body_without_repeated_hook(script, hook),
-            "Then payroll saw the email and everything changed.",
-        )
-
-    def test_distinct_story_opening_is_preserved(self):
-        hook = "The email changed everything."
-        script = "We were three days from month-end when the meeting started."
-        self.assertEqual(story_body_without_repeated_hook(script, hook), script)
 
     def test_subtitles_start_only_after_card_transition(self):
         story_start = 2.80 + CARD_TRANSITION_SECONDS

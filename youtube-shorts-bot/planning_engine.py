@@ -4,8 +4,6 @@ AI owns semantic creative work; this module owns auditable arithmetic, duplicate
 checks, analytics confidence, diversity policy and hourly scheduling. Rejected
 candidates never reach media/TTS/render/upload stages.
 """
-from __future__ import annotations
-
 import argparse
 import json
 import math
@@ -146,19 +144,11 @@ def analytics_weight(video_count):
 
 
 def normalized_performance_score(metrics):
-    """Weighted 0-100 score using only metrics that actually exist."""
+    """Return the canonical normalized historical-attribute fit score."""
     if not isinstance(metrics, dict):
         return None
-    usable = []
-    for key, weight in PERFORMANCE_WEIGHTS.items():
-        value = metrics.get(key)
-        if value is None:
-            continue
-        usable.append((_bounded(value, key), weight))
-    if not usable:
-        return None
-    denominator = sum(weight for _, weight in usable)
-    return round(sum(value * weight for value, weight in usable) / denominator, 3)
+    value = metrics.get("historical_attribute_fit")
+    return None if value is None else round(_bounded(value, "historical_attribute_fit"), 3)
 
 
 def blend_scores(editorial, analytics, weight):

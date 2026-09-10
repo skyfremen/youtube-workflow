@@ -35,7 +35,7 @@ Planning rules:
 
 - `story.hook` is the spoken opening-card title/headline, not the first paragraph of the story.
 - Keep it crisp and immediately intriguing; prefer roughly **5–10 words** when natural so it reads quickly at `af_heart` / `1.75×`.
-- `story.script` starts directly after the hook and **must not repeat the hook verbatim**. Legacy immutable requests that already duplicate the hook are handled defensively by the renderer; new requests should not rely on that fallback.
+- `story.script` starts directly after the hook and **must not repeat the hook verbatim**. The request validator rejects a script that starts by repeating `story.hook`.
 - The first story-body sentence should deepen curiosity immediately through a contradiction, discovery, consequence, evidence, urgent conflict or unanswered event.
 - Avoid generic introductions such as “for context”, relationship-length history, unnecessary ages, family trees, or “this happened a few years ago” before the interesting event unless essential.
 - Narrate in first person and make the conflict easy to follow on first listen.

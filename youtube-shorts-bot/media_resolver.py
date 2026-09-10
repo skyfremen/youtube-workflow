@@ -20,7 +20,6 @@ from background_policy import (
     TARGET_FPS,
     TARGET_HEIGHT,
     TARGET_WIDTH,
-    crop_fill_geometry,
     rendition_is_production_suitable,
     rendition_sort_key,
 )
@@ -54,12 +53,6 @@ def parse_rate(value):
         return 0.0
 
 
-def rendition_is_suitable(rendition, target_width=TARGET_WIDTH, target_height=TARGET_HEIGHT):
-    """Backward-compatible name for the shared production-cost suitability gate."""
-    return rendition_is_production_suitable(
-        rendition, target_width=target_width, target_height=target_height
-    )
-
 
 def suitable_renditions(asset, target_width=TARGET_WIDTH, target_height=TARGET_HEIGHT, target_fps=TARGET_FPS):
     candidates = [
@@ -83,10 +76,10 @@ def select_best_rendition(asset, target_width=TARGET_WIDTH, target_height=TARGET
 
 
 def generic_fallback(asset):
-    """Legacy fallback is allowed only when the original itself fits the cost cap.
+    """Use the provider original only when it already fits the production cost cap.
 
-    A generic provider download endpoint can resolve to the original 4K file, so
-    unknown or oversized originals are deliberately not used by production.
+    A generic provider download endpoint can resolve to a 4K file, so unknown or
+    oversized originals are deliberately not used by production.
     """
     url = str(asset.get("direct_url") or "").strip()
     if not url:

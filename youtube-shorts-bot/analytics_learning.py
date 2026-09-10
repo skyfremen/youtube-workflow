@@ -4,8 +4,6 @@ Raw YouTube metrics are converted to within-cohort percentiles, then attributed
 to controlled creative dimensions. Planning consumes only the resulting 0-100
 historical_attribute_fit, never raw subscriber, share, retention, or view counts.
 """
-from __future__ import annotations
-
 from collections import defaultdict
 from math import isfinite
 
