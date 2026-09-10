@@ -250,7 +250,11 @@ jobs:
       - name: Benchmark bounded production rendering
         run: |
           nproc
-          free -h
+          if command -v free >/dev/null 2>&1; then
+            free -h
+          else
+            sed -n '1,5p' /proc/meminfo
+          fi
           python youtube-shorts-bot/production/concurrency_benchmark.py \
             --stage a \
             --output /tmp/concurrency-benchmark-stage-a.json

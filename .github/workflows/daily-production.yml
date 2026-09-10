@@ -54,7 +54,11 @@ jobs:
         run: |
           python -c 'import time; print(f"{time.time():.6f}")' > /tmp/daily-job-started-at.txt
           echo "logical_cpu_count=$(nproc)"
-          free -h
+          if command -v free >/dev/null 2>&1; then
+            free -h
+          else
+            sed -n '1,5p' /proc/meminfo
+          fi
           cat /proc/loadavg
 
       - name: Validate global batch integrity and shared dependencies
@@ -135,9 +139,9 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          # Intentionally do not use `set -e` at loop scope: per-video failures
-          # are isolated, counted, and the next immutable request must continue.
-          set -uo pipefail
+          # The Python coordinator converts per-video failures into deterministic
+          # batch evidence, so shell fail-fast remains safe for global failures.
+          set -euo pipefail
           success=0
 
           epoch_seconds() {

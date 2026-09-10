@@ -1,7 +1,9 @@
 import copy
 import sys
 import tempfile
+import threading
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -43,6 +45,20 @@ class MemoryState:
         self.records[path] = copy.deepcopy(data)
         self.writes.append(path)
         return Stored(copy.deepcopy(data), blob_sha(encoded_json(data)), True, "c" * 40)
+
+
+class AtomicMemoryState(MemoryState):
+    def __init__(self):
+        super().__init__()
+        self.lock = threading.RLock()
+
+    def load(self, path):
+        with self.lock:
+            return super().load(path)
+
+    def create(self, path, data):
+        with self.lock:
+            return super().create(path, data)
 
 
 def fixture():
@@ -245,6 +261,33 @@ class RecoveryTests(unittest.TestCase):
         )
         insert.assert_called_once()
         self.assertEqual(len(self.state.writes), 2)
+
+    @patch("publishing.upload.find_existing_by_marker", return_value=None)
+    def test_concurrent_same_content_id_can_only_reach_one_insert(self, _lookup):
+        self.state = AtomicMemoryState()
+        insert_started = threading.Event()
+        release_insert = threading.Event()
+        insert_calls = []
+
+        def slow_insert(*_args, **_kwargs):
+            insert_calls.append(1)
+            insert_started.set()
+            release_insert.wait(timeout=2)
+            return {"id": VIDEO_ID}
+
+        with patch("publishing.upload.upload_new", side_effect=slow_insert):
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                first = executor.submit(self.execute)
+                self.assertTrue(insert_started.wait(timeout=2))
+                second = executor.submit(self.execute)
+                with self.assertRaises(RecoveryBlocked):
+                    second.result(timeout=2)
+                release_insert.set()
+                stored, recovered = first.result(timeout=2)
+
+        self.assertFalse(recovered)
+        self.assertEqual(stored.data["youtube_video_id"], VIDEO_ID)
+        self.assertEqual(len(insert_calls), 1)
 
     @patch("publishing.upload.find_existing_by_marker", return_value=None)
     @patch("publishing.upload.upload_new", side_effect=TimeoutError("response lost"))
