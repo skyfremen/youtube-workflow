@@ -1,9 +1,8 @@
 name: Analytics Collection
 
 on:
-  schedule:
-    # Once daily at 19:30 Singapore time, immediately before the 20:00 daily planner.
-    - cron: '30 11 * * *'
+  # Manual fallback only. Scheduled collection now runs inside Daily Production
+  # so it reuses the already-running production runner.
   workflow_dispatch:
 
 jobs:
