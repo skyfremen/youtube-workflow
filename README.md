@@ -63,3 +63,5 @@ A production upload is **not** required to validate repository cleanup or ordina
 ## Repository scope
 
 Retired Wacky Insights planner/queue/series/music/publishing architecture, the former `youtube-story-bot` prototype, and the former single-story production entry point are not part of the supported tree. Do not restore them. Historical or experimental branches with unique unmerged work must be reviewed before deletion rather than treated as disposable solely because of age or naming.
+
+<!-- branch-only dry-run verification trigger -->
