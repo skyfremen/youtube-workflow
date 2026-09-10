@@ -1,0 +1,436 @@
+name: Organize Shorts Bot Folders
+
+on:
+  push:
+    branches:
+      - refactor/organize-shorts-bot-folders
+    paths:
+      - '.github/workflows/refactor-organize.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: youtube-shorts-bot
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: refactor/organize-shorts-bot-folders
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --no-input \
+            'numpy>=2.0.2,<2.3' \
+            'Pillow>=10,<12' \
+            'PyYAML>=6,<7'
+
+      - name: Audit and reorganize files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+
+          import re
+          import subprocess
+          from pathlib import Path
+
+          ROOT = Path('.')
+          BOT = Path('youtube-shorts-bot')
+
+          moves = {
+              'youtube-shorts-bot/SYSTEM_OVERVIEW.md': 'youtube-shorts-bot/docs/SYSTEM_OVERVIEW.md',
+              'youtube-shorts-bot/RECOVERY.md': 'youtube-shorts-bot/docs/RECOVERY.md',
+              'youtube-shorts-bot/planner/DAILY_PLANNER_PROMPT.md': 'youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md',
+              'youtube-shorts-bot/planner/STORY_RULES.md': 'youtube-shorts-bot/planning/STORY_RULES.md',
+              'youtube-shorts-bot/planning_config.py': 'youtube-shorts-bot/planning/planning_config.py',
+              'youtube-shorts-bot/planning_engine.py': 'youtube-shorts-bot/planning/planning_engine.py',
+              'youtube-shorts-bot/background_policy.py': 'youtube-shorts-bot/media/background_policy.py',
+              'youtube-shorts-bot/background_selector.py': 'youtube-shorts-bot/media/background_selector.py',
+              'youtube-shorts-bot/media_resolver.py': 'youtube-shorts-bot/media/media_resolver.py',
+              'youtube-shorts-bot/pexels_registry.py': 'youtube-shorts-bot/media/pexels_registry.py',
+              'youtube-shorts-bot/validate_media_library.py': 'youtube-shorts-bot/media/validate_media_library.py',
+              'youtube-shorts-bot/render.py': 'youtube-shorts-bot/rendering/render.py',
+              'youtube-shorts-bot/render_aligned.py': 'youtube-shorts-bot/rendering/render_aligned.py',
+              'youtube-shorts-bot/caption_alignment.py': 'youtube-shorts-bot/rendering/caption_alignment.py',
+              'youtube-shorts-bot/tts_backend.py': 'youtube-shorts-bot/rendering/tts_backend.py',
+              'youtube-shorts-bot/verify_render.py': 'youtube-shorts-bot/rendering/verify_render.py',
+              'youtube-shorts-bot/auth_preflight.py': 'youtube-shorts-bot/publishing/auth_preflight.py',
+              'youtube-shorts-bot/publish.py': 'youtube-shorts-bot/publishing/publish.py',
+              'youtube-shorts-bot/upload.py': 'youtube-shorts-bot/publishing/upload.py',
+              'youtube-shorts-bot/verify_publication.py': 'youtube-shorts-bot/publishing/verify_publication.py',
+              'youtube-shorts-bot/finalize_receipt.py': 'youtube-shorts-bot/publishing/finalize_receipt.py',
+              'youtube-shorts-bot/recovery_state.py': 'youtube-shorts-bot/publishing/recovery_state.py',
+              'youtube-shorts-bot/validate_content.py': 'youtube-shorts-bot/validation/validate_content.py',
+              'youtube-shorts-bot/request_guard.py': 'youtube-shorts-bot/validation/request_guard.py',
+              'youtube-shorts-bot/workflow_common.py': 'youtube-shorts-bot/common/workflow_common.py',
+              'youtube-shorts-bot/analytics_collection.py': 'youtube-shorts-bot/analytics/analytics_collection.py',
+              'youtube-shorts-bot/analytics_learning.py': 'youtube-shorts-bot/analytics/analytics_learning.py',
+          }
+
+          module_map = {
+              'planning_config': 'planning.planning_config',
+              'planning_engine': 'planning.planning_engine',
+              'background_policy': 'media.background_policy',
+              'background_selector': 'media.background_selector',
+              'media_resolver': 'media.media_resolver',
+              'pexels_registry': 'media.pexels_registry',
+              'validate_media_library': 'media.validate_media_library',
+              'render': 'rendering.render',
+              'render_aligned': 'rendering.render_aligned',
+              'caption_alignment': 'rendering.caption_alignment',
+              'tts_backend': 'rendering.tts_backend',
+              'verify_render': 'rendering.verify_render',
+              'auth_preflight': 'publishing.auth_preflight',
+              'publish': 'publishing.publish',
+              'upload': 'publishing.upload',
+              'verify_publication': 'publishing.verify_publication',
+              'finalize_receipt': 'publishing.finalize_receipt',
+              'recovery_state': 'publishing.recovery_state',
+              'validate_content': 'validation.validate_content',
+              'request_guard': 'validation.request_guard',
+              'workflow_common': 'common.workflow_common',
+              'analytics_collection': 'analytics.analytics_collection',
+              'analytics_learning': 'analytics.analytics_learning',
+          }
+
+          missing = [old for old in moves if not Path(old).exists()]
+          occupied = [new for new in moves.values() if Path(new).exists()]
+          if missing:
+              raise SystemExit('Expected source paths are missing before refactor: ' + ', '.join(missing))
+          if occupied:
+              raise SystemExit('Target paths already exist before refactor: ' + ', '.join(occupied))
+
+          def tracked_text_files():
+              raw = subprocess.check_output(['git', 'ls-files', '-z'])
+              for item in raw.decode().split('\0'):
+                  if not item:
+                      continue
+                  path = Path(item)
+                  try:
+                      path.read_text(encoding='utf-8')
+                  except (UnicodeDecodeError, OSError, IsADirectoryError):
+                      continue
+                  yield path
+
+          # Pre-change dependency inventory for the run log.
+          print('=== PRE-REFACTOR REFERENCE INVENTORY ===')
+          texts = list(tracked_text_files())
+          for old, new in moves.items():
+              needle = old
+              refs = []
+              for path in texts:
+                  text = path.read_text(encoding='utf-8')
+                  if needle in text:
+                      refs.append(str(path))
+              if refs:
+                  print(f'{old} -> {new}: {len(refs)} explicit reference file(s): {refs}')
+          for module in module_map:
+              pattern = re.compile(rf'(?m)^\s*(?:from\s+{re.escape(module)}\s+import\b|import\s+{re.escape(module)}(?:\s|$))')
+              refs = [str(path) for path in texts if pattern.search(path.read_text(encoding='utf-8'))]
+              if refs:
+                  print(f'import {module}: {len(refs)} file(s): {refs}')
+
+          # Create destination folders before git mv.
+          for target in moves.values():
+              Path(target).parent.mkdir(parents=True, exist_ok=True)
+
+          # Move with Git so history remains easy to follow.
+          for old, new in moves.items():
+              subprocess.run(['git', 'mv', old, new], check=True)
+
+          planner = BOT / 'planner'
+          if planner.exists():
+              try:
+                  planner.rmdir()
+              except OSError:
+                  raise SystemExit('planner/ still contains unexpected files after planned moves')
+
+          for package in ('planning', 'media', 'rendering', 'publishing', 'validation', 'common', 'analytics'):
+              init = BOT / package / '__init__.py'
+              if not init.exists():
+                  init.write_text(f'"""Wacky Dramas {package} package."""\n', encoding='utf-8')
+
+          moved_python = [Path(new) for new in moves.values() if new.endswith('.py')]
+
+          # Every moved module is exactly one directory deeper than before. Preserve
+          # any existing __file__-relative base calculation by shifting it one parent.
+          for path in moved_python:
+              text = path.read_text(encoding='utf-8')
+              text = re.sub(
+                  r'Path\(__file__\)\.resolve\(\)\.parents\[(\d+)\]',
+                  lambda m: f'Path(__file__).resolve().parents[{int(m.group(1)) + 1}]',
+                  text,
+              )
+              text = re.sub(
+                  r'Path\(__file__\)\.parents\[(\d+)\]',
+                  lambda m: f'Path(__file__).parents[{int(m.group(1)) + 1}]',
+                  text,
+              )
+              text = text.replace('Path(__file__).resolve().parent', 'Path(__file__).resolve().parents[1]')
+              text = text.replace('Path(__file__).parent', 'Path(__file__).resolve().parents[1]')
+              path.write_text(text, encoding='utf-8')
+
+          def rewrite_imports(text: str) -> str:
+              for old_module, new_module in module_map.items():
+                  text = re.sub(
+                      rf'(?m)^(\s*)from\s+{re.escape(old_module)}\s+import\b',
+                      rf'\1from {new_module} import',
+                      text,
+                  )
+                  package, leaf = new_module.rsplit('.', 1)
+                  pattern = re.compile(
+                      rf'(?m)^(\s*)import\s+{re.escape(old_module)}'
+                      rf'(\s+as\s+([A-Za-z_]\w*))?(\s*#.*)?$'
+                  )
+                  def repl(match):
+                      alias = match.group(2) or ''
+                      comment = match.group(4) or ''
+                      return f'{match.group(1)}from {package} import {leaf}{alias}{comment}'
+                  text = pattern.sub(repl, text)
+              return text
+
+          # Update all repository text references and imports, including inline Python
+          # embedded in Actions YAML and documentation that names current paths.
+          for path in list(tracked_text_files()):
+              text = path.read_text(encoding='utf-8')
+              original = text
+              text = text.replace('youtube-shorts-bot/planner/', 'youtube-shorts-bot/planning/')
+              for old, new in moves.items():
+                  text = text.replace(old, new)
+              text = rewrite_imports(text)
+              if path.suffix in {'.yml', '.yaml'}:
+                  text = text.replace("'youtube-shorts-bot/*.py'", "'youtube-shorts-bot/**/*.py'")
+                  text = text.replace("'youtube-shorts-bot/*.md'", "'youtube-shorts-bot/**/*.md'")
+              if path.parent == BOT / 'tests':
+                  for old, new in moves.items():
+                      if not old.endswith('.py'):
+                          continue
+                      old_name = Path(old).name
+                      new_rel = str(Path(new).relative_to(BOT))
+                      text = text.replace(f'"{old_name}"', f'"{new_rel}"')
+                      text = text.replace(f"'{old_name}'", f"'{new_rel}'")
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+
+          # The old shallow glob and compile command no longer represent the source
+          # tree. Preserve their intent over the responsibility folders.
+          dry = Path('.github/workflows/dry-run.yml')
+          dry_text = dry.read_text(encoding='utf-8')
+          dry_text = dry_text.replace(
+              'run: python -m py_compile youtube-shorts-bot/*.py',
+              "run: find youtube-shorts-bot -type f -name '*.py' -print0 | xargs -0 python -m py_compile",
+          )
+          dry.write_text(dry_text, encoding='utf-8')
+
+          # Make the new application package root available consistently to every
+          # workflow while keeping direct script-path CLI invocation intact.
+          for workflow in Path('.github/workflows').glob('*.yml'):
+              if workflow.name == 'refactor-organize.yml':
+                  continue
+              text = workflow.read_text(encoding='utf-8')
+              if re.search(r'(?m)^env:\s*$', text):
+                  if not re.search(r'(?m)^  PYTHONPATH:\s*youtube-shorts-bot\s*$', text):
+                      text = re.sub(
+                          r'(?m)^env:\s*$',
+                          'env:\n  PYTHONPATH: youtube-shorts-bot',
+                          text,
+                          count=1,
+                      )
+              else:
+                  match = re.search(r'(?m)^name:.*$', text)
+                  if not match:
+                      raise SystemExit(f'Workflow has no name line: {workflow}')
+                  insert_at = match.end()
+                  text = text[:insert_at] + '\n\nenv:\n  PYTHONPATH: youtube-shorts-bot' + text[insert_at:]
+              workflow.write_text(text, encoding='utf-8')
+
+          # Update the dry-run's structural expectations to the new canonical layout.
+          dry_text = dry.read_text(encoding='utf-8')
+          dry_text = dry_text.replace(
+              "Path('youtube-shorts-bot/planning').glob('*.md')",
+              "Path('youtube-shorts-bot/planning').glob('*.md')",
+          )
+          dry.write_text(dry_text, encoding='utf-8')
+
+          # Post-change invariants: old executable locations and bare imports must be gone.
+          texts = list(tracked_text_files())
+          stale = []
+          for path in texts:
+              text = path.read_text(encoding='utf-8')
+              for old in moves:
+                  if old in text:
+                      stale.append(f'{path}: {old}')
+              if 'youtube-shorts-bot/planner/' in text:
+                  stale.append(f'{path}: youtube-shorts-bot/planner/')
+              for old_module in module_map:
+                  if re.search(
+                      rf'(?m)^\s*(?:from\s+{re.escape(old_module)}\s+import\b|import\s+{re.escape(old_module)}(?:\s|$))',
+                      text,
+                  ):
+                      stale.append(f'{path}: bare import {old_module}')
+          if stale:
+              raise SystemExit('Stale references remain after refactor:\n' + '\n'.join(stale[:100]))
+
+          for old in moves:
+              if Path(old).exists():
+                  raise SystemExit(f'Old path still exists: {old}')
+          for new in moves.values():
+              if not Path(new).exists():
+                  raise SystemExit(f'New path missing: {new}')
+
+          # Immutable/runtime data locations must not be touched by this refactor.
+          changed = subprocess.check_output(['git', 'diff', '--name-only']).decode().splitlines()
+          forbidden_prefixes = (
+              'youtube-shorts-bot/content/',
+              'youtube-shorts-bot/media-library/',
+              'youtube-shorts-bot/assets/',
+          )
+          forbidden = [p for p in changed if p.startswith(forbidden_prefixes)]
+          if forbidden:
+              raise SystemExit('Structural refactor modified runtime data/assets: ' + ', '.join(forbidden))
+
+          print('=== POST-REFACTOR TREE ===')
+          for path in sorted(BOT.iterdir()):
+              print(path)
+          print('=== CHANGED FILES ===')
+          print('\n'.join(changed))
+          PY
+
+      - name: Validate Python, YAML, imports, and contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          find youtube-shorts-bot -type f -name '*.py' -print0 | xargs -0 python -m py_compile
+
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for path in Path('.github/workflows').glob('*.yml'):
+              yaml.safe_load(path.read_text(encoding='utf-8'))
+              print(f'YAML parsed: {path}')
+
+          expected_root = {
+              'Dockerfile', 'requirements.txt', 'analytics', 'assets', 'common', 'content',
+              'docs', 'media', 'media-library', 'planning', 'publishing', 'rendering',
+              'tests', 'validation',
+          }
+          actual_root = {p.name for p in Path('youtube-shorts-bot').iterdir() if p.name != '__pycache__'}
+          assert actual_root == expected_root, (sorted(actual_root), sorted(expected_root))
+
+          packages = ('planning', 'media', 'rendering', 'publishing', 'validation', 'common', 'analytics')
+          for package in packages:
+              assert Path('youtube-shorts-bot', package, '__init__.py').is_file()
+
+          assert {p.name for p in Path('youtube-shorts-bot/planning').glob('*.md')} == {
+              'DAILY_PLANNER_PROMPT.md', 'STORY_RULES.md'
+          }
+          print('Canonical responsibility-based repository surface verified.')
+          PY
+
+          python - <<'PY'
+          from common import workflow_common
+          from media.background_policy import production_rendition_policy
+          from media import validate_media_library
+          from planning import planning_engine
+          from publishing import recovery_state
+          from rendering import caption_alignment, render, tts_backend
+          from validation import request_guard, validate_content
+
+          assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
+          assert workflow_common.expected_video_config() == {'width': 720, 'height': 1280, 'fps': 30}
+          assert render.X264_PRESET == 'superfast'
+          assert render.X264_CRF == 19
+          assert tts_backend.ONNX_BACKEND == 'onnx-fp32'
+          assert production_rendition_policy()['uhd_downloads_allowed'] is False
+          print('Cross-package imports and production constants verified.')
+          PY
+
+      - name: Run unit and acceptance tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s youtube-shorts-bot/tests -v
+          python youtube-shorts-bot/media/validate_media_library.py
+          python youtube-shorts-bot/planning/planning_engine.py \
+            --acceptance-dry-run --date 2026-09-10 --analytics-video-count 0 \
+            --output /tmp/planning-dry-run.json
+          python - <<'PY'
+          import json
+          data = json.load(open('/tmp/planning-dry-run.json'))
+          assert data['raw_premises_generated'] >= 120
+          assert data['final_selected'] == 24
+          assert data['analytics_weight'] == 0
+          assert data['exploit_selections'] == 19
+          assert data['explore_selections'] == 5
+          assert len({x['publication']['publish_at'] for x in data['selected']}) == 24
+          print('Planning acceptance preserved: 120+ candidates -> 24 unique scheduled winners.')
+          PY
+
+      - name: Verify production-path equivalence and no runtime-data changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          batch = Path('.github/workflows/daily-production.yml').read_text(encoding='utf-8')
+          expected_order = [
+              'media/validate_media_library.py',
+              'publishing/auth_preflight.py',
+              'media/pexels_registry.py',
+              'validation/validate_content.py',
+              'publishing/publish.py --stage prepare',
+              'media/media_resolver.py',
+              'rendering/render_aligned.py',
+              'rendering/verify_render.py',
+              'publishing/publish.py --stage upload',
+              'publishing/verify_publication.py',
+              'publishing/finalize_receipt.py',
+          ]
+          positions = []
+          for token in expected_order:
+              pos = batch.find(token)
+              assert pos >= 0, f'missing production stage: {token}'
+              positions.append(pos)
+          assert positions == sorted(positions), list(zip(expected_order, positions))
+          assert 'group: wacky-dramas-youtube-upload' in batch
+          assert '[daily production]' in batch
+
+          dry = Path('.github/workflows/dry-run.yml').read_text(encoding='utf-8')
+          assert "'youtube-shorts-bot/**/*.py'" in dry
+          assert "Path('youtube-shorts-bot/planning')" in dry
+          assert 'youtube-shorts-bot/media/validate_media_library.py' in dry
+          assert 'youtube-shorts-bot/planning/planning_engine.py' in dry
+
+          for path in (
+              Path('youtube-shorts-bot/content'),
+              Path('youtube-shorts-bot/media-library'),
+              Path('youtube-shorts-bot/assets'),
+          ):
+              assert path.exists()
+          print('Production stage ordering, safety markers, and canonical runtime data locations preserved.')
+          PY
+
+          test ! -f youtube-shorts-bot/output/short.mp4
+          test ! -f youtube-shorts-bot/output/narration.wav
+          test ! -f youtube-shorts-bot/output/upload_result.json
+
+      - name: Commit validated structural refactor
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf youtube-shorts-bot/**/__pycache__ youtube-shorts-bot/__pycache__ || true
+          git rm .github/workflows/refactor-organize.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git status --short
+          git commit -m 'refactor: organize Wacky Dramas files by responsibility'
+          git push origin HEAD:refactor/organize-shorts-bot-folders
