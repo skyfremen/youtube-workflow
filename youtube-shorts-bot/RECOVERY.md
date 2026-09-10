@@ -11,14 +11,11 @@ The canonical Shorts architecture is request-driven, immutable, and fail-closed 
 
 The request bytes are bound to the exact commit that first added them. Production refuses to publish if the current request differs from those source bytes.
 
-## Publication modes
+## Publication contract
 
-Two current publication modes share the same recovery guarantees:
+The supported production path is the scheduled schema-v3 daily path. Each immutable request carries `publication.mode=scheduled`; the uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
-- **Ad-hoc request:** no `publication` object. The uploader requires an immediate `privacyStatus=public` body and no `publishAt`.
-- **Scheduled schema-v3 request:** immutable `publication.mode=scheduled`. The uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
-
-The canonical ad-hoc workflow is `single-production.yml` (**Single Production**). The canonical daily batch workflow is `daily-production.yml` (**Daily Production**). Publication behavior is determined by the immutable request contract, not by historical workflow naming.
+The canonical production workflow is `daily-production.yml` (**Daily Production**). Publication behavior is determined by the immutable request contract, not by historical workflow naming.
 
 ## Retry and idempotency contract
 
@@ -30,16 +27,14 @@ The canonical ad-hoc workflow is `single-production.yml` (**Single Production**)
 6. For a genuinely new request only, validate the exact upload contract and confirm no matching upload exists.
 7. After a verified render exists, create the upload intent exclusively before calling YouTube `videos.insert`.
 8. Persist durable upload evidence from the insert response or reconciled recovery result.
-9. Verify the exact YouTube video, channel, publication state, and schedule where applicable.
+9. Verify the exact YouTube video, channel, publication state, and schedule.
 10. Create the immutable result receipt only after verification passes. If the receipt already exists, verify its identity/evidence and reuse it unchanged.
 
 A lost or ambiguous GitHub write acknowledgement is treated as unsafe. The code does not infer ownership of an upload intent from a later matching read and does not retry insertion optimistically.
 
 ## Reruns
 
-Ad-hoc GitHub Actions reruns are recovery-only. Manual recovery also uses `recovery_only=true`; this forbids a new upload when no durable record can be reconciled.
-
-The daily batch processes each immutable content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
+Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
 
 ## Scheduled-slot guard
 
@@ -58,7 +53,7 @@ The recovery marker must not be placed in the public description. Semantic YouTu
 A receipt cannot be finalized unless all of the following agree with the immutable request and durable upload evidence:
 
 - YouTube video ID and authenticated channel.
-- Immediate-public or scheduled publication state, including exact `publishAt` for scheduled requests.
+- Scheduled publication state, including exact `publishAt`.
 - Verified render identity and SHA.
 - 720×1280 resolution, 30 fps, H.264 video, one AAC narration stream.
 - Kokoro narration using the request voice/speed contract.
@@ -69,16 +64,10 @@ The receipt itself is create-only. A rerun may reuse an existing verified receip
 
 ## Operator recovery
 
-For an existing ad-hoc content ID, manually run **Single Production** with:
-
-- `content_id=<existing immutable content_id>`
-- `recovery_only=true`
-- `render_preview=false` unless a separate debug preview is explicitly needed
-
-For a scheduled daily content ID, use `daily-production.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
+For a scheduled daily content ID, manually run `daily-production.yml` using `workflow_dispatch` with the existing content ID or comma-separated content IDs. Do not create replacement requests merely to retry a failed workflow.
 
 If recovery reports conflicting videos, mismatched evidence, an intent with no observable video, or any other ambiguous state, stop automated insertion and reconcile the durable GitHub/YouTube evidence. Never delete an intent, edit an immutable request/receipt, or add a force-reupload path to clear ambiguity.
 
 ## Safe verification
 
-Repository cleanup and code changes should use `dry-run.yml` and its unit/contract checks. A public YouTube upload is not part of cleanup verification. Debug rendering may be used only through the explicit test/preview path that does not upload.
+Repository cleanup and code changes should use `dry-run.yml` and its unit/contract checks. A production YouTube upload is not part of cleanup verification.
