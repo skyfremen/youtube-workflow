@@ -1,10 +1,10 @@
 {
-  "captured_at": "2026-09-10T18:38:23.646077Z",
+  "captured_at": "2026-09-10T19:18:30.155735Z",
   "window": {
     "start_date": "2026-09-11",
     "end_date": "2026-09-11"
   },
-  "result_receipt_video_count": 1,
+  "result_receipt_video_count": 2,
   "video_count": 1,
   "published_video_count": 0,
   "mature_video_count": 0,
@@ -19,7 +19,7 @@
   },
   "videos": [
     {
-      "video": "Nkjof9luJeg",
+      "video": "gyHV9J4e3EE",
       "views": 0,
       "engagedViews": null,
       "likes": 0,
@@ -40,46 +40,78 @@
       "likes_per_1000_views": 0,
       "comments_per_1000_views": 0,
       "shares_per_1000_views": null,
-      "video_duration_seconds": 5.766667,
-      "publish_at": "2026-09-11T18:30:00Z",
-      "public_age_hours": -23.860098311944444,
+      "video_duration_seconds": 106.666667,
+      "publish_at": "2026-09-11T19:30:00Z",
+      "public_age_hours": -24.191623406944448,
       "planning": {
         "plan_date": "2026-09-12",
-        "editorial_score": 88,
+        "editorial_score": 90,
         "editorial_components": {
-          "opening_hook_potential": 88,
-          "curiosity_gap": 88,
-          "emotional_stakes": 88,
-          "escalation_potential": 88,
-          "payoff_quality": 88,
-          "title_potential": 88,
-          "broad_relatability": 88,
-          "originality": 88,
-          "narration_suitability": 88
+          "opening_hook_potential": 90,
+          "curiosity_gap": 90,
+          "emotional_stakes": 90,
+          "escalation_potential": 90,
+          "payoff_quality": 90,
+          "title_potential": 90,
+          "broad_relatability": 90,
+          "originality": 90,
+          "narration_suitability": 90
         },
         "analytics_score": null,
         "analytics_weight": 0,
-        "final_score": 87.5,
+        "final_score": 90,
         "title_candidates": [
           {
-            "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+            "title": "My Boss Took Credit for My Work—Until the Client Called Me #Shorts",
             "style": "HIDDEN_REVELATION",
             "truthful": true,
-            "score": 91,
+            "score": 93,
             "score_components": {
-              "curiosity_gap": 91,
-              "emotional_impact": 91,
-              "unanswered_question": 91,
-              "immediate_comprehension": 91,
-              "specificity": 91,
-              "natural_phrasing": 91,
-              "conciseness": 91,
-              "truthful_reflection": 91
+              "curiosity_gap": 93,
+              "emotional_impact": 93,
+              "unanswered_question": 93,
+              "immediate_comprehension": 93,
+              "specificity": 93,
+              "natural_phrasing": 93,
+              "conciseness": 93,
+              "truthful_reflection": 93
             }
           },
           {
-            "title": "I Checked the Archive and Found the Proof #Shorts",
-            "style": "DISCOVERY",
+            "title": "The Client Asked Who Saved the Project. My Boss Froze #Shorts",
+            "style": "CONSEQUENCE_FIRST",
+            "truthful": true,
+            "score": 90,
+            "score_components": {
+              "curiosity_gap": 90,
+              "emotional_impact": 90,
+              "unanswered_question": 90,
+              "immediate_comprehension": 90,
+              "specificity": 90,
+              "natural_phrasing": 90,
+              "conciseness": 90,
+              "truthful_reflection": 90
+            }
+          },
+          {
+            "title": "He Claimed the Credit Until the Email Thread Appeared #Shorts",
+            "style": "NORMAL_TO_ABNORMAL",
+            "truthful": true,
+            "score": 88,
+            "score_components": {
+              "curiosity_gap": 88,
+              "emotional_impact": 88,
+              "unanswered_question": 88,
+              "immediate_comprehension": 88,
+              "specificity": 88,
+              "natural_phrasing": 88,
+              "conciseness": 88,
+              "truthful_reflection": 88
+            }
+          },
+          {
+            "title": "I Stayed Quiet Until the Client Turned the Screen Around #Shorts",
+            "style": "DELAYED_REVELATION",
             "truthful": true,
             "score": 86,
             "score_components": {
@@ -94,8 +126,8 @@
             }
           },
           {
-            "title": "It Looked Normal Until the Timestamp Appeared #Shorts",
-            "style": "NORMAL_TO_ABNORMAL",
+            "title": "Minutes Before the Meeting, He Took Credit for My Work #Shorts",
+            "style": "COUNTDOWN",
             "truthful": true,
             "score": 84,
             "score_components": {
@@ -108,68 +140,36 @@
               "conciseness": 84,
               "truthful_reflection": 84
             }
-          },
-          {
-            "title": "I Kept the Archive and the Story Changed #Shorts",
-            "style": "DECISION_CONSEQUENCE",
-            "truthful": true,
-            "score": 83,
-            "score_components": {
-              "curiosity_gap": 83,
-              "emotional_impact": 83,
-              "unanswered_question": 83,
-              "immediate_comprehension": 83,
-              "specificity": 83,
-              "natural_phrasing": 83,
-              "conciseness": 83,
-              "truthful_reflection": 83
-            }
-          },
-          {
-            "title": "Hours Before the Audit, I Found the Backup #Shorts",
-            "style": "COUNTDOWN",
-            "truthful": true,
-            "score": 82,
-            "score_components": {
-              "curiosity_gap": 82,
-              "emotional_impact": 82,
-              "unanswered_question": 82,
-              "immediate_comprehension": 82,
-              "specificity": 82,
-              "natural_phrasing": 82,
-              "conciseness": 82,
-              "truthful_reflection": 82
-            }
           }
         ],
-        "selected_title_score": 91,
-        "hook_score": 90,
+        "selected_title_score": 93,
+        "hook_score": 92,
         "selection_class": "exploit",
-        "selection_reason": "Strong contradiction, proof-driven escalation and clear reversal.",
+        "selection_reason": "Strong workplace injustice, escalating proof and a clear public reversal.",
         "similarity": {
-          "max_recent_similarity": 0.21
+          "max_recent_similarity": 0.24
         },
         "attributes": {
-          "subtype": "EVIDENCE_BACKFIRE",
-          "conflict": "HIDDEN_FILE",
+          "subtype": "CREDIT_THEFT_BACKFIRE",
+          "conflict": "STOLEN_CREDIT",
           "primary_emotion": "INJUSTICE",
           "protagonist_role": "EMPLOYEE",
           "antagonist_role": "BOSS",
-          "opening_style": "CONTRADICTION",
+          "opening_style": "CONSEQUENCE_FIRST",
           "title_style": "HIDDEN_REVELATION",
-          "ending_style": "REVERSAL"
+          "ending_style": "JUSTICE"
         },
-        "target_duration_seconds": 151
+        "target_duration_seconds": 150
       },
       "content_dimensions": {
         "category": "WORKPLACE",
-        "conflict": "HIDDEN_FILE",
+        "conflict": "STOLEN_CREDIT",
         "primary_emotion": "INJUSTICE",
         "protagonist_role": "EMPLOYEE",
         "antagonist_role": "BOSS",
-        "opening_style": "CONTRADICTION",
+        "opening_style": "CONSEQUENCE_FIRST",
         "title_style": "HIDDEN_REVELATION",
-        "ending_style": "REVERSAL",
+        "ending_style": "JUSTICE",
         "duration_bucket": "<120"
       },
       "cohort_eligible": false,
