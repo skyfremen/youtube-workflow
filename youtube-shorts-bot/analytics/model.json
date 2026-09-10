@@ -1,14 +1,86 @@
 {
-  "schema_version": 2,
-  "epoch": {
-    "schema_version": 1,
-    "epoch_id": "wacky-dramas-fresh-channel-2026-09-10",
-    "start_at": "2026-09-09T16:19:00Z",
-    "timezone": "Asia/Singapore",
-    "note": "Clean-slate Wacky Dramas launch. All pre-launch runtime requests, results, recovery evidence and analytics snapshots were removed from the current repository state."
-  },
+  "model_version": 1,
   "active_cohort": null,
   "analytics_evidence_count": 0,
   "analytics_enabled": false,
-  "cohorts": {}
+  "cohorts": {
+    "24h": {
+      "video_count": 0,
+      "overall_score": null,
+      "dimension_weights": {
+        "category": 15,
+        "conflict": 10,
+        "primary_emotion": 10,
+        "protagonist_role": 5,
+        "antagonist_role": 5,
+        "opening_style": 20,
+        "title_style": 20,
+        "ending_style": 10,
+        "duration_bucket": 5
+      },
+      "dimensions": {
+        "category": {},
+        "conflict": {},
+        "primary_emotion": {},
+        "protagonist_role": {},
+        "antagonist_role": {},
+        "opening_style": {},
+        "title_style": {},
+        "ending_style": {},
+        "duration_bucket": {}
+      }
+    },
+    "72h": {
+      "video_count": 0,
+      "overall_score": null,
+      "dimension_weights": {
+        "category": 15,
+        "conflict": 10,
+        "primary_emotion": 10,
+        "protagonist_role": 5,
+        "antagonist_role": 5,
+        "opening_style": 20,
+        "title_style": 20,
+        "ending_style": 10,
+        "duration_bucket": 5
+      },
+      "dimensions": {
+        "category": {},
+        "conflict": {},
+        "primary_emotion": {},
+        "protagonist_role": {},
+        "antagonist_role": {},
+        "opening_style": {},
+        "title_style": {},
+        "ending_style": {},
+        "duration_bucket": {}
+      }
+    },
+    "7d": {
+      "video_count": 0,
+      "overall_score": null,
+      "dimension_weights": {
+        "category": 15,
+        "conflict": 10,
+        "primary_emotion": 10,
+        "protagonist_role": 5,
+        "antagonist_role": 5,
+        "opening_style": 20,
+        "title_style": 20,
+        "ending_style": 10,
+        "duration_bucket": 5
+      },
+      "dimensions": {
+        "category": {},
+        "conflict": {},
+        "primary_emotion": {},
+        "protagonist_role": {},
+        "antagonist_role": {},
+        "opening_style": {},
+        "title_style": {},
+        "ending_style": {},
+        "duration_bucket": {}
+      }
+    }
+  }
 }
