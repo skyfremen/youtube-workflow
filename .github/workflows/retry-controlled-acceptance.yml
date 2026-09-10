@@ -1,0 +1,27 @@
+name: Retry Controlled Acceptance
+run-name: Retry one controlled batch
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/retry-controlled-acceptance.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch exact batch retry
+        env:
+          PUBLIC_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
+        run: |
+          curl --fail --silent --show-error --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${PUBLIC_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/run.yml/dispatches \
+            --data '{"ref":"main","inputs":{"batch_id":"b_08ab6da925148c34eb715b0fa33811","source_sha":"57a574c589aad94ac8f54b560b3ba0a004f0e66e"}}'
+          echo "Controlled retry dispatched"
