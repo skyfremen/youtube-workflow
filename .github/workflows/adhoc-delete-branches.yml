@@ -1,0 +1,58 @@
+name: Adhoc Delete Non-Main Branches
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/adhoc-delete-branches.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  delete-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete every remote branch except main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -v '^HEAD$' \
+              | grep -v '^main$' \
+              | sort -u
+          )
+
+          if [ "${#branches[@]}" -eq 0 ]; then
+            echo "No non-main branches found."
+          else
+            printf 'Deleting branches:\n'
+            printf ' - %s\n' "${branches[@]}"
+            for branch in "${branches[@]}"; do
+              git push origin --delete "$branch"
+            done
+          fi
+
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          mapfile -t remaining < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -v '^HEAD$' \
+              | sort -u
+          )
+
+          printf 'Remaining branches:\n'
+          printf ' - %s\n' "${remaining[@]}"
+
+          if [ "${#remaining[@]}" -ne 1 ] || [ "${remaining[0]}" != "main" ]; then
+            echo "::error::Branch cleanup verification failed"
+            exit 1
+          fi
+
+          echo "Branch cleanup complete: only main remains."
