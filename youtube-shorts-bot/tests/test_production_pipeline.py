@@ -27,6 +27,7 @@ class DummySampler:
     peak_cpu_percent = 0.0
     peak_load_1m = 0.0
     peak_rss_bytes = 0
+    memory_total_bytes = 1
 
     def start(self):
         pass
@@ -191,10 +192,10 @@ class ProductionPipelineTests(unittest.TestCase):
 
     def test_stage_a_stops_when_next_worker_adds_no_material_saving(self):
         measured = {
-            1: {"concurrency": 1, "batch_seconds": 100.0, "failures": 0, "signatures": ["same"]},
-            2: {"concurrency": 2, "batch_seconds": 61.0, "failures": 0, "signatures": ["same"]},
-            3: {"concurrency": 3, "batch_seconds": 60.5, "failures": 0, "signatures": ["same"]},
-            4: {"concurrency": 4, "batch_seconds": 58.0, "failures": 0, "signatures": ["same"]},
+            1: {"concurrency": 1, "batch_seconds": 100.0, "failures": 0, "signatures": ["same"], "peak_memory_percent": 20.0},
+            2: {"concurrency": 2, "batch_seconds": 61.0, "failures": 0, "signatures": ["same"], "peak_memory_percent": 30.0},
+            3: {"concurrency": 3, "batch_seconds": 60.5, "failures": 0, "signatures": ["same"], "peak_memory_percent": 40.0},
+            4: {"concurrency": 4, "batch_seconds": 58.0, "failures": 0, "signatures": ["same"], "peak_memory_percent": 50.0},
         }
         with patch(
             "production.concurrency_benchmark.run_candidate",

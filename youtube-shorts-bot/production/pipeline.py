@@ -134,6 +134,13 @@ def _cpu_snapshot():
     return sum(values), idle
 
 
+def _memory_total_bytes():
+    for line in Path("/proc/meminfo").read_text(encoding="utf-8").splitlines():
+        if line.startswith("MemTotal:"):
+            return int(line.split()[1]) * 1024
+    return 0
+
+
 class ResourceSampler:
     def __init__(self, path=RESOURCE_METRICS_PATH, interval=2.0):
         self.path = Path(path)
@@ -143,6 +150,7 @@ class ResourceSampler:
         self.peak_rss_bytes = 0
         self.peak_cpu_percent = 0.0
         self.peak_load_1m = 0.0
+        self.memory_total_bytes = _memory_total_bytes()
 
     def start(self):
         self.path.write_text(
@@ -470,6 +478,12 @@ class ProductionPipeline:
             "peak_cpu_percent": self.sampler.peak_cpu_percent,
             "peak_load_1m": self.sampler.peak_load_1m,
             "peak_aggregate_rss_bytes": self.sampler.peak_rss_bytes,
+            "memory_total_bytes": self.sampler.memory_total_bytes,
+            "peak_memory_percent": (
+                100.0 * self.sampler.peak_rss_bytes / self.sampler.memory_total_bytes
+                if self.sampler.memory_total_bytes
+                else 0.0
+            ),
         }
         _atomic_json(SUMMARY_PATH, summary)
         print("PERF_METRIC " + " ".join(

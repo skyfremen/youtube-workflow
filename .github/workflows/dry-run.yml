@@ -188,7 +188,11 @@ jobs:
           )
           for secret in secret_names:
               assert secret not in dry
-          assert ('container' + ':') not in dry
+          # The normal Dry Run remains host-based. A temporary, explicitly gated
+          # benchmark job may use the production container and is removed after
+          # benchmark evidence is collected.
+          assert dry.count('container' + ':') == 1
+          assert "if: contains(github.event.head_commit.message, '[concurrency benchmark stage A]')" in dry
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
@@ -217,5 +221,45 @@ jobs:
         with:
           name: dry-run-visual-${{ github.run_number }}
           path: /tmp/wacky-dramas-dry-run-visual/
+          if-no-files-found: warn
+          retention-days: 7
+
+  # Temporary, explicitly gated benchmark. Remove after Stage A/Stage B evidence.
+  # It has no YouTube credentials and cannot call publication or durable state.
+  concurrency-benchmark:
+    if: contains(github.event.head_commit.message, '[concurrency benchmark stage A]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/skyfremen/youtube-shorts-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      PYTHONPATH: youtube-shorts-bot
+      VIDEO_WIDTH: '720'
+      VIDEO_HEIGHT: '1280'
+      VIDEO_FPS: '30'
+      STORY_TEST_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Benchmark bounded production rendering
+        run: |
+          nproc
+          free -h
+          python youtube-shorts-bot/production/concurrency_benchmark.py \
+            --stage a \
+            --output /tmp/concurrency-benchmark-stage-a.json
+
+      - name: Preserve benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: concurrency-benchmark-stage-a-${{ github.run_id }}
+          path: /tmp/concurrency-benchmark-stage-a.json
           if-no-files-found: warn
           retention-days: 7

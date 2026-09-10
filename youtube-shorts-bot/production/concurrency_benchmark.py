@@ -123,6 +123,10 @@ def run_candidate(concurrency, requests, root, *, explicit_threads=None):
     elapsed = time.monotonic() - started
     failures = [result for result in results if result.error]
     if failures:
+        for result in failures:
+            log_path = result.item.worker_dir / "generation.log"
+            if log_path.exists():
+                print(log_path.read_text(encoding="utf-8", errors="replace"))
         detail = "; ".join(
             f"{result.item.content_id}: {result.error}" for result in failures
         )
@@ -162,6 +166,12 @@ def run_candidate(concurrency, requests, root, *, explicit_threads=None):
         "peak_cpu_percent": pipeline.sampler.peak_cpu_percent,
         "peak_load_1m": pipeline.sampler.peak_load_1m,
         "peak_aggregate_rss_bytes": pipeline.sampler.peak_rss_bytes,
+        "memory_total_bytes": pipeline.sampler.memory_total_bytes,
+        "peak_memory_percent": (
+            100.0 * pipeline.sampler.peak_rss_bytes / pipeline.sampler.memory_total_bytes
+            if pipeline.sampler.memory_total_bytes
+            else 0.0
+        ),
         "failures": 0,
         "signatures": signatures,
     }
@@ -193,6 +203,8 @@ def run_stage_a(requests, root):
         current["equivalent"] = equivalent_to_baseline(baseline, current)
         results.append(current)
         if not current["equivalent"]:
+            break
+        if current["peak_memory_percent"] >= 85.0:
             break
         if previous is not None:
             incremental = (previous["batch_seconds"] - current["batch_seconds"]) / previous["batch_seconds"]
