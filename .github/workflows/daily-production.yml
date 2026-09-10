@@ -63,157 +63,17 @@ jobs:
           # YouTube preflight failure is never repeated.
           echo "youtube_preflight_status=not_run" >> "$GITHUB_OUTPUT"
 
-          python - <<'PY'
-          import json, os, subprocess
-          from pathlib import Path
-
-          manual = os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch'
-          requests = []
-          source_sha = os.environ['GITHUB_SHA']
-          sourcing_paths = []
-          planning = []
-
-          if manual:
-              ids = [x.strip() for x in os.environ.get('MANUAL_CONTENT_IDS','').split(',') if x.strip()]
-              if not ids or len(ids) > 24:
-                  raise SystemExit('Manual batch requires 1-24 content IDs')
-              requests = [f'youtube-shorts-bot/content/requests/{x}.json' for x in ids]
-              for path in requests:
-                  if not Path(path).exists():
-                      raise SystemExit(f'Missing request: {path}')
-                  commits = subprocess.check_output(
-                      ['git','log','--diff-filter=A','--format=%H','--',path], text=True
-                  ).splitlines()
-                  if not commits:
-                      raise SystemExit(f'Cannot determine immutable source for {path}')
-
-              # Recovery can re-ingest the original immutable sourcing manifest if
-              # the cache append failed before rendering on the first attempt.
-              # A malformed individual request is not a global batch failure; it is
-              # allowed to reach per-video validation below.
-              needed = set()
-              for path in requests:
-                  try:
-                      data = json.loads(Path(path).read_text())
-                  except Exception:
-                      continue
-                  needed.update((data.get('visual') or {}).values())
-              source_dir = Path('youtube-shorts-bot/content/background-sourcing')
-              candidates = sorted(source_dir.glob('*.json')) if source_dir.exists() else []
-              for candidate_path in candidates:
-                  try:
-                      payload = json.loads(candidate_path.read_text())
-                  except Exception:
-                      continue
-                  ids_in_manifest = {
-                      str(x.get('logical_id'))
-                      for x in payload.get('candidates', [])
-                      if isinstance(x, dict)
-                  }
-                  if needed & ids_in_manifest:
-                      sourcing_paths.append(candidate_path.as_posix())
-          else:
-              rows = subprocess.check_output(
-                  ['git','diff-tree','--no-commit-id','--name-status','-r',source_sha], text=True
-              ).splitlines()
-              changed = [(r.split('\t')[0], r.split('\t')[-1]) for r in rows if '\t' in r]
-              requests = [
-                  p for s,p in changed
-                  if s == 'A' and p.startswith('youtube-shorts-bot/content/requests/') and p.endswith('.json')
-              ]
-              planning = [
-                  p for s,p in changed
-                  if s == 'A' and p.startswith('youtube-shorts-bot/content/planning/') and p.endswith('.json')
-              ]
-              sourcing_paths = [
-                  p for s,p in changed
-                  if s == 'A' and p.startswith('youtube-shorts-bot/content/background-sourcing/') and p.endswith('.json')
-              ]
-              if not 1 <= len(requests) <= 24:
-                  raise SystemExit(f'Daily planning commit must add 1-24 requests; got {len(requests)}')
-              if len(planning) != 1:
-                  raise SystemExit('Daily planning commit must add exactly one immutable planning audit artifact')
-              if len(sourcing_paths) > 1:
-                  raise SystemExit('Daily planning commit may add at most one background sourcing manifest')
-              allowed = set(requests + planning + sourcing_paths)
-              other = [p for _s,p in changed if p not in allowed]
-              if other:
-                  raise SystemExit('Daily planning content commit changes non-content files: ' + ', '.join(other))
-
-              payload = json.loads(Path(planning[0]).read_text())
-              expected = set(payload.get('content_ids') or [])
-              actual = {Path(p).stem for p in requests}
-              if expected != actual:
-                  raise SystemExit('Planning audit content_ids do not exactly match request files')
-              if payload.get('final_selected') != len(requests):
-                  raise SystemExit('Planning audit final_selected does not match request count')
-
-              if sourcing_paths:
-                  sourcing = json.loads(Path(sourcing_paths[0]).read_text())
-                  if sourcing.get('plan_date') != payload.get('plan_date'):
-                      raise SystemExit('Background sourcing plan_date must match planning audit')
-                  request_by_id = {
-                      Path(path).stem: json.loads(Path(path).read_text()) for path in requests
-                  }
-                  referenced = {
-                      value
-                      for data in request_by_id.values()
-                      for value in (data.get('visual') or {}).values()
-                  }
-                  for item in sourcing.get('candidates') or []:
-                      logical_id = item.get('logical_id')
-                      required_by = set(item.get('required_by_content_ids') or [])
-                      if logical_id not in referenced:
-                          raise SystemExit(f'Unreferenced sourced background in content commit: {logical_id}')
-                      if not required_by or not required_by <= actual:
-                          raise SystemExit(f'Invalid required_by_content_ids for sourced background {logical_id}')
-                      for cid in required_by:
-                          visuals = set((request_by_id[cid].get('visual') or {}).values())
-                          if logical_id not in visuals:
-                              raise SystemExit(f'Sourcing manifest says {cid} needs {logical_id}, but request does not reference it')
-
-          Path('/tmp/batch-requests.txt').write_text('\n'.join(requests) + '\n')
-          Path('/tmp/background-sourcing-manifests.txt').write_text(
-              '\n'.join(dict.fromkeys(sourcing_paths)) + ('\n' if sourcing_paths else '')
-          )
-          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
-              out.write(f'request_count={len(requests)}\n')
-              out.write(f'sourcing_manifest_count={len(sourcing_paths)}\n')
-          print(f'Resolved {len(requests)} immutable planning requests; sourcing manifests={len(sourcing_paths)}')
-          PY
-
-          # GLOBAL / LOCAL: publication-slot collisions are a batch-level planning
-          # contradiction, so they fail the whole batch. Individual malformed
-          # requests are deliberately left for per-video validation and do not stop
-          # otherwise valid Shorts from being processed.
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          scheduled = []
-          deferred = []
-          for path in Path('/tmp/batch-requests.txt').read_text().splitlines():
-              if not path:
-                  continue
-              try:
-                  data = json.loads(Path(path).read_text())
-                  raw = str((data.get('publication') or {}).get('publish_at') or '').strip()
-              except Exception:
-                  raw = ''
-              if raw:
-                  scheduled.append((raw, path))
-              else:
-                  deferred.append(path)
-          slots = [slot for slot, _path in scheduled]
-          if len(slots) != len(set(slots)):
-              raise SystemExit('Duplicate publication slot in daily batch')
-          ordered = [path for _slot, path in sorted(scheduled)] + deferred
-          Path('/tmp/batch-requests.txt').write_text('\n'.join(ordered) + '\n')
-          print(
-              f'Global slot check passed: {len(scheduled)} sortable requests; '
-              f'{len(deferred)} request(s) deferred to per-video validation.'
-          )
-          PY
+          # Canonical shared batch orchestration. Dry Run executes this same module
+          # against a production-shaped 24-item fixture. It owns request discovery,
+          # planning payload.get('content_ids') / payload.get('final_selected') checks,
+          # sourcing-manifest integrity, deterministic ordering, and the
+          # "Duplicate publication slot in daily batch" fail-closed contract.
+          python youtube-shorts-bot/production/batch.py \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --source-sha "$GITHUB_SHA" \
+            --manual-content-ids "${MANUAL_CONTENT_IDS:-}" \
+            --request-output /tmp/batch-requests.txt \
+            --sourcing-output /tmp/background-sourcing-manifests.txt
 
           # GLOBAL / LOCAL: the shared registry itself must be sound before any
           # external call. Request-to-background compatibility is per-video below.
