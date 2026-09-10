@@ -50,11 +50,11 @@ class NamingContractTests(unittest.TestCase):
             "daily-" + ARCH_TERM,
             "private/unscheduled path",
             "private-upload policy",
+            "single-" + "production.yml",
+            "SINGLE_" + "STORY_PROMPT.md",
         ]
         hits = []
         for path in self.active_text_files():
-            # This test intentionally constructs retired tokens so it can forbid
-            # them everywhere else without embedding the architecture term.
             if path == Path(__file__).resolve():
                 continue
             text = path.read_text(encoding="utf-8")
@@ -124,7 +124,6 @@ class NamingContractTests(unittest.TestCase):
     def test_planner_handoff_matches_current_contract(self):
         prompt = (BOT_ROOT / "planner" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        single = (WORKFLOWS / "single-production.yml").read_text(encoding="utf-8")
 
         for token in (
             "planning_engine.py",
@@ -148,12 +147,8 @@ class NamingContractTests(unittest.TestCase):
         self.assertIn("payload.get('content_ids')", batch)
         self.assertIn("payload.get('final_selected')", batch)
 
-        self.assertIn("name: Single Production", single)
-        self.assertIn("!contains(github.event.head_commit.message, '[daily production]')", single)
-
     def test_execution_chain_uses_current_components(self):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        single = (WORKFLOWS / "single-production.yml").read_text(encoding="utf-8")
         analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
         backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
         image = (WORKFLOWS / "build-image.yml").read_text(encoding="utf-8")
@@ -170,17 +165,6 @@ class NamingContractTests(unittest.TestCase):
         ):
             self.assertIn(token, batch)
 
-        for token in (
-            "validate_content.py",
-            "media_resolver.py",
-            "render_aligned.py",
-            "verify_render.py",
-            "publish.py --stage upload",
-            "verify_publication.py",
-            "finalize_receipt.py",
-        ):
-            self.assertIn(token, single)
-
         self.assertIn("analytics_collection.py", analytics)
         self.assertIn("pexels_registry.py", backgrounds)
         self.assertIn("validate_media_library.py", backgrounds)
@@ -194,14 +178,6 @@ class NamingContractTests(unittest.TestCase):
         for text in (prompt, collector, config, learning):
             self.assertIn("analytics_evidence_count", text)
         self.assertIn("Do not substitute `video_count`, `published_video_count`, or `mature_video_count`", prompt)
-
-    def test_single_story_contract_is_immediate_public(self):
-        rules = (BOT_ROOT / "planner" / "STORY_RULES.md").read_text(encoding="utf-8")
-        prompt = (BOT_ROOT / "planner" / "SINGLE_STORY_PROMPT.md").read_text(encoding="utf-8")
-        workflow = (WORKFLOWS / "single-production.yml").read_text(encoding="utf-8")
-        self.assertIn("immediate-public", rules)
-        self.assertIn("immediate-public upload policy", prompt)
-        self.assertIn("YOUTUBE_PRIVACY: public", workflow)
 
 
 if __name__ == "__main__":
