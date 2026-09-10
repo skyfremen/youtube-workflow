@@ -1,9 +1,8 @@
-"""Build a deterministic Wacky Dramas analytics learning model.
+"""Build the deterministic Wacky Dramas analytics learning model.
 
-Raw YouTube metrics are first converted to within-cohort percentiles. The model
-then attributes smoothed performance to controlled creative dimensions. Planning
-uses the resulting 0-100 historical_attribute_fit; it never feeds raw subscriber,
-share, retention, or view counts directly into planning_engine's 0-100 scorer.
+Raw YouTube metrics are converted to within-cohort percentiles, then attributed
+to controlled creative dimensions. Planning consumes only the resulting 0-100
+historical_attribute_fit, never raw subscriber, share, retention, or view counts.
 """
 from __future__ import annotations
 
@@ -17,6 +16,7 @@ from planning_config import (
     TITLE_WEIGHTS,
 )
 
+MODEL_VERSION = 1
 COHORT_ORDER = ("7d", "72h", "24h")
 DIMENSION_WEIGHTS = {
     "category": 15,
@@ -41,48 +41,51 @@ def _number(value):
 
 def _percentile_scores(values):
     """Return percentile scores with average ranks for ties."""
-    numeric = [(idx, _number(value)) for idx, value in enumerate(values)]
-    present = [(idx, value) for idx, value in numeric if value is not None]
+    numeric = [(index, _number(value)) for index, value in enumerate(values)]
+    present = [(index, value) for index, value in numeric if value is not None]
     out = [None] * len(values)
     if not present:
         return out
     if len(present) == 1:
         out[present[0][0]] = 50.0
         return out
+
     ordered = sorted(present, key=lambda item: item[1])
-    pos = 0
-    while pos < len(ordered):
-        end = pos + 1
-        while end < len(ordered) and ordered[end][1] == ordered[pos][1]:
+    position = 0
+    while position < len(ordered):
+        end = position + 1
+        while end < len(ordered) and ordered[end][1] == ordered[position][1]:
             end += 1
-        average_rank = (pos + (end - 1)) / 2.0
+        average_rank = (position + end - 1) / 2.0
         score = round(100.0 * average_rank / (len(ordered) - 1), 3)
-        for idx, _ in ordered[pos:end]:
-            out[idx] = score
-        pos = end
+        for index, _ in ordered[position:end]:
+            out[index] = score
+        position = end
     return out
 
 
 def performance_scores(entries):
-    """Normalize raw metrics within one age-matched cohort and return 0-100 row scores."""
+    """Normalize raw metrics within one age-matched cohort."""
     if not entries:
         return []
     normalized = {
-        key: _percentile_scores([e.get("metrics", {}).get(key) for e in entries])
+        key: _percentile_scores([entry.get("metrics", {}).get(key) for entry in entries])
         for key in RAW_ANALYTICS_WEIGHTS
     }
     scores = []
-    for index, _entry in enumerate(entries):
-        usable = []
-        for key, weight in RAW_ANALYTICS_WEIGHTS.items():
-            value = normalized[key][index]
-            if value is not None:
-                usable.append((value, float(weight)))
+    for index in range(len(entries)):
+        usable = [
+            (normalized[key][index], float(weight))
+            for key, weight in RAW_ANALYTICS_WEIGHTS.items()
+            if normalized[key][index] is not None
+        ]
         if not usable:
             scores.append(None)
             continue
         denominator = sum(weight for _, weight in usable)
-        scores.append(round(sum(value * weight for value, weight in usable) / denominator, 3))
+        scores.append(
+            round(sum(value * weight for value, weight in usable) / denominator, 3)
+        )
     return scores
 
 
@@ -122,18 +125,22 @@ def candidate_dimensions(candidate):
     planning_attrs = planning.get("attributes") if isinstance(planning.get("attributes"), dict) else {}
     merged = {**planning_attrs, **attrs}
     for key in (
-        "conflict", "primary_emotion", "protagonist_role", "antagonist_role",
-        "opening_style", "title_style", "ending_style",
+        "conflict",
+        "primary_emotion",
+        "protagonist_role",
+        "antagonist_role",
+        "opening_style",
+        "title_style",
+        "ending_style",
     ):
         if candidate.get(key) is not None:
-            merged[key] = candidate.get(key)
+            merged[key] = candidate[key]
 
     title_style = candidate.get("selected_title_style") or merged.get("title_style")
     if not title_style:
         titles = candidate.get("title_candidates") or []
         if titles:
-            best = max(titles, key=_weighted_title_score)
-            title_style = best.get("style")
+            title_style = max(titles, key=_weighted_title_score).get("style")
 
     duration = (
         candidate.get("target_duration_seconds")
@@ -155,7 +162,8 @@ def candidate_dimensions(candidate):
 
 def _cohort_entries(snapshot, milestones, label):
     rows = {
-        str(row.get("video")): row for row in snapshot.get("videos", [])
+        str(row.get("video")): row
+        for row in snapshot.get("videos", [])
         if row.get("cohort_eligible")
     }
     entries = []
@@ -168,12 +176,14 @@ def _cohort_entries(snapshot, milestones, label):
         dimensions = row.get("content_dimensions")
         if not isinstance(metrics, dict) or not isinstance(dimensions, dict):
             continue
-        entries.append({
-            "video": str(video_id),
-            "metrics": metrics,
-            "dimensions": dimensions,
-            "age_hours": point.get("age_hours"),
-        })
+        entries.append(
+            {
+                "video": str(video_id),
+                "metrics": metrics,
+                "dimensions": dimensions,
+                "age_hours": point.get("age_hours"),
+            }
+        )
     return entries
 
 
@@ -184,9 +194,8 @@ def _dimension_model(entries, scores):
     for entry, score in zip(entries, scores):
         if score is None:
             continue
-        dims = entry["dimensions"]
         for key in DIMENSION_WEIGHTS:
-            value = dims.get(key)
+            value = entry["dimensions"].get(key)
             if value:
                 groups[key][str(value)].append(score)
 
@@ -196,8 +205,10 @@ def _dimension_model(entries, scores):
         dimensions[key] = {}
         for value, group_scores in values.items():
             raw_mean = sum(group_scores) / len(group_scores)
-            shrunk = raw_mean if overall is None else (
-                (sum(group_scores) + prior * overall) / (len(group_scores) + prior)
+            shrunk = (
+                raw_mean
+                if overall is None
+                else (sum(group_scores) + prior * overall) / (len(group_scores) + prior)
             )
             dimensions[key][value] = {
                 "score": round(shrunk, 3),
@@ -208,14 +219,14 @@ def _dimension_model(entries, scores):
 
 
 def build_model(snapshot, milestones):
-    """Build 24h/72h/7d models and choose the strongest adequately sized cohort."""
+    """Build 24h/72h/7d models and select the strongest mature cohort."""
     cohorts = {}
     for label in ("24h", "72h", "7d"):
         entries = _cohort_entries(snapshot, milestones, label)
         scores = performance_scores(entries)
         overall, dimensions = _dimension_model(entries, scores)
         cohorts[label] = {
-            "video_count": len([x for x in scores if x is not None]),
+            "video_count": len([score for score in scores if score is not None]),
             "overall_score": overall,
             "dimension_weights": DIMENSION_WEIGHTS,
             "dimensions": dimensions,
@@ -223,15 +234,15 @@ def build_model(snapshot, milestones):
 
     active = next(
         (
-            label for label in COHORT_ORDER
+            label
+            for label in COHORT_ORDER
             if cohorts[label]["video_count"] >= ANALYTICS_MIN_MATURE_VIDEOS
         ),
         None,
     )
     evidence_count = int(snapshot.get("analytics_evidence_count") or 0)
     return {
-        "schema_version": 2,
-        "epoch": snapshot.get("analytics_epoch"),
+        "model_version": MODEL_VERSION,
         "active_cohort": active,
         "analytics_evidence_count": evidence_count,
         "analytics_enabled": bool(active and evidence_count > 0),
@@ -253,12 +264,16 @@ def score_candidate(candidate, model):
     matches = []
     for key, weight in DIMENSION_WEIGHTS.items():
         value = dims.get(key)
-        record = cohort.get("dimensions", {}).get(key, {}).get(str(value)) if value else None
+        record = (
+            cohort.get("dimensions", {}).get(key, {}).get(str(value)) if value else None
+        )
         if not record:
             continue
         score = _number(record.get("score"))
         if score is not None:
-            matches.append((score, float(weight), key, str(value), int(record.get("sample_size") or 0)))
+            matches.append(
+                (score, float(weight), key, str(value), int(record.get("sample_size") or 0))
+            )
 
     if not matches:
         return {
@@ -279,10 +294,10 @@ def score_candidate(candidate, model):
             {
                 "dimension": key,
                 "value": value,
-                "sample_size": n,
+                "sample_size": sample_size,
                 "score": round(score_value, 3),
             }
-            for score_value, _, key, value, n in matches
+            for score_value, _, key, value, sample_size in matches
         ],
         "matched_weight": round(matched_weight, 3),
         "active_cohort": label,
