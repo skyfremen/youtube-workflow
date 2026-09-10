@@ -169,9 +169,14 @@ jobs:
           dry = Path('.github/workflows/dry-run.yml').read_text()
           batch = Path('.github/workflows/daily-production.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
-          for secret in ('YOUTUBE_CLIENT_ID', 'YOUTUBE_CLIENT_SECRET', 'YOUTUBE_REFRESH_TOKEN'):
+          secret_names = (
+              'YOUTUBE_' + 'CLIENT_ID',
+              'YOUTUBE_' + 'CLIENT_SECRET',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
+          )
+          for secret in secret_names:
               assert secret not in dry
-          assert 'container:' not in dry
+          assert ('container' + ':') not in dry
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
