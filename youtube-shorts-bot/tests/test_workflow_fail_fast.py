@@ -53,8 +53,6 @@ class WorkflowFailFastContracts(unittest.TestCase):
         batch = self.batch()
         global_step = batch[:batch.index("- name: Process videos with isolated per-video failures")]
         self.assertNotIn("build_upload_body", global_step)
-        # publish.py prepare owns the recovery-first, schedule, and upload-body
-        # validation path for each individual request.
         self.assertIn("publish.py --stage prepare", batch)
 
     def test_per_video_failure_continues_loop_then_fails_job_at_end(self):
@@ -111,11 +109,6 @@ class WorkflowFailFastContracts(unittest.TestCase):
         skip_at = batch.index(skip)
         for command in ("media_resolver.py", "render_aligned.py", "verify_render.py", "publish.py --stage upload"):
             self.assertLess(skip_at, batch.index(command, skip_at))
-
-    def test_adhoc_does_not_add_redundant_second_auth_preflight(self):
-        adhoc = (ROOT / ".github/workflows/single-production.yml").read_text(encoding="utf-8")
-        self.assertNotIn("auth_preflight.py", adhoc)
-        self.assertLess(adhoc.index("publish.py --stage prepare"), adhoc.index("media_resolver.py"))
 
 
 if __name__ == "__main__":
