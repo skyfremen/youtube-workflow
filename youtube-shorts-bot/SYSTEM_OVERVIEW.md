@@ -67,16 +67,16 @@ Final selection enforces approximate daily caps for category, core conflict and 
 
 A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Exploration still has to pass every hard quality, safety and truthfulness gate.
 
-## Immutable request versions
+## Immutable request contract
 
-Schema v2 remains the ad-hoc compatibility path. It has no scheduled `publication` object and therefore follows the current immediate-public ad-hoc upload contract.
-
-Schema v3 is the scheduled daily-planning path. It keeps the same canonical story/narration/visual/YouTube fields and adds:
+Schema v3 is the canonical production request format. It contains the story/narration/visual/YouTube fields plus:
 
 - immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, exact UTC `publish_at`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
 
 The schedule is therefore bound to the same immutable request bytes and source commit as the story itself.
+
+Shared validators still tolerate schema-v2 request fixtures for backward-compatibility testing, but no active workflow or planner creates new schema-v2 production requests.
 
 ## Batch production and Actions cost
 
@@ -84,7 +84,7 @@ The schedule is therefore bound to the same immutable request bytes and source c
 
 The batch continues after individual failures so one bad story does not prevent already-good stories from completing. The job ultimately fails if any item failed, making the partial state visible. A rerun does not blindly upload again: each content ID first resolves its immutable receipt/upload intent/upload evidence.
 
-The ad-hoc workflow and batch workflow share the same `wacky-dramas-youtube-upload` concurrency group, preventing overlapping YouTube insert activity.
+The production upload concurrency group prevents overlapping daily insertion activity.
 
 ## Upload idempotency and recovery
 
@@ -92,7 +92,7 @@ Before `videos.insert`, production creates an immutable durable intent containin
 
 - exact request identity/blob SHA/source commit
 - expected channel ID
-- exact upload body, including scheduled `publishAt` for schema v3
+- exact upload body, including scheduled `publishAt`
 - verified render metadata and background selection
 - workflow provenance
 
@@ -122,7 +122,7 @@ The external daily planner follows `planner/DAILY_PLANNER_PROMPT.md` and creates
 
 `[daily production] YYYY-MM-DD`
 
-That commit is routed to `daily-production.yml`. `single-production.yml` explicitly ignores it.
+That commit is routed to `daily-production.yml`, the only production-upload workflow in the supported tree.
 
 ## Repository state hygiene
 
