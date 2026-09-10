@@ -6,8 +6,8 @@ from unittest.mock import Mock, patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from publish import prepare
-from recovery_state import blob_sha, encoded_json, record_path
+from publishing.publish import prepare
+from publishing.recovery_state import blob_sha, encoded_json, record_path
 from test_recovery import CHANNEL, MemoryState, fixture
 
 
@@ -22,7 +22,7 @@ class RecoveryScheduleOrderTests(unittest.TestCase):
         state = MemoryState()
         state.records[record_path(identity["content_id"], "upload")] = record
 
-        with patch("publish.restore_upload") as restore:
+        with patch("publishing.publish.restore_upload") as restore:
             upload_required = prepare(request, identity, state, Mock(), CHANNEL, False)
 
         self.assertFalse(upload_required)

@@ -5,7 +5,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from validate_media_library import validate_registry_data, validate_request_backgrounds
+from media.validate_media_library import validate_registry_data, validate_request_backgrounds
 from test_request_schema import valid_request
 
 

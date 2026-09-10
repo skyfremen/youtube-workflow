@@ -15,7 +15,7 @@ from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from workflow_common import ensure_request_path_matches, validate_content_id
+from common.workflow_common import ensure_request_path_matches, validate_content_id
 
 
 class RecoveryBlocked(RuntimeError):

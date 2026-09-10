@@ -5,7 +5,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from workflow_common import YOUTUBE_TAG_MAX_CHARS, marker_tag
+from common.workflow_common import YOUTUBE_TAG_MAX_CHARS, marker_tag
 
 
 class DuplicateIdentityTests(unittest.TestCase):

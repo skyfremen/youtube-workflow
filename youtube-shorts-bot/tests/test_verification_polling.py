@@ -5,7 +5,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from verify_publication import RETRY_DELAYS
+from publishing.verify_publication import RETRY_DELAYS
 
 
 class VerificationPollingTests(unittest.TestCase):

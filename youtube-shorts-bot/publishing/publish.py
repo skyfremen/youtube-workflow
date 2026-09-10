@@ -3,7 +3,7 @@ import hashlib
 import os
 from datetime import datetime, timedelta, timezone
 
-from recovery_state import (
+from publishing.recovery_state import (
     GitHubState,
     RecoveryBlocked,
     check_identity,
@@ -11,7 +11,7 @@ from recovery_state import (
     receipt_path,
     record_path,
 )
-from upload import (
+from publishing.upload import (
     authenticated_channel,
     authorize_fresh_upload,
     build_upload_body,
@@ -19,7 +19,7 @@ from upload import (
     make_client,
     recover_record,
 )
-from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
+from common.workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
 SCHEDULE_FRESHNESS_BUFFER_MINUTES = 10
 

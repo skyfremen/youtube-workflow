@@ -6,7 +6,7 @@ import subprocess
 import time
 from datetime import datetime, timezone
 
-from workflow_common import (
+from common.workflow_common import (
     OUTPUT_DIR,
     PRODUCTION_MAX_SECONDS,
     atomic_write_json,

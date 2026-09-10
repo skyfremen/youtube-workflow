@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from render import (
+from rendering.render import (
     CAPTION_FONT_SIZE,
     CAPTION_MARGIN_X,
     CAPTION_MAX_WIDTH,

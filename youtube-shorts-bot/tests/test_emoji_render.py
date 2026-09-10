@@ -6,7 +6,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from render import render_emoji
+from rendering.render import render_emoji
 
 
 class EmojiRenderTests(unittest.TestCase):

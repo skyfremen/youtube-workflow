@@ -1,5 +1,8 @@
 name: Analytics Collection
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 on:
   # Manual fallback only. Scheduled collection now runs inside Daily Production
   # so it reuses the already-running production runner.
@@ -25,7 +28,7 @@ jobs:
             google-auth-httplib2==0.2.0 \
             google-auth-oauthlib==1.2.2
       - name: Collect age-matched video analytics
-        run: python youtube-shorts-bot/analytics_collection.py
+        run: python youtube-shorts-bot/analytics/analytics_collection.py
       - name: Commit analytics snapshot and learning model
         shell: bash
         run: |

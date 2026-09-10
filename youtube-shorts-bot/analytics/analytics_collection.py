@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from analytics_learning import build_model
-from planning_config import (
+from analytics.analytics_learning import build_model
+from planning.planning_config import (
     ANALYTICS_MATURITY_HOURS,
     ANALYTICS_MIN_MATURE_VIDEOS,
     ANALYTICS_VIEWS_PER_EVIDENCE_UNIT,
@@ -13,7 +13,7 @@ from planning_config import (
     MILESTONE_HOURS,
 )
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 REPO_ROOT = BASE.parent
 RESULTS = BASE / "content" / "results"
 ANALYTICS = BASE / "analytics"

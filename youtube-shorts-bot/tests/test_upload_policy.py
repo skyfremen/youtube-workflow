@@ -7,8 +7,8 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
 from test_request_schema import valid_request
-from upload import build_upload_body, expected_publication
-from workflow_common import marker_tag
+from publishing.upload import build_upload_body, expected_publication
+from common.workflow_common import marker_tag
 
 
 class ScheduledUploadPolicyTests(unittest.TestCase):

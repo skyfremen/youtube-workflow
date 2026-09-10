@@ -2,8 +2,8 @@ import os
 import re
 from datetime import datetime, timezone
 
-from recovery_state import RecoveryBlocked, check_identity, now, record_path, workflow_identity
-from workflow_common import (
+from publishing.recovery_state import RecoveryBlocked, check_identity, now, record_path, workflow_identity
+from common.workflow_common import (
     EXPECTED_YOUTUBE_CHANNEL_ID,
     OUTPUT_DIR,
     atomic_write_json,

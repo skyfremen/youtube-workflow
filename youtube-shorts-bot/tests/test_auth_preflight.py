@@ -7,8 +7,8 @@ from unittest.mock import Mock, patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import auth_preflight
-from recovery_state import RecoveryBlocked
+from publishing import auth_preflight
+from publishing.recovery_state import RecoveryBlocked
 
 
 CREDS = {
@@ -28,7 +28,7 @@ class FakeHttpError(Exception):
 class YouTubeReadinessPreflightTests(unittest.TestCase):
     def test_missing_credentials_fail_before_client_or_network(self):
         with patch.dict(os.environ, {}, clear=True), \
-             patch("auth_preflight.make_client") as make_client:
+             patch("publishing.auth_preflight.make_client") as make_client:
             with self.assertRaisesRegex(SystemExit, "missing YOUTUBE_CLIENT_ID"):
                 auth_preflight.run_preflight()
         make_client.assert_not_called()
@@ -36,8 +36,8 @@ class YouTubeReadinessPreflightTests(unittest.TestCase):
     def test_success_reuses_production_client_and_pinned_channel_check(self):
         client = object()
         with patch.dict(os.environ, CREDS, clear=True), \
-             patch("auth_preflight.make_client", return_value=client) as make_client, \
-             patch("auth_preflight.authenticated_channel", return_value=CHANNEL) as channel_check:
+             patch("publishing.auth_preflight.make_client", return_value=client) as make_client, \
+             patch("publishing.auth_preflight.authenticated_channel", return_value=CHANNEL) as channel_check:
             result = auth_preflight.run_preflight()
         self.assertEqual(result, CHANNEL)
         make_client.assert_called_once_with()
@@ -45,8 +45,8 @@ class YouTubeReadinessPreflightTests(unittest.TestCase):
 
     def test_channel_mismatch_is_distinguished(self):
         with patch.dict(os.environ, CREDS, clear=True), \
-             patch("auth_preflight.make_client", return_value=object()), \
-             patch("auth_preflight.authenticated_channel", side_effect=RecoveryBlocked("different channel")):
+             patch("publishing.auth_preflight.make_client", return_value=object()), \
+             patch("publishing.auth_preflight.authenticated_channel", side_effect=RecoveryBlocked("different channel")):
             with self.assertRaisesRegex(SystemExit, "channel readiness.*different channel"):
                 auth_preflight.run_preflight()
 
@@ -60,13 +60,13 @@ class YouTubeReadinessPreflightTests(unittest.TestCase):
         for status, detail, expected in cases:
             with self.subTest(status=status, detail=detail), \
                  patch.dict(os.environ, CREDS, clear=True), \
-                 patch("auth_preflight.make_client", return_value=object()), \
-                 patch("auth_preflight.authenticated_channel", side_effect=FakeHttpError(status, detail)):
+                 patch("publishing.auth_preflight.make_client", return_value=object()), \
+                 patch("publishing.auth_preflight.authenticated_channel", side_effect=FakeHttpError(status, detail)):
                 with self.assertRaisesRegex(SystemExit, expected):
                     auth_preflight.run_preflight()
 
     def test_preflight_source_has_no_youtube_mutation_path(self):
-        source = (BASE / "auth_preflight.py").read_text(encoding="utf-8")
+        source = (BASE / "publishing/auth_preflight.py").read_text(encoding="utf-8")
         for forbidden in ("videos().insert", "upload_new(", "execute_upload(", "state.create("):
             self.assertNotIn(forbidden, source)
         self.assertIn("authenticated_channel(make_client())", source)

@@ -7,7 +7,7 @@ historical_attribute_fit, never raw subscriber, share, retention, or view counts
 from collections import defaultdict
 from math import isfinite
 
-from planning_config import (
+from planning.planning_config import (
     ANALYTICS_ATTRIBUTE_PRIOR_STRENGTH,
     ANALYTICS_MIN_MATURE_VIDEOS,
     RAW_ANALYTICS_WEIGHTS,

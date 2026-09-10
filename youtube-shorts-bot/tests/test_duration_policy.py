@@ -7,7 +7,7 @@ from unittest.mock import patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from workflow_common import (
+from common.workflow_common import (
     END_TAIL_SECONDS,
     START_LEAD_SECONDS,
     PRODUCTION_ENCODE_SAFETY_SECONDS,

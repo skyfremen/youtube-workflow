@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-PROMPT = Path("youtube-shorts-bot/planner/DAILY_PLANNER_PROMPT.md")
+PROMPT = Path("youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md")
 
 
 class PlannerSchedulePolicyTests(unittest.TestCase):

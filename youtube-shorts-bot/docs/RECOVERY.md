@@ -38,13 +38,13 @@ Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more
 
 ## Scheduled-slot guard
 
-For fresh scheduled generation, `publish.py` skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
+For fresh scheduled generation, `publishing/publish.py` skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
 
 The planner additionally avoids creating same-day catch-up slots that are too close to the current time. These are separate protections: planning chooses viable slots; publication guards prevent stale immutable slots from causing late generation.
 
 ## Duplicate recovery marker
 
-`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. `upload.py` searches the authenticated channel uploads for that marker when durable intent recovery requires YouTube reconciliation.
+`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. `publishing/upload.py` searches the authenticated channel uploads for that marker when durable intent recovery requires YouTube reconciliation.
 
 The recovery marker must not be placed in the public description. Semantic YouTube tags and visible hashtags remain distinct from the hidden recovery marker.
 

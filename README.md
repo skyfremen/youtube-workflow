@@ -50,7 +50,7 @@ The dry-run workflow also asserts the exact supported workflow and planner surfa
 - If a durable intent exists, a missing/temporarily unobservable video is never permission to upload again.
 - Result receipts are created only after exact YouTube state, request identity, render, background, and provenance verification.
 
-See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/SYSTEM_OVERVIEW.md` for the planning/analytics design.
+See `youtube-shorts-bot/docs/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/docs/SYSTEM_OVERVIEW.md` for the planning/analytics design.
 
 ## Development and verification
 

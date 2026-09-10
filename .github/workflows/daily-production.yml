@@ -1,5 +1,8 @@
 name: Daily Production
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 on:
   push:
     branches: [main]
@@ -214,7 +217,7 @@ jobs:
 
           # GLOBAL / LOCAL: the shared registry itself must be sound before any
           # external call. Request-to-background compatibility is per-video below.
-          python youtube-shorts-bot/validate_media_library.py
+          python youtube-shorts-bot/media/validate_media_library.py
 
           # GLOBAL / LOCAL: a sourcing batch cannot succeed without its shared key.
           if [ -s /tmp/background-sourcing-manifests.txt ] && [ -z "${PEXELS_API_KEY:-}" ]; then
@@ -224,7 +227,7 @@ jobs:
 
           # GLOBAL / NETWORK: one read-only OAuth/Data API/channel readiness check
           # protects the entire batch before Pexels ingestion or any rendering.
-          if python youtube-shorts-bot/auth_preflight.py; then
+          if python youtube-shorts-bot/publishing/auth_preflight.py; then
             echo "youtube_preflight_status=passed" >> "$GITHUB_OUTPUT"
           else
             echo "youtube_preflight_status=failed" >> "$GITHUB_OUTPUT"
@@ -236,9 +239,9 @@ jobs:
           if [ -s /tmp/background-sourcing-manifests.txt ]; then
             while IFS= read -r manifest; do
               [ -n "$manifest" ] || continue
-              python youtube-shorts-bot/pexels_registry.py ingest-manifest --manifest "$manifest"
+              python youtube-shorts-bot/media/pexels_registry.py ingest-manifest --manifest "$manifest"
             done < /tmp/background-sourcing-manifests.txt
-            python youtube-shorts-bot/validate_media_library.py
+            python youtube-shorts-bot/media/validate_media_library.py
 
             if ! git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
               git config user.name github-actions[bot]
@@ -300,11 +303,11 @@ jobs:
 
             # PER-VIDEO / LOCAL: malformed schema or story metadata fails only this
             # request and happens before its network recovery/authorization work.
-            python youtube-shorts-bot/validate_content.py --request "$req"
+            python youtube-shorts-bot/validation/validate_content.py --request "$req"
 
             local status_file
             status_file="$(mktemp)"
-            GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publish.py --stage prepare --request "$req"
+            GITHUB_OUTPUT="$status_file" python youtube-shorts-bot/publishing/publish.py --stage prepare --request "$req"
             local upload_required schedule_skipped schedule_skip_reason
             upload_required="$(sed -n 's/^upload_required=//p' "$status_file" | tail -1)"
             schedule_skipped="$(sed -n 's/^schedule_skipped=//p' "$status_file" | tail -1)"
@@ -327,7 +330,7 @@ jobs:
           import json, sys
           from pathlib import Path
           sys.path.insert(0, 'youtube-shorts-bot')
-          from validate_media_library import load_registry, validate_request_backgrounds
+          from media.validate_media_library import load_registry, validate_request_backgrounds
           path = sys.argv[1]
           registry = load_registry()
           validate_request_backgrounds(json.loads(Path(path).read_text()), registry)
@@ -337,10 +340,10 @@ jobs:
               # ==============================
               # EXPENSIVE GENERATION PHASE
               # ==============================
-              python youtube-shorts-bot/media_resolver.py --request "$req"
-              python youtube-shorts-bot/render_aligned.py --request "$req"
-              python youtube-shorts-bot/verify_render.py --request "$req"
-              python youtube-shorts-bot/publish.py --stage upload --request "$req"
+              python youtube-shorts-bot/media/media_resolver.py --request "$req"
+              python youtube-shorts-bot/rendering/render_aligned.py --request "$req"
+              python youtube-shorts-bot/rendering/verify_render.py --request "$req"
+              python youtube-shorts-bot/publishing/publish.py --stage upload --request "$req"
             fi
 
             # YouTube processing is asynchronous. Defer the read-only processing
@@ -361,8 +364,8 @@ jobs:
             set_request_context "$req"
             started_at="$(epoch_seconds)"
             printf '%s\tverification_started\t%s\n' "$cid" "$started_at" >> /tmp/batch-pipeline-metrics.tsv
-            python youtube-shorts-bot/verify_publication.py --request "$req"
-            python youtube-shorts-bot/finalize_receipt.py --request "$req"
+            python youtube-shorts-bot/publishing/verify_publication.py --request "$req"
+            python youtube-shorts-bot/publishing/finalize_receipt.py --request "$req"
             completed_at="$(epoch_seconds)"
             printf '%s\tverification_completed\t%s\n' "$cid" "$completed_at" >> /tmp/batch-pipeline-metrics.tsv
             python - "$cid" "$deferred_at" "$started_at" "$completed_at" <<'PY'
@@ -514,7 +517,7 @@ jobs:
               ;;
             *)
               echo "Production did not reach YouTube preflight; checking analytics prerequisite independently."
-              if ! python youtube-shorts-bot/auth_preflight.py; then
+              if ! python youtube-shorts-bot/publishing/auth_preflight.py; then
                 echo "::warning title=Analytics skipped::Independent YouTube readiness preflight failed."
                 exit 0
               fi
@@ -526,7 +529,7 @@ jobs:
           published_receipt_count="$(python - <<'PY'
           import sys
           sys.path.insert(0, 'youtube-shorts-bot')
-          from analytics_collection import load_receipts, public_age_hours
+          from analytics.analytics_collection import load_receipts, public_age_hours
 
           count = 0
           for receipt in load_receipts().values():
@@ -542,7 +545,7 @@ jobs:
           fi
           echo "Analytics preflight found ${published_receipt_count} published canonical receipt(s)."
 
-          python youtube-shorts-bot/analytics_collection.py
+          python youtube-shorts-bot/analytics/analytics_collection.py
 
           # ANALYTICS FAIL-CLOSED: validate every planner-facing output before it
           # can replace the last known-good committed model.
@@ -554,7 +557,7 @@ jobs:
           from zoneinfo import ZoneInfo
 
           sys.path.insert(0, 'youtube-shorts-bot')
-          from analytics_learning import DIMENSION_WEIGHTS, MODEL_VERSION
+          from analytics.analytics_learning import DIMENSION_WEIGHTS, MODEL_VERSION
 
           base = Path('youtube-shorts-bot/analytics')
           latest = json.loads((base / 'latest.json').read_text(encoding='utf-8'))

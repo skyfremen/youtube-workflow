@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from planning_config import (
+from planning.planning_config import (
     ANTAGONIST_ROLES,
     CANONICAL_TIMEZONE,
     CATEGORIES,
@@ -15,7 +15,7 @@ from planning_config import (
     TITLE_STYLES,
     TITLE_WEIGHTS,
 )
-from workflow_common import ensure_request_path_matches, load_json
+from common.workflow_common import ensure_request_path_matches, load_json
 
 SCHEMA_VERSION = 3
 FORBIDDEN_KEYS = {

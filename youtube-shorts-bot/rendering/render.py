@@ -10,21 +10,21 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFile, ImageFont, ImageOps, ImageStat
 
-from tts_backend import (
+from rendering.tts_backend import (
     ONNX_BACKEND,
     PYTORCH_FALLBACK_BACKEND,
     OnnxKokoroSynthesizer,
     PytorchKokoroSynthesizer,
     audio_metrics,
 )
-from workflow_common import (
+from common.workflow_common import (
     END_TAIL_SECONDS, START_LEAD_SECONDS, PRODUCTION_ENCODE_SAFETY_SECONDS, OUTPUT_DIR,
     PRODUCTION_MAX_SECONDS, atomic_write_json,
     env_bool, expected_video_config, load_json,
 )
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 ASSETS = BASE / "assets"
 UI_ASSETS = ASSETS / "ui"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"

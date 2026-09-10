@@ -16,17 +16,17 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from background_policy import (
+from media.background_policy import (
     TARGET_FPS,
     TARGET_HEIGHT,
     TARGET_WIDTH,
     rendition_is_production_suitable,
     rendition_sort_key,
 )
-from validate_media_library import load_registry, validate_request_backgrounds
-from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
+from media.validate_media_library import load_registry, validate_request_backgrounds
+from common.workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 NORMALIZED_VIDEO_CODEC = "h264"
 NORMALIZED_PRESET = "ultrafast"
 NORMALIZED_CRF = 18

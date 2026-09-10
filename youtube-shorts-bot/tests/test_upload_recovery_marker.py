@@ -5,9 +5,9 @@ from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import upload
+from publishing import upload
 from test_request_schema import valid_request
-from workflow_common import marker_tag
+from common.workflow_common import marker_tag
 
 VIDEO_ID = "AbCdEfGhI12"
 CHANNEL = {

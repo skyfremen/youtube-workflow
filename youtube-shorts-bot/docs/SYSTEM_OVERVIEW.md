@@ -38,11 +38,11 @@ Twenty-four final uploads should be winners of a real competition. A raw pool of
 
 Raw candidates are cheap structured premises. They do not trigger media download, TTS, rendering or upload. Expensive production begins only after final selection.
 
-Central strategy values live in `planning_config.py`. `planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change weighting.
+Central strategy values live in `planning/planning_config.py`. `planning/planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change weighting.
 
 With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap of **60%** so editorial judgment and exploration always remain material.
 
-Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning_engine.py` only as normalized `historical_attribute_fit`.
+Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics/analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning/planning_engine.py` only as normalized `historical_attribute_fit`.
 
 Missing metrics are renormalized away. They are never replaced with invented zeros or proxy values. The exact Studio viewed-vs-swiped control is not available through the targeted API used here; `engaged_view_rate` is an `engagedViews / views` continuation proxy and must never be mislabeled as that Studio metric.
 
@@ -89,13 +89,13 @@ A schema-v3 result receipt is created only after exact YouTube state and render 
 
 ## Render verification
 
-The production render writes inline black-detection evidence during the render pass. `verify_render.py` requires that evidence and fails closed if it is missing or failed.
+The production render writes inline black-detection evidence during the render pass. `rendering/verify_render.py` requires that evidence and fails closed if it is missing or failed.
 
 The verifier independently checks duration, 720×1280 resolution, 30 fps, H.264 video, exactly one AAC narration stream, representative frame decoding, render metadata identity and the final video SHA.
 
 ## Analytics
 
-`analytics_collection.py` runs at approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore**. The 19:30 snapshot is the final refresh before the normal 20:00 daily planner.
+`analytics/analytics_collection.py` runs at approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore**. The 19:30 snapshot is the final refresh before the normal 20:00 daily planner.
 
 Analytics reads only canonical scheduled schema-v3 receipts with planning metadata. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
 
