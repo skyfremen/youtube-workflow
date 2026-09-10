@@ -6,7 +6,6 @@ production policy without scattering magic numbers across the codebase.
 
 DAILY_PUBLISH_COUNT = 24
 RAW_CANDIDATE_COUNT = 120
-QUALIFIED_TARGET = 60
 SEMIFINALIST_TARGET = 36
 TITLES_PER_SEMIFINALIST = 5
 EXPLORATION_FRACTION = 0.20
@@ -59,7 +58,6 @@ RAW_ANALYTICS_WEIGHTS = {
 
 # Candidate analytics enters planning only through the normalized historical
 # attribute-fit score produced by analytics_learning.py.
-PERFORMANCE_WEIGHTS = {"historical_attribute_fit": 100}
 
 DIVERSITY_LIMITS = {
     "category": 4,
@@ -108,7 +106,6 @@ MIN_FINAL_EDITORIAL_SCORE = 68.0
 MIN_TITLE_SCORE = 70.0
 MIN_HOOK_SCORE = 70.0
 NEAR_DUPLICATE_THRESHOLD = 0.82
-SOFT_SIMILARITY_THRESHOLD = 0.62
 
 # Analytics must mature before it can steer creative selection.
 # analytics_evidence_count in analytics/latest.json is an evidence-equivalent count:

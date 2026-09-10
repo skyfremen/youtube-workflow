@@ -61,7 +61,7 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 - immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, and exact UTC `publish_at`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
 
-The schedule is bound to the same immutable request bytes and source commit as the story. A missing or non-scheduled publication contract is invalid; there is no unscheduled or immediate-public production fallback.
+The schedule is bound to the same immutable request bytes and source commit as the story. Production requires a complete scheduled publication contract.
 
 ## Batch production and Actions cost
 
@@ -89,7 +89,7 @@ A schema-v3 result receipt is created only after exact YouTube state and render 
 
 ## Render verification
 
-The production render writes inline black-detection evidence during the render pass. `verify_render.py` requires that evidence and fails closed if it is missing or failed. It does not run a compatibility full-video black-detection pass.
+The production render writes inline black-detection evidence during the render pass. `verify_render.py` requires that evidence and fails closed if it is missing or failed.
 
 The verifier independently checks duration, 720×1280 resolution, 30 fps, H.264 video, exactly one AAC narration stream, representative frame decoding, render metadata identity and the final video SHA.
 

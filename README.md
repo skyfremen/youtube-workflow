@@ -39,7 +39,7 @@ The supported workflow set is deliberately small:
 | `build-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
 | `dry-run.yml` | Static, unit, contract, planning-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
 
-The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, migration, stale pre-refactor naming, and removed one-off production entry points do not reappear in active files.
+The dry-run workflow also asserts the exact supported workflow and planner surface and prevents retired project roots or removed production entry points from reappearing.
 
 ## Publication and recovery invariants
 

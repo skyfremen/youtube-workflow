@@ -108,7 +108,6 @@ class ResultReceiptTests(unittest.TestCase):
             {
                 "x264_preset": "superfast",
                 "x264_crf": 19,
-                "kokoro_pipeline_init_duration_seconds": 1.2,
                 "tts_generation_duration_seconds": 2.3,
                 "caption_alignment_duration_seconds": 3.4,
                 "ffmpeg_duration_seconds": 4.5,

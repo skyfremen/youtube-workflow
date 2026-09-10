@@ -185,9 +185,6 @@ def build_receipt(request_path, request, upload, selection, render_meta):
             "ffmpeg_duration_seconds": render_meta.get("ffmpeg_duration_seconds"),
             "x264_preset": render_meta.get("x264_preset"),
             "x264_crf": render_meta.get("x264_crf"),
-            "kokoro_pipeline_init_duration_seconds": render_meta.get(
-                "kokoro_pipeline_init_duration_seconds"
-            ),
             "tts_generation_duration_seconds": render_meta.get(
                 "tts_generation_duration_seconds"
             ),

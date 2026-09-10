@@ -7,7 +7,6 @@ from pathlib import Path
 BASE = Path(__file__).parent
 REQUESTS_DIR = BASE / "content" / "requests"
 RESULTS_DIR = BASE / "content" / "results"
-PLANNING_DIR = BASE / "content" / "planning"
 OUTPUT_DIR = Path(os.getenv("STORY_OUTPUT_DIR", str(BASE / "output")))
 CONTENT_ID_RE = re.compile(r"^wd-\d{8}T\d{6}-[a-z0-9]+(?:-[a-z0-9]+)*-[a-z0-9]{6}$")
 PRODUCTION_MAX_SECONDS = 178.0
@@ -59,10 +58,6 @@ def request_path_for_id(content_id):
     validate_content_id(content_id)
     return REQUESTS_DIR / f"{content_id}.json"
 
-
-def result_path_for_id(content_id):
-    validate_content_id(content_id)
-    return RESULTS_DIR / f"{content_id}.json"
 
 
 def ensure_request_path_matches(path, data):

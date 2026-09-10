@@ -650,7 +650,6 @@ def main():
         "inline_blackdetect_fail_threshold_seconds": BLACKDETECT_MAX_ALLOWED_SECONDS,
         "onnx_init_duration_seconds": onnx_init_duration_seconds,
         "pytorch_fallback_init_duration_seconds": pytorch_fallback_init_duration_seconds,
-        "kokoro_pipeline_init_duration_seconds": pytorch_fallback_init_duration_seconds,
         "tts_generation_duration_seconds": tts_generation_duration_seconds,
         "render_process_duration_seconds": round(time.monotonic() - render_timer, 6),
         "render_started_at": render_started_at.isoformat(),
