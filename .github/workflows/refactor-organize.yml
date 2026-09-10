@@ -105,8 +105,7 @@ jobs:
               raise SystemExit(f'Unsafe starting tree: missing={missing}, occupied={occupied}')
 
           def tracked_text_files():
-              raw = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
-              for item in raw:
+              for item in subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0'):
                   if not item:
                       continue
                   path = Path(item)
@@ -146,8 +145,8 @@ jobs:
               if not init.exists():
                   init.write_text(f'"""Wacky Dramas {package} package."""\n', encoding='utf-8')
 
-          # Every moved Python file is exactly one level deeper. Keep its former
-          # application-root meaning for all __file__-relative calculations.
+          # Each moved Python module is exactly one directory deeper. Preserve the
+          # former application-root meaning of __file__-relative path calculations.
           for new in moves.values():
               if not new.endswith('.py'):
                   continue
@@ -163,8 +162,16 @@ jobs:
                   lambda m: f'Path(__file__).parents[{int(m.group(1)) + 1}]',
                   text,
               )
-              text = text.replace('Path(__file__).resolve().parent', 'Path(__file__).resolve().parents[1]')
-              text = text.replace('Path(__file__).parent', 'Path(__file__).resolve().parents[1]')
+              text = re.sub(
+                  r'Path\(__file__\)\.resolve\(\)\.parent(?!s)',
+                  'Path(__file__).resolve().parents[1]',
+                  text,
+              )
+              text = re.sub(
+                  r'Path\(__file__\)\.parent(?!s)',
+                  'Path(__file__).resolve().parents[1]',
+                  text,
+              )
               path.write_text(text, encoding='utf-8')
 
           def rewrite_imports(text: str) -> str:
@@ -184,12 +191,19 @@ jobs:
                   text = pattern.sub(replacement, text)
               return text
 
-          # Rewrite all callers, imports, workflow command paths and documentation.
+          bare_file_map = {
+              Path(old).name: str(Path(new).relative_to(BOT))
+              for old, new in moves.items()
+              if old.endswith('.py')
+          }
+
+          # Rewrite callers, imports, workflow command paths, tests and docs.
           for path in list(tracked_text_files()):
-              if path == TEMP_WORKFLOW:
+              if path == TEMP_WORKFLOW or not path.exists():
                   continue
               text = path.read_text(encoding='utf-8')
               original = text
+
               text = text.replace('youtube-shorts-bot/planner/', 'youtube-shorts-bot/planning/')
               for old, new in moves.items():
                   text = text.replace(old, new)
@@ -200,17 +214,27 @@ jobs:
                   text = text.replace("'youtube-shorts-bot/*.md'", "'youtube-shorts-bot/**/*.md'")
 
               if path.parent == BOT / 'tests':
-                  # Tests use dynamic patch targets and source-file strings in
-                  # addition to normal imports; those are real structural references.
+                  # Rewrite source-file expectations first. Negative slash lookbehind
+                  # avoids re-rewriting an already-canonical category/path/file.py.
+                  for old_name, new_rel in bare_file_map.items():
+                      text = re.sub(
+                          rf'(?<![A-Za-z0-9_/-]){re.escape(old_name)}',
+                          new_rel,
+                          text,
+                      )
+
+                  # Then rewrite dynamic import/patch targets such as
+                  # patch("upload.OUTPUT_DIR", ...) to publishing.upload.OUTPUT_DIR.
                   for old_module, new_module in module_map.items():
                       text = text.replace(f'"{old_module}.', f'"{new_module}.')
                       text = text.replace(f"'{old_module}.", f"'{new_module}.")
-                  for old, new in moves.items():
-                      if old.endswith('.py'):
-                          old_name = Path(old).name
-                          new_rel = str(Path(new).relative_to(BOT))
-                          text = text.replace(f'"{old_name}"', f'"{new_rel}"')
-                          text = text.replace(f"'{old_name}'", f"'{new_rel}'")
+
+                  # One recovery test builds patch targets from module-name strings.
+                  text = text.replace(
+                      'for module in ("upload", "publish"):',
+                      'for module in ("publishing.upload", "publishing.publish"):',
+                  )
+
                   text = text.replace('BOT_ROOT / "planner"', 'BOT_ROOT / "planning"')
                   text = text.replace("BOT_ROOT / 'planner'", "BOT_ROOT / 'planning'")
                   text = text.replace(
@@ -230,6 +254,23 @@ jobs:
                       "BOT_ROOT / 'docs' / 'RECOVERY.md'",
                   )
 
+                  # Keep architecture scans at least as strong after Python/Markdown
+                  # sources move below responsibility folders.
+                  text = text.replace('*BOT_ROOT.glob("*.py")', '*BOT_ROOT.rglob("*.py")')
+                  text = text.replace("*BOT_ROOT.glob('*.py')", "*BOT_ROOT.rglob('*.py')")
+                  text = text.replace('*BOT_ROOT.glob("*.md")', '*BOT_ROOT.rglob("*.md")')
+                  text = text.replace("*BOT_ROOT.glob('*.md')", "*BOT_ROOT.rglob('*.md')")
+
+              if path.suffix.lower() == '.md':
+                  # Current docs previously referred to root modules by bare filename.
+                  # Convert only truly bare names, never a name already after '/'.
+                  for old_name, new_rel in bare_file_map.items():
+                      text = re.sub(
+                          rf'(?<![A-Za-z0-9_/-]){re.escape(old_name)}',
+                          new_rel,
+                          text,
+                      )
+
               if text != original:
                   path.write_text(text, encoding='utf-8')
 
@@ -240,8 +281,8 @@ jobs:
           )
           dry.write_text(text, encoding='utf-8')
 
-          # New absolute package imports need only the application root on sys.path.
-          # This is a single process environment variable, not new jobs/subprocesses.
+          # Absolute package imports need one stable application-root search path.
+          # This adds no jobs, subprocesses, setup steps, model loads, or runtime work.
           for workflow in Path('.github/workflows').glob('*.yml'):
               if workflow == TEMP_WORKFLOW:
                   continue
@@ -256,13 +297,10 @@ jobs:
                   text = text[:name.end()] + '\n\nenv:\n  PYTHONPATH: youtube-shorts-bot' + text[name.end():]
               workflow.write_text(text, encoding='utf-8')
 
-          # The temporary migration workflow is not part of the canonical surface.
-          # Delete it before unit/architecture tests so those tests validate the real
-          # post-refactor repository rather than a migration helper.
+          # Migration helper is never part of the canonical repository surface.
           TEMP_WORKFLOW.unlink()
 
-          # Final static stale-reference audit excludes historical git data and the
-          # now-deleted migration helper. No compatibility wrappers are permitted.
+          # No old executable locations, planner path, or bare source imports remain.
           stale = []
           for path in tracked_text_files():
               if not path.exists():
@@ -293,7 +331,7 @@ jobs:
               'youtube-shorts-bot/media-library/',
               'youtube-shorts-bot/assets/',
           )
-          forbidden = [path for path in changed if path.startswith(forbidden_prefixes)]
+          forbidden = [p for p in changed if p.startswith(forbidden_prefixes)]
           if forbidden:
               raise SystemExit('Runtime data/assets changed: ' + ', '.join(forbidden))
 
@@ -325,7 +363,6 @@ jobs:
           }
           actual = {p.name for p in Path('youtube-shorts-bot').iterdir() if p.name != '__pycache__'}
           assert actual == expected, (sorted(actual), sorted(expected))
-
           assert {p.name for p in Path('youtube-shorts-bot/planning').glob('*.md')} == {
               'DAILY_PLANNER_PROMPT.md', 'STORY_RULES.md'
           }
@@ -401,9 +438,9 @@ jobs:
           ]
           positions = []
           for stage in stages:
-              position = batch.find(stage)
-              assert position >= 0, f'Missing stage {stage}'
-              positions.append(position)
+              pos = batch.find(stage)
+              assert pos >= 0, f'Missing stage {stage}'
+              positions.append(pos)
           assert positions == sorted(positions), list(zip(stages, positions))
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
@@ -415,8 +452,8 @@ jobs:
           assert 'youtube-shorts-bot/media/validate_media_library.py' in dry
           assert 'youtube-shorts-bot/planning/planning_engine.py' in dry
 
-          for path in ('content', 'media-library', 'assets'):
-              assert Path('youtube-shorts-bot', path).exists()
+          for directory in ('content', 'media-library', 'assets'):
+              assert Path('youtube-shorts-bot', directory).exists()
           print('Production ordering, safety markers, dry-run coverage and runtime-data locations preserved.')
           PY
 
