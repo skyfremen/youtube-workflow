@@ -24,7 +24,7 @@ def _same_instant(left, right):
     return _instant(left) is not None and _instant(left) == _instant(right)
 
 
-def expected_publish_at(request, evidence):
+def _expected_publish_at(request, evidence):
     publication = request.get("publication")
     if not isinstance(publication, dict) or publication.get("mode") != "scheduled":
         raise RecoveryBlocked("Scheduled immutable publication contract is required")
@@ -53,7 +53,7 @@ def verify_video(youtube, request, identity, evidence, sleep=time.sleep):
     if channel["id"] != evidence.get("expected_channel_id"):
         raise RecoveryBlocked("Authenticated channel differs from upload evidence")
     expected_snippet = evidence["upload_body"]["snippet"]
-    expected_publish_at = expected_publish_at(request, evidence)
+    expected_publish_at = _expected_publish_at(request, evidence)
     expected_dt = _instant(expected_publish_at)
 
     last = "video not visible"
