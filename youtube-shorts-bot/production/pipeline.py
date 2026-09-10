@@ -66,8 +66,17 @@ def parse_concurrency(raw):
     return value
 
 
+def effective_cpu_count():
+    """Return CPUs available to this runner/container, not the host total."""
+    try:
+        available = len(os.sched_getaffinity(0))
+    except (AttributeError, OSError):
+        available = 0
+    return max(1, int(available or os.cpu_count() or 1))
+
+
 def threads_per_worker(concurrency, explicit=None, cpu_count=None):
-    cpus = max(1, int(cpu_count or os.cpu_count() or 1))
+    cpus = max(1, int(cpu_count or effective_cpu_count()))
     if explicit not in (None, ""):
         try:
             threads = int(explicit)
@@ -190,7 +199,7 @@ class ResourceSampler:
 class ProductionPipeline:
     def __init__(self, concurrency, *, worker_root=WORKER_ROOT, base_env=None, sampler=None):
         self.concurrency = parse_concurrency(concurrency)
-        self.cpu_count = max(1, int(os.cpu_count() or 1))
+        self.cpu_count = effective_cpu_count()
         self.base_env = dict(base_env or os.environ)
         self.worker_threads = threads_per_worker(
             self.concurrency,

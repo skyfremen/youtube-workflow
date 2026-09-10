@@ -16,6 +16,7 @@ from production.pipeline import (
     PipelineError,
     PreparedRequest,
     ProductionPipeline,
+    effective_cpu_count,
     parse_concurrency,
     read_requests,
     threads_per_worker,
@@ -182,6 +183,10 @@ class ProductionPipelineTests(unittest.TestCase):
         self.assertEqual(threads_per_worker(3, cpu_count=4), 1)
         self.assertEqual(threads_per_worker(4, cpu_count=4), 1)
         self.assertEqual(threads_per_worker(2, explicit="1", cpu_count=4), 1)
+
+    def test_cpu_budget_uses_container_affinity(self):
+        with patch("production.pipeline.os.sched_getaffinity", return_value={0, 1}):
+            self.assertEqual(effective_cpu_count(), 2)
 
     def test_duplicate_content_id_is_rejected_before_any_worker_starts(self):
         path = self.root / "requests.txt"

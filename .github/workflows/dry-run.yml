@@ -192,7 +192,7 @@ jobs:
           # benchmark job may use the production container and is removed after
           # benchmark evidence is collected.
           assert dry.count('container' + ':') == 1
-          assert "if: contains(github.event.head_commit.message, '[concurrency benchmark stage A]')" in dry
+          assert "if: contains(github.event.head_commit.message, '[concurrency benchmark stage B]')" in dry
           assert 'group: wacky-dramas-youtube-upload' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
@@ -224,12 +224,12 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-  # Temporary, explicitly gated benchmark. Remove after Stage A/Stage B evidence.
+  # Temporary, explicitly gated benchmark. Remove after Stage B evidence.
   # It has no YouTube credentials and cannot call publication or durable state.
   concurrency-benchmark:
-    if: contains(github.event.head_commit.message, '[concurrency benchmark stage A]')
+    if: contains(github.event.head_commit.message, '[concurrency benchmark stage B]')
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
     permissions:
       contents: read
       packages: read
@@ -256,14 +256,15 @@ jobs:
             sed -n '1,5p' /proc/meminfo
           fi
           python youtube-shorts-bot/production/concurrency_benchmark.py \
-            --stage a \
-            --output /tmp/concurrency-benchmark-stage-a.json
+            --stage b \
+            --winner 2 \
+            --output /tmp/concurrency-benchmark-stage-b.json
 
       - name: Preserve benchmark evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: concurrency-benchmark-stage-a-${{ github.run_id }}
-          path: /tmp/concurrency-benchmark-stage-a.json
+          name: concurrency-benchmark-stage-b-${{ github.run_id }}
+          path: /tmp/concurrency-benchmark-stage-b.json
           if-no-files-found: warn
           retention-days: 7
