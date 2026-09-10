@@ -1,0 +1,155 @@
+{
+  "schema_version": 3,
+  "content_id": "wd-20260911T183000-acceptance-a4e91c",
+  "channel": {
+    "name": "Wacky Dramas",
+    "handle": "@WACKYDRAMAS"
+  },
+  "story": {
+    "category": "WORKPLACE",
+    "story_type": "BACKFIRE",
+    "hook": "The Backup He Forgot About",
+    "script": "My boss told everyone I had no proof. I opened the archived workspace and found the timestamped backup.",
+    "card_emojis": [
+      "💼",
+      "🗂️",
+      "😳",
+      "💾",
+      "🔥"
+    ]
+  },
+  "narration": {
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "speed": 1.75
+  },
+  "visual": {
+    "background_primary_id": "satisfying-001",
+    "background_backup_id": "satisfying-002"
+  },
+  "youtube": {
+    "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+    "description": "The archived timestamp changed the whole argument. Would you have confronted the person who denied it?",
+    "hashtags": [
+      "#Shorts",
+      "#WackyDramas",
+      "#WorkplaceDrama",
+      "#Storytime"
+    ],
+    "tags": [
+      "wacky dramas",
+      "workplace drama",
+      "boss story",
+      "office conflict",
+      "evidence backfire",
+      "storytime"
+    ],
+    "category_id": "24",
+    "made_for_kids": false
+  },
+  "publication": {
+    "mode": "scheduled",
+    "timezone": "Asia/Singapore",
+    "publish_at": "2026-09-11T18:30:00Z"
+  },
+  "planning": {
+    "plan_date": "2026-09-12",
+    "editorial_score": 88,
+    "editorial_components": {
+      "hook_strength": 88,
+      "relatability": 88,
+      "conflict_clarity": 88,
+      "payoff_strength": 88,
+      "freshness": 88,
+      "shareability": 88
+    },
+    "analytics_score": null,
+    "analytics_weight": 0,
+    "final_score": 87.5,
+    "title_candidates": [
+      {
+        "title": "My Boss Said There Was No Proof. Then I Found the Backup #Shorts",
+        "style": "HIDDEN_REVELATION",
+        "truthful": true,
+        "score": 91,
+        "score_components": {
+          "curiosity": 91,
+          "clarity": 91,
+          "truthfulness": 91,
+          "emotional_pull": 91,
+          "specificity": 91
+        }
+      },
+      {
+        "title": "I Checked the Archive and Found the Proof #Shorts",
+        "style": "DISCOVERY",
+        "truthful": true,
+        "score": 86,
+        "score_components": {
+          "curiosity": 86,
+          "clarity": 86,
+          "truthfulness": 86,
+          "emotional_pull": 86,
+          "specificity": 86
+        }
+      },
+      {
+        "title": "It Looked Normal Until the Timestamp Appeared #Shorts",
+        "style": "NORMAL_TO_ABNORMAL",
+        "truthful": true,
+        "score": 84,
+        "score_components": {
+          "curiosity": 84,
+          "clarity": 84,
+          "truthfulness": 84,
+          "emotional_pull": 84,
+          "specificity": 84
+        }
+      },
+      {
+        "title": "I Kept the Archive and the Story Changed #Shorts",
+        "style": "DECISION_CONSEQUENCE",
+        "truthful": true,
+        "score": 83,
+        "score_components": {
+          "curiosity": 83,
+          "clarity": 83,
+          "truthfulness": 83,
+          "emotional_pull": 83,
+          "specificity": 83
+        }
+      },
+      {
+        "title": "Hours Before the Audit, I Found the Backup #Shorts",
+        "style": "COUNTDOWN",
+        "truthful": true,
+        "score": 82,
+        "score_components": {
+          "curiosity": 82,
+          "clarity": 82,
+          "truthfulness": 82,
+          "emotional_pull": 82,
+          "specificity": 82
+        }
+      }
+    ],
+    "selected_title_score": 91,
+    "hook_score": 90,
+    "selection_class": "exploit",
+    "selection_reason": "Strong contradiction, proof-driven escalation and clear reversal.",
+    "similarity": {
+      "max_recent_similarity": 0.21
+    },
+    "attributes": {
+      "subtype": "EVIDENCE_BACKFIRE",
+      "conflict": "HIDDEN_FILE",
+      "primary_emotion": "INJUSTICE",
+      "protagonist_role": "EMPLOYEE",
+      "antagonist_role": "BOSS",
+      "opening_style": "CONTRADICTION",
+      "title_style": "HIDDEN_REVELATION",
+      "ending_style": "REVERSAL"
+    },
+    "target_duration_seconds": 151
+  }
+}
