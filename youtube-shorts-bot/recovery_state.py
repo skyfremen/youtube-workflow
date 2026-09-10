@@ -66,19 +66,26 @@ class GitHubState:
             f"https://api.github.com/repos/{self.repo}/{path}",
             data=encoded_json(body) if body is not None else None,
             method=method,
-            headers={"Authorization": f"Bearer {self.token}",
-                     "Accept": "application/vnd.github+json",
-                     "X-GitHub-Api-Version": "2022-11-28",
-                     "Content-Type": "application/json"},
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Content-Type": "application/json",
+            },
         )
         with urlopen(request, timeout=30) as response:
             return json.load(response)
 
     @staticmethod
     def allowed(path):
-        match = re.fullmatch(r"youtube-shorts-bot/content/(?:recovery/([^/]+)/(?:intent|upload)|results/([^/]+))\.json", path)
+        match = re.fullmatch(
+            r"youtube-shorts-bot/content/(?:recovery/([^/]+)/(?:intent|upload)|results/([^/]+))\.json",
+            path,
+        )
         if not match:
-            raise RecoveryBlocked("State operations are limited to canonical evidence and receipts")
+            raise RecoveryBlocked(
+                "State operations are limited to canonical evidence and receipts"
+            )
         validate_content_id(match[1] or match[2])
 
     def load(self, path):
@@ -88,7 +95,9 @@ class GitHubState:
         except HTTPError as exc:
             if exc.code == 404:
                 return None
-            raise RecoveryBlocked(f"Cannot read durable state (HTTP {exc.code}); upload forbidden") from None
+            raise RecoveryBlocked(
+                f"Cannot read durable state (HTTP {exc.code}); upload forbidden"
+            ) from None
         raw = base64.b64decode(result["content"])
         if blob_sha(raw) != result["sha"]:
             raise RecoveryBlocked("GitHub evidence blob integrity mismatch")
@@ -103,33 +112,50 @@ class GitHubState:
             return prior
         raw = encoded_json(data)
         try:
-            result = self.api(f"contents/{path}", method="PUT", body={
-                "branch": "main", "message": f"[skip upload] record {Path(path).stem} for {data['content_id']}",
-                "content": base64.b64encode(raw).decode(),
-            })
+            result = self.api(
+                f"contents/{path}",
+                method="PUT",
+                body={
+                    "branch": "main",
+                    "message": f"[skip upload] record {Path(path).stem} for {data['content_id']}",
+                    "content": base64.b64encode(raw).decode(),
+                },
+            )
         except Exception as exc:
-            # A lost write response is ambiguous. Never infer ownership of an
-            # upload intent from a subsequent read, even if its bytes match.
-            raise RecoveryBlocked(f"Durable write not acknowledged ({type(exc).__name__}); retry recovery only") from None
+            raise RecoveryBlocked(
+                f"Durable write not acknowledged ({type(exc).__name__}); retry recovery only"
+            ) from None
         if result["content"]["sha"] != blob_sha(raw):
             raise RecoveryBlocked("Durable write returned unexpected evidence SHA")
-        return Stored(data, result["content"]["sha"], True, result["commit"]["sha"])
+        return Stored(
+            data,
+            result["content"]["sha"],
+            True,
+            result["commit"]["sha"],
+        )
 
 
 def identity_for(path, data):
     path = Path(path)
-    cid = ensure_request_path_matches(path, data)
-    relative = f"youtube-shorts-bot/content/requests/{cid}.json"
+    content_id = ensure_request_path_matches(path, data)
+    relative = f"youtube-shorts-bot/content/requests/{content_id}.json"
     if path.resolve() != Path(relative).resolve():
         raise RecoveryBlocked("Publishing requires the canonical immutable request path")
     source = os.environ.get("SOURCE_COMMIT_SHA", "")
     if not re.fullmatch(r"[0-9a-f]{40}", source):
         raise RecoveryBlocked("An exact immutable request source commit is required")
     raw = path.read_bytes()
-    original = subprocess.run(["git", "show", f"{source}:{relative}"], capture_output=True, check=True).stdout
+    original = subprocess.run(
+        ["git", "show", f"{source}:{relative}"], capture_output=True, check=True
+    ).stdout
     if raw != original:
         raise RecoveryBlocked("Request differs from its immutable source commit")
-    return {"content_id": cid, "request_path": relative, "request_blob_sha": blob_sha(raw), "source_commit_sha": source}
+    return {
+        "content_id": content_id,
+        "request_path": relative,
+        "request_blob_sha": blob_sha(raw),
+        "source_commit_sha": source,
+    }
 
 
 def check_identity(evidence, identity):
@@ -139,10 +165,15 @@ def check_identity(evidence, identity):
 
 
 def workflow_identity():
-    head = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
-    return {"name": os.environ.get("GITHUB_WORKFLOW", ""), "run_id": os.environ.get("GITHUB_RUN_ID", ""),
-            "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""), "code_commit_sha": head}
-
-
-def source_supports_intent(source):
-    return subprocess.run(["git", "cat-file", "-e", f"{source}:youtube-shorts-bot/recovery_state.py"], capture_output=True).returncode == 0
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    return {
+        "name": os.environ.get("GITHUB_WORKFLOW", ""),
+        "run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "code_commit_sha": head,
+    }
