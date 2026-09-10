@@ -2,9 +2,9 @@ import argparse
 import time
 from datetime import datetime, timezone
 
-from recovery_state import RecoveryBlocked, check_identity, identity_for, now
-from upload import authenticated_channel, make_client
-from workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
+from publishing.recovery_state import RecoveryBlocked, check_identity, identity_for, now
+from publishing.upload import authenticated_channel, make_client
+from common.workflow_common import OUTPUT_DIR, atomic_write_json, load_json, marker_tag
 
 RETRY_DELAYS = (0, 2, 4, 8, 8, 4, 4, 10, 10, 10)
 

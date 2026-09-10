@@ -7,12 +7,12 @@ from unittest.mock import Mock, patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from publish import (
+from publishing.publish import (
     SCHEDULE_FRESHNESS_BUFFER_MINUTES,
     pre_generation_authorization,
     scheduled_slot_guard,
 )
-from recovery_state import RecoveryBlocked
+from publishing.recovery_state import RecoveryBlocked
 from test_request_schema import valid_request
 
 
@@ -75,8 +75,8 @@ class ScheduledSlotGuardTests(unittest.TestCase):
     def test_skipped_slot_avoids_upload_contract_and_inventory_scan(self):
         request = self.full_request_at(self.now + timedelta(minutes=5))
         with (
-            patch("publish.build_upload_body") as body,
-            patch("publish.authorize_fresh_upload") as authorize,
+            patch("publishing.publish.build_upload_body") as body,
+            patch("publishing.publish.authorize_fresh_upload") as authorize,
         ):
             result = pre_generation_authorization(
                 request, {}, Mock(), Mock(), Mock(), now_utc=self.now
@@ -90,11 +90,11 @@ class ScheduledSlotGuardTests(unittest.TestCase):
         events = []
         with (
             patch(
-                "publish.build_upload_body",
+                "publishing.publish.build_upload_body",
                 side_effect=lambda *args, **kwargs: events.append("body") or {},
             ),
             patch(
-                "publish.authorize_fresh_upload",
+                "publishing.publish.authorize_fresh_upload",
                 side_effect=lambda *args, **kwargs: events.append("authorize"),
             ),
         ):

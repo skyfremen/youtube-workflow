@@ -9,8 +9,8 @@ from unittest import mock
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import media_resolver
-from background_policy import crop_fill_geometry, rendition_is_production_suitable
+from media import media_resolver
+from media.background_policy import crop_fill_geometry, rendition_is_production_suitable
 
 
 def rendition(name, width, height, fps=30, size=None, url=None):

@@ -7,9 +7,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import render
-from tts_backend import OnnxKokoroSynthesizer, sentence_chunks, validate_audio
-from verify_render import inline_blackdetect_max
+from rendering import render
+from rendering.tts_backend import OnnxKokoroSynthesizer, sentence_chunks, validate_audio
+from rendering.verify_render import inline_blackdetect_max
 
 
 class FakeOnnxEngine:
@@ -56,7 +56,7 @@ class OnnxNarrationTests(unittest.TestCase):
             validate_audio(np.ones(1000, dtype=np.float32), 24000)
 
     def test_renderer_keeps_primary_and_fallback_contract(self):
-        source = (ROOT / "render.py").read_text(encoding="utf-8")
+        source = (ROOT / "rendering/render.py").read_text(encoding="utf-8")
         self.assertIn("OnnxKokoroSynthesizer", source)
         self.assertIn("PytorchKokoroSynthesizer", source)
         self.assertIn("narration_backend_requested", source)

@@ -1,12 +1,15 @@
 name: Background Management
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/pexels_registry.py'
-      - 'youtube-shorts-bot/background_policy.py'
+      - 'youtube-shorts-bot/media/pexels_registry.py'
+      - 'youtube-shorts-bot/media/background_policy.py'
       - '.github/workflows/background-management.yml'
 
 concurrency:
@@ -41,11 +44,11 @@ jobs:
 
       - name: Refresh exact rendition metadata
         if: steps.pexels-key.outputs.available == 'true'
-        run: python youtube-shorts-bot/pexels_registry.py enrich-existing --require-any
+        run: python youtube-shorts-bot/media/pexels_registry.py enrich-existing --require-any
 
       - name: Validate registry
         if: steps.pexels-key.outputs.available == 'true'
-        run: python youtube-shorts-bot/validate_media_library.py
+        run: python youtube-shorts-bot/media/validate_media_library.py
 
       - name: Commit metadata refresh
         if: steps.pexels-key.outputs.available == 'true'

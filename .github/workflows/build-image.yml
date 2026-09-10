@@ -1,5 +1,8 @@
 name: Build Image
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 on:
   push:
     paths:

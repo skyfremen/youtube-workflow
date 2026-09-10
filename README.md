@@ -4,6 +4,8 @@ This repository contains the canonical **Wacky Dramas** Shorts production system
 
 ## Canonical architecture
 
+Application modules under `youtube-shorts-bot/` are grouped by responsibility into `planning/`, `media/`, `rendering/`, `publishing/`, `validation/`, `common/`, and `analytics/`; durable runtime data remains in its existing top-level locations.
+
 The production path is request-driven and append-only:
 
 1. The daily planner generates a large premise pool, applies deterministic scoring/diversity policy, selects up to 24 winners, and creates immutable schema-v3 requests with hourly `Asia/Singapore` publication slots.
@@ -50,7 +52,7 @@ The dry-run workflow also asserts the exact supported workflow and planner surfa
 - If a durable intent exists, a missing/temporarily unobservable video is never permission to upload again.
 - Result receipts are created only after exact YouTube state, request identity, render, background, and provenance verification.
 
-See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/SYSTEM_OVERVIEW.md` for the planning/analytics design.
+See `youtube-shorts-bot/docs/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/docs/SYSTEM_OVERVIEW.md` for the planning/analytics design.
 
 ## Development and verification
 

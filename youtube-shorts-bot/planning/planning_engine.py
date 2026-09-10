@@ -13,7 +13,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from planning_config import (
+from planning.planning_config import (
     ANALYTICS_CONFIDENCE_SCALE, CANONICAL_TIMEZONE, DAILY_PUBLISH_COUNT,
     DIVERSITY_LIMITS, EDITORIAL_WEIGHTS, EXPLORATION_FRACTION, HOOK_WEIGHTS,
     MAX_ANALYTICS_WEIGHT, MIN_FINAL_EDITORIAL_SCORE, MIN_HOOK_SCORE,

@@ -4,7 +4,7 @@ import os
 import re
 from pathlib import Path
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 REQUESTS_DIR = BASE / "content" / "requests"
 RESULTS_DIR = BASE / "content" / "results"
 OUTPUT_DIR = Path(os.getenv("STORY_OUTPUT_DIR", str(BASE / "output")))

@@ -8,7 +8,7 @@ from unittest import mock
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import pexels_registry
+from media import pexels_registry
 
 
 class PexelsRegistryTests(unittest.TestCase):

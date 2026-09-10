@@ -14,10 +14,10 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from background_policy import rendition_is_production_suitable
-from validate_media_library import REGISTRY_PATH, asset_map, load_registry
+from media.background_policy import rendition_is_production_suitable
+from media.validate_media_library import REGISTRY_PATH, asset_map, load_registry
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 RESULTS_DIR = BASE / "content" / "results"
 
 HARD_AVOID_SHORTS = 10

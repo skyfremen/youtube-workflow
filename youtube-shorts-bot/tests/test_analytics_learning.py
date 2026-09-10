@@ -5,9 +5,9 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import analytics_collection
-from analytics_learning import build_model, performance_scores, score_candidate
-from planning_config import ANALYTICS_MIN_MATURE_VIDEOS
+from analytics import analytics_collection
+from analytics.analytics_learning import build_model, performance_scores, score_candidate
+from planning.planning_config import ANALYTICS_MIN_MATURE_VIDEOS
 
 
 class AnalyticsLearningTests(unittest.TestCase):

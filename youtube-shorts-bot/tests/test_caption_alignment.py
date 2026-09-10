@@ -5,8 +5,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from caption_alignment import AlignmentError, group_aligned_words, normalize_token, validate_alignment
-from render_aligned import build_caption_events
+from rendering.caption_alignment import AlignmentError, group_aligned_words, normalize_token, validate_alignment
+from rendering.render_aligned import build_caption_events
 
 
 class CaptionAlignmentTests(unittest.TestCase):

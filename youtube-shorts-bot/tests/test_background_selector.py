@@ -6,7 +6,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from background_selector import (
+from media.background_selector import (
     audit_ai_selection,
     derive_usage_history,
     rank_assets,

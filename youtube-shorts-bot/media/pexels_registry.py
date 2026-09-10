@@ -20,13 +20,13 @@ from pathlib import Path
 from urllib.parse import quote_plus, urlparse
 from urllib.request import Request, urlopen
 
-from background_policy import (
+from media.background_policy import (
     production_rendition_policy,
     rendition_is_production_suitable,
 )
-from workflow_common import atomic_write_json
+from common.workflow_common import atomic_write_json
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = BASE / "media-library" / "backgrounds.json"
 API_ROOT = "https://api.pexels.com/v1/videos"
 PEXELS_LICENSE = "Pexels License"

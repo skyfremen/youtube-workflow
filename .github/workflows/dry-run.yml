@@ -1,5 +1,8 @@
 name: Dry Run
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 on:
   push:
     paths:
@@ -7,10 +10,10 @@ on:
       - '.github/workflows/**'
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
-      - 'youtube-shorts-bot/*.py'
+      - 'youtube-shorts-bot/**/*.py'
       - 'youtube-shorts-bot/tests/**'
-      - 'youtube-shorts-bot/planner/**'
-      - 'youtube-shorts-bot/*.md'
+      - 'youtube-shorts-bot/planning/**'
+      - 'youtube-shorts-bot/**/*.md'
       - 'youtube-shorts-bot/analytics/**'
       - 'youtube-shorts-bot/media-library/backgrounds.json'
   workflow_dispatch:
@@ -43,7 +46,7 @@ jobs:
             'Pillow>=10,<12'
 
       - name: Compile production Python
-        run: python -m py_compile youtube-shorts-bot/*.py
+        run: find youtube-shorts-bot -type f -name '*.py' -print0 | xargs -0 python -m py_compile
 
       - name: Verify canonical repository surface
         shell: bash
@@ -62,7 +65,7 @@ jobs:
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
 
           expected_planner_docs = {'DAILY_PLANNER_PROMPT.md', 'STORY_RULES.md'}
-          actual_planner_docs = {path.name for path in Path('youtube-shorts-bot/planner').glob('*.md')}
+          actual_planner_docs = {path.name for path in Path('youtube-shorts-bot/planning').glob('*.md')}
           assert actual_planner_docs == expected_planner_docs, f'unexpected planner docs: {sorted(actual_planner_docs)}'
 
           retired_roots = [
@@ -86,7 +89,7 @@ jobs:
           import os
           import sys
           sys.path.insert(0, 'youtube-shorts-bot')
-          from request_guard import check_immutable_changes
+          from validation.request_guard import check_immutable_changes
 
           before = os.environ['PREVIOUS_SHA']
           if before and set(before) != {'0'}:
@@ -98,12 +101,12 @@ jobs:
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
 
       - name: Validate satisfying-background registry
-        run: python youtube-shorts-bot/validate_media_library.py
+        run: python youtube-shorts-bot/media/validate_media_library.py
 
       - name: Run full planning acceptance dry run
         shell: bash
         run: |
-          python youtube-shorts-bot/planning_engine.py \
+          python youtube-shorts-bot/planning/planning_engine.py \
             --acceptance-dry-run --date 2026-09-10 --analytics-video-count 0 \
             --output /tmp/planning-dry-run.json
           python - <<'PY'
@@ -130,10 +133,10 @@ jobs:
           from pathlib import Path
           import sys
           sys.path.insert(0, 'youtube-shorts-bot')
-          import render
-          import tts_backend
-          import workflow_common
-          from background_policy import production_rendition_policy
+          from rendering import render
+          from rendering import tts_backend
+          from common import workflow_common
+          from media.background_policy import production_rendition_policy
 
           assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
           assert workflow_common.PRODUCTION_TARGET_MIN_SECONDS == 120.0
@@ -147,7 +150,7 @@ jobs:
           policy = production_rendition_policy()
           assert policy['max_source_pixels'] == 1920 * 1080
           assert policy['uhd_downloads_allowed'] is False
-          source = Path('youtube-shorts-bot/render.py').read_text(encoding='utf-8')
+          source = Path('youtube-shorts-bot/rendering/render.py').read_text(encoding='utf-8')
           for token in (
               'OnnxKokoroSynthesizer',
               'PytorchKokoroSynthesizer',

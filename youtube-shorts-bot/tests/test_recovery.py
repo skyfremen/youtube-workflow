@@ -8,12 +8,12 @@ from unittest.mock import Mock, patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from publish import prepare
-from recovery_state import GitHubState, RecoveryBlocked, Stored, blob_sha, encoded_json, record_path
+from publishing.publish import prepare
+from publishing.recovery_state import GitHubState, RecoveryBlocked, Stored, blob_sha, encoded_json, record_path
 from test_request_schema import valid_request
-from upload import build_upload_body, execute_upload, find_existing_by_marker
-from verify_publication import RETRY_DELAYS, verify_video
-from workflow_common import marker_tag
+from publishing.upload import build_upload_body, execute_upload, find_existing_by_marker
+from publishing.verify_publication import RETRY_DELAYS, verify_video
+from common.workflow_common import marker_tag
 
 VIDEO_ID = "vUTeNhM0UH8"
 CHANNEL = {
@@ -200,12 +200,12 @@ class RecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        for module in ("upload", "publish"):
+        for module in ("publishing.upload", "publishing.publish"):
             output_patch = patch(module + ".OUTPUT_DIR", Path(self.temp.name))
             output_patch.start()
             self.addCleanup(output_patch.stop)
         workflow_patch = patch(
-            "upload.workflow_identity",
+            "publishing.upload.workflow_identity",
             return_value={
                 "name": "Daily Production",
                 "run_id": "2",
@@ -230,8 +230,8 @@ class RecoveryTests(unittest.TestCase):
             youtube=Mock(),
         )
 
-    @patch("upload.find_existing_by_marker", return_value=None)
-    @patch("upload.upload_new", return_value={"id": VIDEO_ID})
+    @patch("publishing.upload.find_existing_by_marker", return_value=None)
+    @patch("publishing.upload.upload_new", return_value={"id": VIDEO_ID})
     def test_normal_rerun_reuses_id_and_calls_insert_once(self, insert, _lookup):
         first, recovered = self.execute()
         second, recovered_again = self.execute()
@@ -246,8 +246,8 @@ class RecoveryTests(unittest.TestCase):
         insert.assert_called_once()
         self.assertEqual(len(self.state.writes), 2)
 
-    @patch("upload.find_existing_by_marker", return_value=None)
-    @patch("upload.upload_new", side_effect=TimeoutError("response lost"))
+    @patch("publishing.upload.find_existing_by_marker", return_value=None)
+    @patch("publishing.upload.upload_new", side_effect=TimeoutError("response lost"))
     def test_lost_response_and_invisible_metadata_fence_all_future_uploads(
         self, insert, _lookup
     ):
@@ -258,27 +258,27 @@ class RecoveryTests(unittest.TestCase):
         insert.assert_called_once()
         self.assertIn(record_path(self.identity["content_id"], "intent"), self.state.records)
 
-    @patch("upload.upload_new", side_effect=TimeoutError("response lost"))
+    @patch("publishing.upload.upload_new", side_effect=TimeoutError("response lost"))
     def test_lost_response_recovers_later_without_another_insert(self, insert):
-        with patch("upload.find_existing_by_marker", return_value=None):
+        with patch("publishing.upload.find_existing_by_marker", return_value=None):
             with self.assertRaises(RecoveryBlocked):
                 self.execute()
-        with patch("upload.find_existing_by_marker", return_value=self.item):
+        with patch("publishing.upload.find_existing_by_marker", return_value=self.item):
             stored, recovered = self.execute()
         self.assertTrue(recovered)
         self.assertEqual(stored.data["youtube_video_id"], VIDEO_ID)
         insert.assert_called_once()
 
-    @patch("upload.find_existing_by_marker", return_value=None)
-    @patch("upload.upload_new")
+    @patch("publishing.upload.find_existing_by_marker", return_value=None)
+    @patch("publishing.upload.upload_new")
     def test_intent_write_failure_prevents_upload(self, insert, _lookup):
         self.state.create = Mock(side_effect=RecoveryBlocked("GitHub unavailable"))
         with self.assertRaises(RecoveryBlocked):
             self.execute()
         insert.assert_not_called()
 
-    @patch("upload.find_existing_by_marker", return_value=None)
-    @patch("upload.upload_new", return_value={"id": VIDEO_ID})
+    @patch("publishing.upload.find_existing_by_marker", return_value=None)
+    @patch("publishing.upload.upload_new", return_value={"id": VIDEO_ID})
     def test_upload_record_commit_failure_is_recovered_from_intent(self, insert, lookup):
         real_create = self.state.create
 
@@ -297,7 +297,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(stored.data["youtube_video_id"], VIDEO_ID)
         insert.assert_called_once()
 
-    @patch("upload.upload_new")
+    @patch("publishing.upload.upload_new")
     def test_recovery_only_without_record_cannot_upload(self, insert):
         with self.assertRaisesRegex(RecoveryBlocked, "Recovery-only"):
             prepare(self.request, self.identity, self.state, Mock(), CHANNEL, True)
@@ -339,7 +339,7 @@ class RecoveryTests(unittest.TestCase):
 
     def test_github_state_cannot_write_requests_or_code(self):
         for path in (
-            "youtube-shorts-bot/render.py",
+            "youtube-shorts-bot/rendering/render.py",
             self.identity["request_path"],
             ".github/workflows/example.yml",
         ):

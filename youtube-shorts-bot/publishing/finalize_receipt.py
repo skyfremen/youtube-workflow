@@ -2,7 +2,7 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 
-from recovery_state import (
+from publishing.recovery_state import (
     GitHubState,
     RecoveryBlocked,
     blob_sha,
@@ -12,7 +12,7 @@ from recovery_state import (
     receipt_path,
     workflow_identity,
 )
-from workflow_common import OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, load_json
+from common.workflow_common import OUTPUT_DIR, atomic_write_json, ensure_request_path_matches, load_json
 
 ALLOWED_VERIFICATION_STATES = {"verified_scheduled", "verified_scheduled_published"}
 

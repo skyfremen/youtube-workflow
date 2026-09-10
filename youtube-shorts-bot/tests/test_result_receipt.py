@@ -9,8 +9,8 @@ from unittest.mock import patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from finalize_receipt import build_receipt
-from recovery_state import RecoveryBlocked, blob_sha
+from publishing.finalize_receipt import build_receipt
+from publishing.recovery_state import RecoveryBlocked, blob_sha
 from test_recovery import MemoryState, fixture
 
 
@@ -69,7 +69,7 @@ class ResultReceiptTests(unittest.TestCase):
             },
         }
         workflow_patch = patch(
-            "finalize_receipt.workflow_identity",
+            "publishing.finalize_receipt.workflow_identity",
             return_value={
                 "name": "Daily Production",
                 "run_id": "20",
@@ -162,9 +162,9 @@ class ResultReceiptTests(unittest.TestCase):
             self.build()
 
     def test_failed_receipt_commit_then_rerun_preserves_one_immutable_receipt(self):
-        import finalize_receipt
-        from recovery_state import encoded_json, receipt_path, record_path
-        from workflow_common import atomic_write_json
+        from publishing import finalize_receipt
+        from publishing.recovery_state import encoded_json, receipt_path, record_path
+        from common.workflow_common import atomic_write_json
 
         identity = {
             key: self.upload[key]
@@ -195,9 +195,9 @@ class ResultReceiptTests(unittest.TestCase):
             RecoveryBlocked("receipt commit failed")
         )
         with (
-            patch("finalize_receipt.GitHubState", return_value=state),
-            patch("finalize_receipt.identity_for", return_value=identity),
-            patch("finalize_receipt.OUTPUT_DIR", output),
+            patch("publishing.finalize_receipt.GitHubState", return_value=state),
+            patch("publishing.finalize_receipt.identity_for", return_value=identity),
+            patch("publishing.finalize_receipt.OUTPUT_DIR", output),
             patch("sys.argv", ["finalize_receipt", "--request", str(self.path)]),
         ):
             with self.assertRaises(RecoveryBlocked):

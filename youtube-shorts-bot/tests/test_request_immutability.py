@@ -7,7 +7,7 @@ from unittest.mock import patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import request_guard
+from validation import request_guard
 
 
 class RequestImmutabilityTests(unittest.TestCase):

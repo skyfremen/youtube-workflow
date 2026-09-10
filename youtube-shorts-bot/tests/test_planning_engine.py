@@ -5,8 +5,8 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from planning_config import DAILY_PUBLISH_COUNT, RAW_CANDIDATE_COUNT
-from planning_engine import (
+from planning.planning_config import DAILY_PUBLISH_COUNT, RAW_CANDIDATE_COUNT
+from planning.planning_engine import (
     PlanningError,
     analytics_weight,
     blend_scores,
@@ -21,7 +21,7 @@ from planning_engine import (
     similarity,
     title_score,
 )
-from planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
+from planning.planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
 
 
 class PlanningEngineTests(unittest.TestCase):

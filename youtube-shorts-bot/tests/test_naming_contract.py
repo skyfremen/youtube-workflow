@@ -5,7 +5,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
 WORKFLOWS = REPO_ROOT / ".github" / "workflows"
-PLANNER = BOT_ROOT / "planner"
+PLANNER = BOT_ROOT / "planning"
 ARCH_TERM = "gro" + "wth"
 
 
@@ -36,7 +36,7 @@ class ArchitectureContractTests(unittest.TestCase):
 
         code_hits = []
         for path in [
-            *BOT_ROOT.glob("*.py"),
+            *BOT_ROOT.rglob("*.py"),
             *(BOT_ROOT / "tests").glob("*.py"),
             *WORKFLOWS.glob("*.yml"),
         ]:
@@ -47,7 +47,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertFalse(code_hits, "architecture term remains in code: " + "; ".join(code_hits))
 
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        overview = (BOT_ROOT / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
         for text in (prompt, overview):
             self.assertIn("subscriber and qualified-view " + ARCH_TERM, text)
             self.assertIn("1,000 subscribers", text)
@@ -55,12 +55,12 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("business-purpose language only", overview)
 
     def test_request_and_publication_contract_is_schema_v3_only(self):
-        validator = (BOT_ROOT / "validate_content.py").read_text(encoding="utf-8")
-        upload = (BOT_ROOT / "upload.py").read_text(encoding="utf-8")
-        publish = (BOT_ROOT / "publish.py").read_text(encoding="utf-8")
-        verify = (BOT_ROOT / "verify_publication.py").read_text(encoding="utf-8")
-        finalize = (BOT_ROOT / "finalize_receipt.py").read_text(encoding="utf-8")
-        overview = (BOT_ROOT / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
+        upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
+        publish = (BOT_ROOT / "publishing/publish.py").read_text(encoding="utf-8")
+        verify = (BOT_ROOT / "publishing/verify_publication.py").read_text(encoding="utf-8")
+        finalize = (BOT_ROOT / "publishing/finalize_receipt.py").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
 
         self.assertIn("SCHEMA_VERSION = 3", validator)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
@@ -87,8 +87,8 @@ class ArchitectureContractTests(unittest.TestCase):
         ]
         files = [
             REPO_ROOT / "README.md",
-            *BOT_ROOT.glob("*.py"),
-            *BOT_ROOT.glob("*.md"),
+            *BOT_ROOT.rglob("*.py"),
+            *BOT_ROOT.rglob("*.md"),
             *PLANNER.glob("*.md"),
             *(BOT_ROOT / "tests").glob("*.py"),
             *WORKFLOWS.glob("*.yml"),
@@ -104,7 +104,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertFalse(hits, "compatibility/reset terminology remains: " + "; ".join(hits))
 
     def test_render_verification_has_no_old_metadata_fallback(self):
-        source = (BOT_ROOT / "verify_render.py").read_text(encoding="utf-8")
+        source = (BOT_ROOT / "rendering/verify_render.py").read_text(encoding="utf-8")
         self.assertIn("inline_blackdetect_max", source)
         self.assertIn("canonical inline blackdetect evidence is missing or failed", source)
         self.assertNotIn("legacy_blackdetect", source)
@@ -114,7 +114,7 @@ class ArchitectureContractTests(unittest.TestCase):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         for token in (
-            "planning_engine.py",
+            "planning/planning_engine.py",
             "analytics_evidence_count",
             "daily-production.yml",
             "[daily production]",
@@ -134,29 +134,29 @@ class ArchitectureContractTests(unittest.TestCase):
     def test_execution_chain_uses_current_components(self):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         for token in (
-            "validate_content.py",
-            "auth_preflight.py",
-            "media_resolver.py",
-            "render_aligned.py",
-            "verify_render.py",
-            "publish.py --stage upload",
-            "verify_publication.py",
-            "finalize_receipt.py",
+            "validation/validate_content.py",
+            "publishing/auth_preflight.py",
+            "media/media_resolver.py",
+            "rendering/render_aligned.py",
+            "rendering/verify_render.py",
+            "publishing/publish.py --stage upload",
+            "publishing/verify_publication.py",
+            "publishing/finalize_receipt.py",
         ):
             self.assertIn(token, batch)
 
         analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
         backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
         image = (WORKFLOWS / "build-image.yml").read_text(encoding="utf-8")
-        self.assertIn("analytics_collection.py", analytics)
-        self.assertIn("pexels_registry.py", backgrounds)
-        self.assertIn("validate_media_library.py", backgrounds)
+        self.assertIn("analytics/analytics_collection.py", analytics)
+        self.assertIn("media/pexels_registry.py", backgrounds)
+        self.assertIn("media/validate_media_library.py", backgrounds)
         self.assertIn("youtube-shorts-bot/Dockerfile", image)
 
     def test_analytics_contract_is_current_and_consistent(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        collector = (BOT_ROOT / "analytics_collection.py").read_text(encoding="utf-8")
-        learning = (BOT_ROOT / "analytics_learning.py").read_text(encoding="utf-8")
+        collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(encoding="utf-8")
+        learning = (BOT_ROOT / "analytics/analytics_learning.py").read_text(encoding="utf-8")
         model = (BOT_ROOT / "analytics" / "model.json").read_text(encoding="utf-8")
         for text in (prompt, collector, learning):
             self.assertIn("analytics_evidence_count", text)

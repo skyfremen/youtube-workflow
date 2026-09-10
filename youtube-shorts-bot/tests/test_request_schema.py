@@ -6,8 +6,8 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
-from validate_content import validate_request_data
+from planning.planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
+from validation.validate_content import validate_request_data
 
 
 def _title_candidate(title, style, score):

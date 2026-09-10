@@ -5,7 +5,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from workflow_common import CONTENT_ID_RE, YOUTUBE_TAG_MAX_CHARS, marker_tag, request_path_for_id
+from common.workflow_common import CONTENT_ID_RE, YOUTUBE_TAG_MAX_CHARS, marker_tag, request_path_for_id
 
 
 class RequestResolverTests(unittest.TestCase):

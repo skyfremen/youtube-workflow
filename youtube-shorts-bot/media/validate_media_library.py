@@ -3,9 +3,9 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
-from background_policy import rendition_is_production_suitable
+from media.background_policy import rendition_is_production_suitable
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = BASE / "media-library" / "backgrounds.json"
 ID_RE = re.compile(r"^satisfying-(?:\d{3,}|px-\d{5,})$")
 ALLOWED_STATUS = {"active", "inactive"}

@@ -2,8 +2,8 @@ import json
 import sys
 import time
 
-import render
-from caption_alignment import (
+from rendering import render
+from rendering.caption_alignment import (
     ALIGNMENT_BACKEND,
     AlignmentError,
     align_story_words,

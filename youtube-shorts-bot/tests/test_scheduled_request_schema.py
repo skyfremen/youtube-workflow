@@ -7,8 +7,8 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
 from test_request_schema import valid_request
-from upload import build_upload_body
-from validate_content import validate_request_data
+from publishing.upload import build_upload_body
+from validation.validate_content import validate_request_data
 
 
 class ScheduledRequestSchemaTests(unittest.TestCase):
@@ -71,7 +71,7 @@ class ScheduledRequestSchemaTests(unittest.TestCase):
 
     def test_upload_body_is_private_with_exact_publish_at(self):
         data = valid_request()
-        with patch("upload.datetime") as mocked_datetime:
+        with patch("publishing.upload.datetime") as mocked_datetime:
             from datetime import datetime, timezone
 
             mocked_datetime.fromisoformat.side_effect = datetime.fromisoformat

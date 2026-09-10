@@ -8,8 +8,8 @@ media/TTS/render work begins.
 import os
 import socket
 
-from recovery_state import RecoveryBlocked
-from upload import authenticated_channel, make_client
+from publishing.recovery_state import RecoveryBlocked
+from publishing.upload import authenticated_channel, make_client
 
 REQUIRED = ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")
 

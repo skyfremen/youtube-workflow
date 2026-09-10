@@ -81,7 +81,7 @@ Only final winners may trigger expensive media resolution, TTS, rendering or You
 
 ## Background selection
 
-The request creator owns the logical content/diversity decision; `media_resolver.py` does not. The background is a retention layer, not necessarily a literal reenactment. Describe visual requirements using relevant tags, motion type/intensity and orientation, then use `background_selector.py` against the registry and successful receipts.
+The request creator owns the logical content/diversity decision; `media/media_resolver.py` does not. The background is a retention layer, not necessarily a literal reenactment. Describe visual requirements using relevant tags, motion type/intensity and orientation, then use `media/background_selector.py` against the registry and successful receipts.
 
 The centralized policy balances semantic fit with visual satisfaction, loopability and caption readability:
 

@@ -17,7 +17,7 @@ Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **no
 ## Canonical production contract
 Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; Kokoro af_heart 1.75x; 720×1280/30fps H.264 + AAC; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
 
-Read before planning: `planner/STORY_RULES.md`, `planning_config.py`, `planning_engine.py`, `background_policy.py`, `background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
+Read before planning: `planner/STORY_RULES.md`, `planning/planning_config.py`, `planning/planning_engine.py`, `media/background_policy.py`, `media/background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
 
 ## Funnel
 Use progressive detail, not 120 full scripts:
@@ -25,7 +25,7 @@ Use progressive detail, not 120 full scripts:
 Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial swap concepts.
 
 ## Editorial and title competition
-Use central `EDITORIAL_WEIGHTS` and `planning_engine.py`. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
+Use central `EDITORIAL_WEIGHTS` and `planning/planning_engine.py`. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
 
 ## YouTube metadata — planner-owned hard contract
 For every winning story, ChatGPT must author the complete YouTube metadata **before** the immutable request is committed. Do not rely on the uploader to invent semantic metadata later.
@@ -43,13 +43,13 @@ Hard final-payload limits: title <=100 characters including `#Shorts`; final des
 
 Before committing **every** winner, validate the exact local production payload:
 ```python
-from upload import build_upload_body
+from publishing.upload import build_upload_body
 build_upload_body(request_data, require_future=False)
 ```
 This is authoritative for description assembly, tag de-duplication and final tag cost. If it fails, fix or reject the winner before commit. The backend repeats these checks before expensive generation and at upload time.
 
 ## Analytics learning
-Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. `analytics_evidence_count` is the evidence-equivalent confidence input; it is not a raw count of newly published Shorts. When analytics is disabled or the evidence count is zero, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical `analytics_learning.py` arithmetic and feed only normalized 0–100 analytics metrics into planning scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
+Use only valid/current `analytics/latest.json`. Never invent Studio-only metrics. Use the embedded analytics model and age-matched 24h/72h/7d cohorts. `analytics_evidence_count` is the evidence-equivalent confidence input; it is not a raw count of newly published Shorts. When analytics is disabled or the evidence count is zero, use editorial/diversity fallback. When enabled, score historical attribute fit using canonical `analytics/analytics_learning.py` arithmetic and feed only normalized 0–100 analytics metrics into planning scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
 
 When invoking the deterministic planning engine or equivalent arithmetic, use `analytics_evidence_count` as the confidence-count input. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for it.
 
@@ -57,7 +57,7 @@ When invoking the deterministic planning engine or equivalent arithmetic, use `a
 Apply diversity after ranking. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day target roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
 
 ## AI-owned cache-first backgrounds
-For every winner read `media-library/backgrounds.json`, successful receipts and `background_selector.py` recency/quality helpers. Semantically select two genuinely suitable, verified, fresh cached assets whenever possible; primary and backup must differ. Use `audit_ai_selection()` for mechanical quality/freshness/rendition safety. If fewer than two suitable cached assets exist, source only the missing Pexels assets, visually verify them, and create exactly one immutable `content/background-sourcing/YYYY-MM-DD.json` manifest for the day. Never invent provider IDs/URLs. Production ingestion uses PEXELS_API_KEY and fails closed before TTS/render/upload if ingestion fails. Respect `background_policy.py`: prefer 720×1280, then 30fps/lowest decode cost; max 1920×1080 or 1080×1920 equivalent; reject UHD/4K production selection.
+For every winner read `media-library/backgrounds.json`, successful receipts and `media/background_selector.py` recency/quality helpers. Semantically select two genuinely suitable, verified, fresh cached assets whenever possible; primary and backup must differ. Use `audit_ai_selection()` for mechanical quality/freshness/rendition safety. If fewer than two suitable cached assets exist, source only the missing Pexels assets, visually verify them, and create exactly one immutable `content/background-sourcing/YYYY-MM-DD.json` manifest for the day. Never invent provider IDs/URLs. Production ingestion uses PEXELS_API_KEY and fails closed before TTS/render/upload if ingestion fails. Respect `media/background_policy.py`: prefer 720×1280, then 30fps/lowest decode cost; max 1920×1080 or 1080×1920 equivalent; reject UHD/4K production selection.
 
 If a sourcing manifest is required, its `plan_date` must exactly equal the daily planning audit `plan_date`. Every item in `candidates` must contain the exact `logical_id` being introduced and a non-empty `required_by_content_ids` list. Every listed content ID must be one of that day's new requests and must actually reference that `logical_id` as its primary or backup background.
 
