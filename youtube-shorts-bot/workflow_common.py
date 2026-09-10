@@ -2,7 +2,6 @@ import hashlib
 import json
 import os
 import re
-import subprocess
 from pathlib import Path
 
 BASE = Path(__file__).parent
@@ -28,9 +27,12 @@ def load_json(path):
 def atomic_write_json(path, payload):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    tmp.replace(path)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
 
 
 def request_content_id(data):
@@ -73,19 +75,6 @@ def ensure_request_path_matches(path, data):
     return content_id
 
 
-def git_blob_sha(path, ref="HEAD"):
-    path = Path(path)
-    try:
-        relative = path.resolve().relative_to(Path.cwd().resolve()).as_posix()
-    except ValueError:
-        relative = path.as_posix()
-    result = subprocess.run(["git", "rev-parse", f"{ref}:{relative}"], capture_output=True, text=True)
-    if result.returncode == 0:
-        return result.stdout.strip()
-    raw = path.read_bytes()
-    return hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()
-
-
 def env_bool(name, default=False):
     raw = os.getenv(name)
     if raw is None:
@@ -99,19 +88,3 @@ def expected_video_config():
         "height": int(os.getenv("VIDEO_HEIGHT", "1280")),
         "fps": int(os.getenv("VIDEO_FPS", "30")),
     }
-
-
-def load_recent_results(limit=50):
-    records = []
-    if not RESULTS_DIR.exists():
-        return records
-    for path in sorted(RESULTS_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
-        try:
-            data = load_json(path)
-        except (OSError, json.JSONDecodeError):
-            continue
-        if isinstance(data, dict):
-            records.append(data)
-        if len(records) >= limit:
-            break
-    return records
