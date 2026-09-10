@@ -18,42 +18,32 @@ RESULTS = BASE / "content" / "results"
 ANALYTICS = BASE / "analytics"
 ANALYTICS.mkdir(exist_ok=True)
 MILESTONES_PATH = ANALYTICS / "milestones.json"
-EPOCH_PATH = ANALYTICS / "epoch.json"
 MODEL_PATH = ANALYTICS / "model.json"
+LATEST_PATH = ANALYTICS / "latest.json"
 
 
 def _instant(raw):
     if not raw:
         return None
     try:
-        return datetime.fromisoformat(str(raw).replace("Z", "+00:00")).astimezone(timezone.utc)
+        return datetime.fromisoformat(str(raw).replace("Z", "+00:00")).astimezone(
+            timezone.utc
+        )
     except ValueError:
         return None
 
 
-def load_epoch():
-    try:
-        payload = json.loads(EPOCH_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise SystemExit(f"Analytics epoch is missing or invalid: {exc}") from None
-    start = _instant(payload.get("start_at"))
-    if payload.get("schema_version") != 1 or start is None:
-        raise SystemExit("Analytics epoch must be schema_version=1 with valid start_at")
-    return payload, start
-
-
-def receipt_in_epoch(receipt, epoch_start):
-    publish_at = _instant(receipt.get("publish_at"))
+def receipt_eligible(receipt):
     return bool(
-        receipt.get("publication_mode") == "scheduled"
-        and receipt.get("planning")
-        and publish_at is not None
-        and publish_at >= epoch_start
+        receipt.get("schema_version") == 3
+        and receipt.get("publication_mode") == "scheduled"
+        and isinstance(receipt.get("planning"), dict)
+        and _instant(receipt.get("publish_at")) is not None
     )
 
 
-def load_receipts(epoch_start):
-    """Load only fresh-start scheduled planning receipts; old evidence remains untouched."""
+def load_receipts():
+    """Load canonical scheduled schema-v3 success receipts."""
     records = {}
     if not RESULTS.exists():
         return records
@@ -62,11 +52,11 @@ def load_receipts(epoch_start):
             receipt = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
-        if not receipt_in_epoch(receipt, epoch_start):
+        if not receipt_eligible(receipt):
             continue
-        vid = str(receipt.get("youtube_video_id", "")).strip()
-        if vid:
-            records[vid] = receipt
+        video_id = str(receipt.get("youtube_video_id", "")).strip()
+        if video_id:
+            records[video_id] = receipt
     return records
 
 
@@ -76,15 +66,16 @@ def load_request(receipt):
         return {}
     path = REPO_ROOT / raw
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        request = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
+    return request if request.get("schema_version") == 3 else {}
 
 
 def content_dimensions(receipt):
     request = load_request(receipt)
     planning = receipt.get("planning") if isinstance(receipt.get("planning"), dict) else {}
-    attrs = planning.get("attributes") if isinstance(planning.get("attributes"), dict) else {}
+    attributes = planning.get("attributes") if isinstance(planning.get("attributes"), dict) else {}
     story = request.get("story") if isinstance(request.get("story"), dict) else {}
     duration = receipt.get("video_seconds") or planning.get("target_duration_seconds")
     try:
@@ -105,23 +96,23 @@ def content_dimensions(receipt):
         bucket = "165-178"
     return {
         "category": story.get("category"),
-        "conflict": attrs.get("conflict"),
-        "primary_emotion": attrs.get("primary_emotion"),
-        "protagonist_role": attrs.get("protagonist_role"),
-        "antagonist_role": attrs.get("antagonist_role"),
-        "opening_style": attrs.get("opening_style"),
-        "title_style": attrs.get("title_style"),
-        "ending_style": attrs.get("ending_style"),
+        "conflict": attributes.get("conflict"),
+        "primary_emotion": attributes.get("primary_emotion"),
+        "protagonist_role": attributes.get("protagonist_role"),
+        "antagonist_role": attributes.get("antagonist_role"),
+        "opening_style": attributes.get("opening_style"),
+        "title_style": attributes.get("title_style"),
+        "ending_style": attributes.get("ending_style"),
         "duration_bucket": bucket,
     }
 
 
 def public_age_hours(receipt, now_utc=None):
-    now_utc = now_utc or datetime.now(timezone.utc)
+    current = now_utc or datetime.now(timezone.utc)
     start = _instant(receipt.get("publish_at"))
     if start is None:
         return None
-    return (now_utc - start).total_seconds() / 3600.0
+    return (current - start).total_seconds() / 3600.0
 
 
 def rate_per_1000(value, views):
@@ -130,22 +121,30 @@ def rate_per_1000(value, views):
     return round((float(value or 0) / views * 1000) if views else 0, 3)
 
 
-def enrich_row(row, receipt, epoch_start, now_utc=None):
+def enrich_row(row, receipt, now_utc=None):
     views = float(row.get("views") or 0)
     engaged = row.get("engagedViews")
     duration = float(receipt.get("video_seconds") or 0)
-    avg_duration = row.get("averageViewDuration")
+    average_duration = row.get("averageViewDuration")
     gained = row.get("subscribersGained")
     lost = row.get("subscribersLost")
-    net_subscribers = None if gained is None and lost is None else float(gained or 0) - float(lost or 0)
+    net_subscribers = (
+        None
+        if gained is None and lost is None
+        else float(gained or 0) - float(lost or 0)
+    )
+
     row["qualified_shorts_views"] = None if engaged is None else int(engaged or 0)
-    row["engaged_view_rate"] = None if engaged is None else round(
-        (float(engaged or 0) / views * 100) if views else 0, 3
+    row["engaged_view_rate"] = (
+        None
+        if engaged is None
+        else round((float(engaged or 0) / views * 100) if views else 0, 3)
     )
     row["average_percentage_viewed"] = row.get("averageViewPercentage")
     row["average_view_duration_relative"] = (
-        None if avg_duration is None or not duration
-        else round(float(avg_duration) / duration * 100, 3)
+        None
+        if average_duration is None or not duration
+        else round(float(average_duration) / duration * 100, 3)
     )
     row["subscribers_per_1000_views"] = rate_per_1000(gained, views)
     row["net_subscribers_per_1000_views"] = rate_per_1000(net_subscribers, views)
@@ -153,19 +152,12 @@ def enrich_row(row, receipt, epoch_start, now_utc=None):
     row["comments_per_1000_views"] = rate_per_1000(row.get("comments"), views)
     row["shares_per_1000_views"] = rate_per_1000(row.get("shares"), views)
     row["video_duration_seconds"] = receipt.get("video_seconds")
-    row["publication_mode"] = receipt.get("publication_mode", "private")
     row["publish_at"] = receipt.get("publish_at")
     row["public_age_hours"] = public_age_hours(receipt, now_utc=now_utc)
-    row["planning"] = receipt.get("planning")
+    row["planning"] = receipt["planning"]
     row["content_dimensions"] = content_dimensions(receipt)
-    publish_at = _instant(receipt.get("publish_at"))
-    row["epoch_eligible"] = bool(publish_at and publish_at >= epoch_start)
     row["cohort_eligible"] = bool(
-        row["epoch_eligible"]
-        and receipt.get("publication_mode") == "scheduled"
-        and row["public_age_hours"] is not None
-        and row["public_age_hours"] >= 0
-        and receipt.get("planning")
+        row["public_age_hours"] is not None and row["public_age_hours"] >= 0
     )
     row["learning_eligible"] = bool(
         row["cohort_eligible"]
@@ -183,14 +175,14 @@ def load_milestones():
 
 
 def capture_milestones(rows, captured_at):
-    """Capture only near the target age so 24h/72h/7d remain comparable."""
+    """Capture only near target ages so 24h/72h/7d remain comparable."""
     payload = load_milestones()
     payload.setdefault("videos", {})
     for row in rows:
         if not row.get("cohort_eligible"):
             continue
-        vid = row["video"]
-        snapshots = payload["videos"].setdefault(vid, {})
+        video_id = row["video"]
+        snapshots = payload["videos"].setdefault(video_id, {})
         age = row.get("public_age_hours")
         if age is None:
             continue
@@ -203,13 +195,21 @@ def capture_milestones(rows, captured_at):
                 "captured_at": captured_at,
                 "target_age_hours": hours,
                 "age_hours": round(age, 2),
-                "metrics": {k: row.get(k) for k in (
-                    "views", "qualified_shorts_views", "engaged_view_rate",
-                    "averageViewDuration", "average_percentage_viewed",
-                    "net_subscribers_per_1000_views", "subscribers_per_1000_views",
-                    "shares_per_1000_views", "likes_per_1000_views",
-                    "comments_per_1000_views",
-                )},
+                "metrics": {
+                    key: row.get(key)
+                    for key in (
+                        "views",
+                        "qualified_shorts_views",
+                        "engaged_view_rate",
+                        "averageViewDuration",
+                        "average_percentage_viewed",
+                        "net_subscribers_per_1000_views",
+                        "subscribers_per_1000_views",
+                        "shares_per_1000_views",
+                        "likes_per_1000_views",
+                        "comments_per_1000_views",
+                    )
+                },
             }
     MILESTONES_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -218,8 +218,10 @@ def capture_milestones(rows, captured_at):
 
 
 def evidence_count(rows, milestones):
-    """Return conservative evidence-equivalent count for planning_engine.analytics_weight()."""
-    rows_by_video = {str(row.get("video")): row for row in rows if row.get("cohort_eligible")}
+    """Return the evidence-equivalent count used by planning analytics weight."""
+    rows_by_video = {
+        str(row.get("video")): row for row in rows if row.get("cohort_eligible")
+    }
     points = []
     total_evidence_views = 0.0
     for video_id, snapshots in milestones.get("videos", {}).items():
@@ -242,33 +244,35 @@ def evidence_count(rows, milestones):
     return min(mature_count, view_units), mature_count, int(total_evidence_views)
 
 
+def write_snapshot(payload, dated=False):
+    text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    LATEST_PATH.write_text(text, encoding="utf-8")
+    MODEL_PATH.write_text(
+        json.dumps(payload["analytics_model"], ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    if dated:
+        (ANALYTICS / f"{date.today().isoformat()}.json").write_text(text, encoding="utf-8")
+
+
 def main():
-    epoch, epoch_start = load_epoch()
-    receipts = load_receipts(epoch_start)
+    receipts = load_receipts()
     video_ids = list(receipts)
+    captured_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     if not video_ids:
         payload = {
-            "captured_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            "analytics_epoch": epoch,
+            "captured_at": captured_at,
             "result_receipt_video_count": 0,
             "video_count": 0,
             "published_video_count": 0,
             "mature_video_count": 0,
             "analytics_evidence_count": 0,
-            "analytics_model": {
-                "schema_version": 2, "epoch": epoch, "active_cohort": None,
-                "analytics_evidence_count": 0, "analytics_enabled": False,
-                "cohorts": {},
-            },
+            "analytics_evidence_views": 0,
             "videos": [],
         }
-        text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
-        (ANALYTICS / "latest.json").write_text(text, encoding="utf-8")
-        MODEL_PATH.write_text(
-            json.dumps(payload["analytics_model"], ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
-        print("No post-epoch Wacky Dramas planning receipts yet; fresh-start analytics remains at 0%.")
+        payload["analytics_model"] = build_model(payload, {"videos": {}})
+        write_snapshot(payload)
+        print("No Wacky Dramas production receipts yet; analytics remains at 0%.")
         return
 
     from google.auth.exceptions import RefreshError
@@ -276,82 +280,98 @@ def main():
     from googleapiclient.discovery import build
     from googleapiclient.errors import HttpError
 
-    creds = Credentials(
-        token=None, refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
-        token_uri="https://oauth2.googleapis.com/token", client_id=os.environ["YOUTUBE_CLIENT_ID"],
+    credentials = Credentials(
+        token=None,
+        refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.environ["YOUTUBE_CLIENT_ID"],
         client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
-        scopes=["https://www.googleapis.com/auth/yt-analytics.readonly",
-                "https://www.googleapis.com/auth/youtube.readonly"],
+        scopes=[
+            "https://www.googleapis.com/auth/yt-analytics.readonly",
+            "https://www.googleapis.com/auth/youtube.readonly",
+        ],
     )
-    start = max(date.today() - timedelta(days=90), epoch_start.date()).isoformat()
-    end = date.today().isoformat()
+    oldest_publish_date = min(_instant(receipt["publish_at"]).date() for receipt in receipts.values())
+    start_date = max(date.today() - timedelta(days=90), oldest_publish_date).isoformat()
+    end_date = date.today().isoformat()
     metrics = (
         "views,engagedViews,likes,comments,shares,estimatedMinutesWatched,"
         "averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost"
     )
     rows_by_video = {}
     try:
-        service = build("youtubeAnalytics", "v2", credentials=creds, cache_discovery=False)
+        service = build(
+            "youtubeAnalytics", "v2", credentials=credentials, cache_discovery=False
+        )
         for offset in range(0, len(video_ids), 200):
-            batch = video_ids[offset:offset + 200]
+            batch = video_ids[offset : offset + 200]
             result = service.reports().query(
-                ids="channel==MINE", startDate=start, endDate=end, metrics=metrics,
-                dimensions="video", filters="video==" + ",".join(batch),
-                sort="-views", maxResults=200,
+                ids="channel==MINE",
+                startDate=start_date,
+                endDate=end_date,
+                metrics=metrics,
+                dimensions="video",
+                filters="video==" + ",".join(batch),
+                sort="-views",
+                maxResults=200,
             ).execute()
-            headers = [x["name"] for x in result.get("columnHeaders", [])]
+            headers = [column["name"] for column in result.get("columnHeaders", [])]
             for values in result.get("rows", []) or []:
                 row = dict(zip(headers, values))
-                vid = str(row.get("video", "")).strip()
-                if vid:
+                video_id = str(row.get("video", "")).strip()
+                if video_id:
                     row["data_source"] = "youtube_analytics"
-                    rows_by_video[vid] = row
+                    rows_by_video[video_id] = row
 
-        missing = [x for x in video_ids if x not in rows_by_video]
+        missing = [video_id for video_id in video_ids if video_id not in rows_by_video]
         if missing:
-            youtube = build("youtube", "v3", credentials=creds, cache_discovery=False)
+            youtube = build("youtube", "v3", credentials=credentials, cache_discovery=False)
             for offset in range(0, len(missing), 50):
-                batch = missing[offset:offset + 50]
+                batch = missing[offset : offset + 50]
                 result = youtube.videos().list(
                     part="statistics", id=",".join(batch), maxResults=50
                 ).execute()
                 for item in result.get("items", []) or []:
-                    vid = item["id"]
+                    video_id = item["id"]
                     stats = item.get("statistics", {})
-                    rows_by_video[vid] = {
-                        "video": vid, "views": int(stats.get("viewCount", 0) or 0),
-                        "engagedViews": None, "likes": int(stats.get("likeCount", 0) or 0),
-                        "comments": int(stats.get("commentCount", 0) or 0), "shares": None,
-                        "estimatedMinutesWatched": None, "averageViewDuration": None,
-                        "averageViewPercentage": None, "subscribersGained": None,
-                        "subscribersLost": None, "data_source": "youtube_data_api_fallback",
+                    rows_by_video[video_id] = {
+                        "video": video_id,
+                        "views": int(stats.get("viewCount", 0) or 0),
+                        "engagedViews": None,
+                        "likes": int(stats.get("likeCount", 0) or 0),
+                        "comments": int(stats.get("commentCount", 0) or 0),
+                        "shares": None,
+                        "estimatedMinutesWatched": None,
+                        "averageViewDuration": None,
+                        "averageViewPercentage": None,
+                        "subscribersGained": None,
+                        "subscribersLost": None,
+                        "data_source": "youtube_data_api_fallback",
                     }
     except RefreshError:
         print("ANALYTICS_AUTHORIZATION_REQUIRED")
         return
     except HttpError as exc:
-        if getattr(exc.resp, "status", None) in (400, 401, 403):
-            print(f"ANALYTICS_UNAVAILABLE_HTTP_{getattr(exc.resp, 'status', 'unknown')}")
+        status = getattr(exc.resp, "status", None)
+        if status in (400, 401, 403):
+            print(f"ANALYTICS_UNAVAILABLE_HTTP_{status or 'unknown'}")
             return
         raise
 
     now_utc = datetime.now(timezone.utc)
-    rows = []
-    for vid in video_ids:
-        row = rows_by_video.get(vid)
-        if not row:
-            continue
-        rows.append(enrich_row(row, receipts[vid], epoch_start, now_utc=now_utc))
-
+    rows = [
+        enrich_row(rows_by_video[video_id], receipts[video_id], now_utc=now_utc)
+        for video_id in video_ids
+        if video_id in rows_by_video
+    ]
     captured_at = now_utc.isoformat().replace("+00:00", "Z")
     milestones = capture_milestones(rows, captured_at)
     evidence, mature_count, evidence_views = evidence_count(rows, milestones)
-    eligible_rows = [x for x in rows if x.get("cohort_eligible")]
+    eligible_rows = [row for row in rows if row.get("cohort_eligible")]
 
     payload = {
         "captured_at": captured_at,
-        "analytics_epoch": epoch,
-        "window": {"start_date": start, "end_date": end},
+        "window": {"start_date": start_date, "end_date": end_date},
         "result_receipt_video_count": len(video_ids),
         "video_count": len(rows),
         "published_video_count": len(eligible_rows),
@@ -364,21 +384,23 @@ def main():
                 "then min(mature videos, comparable views/500)"
             ),
             "qualified_shorts_views": "engagedViews when available from YouTube Analytics",
-            "viewed_vs_swiped_away": "not exposed by this targeted API path; never fabricated",
-            "engaged_view_rate": "engagedViews/views continuation proxy; not labeled as viewed-vs-swiped",
-            "net_subscribers_per_1000_views": "(subscribersGained-subscribersLost)/views*1000",
+            "viewed_vs_swiped_away": (
+                "not exposed by this targeted API path; never fabricated"
+            ),
+            "engaged_view_rate": (
+                "engagedViews/views continuation proxy; not labeled as viewed-vs-swiped"
+            ),
+            "net_subscribers_per_1000_views": (
+                "(subscribersGained-subscribersLost)/views*1000"
+            ),
         },
         "videos": rows,
     }
     model = build_model(payload, milestones)
     payload["analytics_model"] = model
-
-    text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
-    (ANALYTICS / "latest.json").write_text(text, encoding="utf-8")
-    (ANALYTICS / f"{end}.json").write_text(text, encoding="utf-8")
-    MODEL_PATH.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_snapshot(payload, dated=True)
     print(
-        f"Collected fresh-start analytics for {len(rows)}/{len(video_ids)} videos; "
+        f"Collected analytics for {len(rows)}/{len(video_ids)} videos; "
         f"published={len(eligible_rows)}; mature24h={mature_count}; "
         f"evidence_count={evidence}; analytics_enabled={model['analytics_enabled']}."
     )
