@@ -22,7 +22,8 @@ Daily planner
   -> <=24 winners
   -> full scripts + verified background IDs
   -> immutable schema-v3 requests
-  -> one batch production job
+  -> one lightweight private dispatch (batch_id + source_sha)
+  -> one public runtime workflow and one production job
   -> render selected stories only
   -> upload each exactly once as private + publishAt
   -> verify exact YouTube state
@@ -65,11 +66,11 @@ The schedule is bound to the same immutable request bytes and source commit as t
 
 ## Batch production and Actions cost
 
-`daily-production.yml` processes selected requests in one heavy container job instead of starting one full production runner each hour. This removes repeated image/container setup while retaining per-content isolation through dedicated output directories and durable GitHub state.
+`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow runs one heavy container job with bounded internal concurrency of two, while all canonical requests, intents, upload evidence, receipts, completion state, and analytics remain private.
 
 The batch continues after individual failures so one bad story does not prevent already-good stories from completing. The job ultimately fails if any item failed, making partial state visible. A rerun does not blindly upload again: each content ID first resolves its immutable receipt, upload intent and upload evidence.
 
-The production upload concurrency group prevents overlapping daily insertion activity.
+The opaque batch concurrency group prevents overlapping execution of the same logical batch.
 
 ## Upload idempotency and recovery
 
@@ -111,7 +112,7 @@ The external daily planner follows `planner/DAILY_PLANNER_PROMPT.md` and creates
 
 `[daily production] YYYY-MM-DD`
 
-That commit is routed to `daily-production.yml`, the only production-upload workflow in the supported tree.
+That commit is routed to `daily-production.yml`, which dispatches the only authoritative upload implementation in the public runtime.
 
 ## Repository state hygiene
 
@@ -121,9 +122,10 @@ Transient Python caches, local environment files, render outputs and preview out
 
 Before a production change is merged:
 
-1. static compilation and all unit/contract tests must pass
+1. private planning/state checks and public runtime static/unit checks must pass
 2. planning acceptance must generate at least 120 raw premises and valid selected requests
 3. selected requests must have unique Singapore hourly slots
 4. dry-run must prove no TTS, render, upload or false-receipt side effects
 5. production must retain durable intent and duplicate-recovery invariants
 6. current secrets must remain referenced only through GitHub Actions secret expressions
+7. the public runtime must write canonical state only to this private repository

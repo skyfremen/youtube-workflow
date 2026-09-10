@@ -54,12 +54,9 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn("10 million qualified public Shorts views", text)
         self.assertIn("business-purpose language only", overview)
 
-    def test_request_and_publication_contract_is_schema_v3_only(self):
+    def test_private_request_and_publication_contract_is_schema_v3_only(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
         upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
-        publish = (BOT_ROOT / "publishing/publish.py").read_text(encoding="utf-8")
-        verify = (BOT_ROOT / "publishing/verify_publication.py").read_text(encoding="utf-8")
-        finalize = (BOT_ROOT / "publishing/finalize_receipt.py").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
 
         self.assertIn("SCHEMA_VERSION = 3", validator)
@@ -68,12 +65,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn('"privacyStatus": "private"', upload)
         self.assertIn('"publishAt": publish_at', upload)
         self.assertIn("Scheduled publication contract is required", upload)
-        self.assertIn("Scheduled publication contract is required", publish)
         self.assertNotIn('"mode": "public"', upload)
-        self.assertNotIn('"verified_private"', verify)
-        self.assertNotIn('"verified_public"', verify)
-        self.assertIn('"schema_version": 3', finalize)
-        self.assertIn("Only schema-v3 requests can produce receipts", finalize)
         self.assertIn("Schema v3 is the only supported production request format", overview)
 
         forbidden = [
@@ -103,12 +95,18 @@ class ArchitectureContractTests(unittest.TestCase):
                     hits.append(f"{path.relative_to(REPO_ROOT)}: {token}")
         self.assertFalse(hits, "compatibility/reset terminology remains: " + "; ".join(hits))
 
-    def test_render_verification_has_no_old_metadata_fallback(self):
-        source = (BOT_ROOT / "rendering/verify_render.py").read_text(encoding="utf-8")
-        self.assertIn("inline_blackdetect_max", source)
-        self.assertIn("canonical inline blackdetect evidence is missing or failed", source)
-        self.assertNotIn("legacy_blackdetect", source)
-        self.assertNotIn("legacy_second_pass", source)
+    def test_heavy_execution_modules_are_public_only(self):
+        paths = [
+            BOT_ROOT / "media/media_resolver.py",
+            BOT_ROOT / "publishing/auth_preflight.py",
+            BOT_ROOT / "publishing/finalize_receipt.py",
+            BOT_ROOT / "publishing/publish.py",
+            BOT_ROOT / "publishing/verify_publication.py",
+        ]
+        paths.extend((BOT_ROOT / "production").glob("*.py"))
+        paths.extend((BOT_ROOT / "rendering").glob("*.py"))
+        for path in paths:
+            self.assertFalse(path.exists(), f"obsolete private runtime copy remains: {path}")
 
     def test_planner_handoff_matches_daily_production(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")

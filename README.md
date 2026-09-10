@@ -1,22 +1,22 @@
 # Wacky Dramas YouTube Workflow
 
-This repository contains the canonical **Wacky Dramas** Shorts production system. The active implementation lives under `youtube-shorts-bot/`; GitHub Actions orchestration lives under `.github/workflows/`.
+This private repository is the canonical **Wacky Dramas** source of truth. It owns planning, immutable requests, recovery and result state, media-registry maintenance, analytics, and the runner-image build. Stateless production execution lives in the separate public `production-runtime` repository.
 
 ## Canonical architecture
 
-Application modules under `youtube-shorts-bot/` are grouped by responsibility into `planning/`, `media/`, `rendering/`, `publishing/`, `validation/`, `common/`, and `analytics/`; durable runtime data remains in its existing top-level locations.
+Private modules under `youtube-shorts-bot/` are limited to planning, analytics, state validation, media-registry maintenance, and the small shared request/upload contract needed to create valid immutable requests. Rendering, TTS, alignment, upload orchestration, publication verification, and receipt finalization execute only from public runtime code.
 
 The production path is request-driven and append-only:
 
 1. The daily planner generates a large premise pool, applies deterministic scoring/diversity policy, selects up to 24 winners, and creates immutable schema-v3 requests with hourly `Asia/Singapore` publication slots.
-2. Requests are validated before expensive work.
-3. Primary/backup logical background IDs are resolved through the verified media registry, with rendition preflight and controlled fallback.
-4. Kokoro generates narration using the approved voice/speed contract; captions are aligned and the video is rendered at 720×1280 / 30 fps / H.264 + AAC.
-5. Upload recovery is checked before generation or insertion. A durable upload intent is an irreversible retry fence.
-6. Scheduled daily requests upload private with the immutable YouTube `publishAt` value.
-7. YouTube state is verified through the authenticated owner API.
-8. A success receipt is written only after verification succeeds and is immutable thereafter.
-9. Scheduled daily receipts feed age-matched analytics and future candidate scoring.
+2. The lightweight private workflow sends one opaque `batch_id` and exact `source_sha` to the public runtime.
+3. The public runtime fetches only the allowed private files at that exact source revision and validates them before expensive work.
+4. Primary/backup logical background IDs are resolved through the verified media registry, with rendition preflight and controlled fallback.
+5. Kokoro generates narration using the approved voice/speed contract; captions are aligned and the video is rendered at 720×1280 / 30 fps / H.264 + AAC.
+6. Upload recovery is checked before generation or insertion. A durable upload intent is an irreversible retry fence.
+7. Scheduled daily requests upload private with the immutable YouTube `publishAt` value.
+8. YouTube state is verified through the authenticated owner API.
+9. The public runtime writes verified state back only to this private repository; one completion marker triggers private analytics.
 
 Canonical durable paths:
 
@@ -35,11 +35,11 @@ The supported workflow set is deliberately small:
 
 | Workflow | Purpose |
 | --- | --- |
-| `daily-production.yml` | Processes a daily selected batch, isolates per-video failures, preserves shared-state safety, and delegates hourly release timing to YouTube scheduling. |
+| `daily-production.yml` | Performs one lightweight opaque dispatch to the public runtime; manual recovery is represented by immutable private recovery state. |
 | `analytics-collection.yml` | Collects age-matched Shorts analytics and updates the learning snapshot/model. |
 | `background-management.yml` | Maintains official Pexels rendition metadata in the verified background registry. |
 | `build-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
-| `dry-run.yml` | Static, unit, contract, planning-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
+| `dry-run.yml` | Private planning, analytics, state-integrity, media-registry, and dispatch-boundary checks. |
 
 The dry-run workflow also asserts the exact supported workflow and planner surface and prevents retired project roots or removed production entry points from reappearing.
 
@@ -56,7 +56,7 @@ See `youtube-shorts-bot/docs/RECOVERY.md` for operator recovery details and `you
 
 ## Development and verification
 
-The canonical lightweight validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises the scheduled request and 120-premise planning acceptance paths, checks renderer constants, enforces workflow safety and naming contracts, and proves the dry run creates no TTS/render/upload side effects.
+The private validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles private Python, runs planning/state/contract tests, validates the media registry, exercises the 120-premise planning acceptance path, and enforces the dispatch boundary. The public repository's `check.yml` owns runtime, rendering, recovery, and production-equivalent acceptance tests.
 
 A production upload is **not** required to validate repository cleanup or ordinary code changes. Do not use public YouTube publishing as a cleanup test.
 

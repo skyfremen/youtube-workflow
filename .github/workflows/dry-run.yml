@@ -32,23 +32,12 @@ jobs:
       VIDEO_WIDTH: '720'
       VIDEO_HEIGHT: '1280'
       VIDEO_FPS: '30'
-      STORY_TEST_MODE: 'true'
-      STORY_RENDER_MAX_SECONDS: '5'
-      DRY_RUN_ARTIFACT_DIR: /tmp/wacky-dramas-dry-run-visual
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
-      - name: Install lightweight dry-run dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends ffmpeg
-          python -m pip install --disable-pip-version-check --no-input \
-            'numpy>=2.0.2,<2.3' \
-            'Pillow>=10,<12'
-
-      - name: Compile production Python
+      - name: Compile private Python
         run: find youtube-shorts-bot -type f -name '*.py' -print0 | xargs -0 python -m py_compile
 
       - name: Verify canonical repository surface
@@ -75,6 +64,8 @@ jobs:
               Path('youtube-story-bot'),
               Path('youtube-longform-bot'),
               Path('youtube-shorts-bot-backup'),
+              Path('youtube-shorts-bot/production'),
+              Path('youtube-shorts-bot/rendering'),
           ]
           present = [str(path) for path in retired_roots if path.exists()]
           assert not present, 'retired project roots present: ' + ', '.join(present)
@@ -100,14 +91,8 @@ jobs:
           print('Immutable request/result/recovery/planning/background-sourcing history unchanged.')
           PY
 
-      - name: Run unit and contract tests
+      - name: Run private planning, state, and contract tests
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
-
-      - name: Run production-equivalence dry run
-        run: |
-          # Canonical harness: python youtube-shorts-bot/production/dry_run.py
-          # The adapter runs the same harness functions once and preserves validated visual outputs.
-          python youtube-shorts-bot/production/dry_run_artifact.py
 
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/media/validate_media_library.py
@@ -133,43 +118,6 @@ jobs:
           assert all(len(item['title_candidates']) >= 5 for item in selected)
           assert all(item['opening_line'] for item in selected)
           print('Planning acceptance: 120+ premises -> 24 valid unique scheduled winners.')
-          PY
-
-      - name: Verify renderer production contracts statically
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import sys
-          sys.path.insert(0, 'youtube-shorts-bot')
-          from rendering import render
-          from rendering import tts_backend
-          from common import workflow_common
-          from media.background_policy import production_rendition_policy
-
-          assert workflow_common.PRODUCTION_MAX_SECONDS == 178.0
-          assert workflow_common.PRODUCTION_TARGET_MIN_SECONDS == 120.0
-          assert workflow_common.PRODUCTION_TARGET_MAX_SECONDS == 175.0
-          assert workflow_common.START_LEAD_SECONDS == 0.50
-          assert workflow_common.END_TAIL_SECONDS == 0.35
-          assert workflow_common.expected_video_config() == {'width': 720, 'height': 1280, 'fps': 30}
-          assert render.X264_PRESET == 'superfast'
-          assert render.X264_CRF == 19
-          assert tts_backend.ONNX_BACKEND == 'onnx-fp32'
-          policy = production_rendition_policy()
-          assert policy['max_source_pixels'] == 1920 * 1080
-          assert policy['uhd_downloads_allowed'] is False
-          source = Path('youtube-shorts-bot/rendering/render.py').read_text(encoding='utf-8')
-          for token in (
-              'OnnxKokoroSynthesizer',
-              'PytorchKokoroSynthesizer',
-              'narration_backend_used',
-              'inline_blackdetect_passed',
-              '"-map", "3:a:0"',
-              'lead_audio = np.zeros',
-          ):
-              assert token in source
-          print('Rendering identity and bounded background policy verified.')
           PY
 
       - name: Verify workflow safety contracts
@@ -202,21 +150,10 @@ jobs:
           print('Dry-run isolation and opaque public production routing verified.')
           PY
 
-      - name: Confirm zero expensive production side effects
+      - name: Confirm zero private execution side effects
         shell: bash
         run: |
           test ! -f youtube-shorts-bot/output/short.mp4
           test ! -f youtube-shorts-bot/output/narration.wav
           test ! -f youtube-shorts-bot/output/upload_result.json
-          test ! -d youtube-shorts-bot/content/planning
-          test ! -d youtube-shorts-bot/content/background-sourcing
-          echo 'Dry run passed with no TTS, production render, upload, receipt, planning, or sourcing side effects.'
-
-      - name: Upload Dry Run visual artifact
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: dry-run-visual-${{ github.run_number }}
-          path: /tmp/wacky-dramas-dry-run-visual/
-          if-no-files-found: warn
-          retention-days: 7
+          echo 'Private dry run passed with no render or upload side effects.'

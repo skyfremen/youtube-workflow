@@ -15,7 +15,7 @@ The request bytes are bound to the exact commit that first added them. Productio
 
 The supported production path is the scheduled schema-v3 daily path. Each immutable request carries `publication.mode=scheduled`; the uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
-The canonical production workflow is `daily-production.yml` (**Daily Production**). Publication behavior is determined by the immutable request contract, not by historical workflow naming.
+The canonical private entry point is `daily-production.yml` (**Daily Production**). It creates one opaque public-runtime dispatch; publication behavior is determined by the immutable request contract.
 
 ## Retry and idempotency contract
 
@@ -34,17 +34,17 @@ A lost or ambiguous GitHub write acknowledgement is treated as unsafe. The code 
 
 ## Reruns
 
-Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
+Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The private workflow writes an immutable recovery manifest and sends only its opaque batch ID and exact source SHA to the public runtime. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
 
 ## Scheduled-slot guard
 
-For fresh scheduled generation, `publishing/publish.py` skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
+For fresh scheduled generation, the public runtime's publication pipeline skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
 
 The planner additionally avoids creating same-day catch-up slots that are too close to the current time. These are separate protections: planning chooses viable slots; publication guards prevent stale immutable slots from causing late generation.
 
 ## Duplicate recovery marker
 
-`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. `publishing/upload.py` searches the authenticated channel uploads for that marker when durable intent recovery requires YouTube reconciliation.
+`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. The shared upload contract creates it, and the public runtime searches the authenticated channel uploads for that marker when durable intent recovery requires YouTube reconciliation.
 
 The recovery marker must not be placed in the public description. Semantic YouTube tags and visible hashtags remain distinct from the hidden recovery marker.
 
@@ -70,4 +70,4 @@ If recovery reports conflicting videos, mismatched evidence, an intent with no o
 
 ## Safe verification
 
-Repository cleanup and code changes should use `dry-run.yml` and its unit/contract checks. A production YouTube upload is not part of cleanup verification.
+Private planning/state changes should use `dry-run.yml`; runtime changes should use the public repository's `check.yml`. A production YouTube upload is not part of cleanup verification.
