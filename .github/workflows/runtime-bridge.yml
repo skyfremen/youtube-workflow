@@ -1,0 +1,29 @@
+name: Runtime Bridge Dispatch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/runtime-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch public bridge check
+        env:
+          PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/check.yml/dispatches \
+            -d '{"ref":"main","inputs":{"fixture_id":"f8e8a2c9fef49424a74e4a177bbb270f","source_sha":"db52dca6f7afd62a6b36a6375127b3ad022876ea"}}'
+          echo "Public bridge check dispatched."
