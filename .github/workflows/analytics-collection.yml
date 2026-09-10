@@ -2,11 +2,8 @@ name: Analytics Collection
 
 on:
   schedule:
-    # Twice daily in Singapore time: 07:30 and 19:30.
-    # The 12-hour spacing retains reliable coverage for the age-matched
-    # analytics milestone windows while halving scheduled collection runs.
-    # 19:30 remains the final pre-planner refresh for the 20:00 daily planner.
-    - cron: '30 11,23 * * *'
+    # Once daily at 19:30 Singapore time, immediately before the 20:00 daily planner.
+    - cron: '30 11 * * *'
   workflow_dispatch:
 
 jobs:
