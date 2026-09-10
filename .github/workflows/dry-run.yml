@@ -34,7 +34,7 @@ jobs:
       VIDEO_FPS: '30'
       STORY_TEST_MODE: 'true'
       STORY_RENDER_MAX_SECONDS: '5'
-      DRY_RUN_ARTIFACT_DIR: ${{ runner.temp }}/wacky-dramas-dry-run-visual
+      DRY_RUN_ARTIFACT_DIR: /tmp/wacky-dramas-dry-run-visual
     steps:
       - uses: actions/checkout@v4
         with:
@@ -215,6 +215,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dry-run-visual-${{ github.run_number }}
-          path: ${{ runner.temp }}/wacky-dramas-dry-run-visual/
+          path: /tmp/wacky-dramas-dry-run-visual/
           if-no-files-found: warn
           retention-days: 7
