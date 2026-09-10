@@ -39,8 +39,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install lightweight static-test dependencies
+      - name: Install lightweight dry-run dependencies
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ffmpeg
           python -m pip install --disable-pip-version-check --no-input \
             'numpy>=2.0.2,<2.3' \
             'Pillow>=10,<12'
