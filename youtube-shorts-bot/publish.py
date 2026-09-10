@@ -3,14 +3,21 @@ import hashlib
 import os
 from datetime import datetime, timedelta, timezone
 
-from recovery_state import GitHubState, RecoveryBlocked, check_identity, identity_for, receipt_path, record_path
+from recovery_state import (
+    GitHubState,
+    RecoveryBlocked,
+    check_identity,
+    identity_for,
+    receipt_path,
+    record_path,
+)
 from upload import (
-    make_client,
     authenticated_channel,
-    recover_record,
     authorize_fresh_upload,
     build_upload_body,
     execute_upload,
+    make_client,
+    recover_record,
 )
 from workflow_common import OUTPUT_DIR, atomic_write_json, load_json
 
@@ -22,37 +29,48 @@ def restore_upload(stored, identity, recovered=True):
     check_identity(record, identity)
     atomic_write_json(OUTPUT_DIR / "background_selection.json", record["background"])
     atomic_write_json(OUTPUT_DIR / "render-metadata.json", record["render"])
-    payload = {**identity, "youtube_video_id": record["youtube_video_id"],
-               "youtube_url": f"https://www.youtube.com/watch?v={record['youtube_video_id']}",
-               "uploaded_at": record["uploaded_at"], "recovered": recovered,
-               "recovery_source": "immutable_github_upload_record",
-               "recovery_record_path": record_path(identity["content_id"], "upload"),
-               "recovery_record_blob_sha": stored.sha, "upload_evidence": record}
+    payload = {
+        **identity,
+        "youtube_video_id": record["youtube_video_id"],
+        "youtube_url": f"https://www.youtube.com/watch?v={record['youtube_video_id']}",
+        "uploaded_at": record["uploaded_at"],
+        "recovered": recovered,
+        "recovery_source": "immutable_github_upload_record",
+        "recovery_record_path": record_path(identity["content_id"], "upload"),
+        "recovery_record_blob_sha": stored.sha,
+        "upload_evidence": record,
+    }
     atomic_write_json(OUTPUT_DIR / "upload_result.json", payload)
-    print(f"YouTube video resolved: {record['youtube_video_id']}; recovered={recovered}; upload_record={stored.sha}")
+    print(
+        f"YouTube video resolved: {record['youtube_video_id']}; "
+        f"recovered={recovered}; upload_record={stored.sha}"
+    )
 
 
-def scheduled_slot_guard(request, *, now_utc=None, buffer_minutes=SCHEDULE_FRESHNESS_BUFFER_MINUTES):
-    """Return whether fresh generation should be skipped for an imminent/past scheduled slot.
-
-    Recovery is deliberately handled before this guard. The guard protects only
-    fresh background/TTS/render work when the immutable publish_at is no longer
-    more than `buffer_minutes` into the future.
-    """
+def scheduled_slot_guard(
+    request,
+    *,
+    now_utc=None,
+    buffer_minutes=SCHEDULE_FRESHNESS_BUFFER_MINUTES,
+):
+    """Skip fresh generation for a scheduled slot that is past or too close."""
     publication = request.get("publication")
-    if not publication:
-        return {"skip": False, "reason": None, "remaining_seconds": None}
+    if not isinstance(publication, dict):
+        raise RecoveryBlocked("Scheduled publication contract is required")
     if publication.get("mode") != "scheduled":
-        raise RecoveryBlocked("Unknown publication mode while checking scheduled slot guard")
+        raise RecoveryBlocked("publication.mode must be scheduled")
     raw = str(publication.get("publish_at", ""))
     if not raw.endswith("Z"):
         raise RecoveryBlocked("Scheduled publish_at must be UTC RFC3339 ending Z")
     try:
         publish_at = datetime.fromisoformat(raw.replace("Z", "+00:00"))
     except ValueError:
-        raise RecoveryBlocked("Invalid scheduled publish_at while checking generation guard") from None
+        raise RecoveryBlocked(
+            "Invalid scheduled publish_at while checking generation guard"
+        ) from None
     if publish_at.utcoffset() is None or publish_at.utcoffset().total_seconds() != 0:
         raise RecoveryBlocked("Scheduled publish_at must be UTC")
+
     current = now_utc or datetime.now(timezone.utc)
     if current.tzinfo is None:
         raise ValueError("now_utc must be timezone-aware")
@@ -63,19 +81,14 @@ def scheduled_slot_guard(request, *, now_utc=None, buffer_minutes=SCHEDULE_FRESH
     reason = None
     if skip:
         reason = (
-            f"scheduled slot {raw} is past or within the {buffer_minutes}-minute fresh-generation buffer "
-            f"(remaining_seconds={round(remaining, 3)})"
+            f"scheduled slot {raw} is past or within the {buffer_minutes}-minute "
+            f"fresh-generation buffer (remaining_seconds={round(remaining, 3)})"
         )
     return {"skip": skip, "reason": reason, "remaining_seconds": remaining}
 
 
 def prepare(request, identity, state, youtube, channel, recovery_only):
-    """Resolve durable recovery state before any fresh-generation decision.
-
-    Fresh-upload authorization is intentionally deferred until after the schedule
-    and local upload-contract guards. This keeps recovery first while avoiding an
-    expensive channel inventory scan for a request that will be skipped anyway.
-    """
+    """Resolve durable recovery state before any fresh-generation decision."""
     receipt = state.load(receipt_path(identity["content_id"]))
     if receipt:
         check_identity(receipt.data, identity)
@@ -88,26 +101,34 @@ def prepare(request, identity, state, youtube, channel, recovery_only):
     if receipt:
         raise RecoveryBlocked("Receipt is missing its durable upload evidence")
     if recovery_only:
-        raise RecoveryBlocked("Recovery-only execution has no durable upload record; upload forbidden")
+        raise RecoveryBlocked(
+            "Recovery-only execution has no durable upload record; upload forbidden"
+        )
     return True
 
 
-def pre_generation_authorization(request, identity, state, youtube, channel, *, now_utc=None):
-    """Run cheap fresh-generation guards before the duplicate inventory scan."""
+def pre_generation_authorization(
+    request,
+    identity,
+    state,
+    youtube,
+    channel,
+    *,
+    now_utc=None,
+):
+    """Run deterministic guards before media/TTS/render and inventory lookup."""
     current = now_utc or datetime.now(timezone.utc)
     guard = scheduled_slot_guard(request, now_utc=current)
     if guard["skip"]:
         return guard
 
     try:
-        # Validate the exact metadata/privacy/publishAt body now, before media,
-        # TTS and rendering. Real upload validates it again at insert time.
-        build_upload_body(request, identity=identity, now_utc=current)
+        build_upload_body(request, now_utc=current)
     except (KeyError, TypeError, ValueError) as exc:
-        raise RecoveryBlocked(f"Invalid YouTube upload contract before generation: {exc}") from None
+        raise RecoveryBlocked(
+            f"Invalid YouTube upload contract before generation: {exc}"
+        ) from None
 
-    # This can enumerate channel uploads, so keep it after all deterministic
-    # local guards. execute_upload repeats it immediately before durable intent.
     authorize_fresh_upload(youtube, state, identity, channel)
     return guard
 
@@ -118,11 +139,14 @@ def main():
     parser.add_argument("--stage", choices=("prepare", "upload"), default="upload")
     parser.add_argument("--recovery-only", action="store_true")
     args = parser.parse_args()
+
     data = load_json(args.request)
     identity = identity_for(args.request, data)
-    state, youtube = GitHubState(), make_client()
+    state = GitHubState()
+    youtube = make_client()
     channel = authenticated_channel(youtube)
     required = prepare(data, identity, state, youtube, channel, args.recovery_only)
+
     if args.stage == "prepare":
         guard = (
             pre_generation_authorization(data, identity, state, youtube, channel)
@@ -136,12 +160,15 @@ def main():
                 output.write(f"schedule_skipped={'true' if guard['skip'] else 'false'}\n")
                 output.write(f"schedule_skip_reason={guard['reason'] or ''}\n")
                 if guard["remaining_seconds"] is not None:
-                    output.write(f"schedule_remaining_seconds={round(guard['remaining_seconds'], 3)}\n")
+                    output.write(
+                        f"schedule_remaining_seconds={round(guard['remaining_seconds'], 3)}\n"
+                    )
         if guard["skip"]:
             print(f"Fresh generation skipped: {guard['reason']}")
         else:
             print(f"Recovery preflight: upload_required={upload_required}")
         return
+
     if not required:
         return
     video = OUTPUT_DIR / "short.mp4"
@@ -150,8 +177,17 @@ def main():
         raise RecoveryBlocked("Verified render for this content ID is required before upload")
     if hashlib.sha256(video.read_bytes()).hexdigest() != render.get("video_sha256"):
         raise RecoveryBlocked("Video bytes changed after render verification")
-    stored, recovered = execute_upload(data, video, state=state, identity=identity, channel=channel,
-        selection=load_json(OUTPUT_DIR / "background_selection.json"), render_meta=render, youtube=youtube)
+
+    stored, recovered = execute_upload(
+        data,
+        video,
+        state=state,
+        identity=identity,
+        channel=channel,
+        selection=load_json(OUTPUT_DIR / "background_selection.json"),
+        render_meta=render,
+        youtube=youtube,
+    )
     restore_upload(stored, identity, recovered)
 
 
