@@ -1,4 +1,4 @@
-"""Central growth-system configuration for Wacky Dramas.
+"""Central planning-system configuration for Wacky Dramas.
 
 Keep strategy knobs here so planner behavior is auditable and tests can assert the
 production policy without scattering magic numbers across the codebase.
@@ -57,7 +57,7 @@ RAW_ANALYTICS_WEIGHTS = {
     "comments_per_1000_views": 7.5,
 }
 
-# growth_planner.normalized_performance_score remains backward-compatible with
+# planning_engine.normalized_performance_score remains backward-compatible with
 # direct normalized metrics used by tests/older callers. New production planning
 # should pass only historical_attribute_fit, produced by analytics_learning.py.
 PERFORMANCE_WEIGHTS = {
@@ -121,7 +121,7 @@ NEAR_DUPLICATE_THRESHOLD = 0.82
 SOFT_SIMILARITY_THRESHOLD = 0.62
 
 # Fresh-start analytics must mature before it can steer creative selection.
-# growth_video_count in analytics/latest.json is an evidence-equivalent count:
+# analytics_evidence_count in analytics/latest.json is an evidence-equivalent count:
 # it is zero until >=10 videos have a 24h cohort snapshot, then is capped by
 # both mature video count and one evidence unit per 500 comparable views.
 MAX_ANALYTICS_WEIGHT = 0.60

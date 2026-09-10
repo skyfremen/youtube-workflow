@@ -70,7 +70,7 @@ def build_upload_body(request_data, privacy=None, identity=None, *, require_futu
 
     tags = [marker]
     seen = {marker.lower()}
-    # Schema-v3 growth requests explicitly plan semantic backend tags. Legacy
+    # Schema-v3 planning requests explicitly plan semantic backend tags. Legacy
     # schema-v2 requests remain recoverable because this field is optional.
     for tag in yt.get("tags", []):
         _append_unique_tag(tags, seen, tag)

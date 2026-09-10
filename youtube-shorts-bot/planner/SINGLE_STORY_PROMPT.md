@@ -1,4 +1,4 @@
-# Wacky Dramas — Ad-hoc Story Planner
+# Wacky Dramas — Single Story Planner
 
 Generate exactly **one** original Wacky Dramas request and commit it as one new immutable JSON file:
 

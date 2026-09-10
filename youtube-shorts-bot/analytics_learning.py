@@ -3,14 +3,14 @@
 Raw YouTube metrics are first converted to within-cohort percentiles. The model
 then attributes smoothed performance to controlled creative dimensions. Planning
 uses the resulting 0-100 historical_attribute_fit; it never feeds raw subscriber,
-share, retention, or view counts directly into growth_planner's 0-100 scorer.
+share, retention, or view counts directly into planning_engine's 0-100 scorer.
 """
 from __future__ import annotations
 
 from collections import defaultdict
 from math import isfinite
 
-from growth_config import (
+from planning_config import (
     ANALYTICS_ATTRIBUTE_PRIOR_STRENGTH,
     ANALYTICS_MIN_MATURE_VIDEOS,
     RAW_ANALYTICS_WEIGHTS,
@@ -156,7 +156,7 @@ def candidate_dimensions(candidate):
 def _cohort_entries(snapshot, milestones, label):
     rows = {
         str(row.get("video")): row for row in snapshot.get("videos", [])
-        if row.get("growth_eligible")
+        if row.get("cohort_eligible")
     }
     entries = []
     for video_id, snapshots in milestones.get("videos", {}).items():
@@ -165,7 +165,7 @@ def _cohort_entries(snapshot, milestones, label):
         if not point or not row:
             continue
         metrics = point.get("metrics")
-        dimensions = row.get("growth_dimensions")
+        dimensions = row.get("content_dimensions")
         if not isinstance(metrics, dict) or not isinstance(dimensions, dict):
             continue
         entries.append({
@@ -228,7 +228,7 @@ def build_model(snapshot, milestones):
         ),
         None,
     )
-    evidence_count = int(snapshot.get("growth_video_count") or 0)
+    evidence_count = int(snapshot.get("analytics_evidence_count") or 0)
     return {
         "schema_version": 2,
         "epoch": snapshot.get("analytics_epoch"),

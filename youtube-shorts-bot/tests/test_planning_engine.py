@@ -5,9 +5,9 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-from growth_config import DAILY_PUBLISH_COUNT, RAW_CANDIDATE_COUNT
-from growth_planner import (
-    GrowthPlanError,
+from planning_config import DAILY_PUBLISH_COUNT, RAW_CANDIDATE_COUNT
+from planning_engine import (
+    PlanningError,
     analytics_weight,
     blend_scores,
     build_acceptance_fixture,
@@ -21,10 +21,10 @@ from growth_planner import (
     similarity,
     title_score,
 )
-from growth_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
+from planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
 
 
-class GrowthPlannerTests(unittest.TestCase):
+class PlanningEngineTests(unittest.TestCase):
     def test_acceptance_fixture_generates_at_least_120_raw_premises(self):
         raw, semifinalists = build_acceptance_fixture("2026-09-10")
         self.assertGreaterEqual(len(raw), RAW_CANDIDATE_COUNT)
@@ -50,7 +50,7 @@ class GrowthPlannerTests(unittest.TestCase):
                     sum(EDITORIAL_WEIGHTS.values()))
         self.assertAlmostEqual(editorial_score(candidate), expected, places=3)
         candidate["editorial_components"]["curiosity_gap"] = 101
-        with self.assertRaises(GrowthPlanError):
+        with self.assertRaises(PlanningError):
             editorial_score(candidate)
 
     def test_missing_optional_analytics_does_not_crash(self):
@@ -80,7 +80,7 @@ class GrowthPlannerTests(unittest.TestCase):
         _, semifinalists = build_acceptance_fixture("2026-09-10")
         candidate = dict(semifinalists[0])
         candidate["title_candidates"] = candidate["title_candidates"][:2]
-        with self.assertRaises(GrowthPlanError):
+        with self.assertRaises(PlanningError):
             score_semifinalist(candidate)
 
     def test_near_duplicate_detection_uses_story_structure(self):

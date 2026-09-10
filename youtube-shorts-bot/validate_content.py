@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from growth_config import (
+from planning_config import (
     ANTAGONIST_ROLES, CANONICAL_TIMEZONE, CATEGORIES, EDITORIAL_WEIGHTS, EMOTIONS,
     ENDING_STYLES, OPENING_STYLES, PROTAGONIST_ROLES, TITLE_STYLES, TITLE_WEIGHTS,
 )
@@ -115,7 +115,7 @@ def validate_request_data(data, request_path=None):
         if extra: errors.append("story unexpected fields: " + ", ".join(sorted(extra)))
         for key in ("category", "story_type", "hook", "script"):
             if not _nonempty(story.get(key)): errors.append(f"story.{key} must be non-empty")
-        if schema == 3 and story.get("category") not in CATEGORIES: errors.append("schema v3 story.category is not a controlled growth category")
+        if schema == 3 and story.get("category") not in CATEGORIES: errors.append("schema v3 story.category is not a controlled planning category")
         emojis = story.get("card_emojis")
         if not isinstance(emojis, list) or not 4 <= len(emojis) <= 6: errors.append("story.card_emojis must contain 4-6 emojis")
         elif any(not _nonempty(x) for x in emojis): errors.append("story.card_emojis entries must be non-empty")

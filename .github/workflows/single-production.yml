@@ -1,4 +1,4 @@
-name: Wacky Dramas Ad-hoc Public Publish
+name: Single Production
 
 on:
   push:
@@ -29,9 +29,9 @@ permissions:
 
 jobs:
   public-story:
-    # Daily growth commits are owned by daily-growth-batch.yml. Keeping the
+    # Daily planning commits are owned by daily-production.yml. Keeping the
     # same concurrency group prevents ad-hoc and batch inserts overlapping.
-    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily growth]')) && github.run_attempt == 1 && (github.event_name != 'workflow_dispatch' || inputs.recovery_only != true || inputs.render_preview == true) }}
+    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily production]')) && github.run_attempt == 1 && (github.event_name != 'workflow_dispatch' || inputs.recovery_only != true || inputs.render_preview == true) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -123,13 +123,13 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
-        run: python youtube-shorts-bot/verify_youtube_private.py --request "$REQUEST_PATH"
+        run: python youtube-shorts-bot/verify_publication.py --request "$REQUEST_PATH"
 
       - name: Persist verified immutable receipt or reuse unchanged receipt
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
-        run: python youtube-shorts-bot/finalize.py --request "$REQUEST_PATH"
+        run: python youtube-shorts-bot/finalize_receipt.py --request "$REQUEST_PATH"
 
       - name: Preserve lightweight verification evidence
         if: always()
@@ -172,7 +172,7 @@ jobs:
           retention-days: 7
 
   recovery-story:
-    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily growth]')) && (github.run_attempt > 1 || (github.event_name == 'workflow_dispatch' && inputs.recovery_only == true && inputs.render_preview != true)) }}
+    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[daily production]')) && (github.run_attempt > 1 || (github.event_name == 'workflow_dispatch' && inputs.recovery_only == true && inputs.render_preview != true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -231,13 +231,13 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
-        run: python youtube-shorts-bot/verify_youtube_private.py --request "$REQUEST_PATH"
+        run: python youtube-shorts-bot/verify_publication.py --request "$REQUEST_PATH"
 
       - name: Persist verified immutable receipt or reuse unchanged receipt
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUEST_PATH: ${{ steps.request.outputs.request_path }}
-        run: python youtube-shorts-bot/finalize.py --request "$REQUEST_PATH"
+        run: python youtube-shorts-bot/finalize_receipt.py --request "$REQUEST_PATH"
 
       - name: Preserve lightweight recovery evidence
         if: always()

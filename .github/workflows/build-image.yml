@@ -1,11 +1,11 @@
-name: Build Shorts runner image
+name: Build Image
 
 on:
   push:
     paths:
       - 'youtube-shorts-bot/Dockerfile'
       - 'youtube-shorts-bot/requirements.txt'
-      - '.github/workflows/build-shorts-image.yml'
+      - '.github/workflows/build-image.yml'
   workflow_dispatch:
 
 permissions:

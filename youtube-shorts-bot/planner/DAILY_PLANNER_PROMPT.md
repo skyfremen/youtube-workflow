@@ -10,12 +10,12 @@ The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. At or af
 
 When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
-Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-growth-batch.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
+Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
 
 ## Canonical production contract
 Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; Kokoro af_heart 1.75x; 720×1280/30fps H.264 + AAC; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
 
-Read before planning: `planner/STORY_RULES.md`, `growth_config.py`, `growth_planner.py`, `background_policy.py`, `background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
+Read before planning: `planner/STORY_RULES.md`, `planning_config.py`, `planning_engine.py`, `background_policy.py`, `background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
 
 ## Funnel
 Use progressive detail, not 120 full scripts:
@@ -23,7 +23,7 @@ Use progressive detail, not 120 full scripts:
 Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial swap concepts.
 
 ## Editorial and title competition
-Use central `EDITORIAL_WEIGHTS` and `growth_planner.py`. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
+Use central `EDITORIAL_WEIGHTS` and `planning_engine.py`. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
 
 ## YouTube metadata — planner-owned hard contract
 For every winning story, ChatGPT must author the complete YouTube metadata **before** the immutable request is committed. Do not rely on the uploader to invent semantic metadata later.
@@ -62,4 +62,4 @@ Only after winner selection/background planning write full scripts and requests.
 Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. Record planning mode/date, funnel counts, selected count/content IDs, diversity/exploration summary, analytics availability/model cohort/evidence/weight/fallback, background reuse/sourcing, metadata validation summary, and catch-up slot details where applicable. If no candidate clears hard gates, commit no weak filler.
 
 ## Commit and handoff
-The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily growth] YYYY-MM-DD`. ChatGPT planning ends after the content commit; the canonical Daily Growth Batch owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
+The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; the canonical Daily Growth Batch owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.

@@ -10,7 +10,7 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 from recovery_state import RecoveryBlocked, Stored, blob_sha, encoded_json, record_path, GitHubState
 from upload import execute_upload, build_upload_body, recover_record, find_existing_by_marker, authorize_fresh_upload
-from verify_youtube_private import verify_video, RETRY_DELAYS
+from verify_publication import verify_video, RETRY_DELAYS
 from publish import prepare
 from test_request_schema import valid_request
 

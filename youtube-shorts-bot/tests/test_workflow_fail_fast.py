@@ -9,11 +9,11 @@ sys.path.insert(0, str(BASE))
 
 class WorkflowFailFastContracts(unittest.TestCase):
     def batch(self):
-        return (ROOT / ".github/workflows/daily-growth-batch.yml").read_text(encoding="utf-8")
+        return (ROOT / ".github/workflows/daily-production.yml").read_text(encoding="utf-8")
 
     def test_daily_batch_runs_one_shared_youtube_preflight_before_external_cache_and_generation(self):
         batch = self.batch()
-        preflight = "python youtube-shorts-bot/auth_check.py"
+        preflight = "python youtube-shorts-bot/auth_preflight.py"
         self.assertEqual(batch.count(preflight), 1)
         self.assertLess(batch.index("python youtube-shorts-bot/validate_media_library.py"), batch.index(preflight))
         self.assertLess(batch.index(preflight), batch.index("ingest-manifest"))
@@ -24,14 +24,14 @@ class WorkflowFailFastContracts(unittest.TestCase):
         batch = self.batch()
         duplicate = "Duplicate publication slot in daily batch"
         self.assertIn(duplicate, batch)
-        self.assertLess(batch.index(duplicate), batch.index("python youtube-shorts-bot/auth_check.py"))
+        self.assertLess(batch.index(duplicate), batch.index("python youtube-shorts-bot/auth_preflight.py"))
 
     def test_pexels_secret_presence_is_global_and_fails_before_youtube_network(self):
         batch = self.batch()
         missing_pexels = 'if [ -s /tmp/background-sourcing-manifests.txt ] && [ -z "${PEXELS_API_KEY:-}" ]'
         self.assertIn(missing_pexels, batch)
         self.assertIn("Global failure", batch)
-        self.assertLess(batch.index(missing_pexels), batch.index("python youtube-shorts-bot/auth_check.py"))
+        self.assertLess(batch.index(missing_pexels), batch.index("python youtube-shorts-bot/auth_preflight.py"))
 
     def test_individual_schema_validation_is_inside_process_one_not_global_preflight(self):
         batch = self.batch()
@@ -75,8 +75,8 @@ class WorkflowFailFastContracts(unittest.TestCase):
         upload = batch.index("publish.py --stage upload", process_one)
         deferred = batch.index("verification_deferred", upload)
         verify_definition = batch.index("verify_one()", deferred)
-        verify = batch.index("verify_youtube_private.py --request", verify_definition)
-        finalize = batch.index("finalize.py --request", verify)
+        verify = batch.index("verify_publication.py --request", verify_definition)
+        finalize = batch.index("finalize_receipt.py --request", verify)
         production_done = batch.index("done < /tmp/batch-requests.txt", finalize)
         verify_call = batch.index('if verify_one "$req" "$deferred_at"; then', production_done)
         self.assertLess(upload, deferred)
@@ -113,8 +113,8 @@ class WorkflowFailFastContracts(unittest.TestCase):
             self.assertLess(skip_at, batch.index(command, skip_at))
 
     def test_adhoc_does_not_add_redundant_second_auth_preflight(self):
-        adhoc = (ROOT / ".github/workflows/adhoc-story-private.yml").read_text(encoding="utf-8")
-        self.assertNotIn("auth_check.py", adhoc)
+        adhoc = (ROOT / ".github/workflows/single-production.yml").read_text(encoding="utf-8")
+        self.assertNotIn("auth_preflight.py", adhoc)
         self.assertLess(adhoc.index("publish.py --stage prepare"), adhoc.index("media_resolver.py"))
 
 

@@ -1,4 +1,4 @@
-name: Wacky Dramas Daily Growth Batch
+name: Daily Production
 
 on:
   push:
@@ -23,8 +23,8 @@ permissions:
   packages: read
 
 jobs:
-  growth-batch:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[daily growth]') }}
+  daily-production:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[daily production]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     container:
@@ -122,15 +122,15 @@ jobs:
                   if s == 'A' and p.startswith('youtube-shorts-bot/content/background-sourcing/') and p.endswith('.json')
               ]
               if not 1 <= len(requests) <= 24:
-                  raise SystemExit(f'Daily growth commit must add 1-24 requests; got {len(requests)}')
+                  raise SystemExit(f'Daily planning commit must add 1-24 requests; got {len(requests)}')
               if len(planning) != 1:
-                  raise SystemExit('Daily growth commit must add exactly one immutable planning audit artifact')
+                  raise SystemExit('Daily planning commit must add exactly one immutable planning audit artifact')
               if len(sourcing_paths) > 1:
-                  raise SystemExit('Daily growth commit may add at most one background sourcing manifest')
+                  raise SystemExit('Daily planning commit may add at most one background sourcing manifest')
               allowed = set(requests + planning + sourcing_paths)
               other = [p for _s,p in changed if p not in allowed]
               if other:
-                  raise SystemExit('Daily growth content commit changes non-content files: ' + ', '.join(other))
+                  raise SystemExit('Daily planning content commit changes non-content files: ' + ', '.join(other))
 
               payload = json.loads(Path(planning[0]).read_text())
               expected = set(payload.get('content_ids') or [])
@@ -171,7 +171,7 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'],'a') as out:
               out.write(f'request_count={len(requests)}\n')
               out.write(f'sourcing_manifest_count={len(sourcing_paths)}\n')
-          print(f'Resolved {len(requests)} immutable growth requests; sourcing manifests={len(sourcing_paths)}')
+          print(f'Resolved {len(requests)} immutable planning requests; sourcing manifests={len(sourcing_paths)}')
           PY
 
           # GLOBAL / LOCAL: publication-slot collisions are a batch-level planning
@@ -219,7 +219,7 @@ jobs:
 
           # GLOBAL / NETWORK: one read-only OAuth/Data API/channel readiness check
           # protects the entire batch before Pexels ingestion or any rendering.
-          python youtube-shorts-bot/auth_check.py
+          python youtube-shorts-bot/auth_preflight.py
 
           # GLOBAL / SHARED STATE: source-manifest/cache ingestion is atomic shared
           # state. If it fails, do not render against an incomplete common registry.
@@ -351,8 +351,8 @@ jobs:
             set_request_context "$req"
             started_at="$(epoch_seconds)"
             printf '%s\tverification_started\t%s\n' "$cid" "$started_at" >> /tmp/batch-pipeline-metrics.tsv
-            python youtube-shorts-bot/verify_youtube_private.py --request "$req"
-            python youtube-shorts-bot/finalize.py --request "$req"
+            python youtube-shorts-bot/verify_publication.py --request "$req"
+            python youtube-shorts-bot/finalize_receipt.py --request "$req"
             completed_at="$(epoch_seconds)"
             printf '%s\tverification_completed\t%s\n' "$cid" "$completed_at" >> /tmp/batch-pipeline-metrics.tsv
             python - "$cid" "$deferred_at" "$started_at" "$completed_at" <<'PY'
@@ -440,7 +440,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wacky-dramas-growth-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          name: wacky-dramas-planning-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             youtube-shorts-bot/output/**/*.json
             /tmp/batch-failures.txt

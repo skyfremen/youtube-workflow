@@ -18,7 +18,7 @@ Two current publication modes share the same recovery guarantees:
 - **Ad-hoc request:** no `publication` object. The uploader requires an immediate `privacyStatus=public` body and no `publishAt`.
 - **Daily-growth schema-v3 request:** immutable `publication.mode=scheduled`. The uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
-The workflow file `adhoc-story-private.yml` retains a historical filename, but its current workflow name and production behavior are **Wacky Dramas Ad-hoc Public Publish**. The filename is not a publication contract.
+The workflow file `single-production.yml` retains a historical filename, but its current workflow name and production behavior are **Wacky Dramas Ad-hoc Public Publish**. The filename is not a publication contract.
 
 ## Retry and idempotency contract
 
@@ -75,10 +75,10 @@ For an existing ad-hoc content ID, manually run **Wacky Dramas Ad-hoc Public Pub
 - `recovery_only=true`
 - `render_preview=false` unless a separate debug preview is explicitly needed
 
-For a daily-growth content ID, use `daily-growth-batch.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
+For a daily-growth content ID, use `daily-production.yml` `workflow_dispatch` with the existing content ID(s). Do not create replacement requests merely to retry a failed workflow.
 
 If recovery reports conflicting videos, mismatched evidence, an intent with no observable video, or any other ambiguous state, stop automated insertion and reconcile the durable GitHub/YouTube evidence. Never delete an intent, edit an immutable request/receipt, or add a force-reupload path to clear ambiguity.
 
 ## Safe verification
 
-Repository cleanup and code changes should use `youtube-shorts-dry-run.yml` and its unit/contract checks. A public YouTube upload is not part of cleanup verification. Debug rendering may be used only through the explicit test/preview path that does not upload.
+Repository cleanup and code changes should use `dry-run.yml` and its unit/contract checks. A public YouTube upload is not part of cleanup verification. Debug rendering may be used only through the explicit test/preview path that does not upload.

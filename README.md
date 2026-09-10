@@ -34,12 +34,12 @@ The supported workflow set is deliberately small:
 
 | Workflow | Purpose |
 | --- | --- |
-| `adhoc-story-private.yml` | Ad-hoc public publish plus recovery-only reruns and optional debug preview. The historical filename is retained to avoid an unnecessary workflow-identity rename; the workflow name and current behavior are public publish. |
-| `daily-growth-batch.yml` | Processes a daily selected batch, isolates per-video failures, preserves shared-state safety, and delegates hourly release timing to YouTube scheduling. |
-| `youtube-analytics.yml` | Collects age-matched Shorts analytics and updates the learning snapshot/model. |
-| `background-library-renditions.yml` | Maintains official Pexels rendition metadata in the verified background registry. |
-| `build-shorts-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
-| `youtube-shorts-dry-run.yml` | Static, unit, contract, growth-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
+| `single-production.yml` | Ad-hoc public publish plus recovery-only reruns and optional debug preview. The historical filename is retained to avoid an unnecessary workflow-identity rename; the workflow name and current behavior are public publish. |
+| `daily-production.yml` | Processes a daily selected batch, isolates per-video failures, preserves shared-state safety, and delegates hourly release timing to YouTube scheduling. |
+| `analytics-collection.yml` | Collects age-matched Shorts analytics and updates the learning snapshot/model. |
+| `background-management.yml` | Maintains official Pexels rendition metadata in the verified background registry. |
+| `build-image.yml` | Builds the canonical production GHCR runner image from `youtube-shorts-bot/Dockerfile`. |
+| `dry-run.yml` | Static, unit, contract, growth-funnel, media-registry, workflow-safety, and zero-production-side-effect checks. |
 
 The dry-run workflow also asserts that retired Wacky Insights, queue, music, story-bot, long-form, backup, and migration workflow paths do not reappear.
 
@@ -53,11 +53,11 @@ The dry-run workflow also asserts that retired Wacky Insights, queue, music, sto
 - If a durable intent exists, a missing/temporarily unobservable video is never permission to upload again.
 - Result receipts are created only after exact YouTube state, request identity, render, background, and provenance verification.
 
-See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/GROWTH_SYSTEM.md` for the planning/analytics design.
+See `youtube-shorts-bot/RECOVERY.md` for operator recovery details and `youtube-shorts-bot/SYSTEM_OVERVIEW.md` for the planning/analytics design.
 
 ## Development and verification
 
-The canonical lightweight validation baseline is encoded in `.github/workflows/youtube-shorts-dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises request compatibility and the 120-premise growth acceptance path, checks renderer constants, enforces workflow safety, and proves the dry run creates no TTS/render/upload side effects.
+The canonical lightweight validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles production Python, runs `unittest` discovery, validates the media registry, exercises request compatibility and the 120-premise growth acceptance path, checks renderer constants, enforces workflow safety, and proves the dry run creates no TTS/render/upload side effects.
 
 A production upload is **not** required to validate repository cleanup or ordinary code changes. Do not use public YouTube publishing as a cleanup test.
 

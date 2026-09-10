@@ -1,4 +1,4 @@
-name: Wacky Dramas Dry Run
+name: Dry Run
 
 on:
   push:
@@ -68,8 +68,8 @@ jobs:
           present = [p for p in forbidden_paths if Path(p).exists()]
           assert not present, 'retired paths still present: ' + ', '.join(present)
           expected_workflows = {
-              'adhoc-story-private.yml','background-library-renditions.yml','build-shorts-image.yml',
-              'daily-growth-batch.yml','youtube-analytics.yml','youtube-shorts-dry-run.yml',
+              'single-production.yml','background-management.yml','build-image.yml',
+              'daily-production.yml','analytics-collection.yml','dry-run.yml',
           }
           actual_workflows = {p.name for p in Path('.github/workflows').glob('*.yml')}
           assert actual_workflows == expected_workflows, f'unexpected workflow set: {sorted(actual_workflows)}'
@@ -80,7 +80,7 @@ jobs:
           hits=[]
           # Cleanup workflow itself lists retired names intentionally; do not scan this file.
           for path in active_files:
-              if path.name == 'youtube-shorts-dry-run.yml': continue
+              if path.name == 'dry-run.yml': continue
               text=path.read_text(encoding='utf-8')
               for term in forbidden_terms:
                   if term in text: hits.append(f'{path}: {term}')
@@ -127,15 +127,15 @@ jobs:
           python youtube-shorts-bot/validate_content.py --request /tmp/wd-20260908T161000-dry-run-abc123.json
           python youtube-shorts-bot/media_resolver.py --request /tmp/wd-20260908T161000-dry-run-abc123.json --no-download --skip-preflight
 
-      - name: Run full 120 premise growth acceptance dry run
+      - name: Run full 120 premise planning acceptance dry run
         shell: bash
         run: |
-          python youtube-shorts-bot/growth_planner.py \
+          python youtube-shorts-bot/planning_engine.py \
             --acceptance-dry-run --date 2026-09-10 --analytics-video-count 0 \
-            --output /tmp/growth-dry-run.json
+            --output /tmp/planning-dry-run.json
           python - <<'PY'
           import json
-          d=json.load(open('/tmp/growth-dry-run.json'))
+          d=json.load(open('/tmp/planning-dry-run.json'))
           assert d['raw_premises_generated'] >= 120
           assert d['final_selected'] == 24
           assert d['analytics_weight'] == 0
@@ -145,7 +145,7 @@ jobs:
           assert all(x['publication']['timezone'] == 'Asia/Singapore' for x in selected)
           assert all(len(x['title_candidates']) >= 5 for x in selected)
           assert all(x['opening_line'] for x in selected)
-          print('Growth acceptance: 120+ raw -> filtered/scored -> semifinal title/hook competition -> 19 exploit + 5 explore -> 24 unique hourly slots.')
+          print('Planning acceptance: 120+ raw -> filtered/scored -> semifinal title/hook competition -> 19 exploit + 5 explore -> 24 unique hourly slots.')
           PY
 
       - name: Verify renderer production contracts statically
@@ -180,10 +180,10 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          dry=Path('.github/workflows/youtube-shorts-dry-run.yml').read_text()
-          adhoc=Path('.github/workflows/adhoc-story-private.yml').read_text()
-          batch=Path('.github/workflows/daily-growth-batch.yml').read_text()
-          maintenance=Path('.github/workflows/background-library-renditions.yml').read_text()
+          dry=Path('.github/workflows/dry-run.yml').read_text()
+          adhoc=Path('.github/workflows/single-production.yml').read_text()
+          batch=Path('.github/workflows/daily-production.yml').read_text()
+          maintenance=Path('.github/workflows/background-management.yml').read_text()
           # Build self-search tokens dynamically so the test does not match its own source.
           secret_names=[
               'YOUTUBE_' + 'CLIENT_ID',
@@ -195,7 +195,7 @@ jobs:
           assert ('container' + ':') not in dry
           assert 'group: wacky-dramas-youtube-upload' in adhoc
           assert 'group: wacky-dramas-youtube-upload' in batch
-          assert "[daily growth]" in adhoc and "[daily growth]" in batch
+          assert "[daily production]" in adhoc and "[daily production]" in batch
           assert 'schedule:' not in batch.split('jobs:')[0], 'batch must not wake hourly; YouTube scheduling owns cadence'
           assert 'for req in' not in adhoc and 'content/latest.json' not in adhoc
           assert 'queue_manager.py' not in batch and 'content/latest.json' not in batch

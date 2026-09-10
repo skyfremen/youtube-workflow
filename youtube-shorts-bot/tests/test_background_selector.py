@@ -99,7 +99,7 @@ class BackgroundSelectorTests(unittest.TestCase):
         self.assertNotIn("satisfying-001", history)
         self.assertEqual(history["satisfying-002"]["shorts_ago"], 0)
 
-    def test_scheduled_growth_receipts_count_toward_recency(self):
+    def test_scheduled_planning_receipts_count_toward_recency(self):
         records = [
             receipt(0, "satisfying-001", scheduled=True),
             receipt(1, "satisfying-002", scheduled=True, published=True),

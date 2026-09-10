@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-PROMPT = Path("youtube-shorts-bot/planner/DAILY_GROWTH_PROMPT.md")
+PROMPT = Path("youtube-shorts-bot/planner/DAILY_PLANNER_PROMPT.md")
 
 
 class PlannerSchedulePolicyTests(unittest.TestCase):
@@ -27,7 +27,7 @@ class PlannerSchedulePolicyTests(unittest.TestCase):
         self.assertIn("first eligible slot is `03:00`", self.text)
 
     def test_existing_daily_plan_uses_production_recovery_not_replanning(self):
-        self.assertIn("daily-growth-batch.yml", self.text)
+        self.assertIn("daily-production.yml", self.text)
         self.assertIn("manual `workflow_dispatch`", self.text)
         self.assertIn("do **not** create a second plan", self.text)
 

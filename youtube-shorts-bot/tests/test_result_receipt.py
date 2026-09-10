@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from finalize import build_receipt
+from finalize_receipt import build_receipt
 from recovery_state import RecoveryBlocked, blob_sha
 from test_recovery import fixture
 
@@ -33,7 +33,7 @@ class ResultReceiptTests(unittest.TestCase):
                        'verification': {**identity, 'passed': True, 'state': 'verified_public', 'privacy_status': 'public',
                                         'publish_at_absent': True, 'youtube_video_id': record['youtube_video_id'],
                                         'channel_id': record['expected_channel_id'], 'verified_at': '2026-09-08T17:08:24Z'}}
-        p=patch('finalize.workflow_identity',return_value={'name':'Recovery','run_id':'20','run_attempt':'2','code_commit_sha':'d'*40});p.start();self.addCleanup(p.stop)
+        p=patch('finalize_receipt.workflow_identity',return_value={'name':'Recovery','run_id':'20','run_attempt':'2','code_commit_sha':'d'*40});p.start();self.addCleanup(p.stop)
 
     def build(self): return build_receipt(self.path, self.request, self.upload, self.selection, self.render)
 
@@ -91,7 +91,7 @@ class ResultReceiptTests(unittest.TestCase):
         with self.assertRaises(RecoveryBlocked):self.build()
 
     def test_failed_receipt_commit_then_rerun_preserves_one_immutable_receipt(self):
-        import finalize
+        import finalize_receipt
         from recovery_state import receipt_path, record_path, encoded_json
         from test_recovery import MemoryState
         from workflow_common import atomic_write_json
@@ -104,15 +104,15 @@ class ResultReceiptTests(unittest.TestCase):
             atomic_write_json(out/name,data)
         real_create=state.create
         state.create=lambda path,data: (_ for _ in ()).throw(RecoveryBlocked('receipt commit failed'))
-        with patch('finalize.GitHubState',return_value=state),patch('finalize.identity_for',return_value=identity),patch('finalize.OUTPUT_DIR',out),patch('sys.argv',['finalize','--request',str(self.path)]):
-            with self.assertRaises(RecoveryBlocked):finalize.main()
+        with patch('finalize_receipt.GitHubState',return_value=state),patch('finalize_receipt.identity_for',return_value=identity),patch('finalize_receipt.OUTPUT_DIR',out),patch('sys.argv',['finalize_receipt','--request',str(self.path)]):
+            with self.assertRaises(RecoveryBlocked):finalize_receipt.main()
             self.assertIsNone(state.load(receipt_path(identity['content_id'])))
             state.create=real_create
-            finalize.main()
+            finalize_receipt.main()
             original=encoded_json(state.load(receipt_path(identity['content_id'])).data)
             self.upload['verification']['verified_at']='2026-09-08T17:10:00Z'
             atomic_write_json(out/'upload_result.json',self.upload)
-            finalize.main()
+            finalize_receipt.main()
             self.assertEqual(original,encoded_json(state.load(receipt_path(identity['content_id'])).data))
             self.assertEqual(len(state.writes),2)  # one upload record plus one receipt
 

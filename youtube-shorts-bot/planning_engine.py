@@ -1,4 +1,4 @@
-"""Deterministic selection/validation engine for the Wacky Dramas growth funnel.
+"""Deterministic selection/validation engine for the Wacky Dramas planning funnel.
 
 AI owns semantic creative work; this module owns auditable arithmetic, duplicate
 checks, analytics confidence, diversity policy and hourly scheduling. Rejected
@@ -15,7 +15,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from growth_config import (
+from planning_config import (
     ANALYTICS_CONFIDENCE_SCALE, CANONICAL_TIMEZONE, DAILY_PUBLISH_COUNT,
     DIVERSITY_LIMITS, EDITORIAL_WEIGHTS, EXPLORATION_FRACTION, HOOK_WEIGHTS,
     MAX_ANALYTICS_WEIGHT, MIN_FINAL_EDITORIAL_SCORE, MIN_HOOK_SCORE,
@@ -32,7 +32,7 @@ STOPWORDS = {
 }
 
 
-class GrowthPlanError(ValueError):
+class PlanningError(ValueError):
     pass
 
 
@@ -40,18 +40,18 @@ def _bounded(value, name="score"):
     try:
         value = float(value)
     except (TypeError, ValueError):
-        raise GrowthPlanError(f"{name} must be numeric") from None
+        raise PlanningError(f"{name} must be numeric") from None
     if not 0 <= value <= 100:
-        raise GrowthPlanError(f"{name} must be between 0 and 100")
+        raise PlanningError(f"{name} must be between 0 and 100")
     return value
 
 
 def weighted_score(components, weights):
     if not isinstance(components, dict):
-        raise GrowthPlanError("score components must be an object")
+        raise PlanningError("score components must be an object")
     missing = [key for key in weights if key not in components]
     if missing:
-        raise GrowthPlanError("missing score components: " + ", ".join(missing))
+        raise PlanningError("missing score components: " + ", ".join(missing))
     total = sum(weights.values())
     return round(sum(_bounded(components[k], k) * weights[k] for k in weights) / total, 3)
 
@@ -103,7 +103,7 @@ def hard_reject(candidate, accepted_today=(), recent=()):
         return str(candidate["hard_reject_reason"])
     try:
         score = editorial_score(candidate)
-    except GrowthPlanError:
+    except PlanningError:
         return "malformed_editorial_score"
     if candidate.get("can_sustain_target_duration") is not True:
         return "cannot_sustain_target_duration"
@@ -172,11 +172,11 @@ def blend_scores(editorial, analytics, weight):
 def select_best_title(candidate):
     titles = candidate.get("title_candidates") or []
     if len(titles) < TITLES_PER_SEMIFINALIST:
-        raise GrowthPlanError(f"{candidate.get('candidate_id')}: requires at least {TITLES_PER_SEMIFINALIST} title candidates")
+        raise PlanningError(f"{candidate.get('candidate_id')}: requires at least {TITLES_PER_SEMIFINALIST} title candidates")
     scored = [(title_score(title), title) for title in titles]
     score, best = max(scored, key=lambda x: x[0])
     if score < MIN_TITLE_SCORE:
-        raise GrowthPlanError(f"{candidate.get('candidate_id')}: no title clears minimum quality")
+        raise PlanningError(f"{candidate.get('candidate_id')}: no title clears minimum quality")
     return best, score
 
 
@@ -185,9 +185,9 @@ def score_semifinalist(candidate, analytics_w=0.0):
     title, title_value = select_best_title(candidate)
     hook_value = hook_score(candidate)
     if editorial < MIN_FINAL_EDITORIAL_SCORE:
-        raise GrowthPlanError("editorial_below_final_threshold")
+        raise PlanningError("editorial_below_final_threshold")
     if hook_value < MIN_HOOK_SCORE:
-        raise GrowthPlanError("hook_below_final_threshold")
+        raise PlanningError("hook_below_final_threshold")
     analytics_value = normalized_performance_score(candidate.get("analytics_metrics"))
     blended = blend_scores(editorial, analytics_value, analytics_w)
     final = round((blended * 0.70) + (title_value * 0.18) + (hook_value * 0.12), 3)
@@ -288,7 +288,7 @@ def order_for_schedule(selected):
 
 def evaluate(raw_candidates, semifinalists, plan_date, analytics_video_count=0, recent=()):
     if len(raw_candidates) < RAW_CANDIDATE_COUNT:
-        raise GrowthPlanError(f"raw candidate count {len(raw_candidates)} is below required {RAW_CANDIDATE_COUNT}")
+        raise PlanningError(f"raw candidate count {len(raw_candidates)} is below required {RAW_CANDIDATE_COUNT}")
     qualified, rejected = filter_candidates(raw_candidates, recent=recent)
     qualified_ids = {x["candidate_id"] for x in qualified}
     semifinalists = [x for x in semifinalists if x.get("candidate_id") in qualified_ids]
@@ -299,7 +299,7 @@ def evaluate(raw_candidates, semifinalists, plan_date, analytics_video_count=0, 
     for candidate in semifinalists:
         try:
             scored.append(score_semifinalist(candidate, weight))
-        except GrowthPlanError as exc:
+        except PlanningError as exc:
             semifinal_rejected.append({"candidate_id": candidate.get("candidate_id"), "reason": str(exc)})
     selected, substitutions = select_diverse(scored)
     ordered = order_for_schedule(selected)
@@ -443,7 +443,7 @@ def main():
     parser.add_argument("--output")
     args = parser.parse_args()
     if not args.acceptance_dry_run:
-        raise SystemExit("Only --acceptance-dry-run is a CLI action; production AI planning follows planner/DAILY_GROWTH_PROMPT.md")
+        raise SystemExit("Only --acceptance-dry-run is a CLI action; production AI planning follows planner/DAILY_PLANNER_PROMPT.md")
     raw, semifinalists = build_acceptance_fixture(args.date)
     result = evaluate(raw, semifinalists, args.date, analytics_video_count=args.analytics_video_count)
     print_summary(result)

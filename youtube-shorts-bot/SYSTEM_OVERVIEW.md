@@ -1,4 +1,4 @@
-# Wacky Dramas Growth System
+# Wacky Dramas System Overview
 
 ## Purpose
 
@@ -49,11 +49,11 @@ Raw candidates are cheap structured premises. They do not trigger media download
 
 ## Scoring
 
-Central strategy values live in `growth_config.py`. `growth_planner.py` owns deterministic arithmetic so prompt wording cannot silently change the weighting.
+Central strategy values live in `planning_config.py`. `planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change the weighting.
 
 With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap of **60%** so editorial judgment and exploration always remain material.
 
-Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `growth_planner.py` only as the normalized `historical_attribute_fit` score.
+Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning_engine.py` only as the normalized `historical_attribute_fit` score.
 
 Missing metrics are renormalized away. They are never replaced with invented zeros or proxy values. The exact Studio viewed-vs-swiped control is not available through the targeted API used here; the separately named `engaged_view_rate` is an `engagedViews / views` continuation proxy and must never be mislabeled as that Studio metric.
 
@@ -78,7 +78,7 @@ The schedule is therefore bound to the same immutable request bytes and source c
 
 ## Batch production and Actions cost
 
-`daily-growth-batch.yml` processes the selected requests in one heavy container job instead of starting one full production runner each hour. This removes repeated image/container setup while retaining per-content isolation through a dedicated output directory and durable GitHub state.
+`daily-production.yml` processes the selected requests in one heavy container job instead of starting one full production runner each hour. This removes repeated image/container setup while retaining per-content isolation through a dedicated output directory and durable GitHub state.
 
 The batch continues after individual failures so one bad story does not prevent already-good stories from completing. The job ultimately fails if any item failed, making the partial state visible. A rerun does not blindly upload again: each content ID first resolves its immutable receipt/upload intent/upload evidence.
 
@@ -102,7 +102,7 @@ A result receipt is created only after the exact YouTube state and render eviden
 
 ## Analytics
 
-`analytics.py` runs at approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore**. The 19:30 snapshot is the final refresh before the normal 20:00 daily planner.
+`analytics_collection.py` runs at approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore**. The 19:30 snapshot is the final refresh before the normal 20:00 daily planner.
 
 Only post-epoch scheduled Wacky Dramas receipts with planning metadata are eligible for the fresh-channel learning system. Same-day immature videos do not automatically increase analytics confidence.
 
@@ -116,9 +116,9 @@ The planner prefers the most mature cohort with enough usable evidence: 7d, othe
 
 ## Daily content commit
 
-The external daily planner follows `planner/DAILY_GROWTH_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v3 request files in one content-only commit whose message begins:
+The external daily planner follows `planner/DAILY_PLANNER_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v3 request files in one content-only commit whose message begins:
 
-`[daily growth] YYYY-MM-DD`
+`[daily production] YYYY-MM-DD`
 
 That commit is routed to the batch workflow. The ad-hoc workflow explicitly ignores it.
 

@@ -5,23 +5,23 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
-import analytics
+import analytics_collection
 from analytics_learning import build_model, performance_scores, score_candidate
-from growth_config import ANALYTICS_MIN_MATURE_VIDEOS
+from planning_config import ANALYTICS_MIN_MATURE_VIDEOS
 
 
 class AnalyticsFreshStartTests(unittest.TestCase):
     def test_epoch_excludes_legacy_private_and_pre_epoch_receipts(self):
-        epoch = analytics._instant("2026-09-09T16:06:13Z")
-        self.assertFalse(analytics.receipt_in_epoch({
+        epoch = analytics_collection._instant("2026-09-09T16:06:13Z")
+        self.assertFalse(analytics_collection.receipt_in_epoch({
             "publication_mode": "private", "publish_at": None, "planning": None,
         }, epoch))
-        self.assertFalse(analytics.receipt_in_epoch({
+        self.assertFalse(analytics_collection.receipt_in_epoch({
             "publication_mode": "scheduled",
             "publish_at": "2026-09-09T16:00:00Z",
             "planning": {"x": 1},
         }, epoch))
-        self.assertTrue(analytics.receipt_in_epoch({
+        self.assertTrue(analytics_collection.receipt_in_epoch({
             "publication_mode": "scheduled",
             "publish_at": "2026-09-09T17:00:00Z",
             "planning": {"x": 1},
@@ -40,9 +40,9 @@ class AnalyticsFreshStartTests(unittest.TestCase):
             "subscribersGained": 12, "subscribersLost": 2,
             "likes": 50, "comments": 5, "shares": 3,
         }
-        enriched = analytics.enrich_row(
-            row, receipt, analytics._instant("2026-09-09T16:06:13Z"),
-            now_utc=analytics._instant("2026-09-11T01:00:00Z"),
+        enriched = analytics_collection.enrich_row(
+            row, receipt, analytics_collection._instant("2026-09-09T16:06:13Z"),
+            now_utc=analytics_collection._instant("2026-09-11T01:00:00Z"),
         )
         self.assertEqual(enriched["subscribers_per_1000_views"], 12.0)
         self.assertEqual(enriched["net_subscribers_per_1000_views"], 10.0)
@@ -62,23 +62,23 @@ class AnalyticsFreshStartTests(unittest.TestCase):
         self.assertLessEqual(scores[2], 100)
 
     def test_evidence_count_requires_mature_sample_and_views(self):
-        rows = [{"video": f"v{i}", "growth_eligible": True} for i in range(12)]
+        rows = [{"video": f"v{i}", "cohort_eligible": True} for i in range(12)]
         few = {"videos": {f"v{i}": {"24h": {"metrics": {"views": 1000}}} for i in range(9)}}
-        evidence, mature, views = analytics.evidence_count(rows, few)
+        evidence, mature, views = analytics_collection.evidence_count(rows, few)
         self.assertEqual((evidence, mature), (0, 9))
         self.assertEqual(views, 9000)
 
         enough_low_views = {
             "videos": {f"v{i}": {"24h": {"metrics": {"views": 50}}} for i in range(10)}
         }
-        evidence, mature, _views = analytics.evidence_count(rows, enough_low_views)
+        evidence, mature, _views = analytics_collection.evidence_count(rows, enough_low_views)
         self.assertEqual(mature, 10)
         self.assertEqual(evidence, 1)
 
         enough_views = {
             "videos": {f"v{i}": {"24h": {"metrics": {"views": 1000}}} for i in range(10)}
         }
-        evidence, _mature, _views = analytics.evidence_count(rows, enough_views)
+        evidence, _mature, _views = analytics_collection.evidence_count(rows, enough_views)
         self.assertEqual(evidence, 10)
 
     def test_model_uses_age_matched_cohort_and_scores_candidate_attributes(self):
@@ -90,8 +90,8 @@ class AnalyticsFreshStartTests(unittest.TestCase):
             category = "RELATIONSHIP" if high else "WORKPLACE"
             videos.append({
                 "video": vid,
-                "growth_eligible": True,
-                "growth_dimensions": {
+                "cohort_eligible": True,
+                "content_dimensions": {
                     "category": category,
                     "conflict": f"C{i}",
                     "primary_emotion": "BETRAYAL",
@@ -116,7 +116,7 @@ class AnalyticsFreshStartTests(unittest.TestCase):
 
         snapshot = {
             "analytics_epoch": {"schema_version": 1, "start_at": "2026-09-09T16:06:13Z"},
-            "growth_video_count": ANALYTICS_MIN_MATURE_VIDEOS,
+            "analytics_evidence_count": ANALYTICS_MIN_MATURE_VIDEOS,
             "videos": videos,
         }
         model = build_model(snapshot, {"videos": milestone_videos})

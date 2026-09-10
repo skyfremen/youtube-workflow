@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from analytics_learning import build_model
-from growth_config import (
+from planning_config import (
     ANALYTICS_MATURITY_HOURS,
     ANALYTICS_MIN_MATURE_VIDEOS,
     ANALYTICS_VIEWS_PER_EVIDENCE_UNIT,
@@ -53,7 +53,7 @@ def receipt_in_epoch(receipt, epoch_start):
 
 
 def load_receipts(epoch_start):
-    """Load only fresh-start scheduled growth receipts; old evidence remains untouched."""
+    """Load only fresh-start scheduled planning receipts; old evidence remains untouched."""
     records = {}
     if not RESULTS.exists():
         return records
@@ -81,7 +81,7 @@ def load_request(receipt):
         return {}
 
 
-def growth_dimensions(receipt):
+def content_dimensions(receipt):
     request = load_request(receipt)
     planning = receipt.get("planning") if isinstance(receipt.get("planning"), dict) else {}
     attrs = planning.get("attributes") if isinstance(planning.get("attributes"), dict) else {}
@@ -157,10 +157,10 @@ def enrich_row(row, receipt, epoch_start, now_utc=None):
     row["publish_at"] = receipt.get("publish_at")
     row["public_age_hours"] = public_age_hours(receipt, now_utc=now_utc)
     row["planning"] = receipt.get("planning")
-    row["growth_dimensions"] = growth_dimensions(receipt)
+    row["content_dimensions"] = content_dimensions(receipt)
     publish_at = _instant(receipt.get("publish_at"))
     row["epoch_eligible"] = bool(publish_at and publish_at >= epoch_start)
-    row["growth_eligible"] = bool(
+    row["cohort_eligible"] = bool(
         row["epoch_eligible"]
         and receipt.get("publication_mode") == "scheduled"
         and row["public_age_hours"] is not None
@@ -168,7 +168,7 @@ def enrich_row(row, receipt, epoch_start, now_utc=None):
         and receipt.get("planning")
     )
     row["learning_eligible"] = bool(
-        row["growth_eligible"]
+        row["cohort_eligible"]
         and row["public_age_hours"] >= ANALYTICS_MATURITY_HOURS
     )
     return row
@@ -187,7 +187,7 @@ def capture_milestones(rows, captured_at):
     payload = load_milestones()
     payload.setdefault("videos", {})
     for row in rows:
-        if not row.get("growth_eligible"):
+        if not row.get("cohort_eligible"):
             continue
         vid = row["video"]
         snapshots = payload["videos"].setdefault(vid, {})
@@ -218,8 +218,8 @@ def capture_milestones(rows, captured_at):
 
 
 def evidence_count(rows, milestones):
-    """Return conservative evidence-equivalent count for growth_planner.analytics_weight()."""
-    rows_by_video = {str(row.get("video")): row for row in rows if row.get("growth_eligible")}
+    """Return conservative evidence-equivalent count for planning_engine.analytics_weight()."""
+    rows_by_video = {str(row.get("video")): row for row in rows if row.get("cohort_eligible")}
     points = []
     total_evidence_views = 0.0
     for video_id, snapshots in milestones.get("videos", {}).items():
@@ -252,9 +252,9 @@ def main():
             "analytics_epoch": epoch,
             "result_receipt_video_count": 0,
             "video_count": 0,
-            "published_growth_video_count": 0,
-            "mature_growth_video_count": 0,
-            "growth_video_count": 0,
+            "published_video_count": 0,
+            "mature_video_count": 0,
+            "analytics_evidence_count": 0,
             "analytics_model": {
                 "schema_version": 2, "epoch": epoch, "active_cohort": None,
                 "analytics_evidence_count": 0, "analytics_enabled": False,
@@ -268,7 +268,7 @@ def main():
             json.dumps(payload["analytics_model"], ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-        print("No post-epoch Wacky Dramas growth receipts yet; fresh-start analytics remains at 0%.")
+        print("No post-epoch Wacky Dramas planning receipts yet; fresh-start analytics remains at 0%.")
         return
 
     from google.auth.exceptions import RefreshError
@@ -346,7 +346,7 @@ def main():
     captured_at = now_utc.isoformat().replace("+00:00", "Z")
     milestones = capture_milestones(rows, captured_at)
     evidence, mature_count, evidence_views = evidence_count(rows, milestones)
-    growth_rows = [x for x in rows if x.get("growth_eligible")]
+    eligible_rows = [x for x in rows if x.get("cohort_eligible")]
 
     payload = {
         "captured_at": captured_at,
@@ -354,12 +354,12 @@ def main():
         "window": {"start_date": start, "end_date": end},
         "result_receipt_video_count": len(video_ids),
         "video_count": len(rows),
-        "published_growth_video_count": len(growth_rows),
-        "mature_growth_video_count": mature_count,
-        "growth_video_count": evidence,
+        "published_video_count": len(eligible_rows),
+        "mature_video_count": mature_count,
+        "analytics_evidence_count": evidence,
         "analytics_evidence_views": evidence_views,
         "metrics_note": {
-            "growth_video_count": (
+            "analytics_evidence_count": (
                 "planner evidence-equivalent count: zero until >=10 24h snapshots, "
                 "then min(mature videos, comparable views/500)"
             ),
@@ -379,7 +379,7 @@ def main():
     MODEL_PATH.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(
         f"Collected fresh-start analytics for {len(rows)}/{len(video_ids)} videos; "
-        f"published={len(growth_rows)}; mature24h={mature_count}; "
+        f"published={len(eligible_rows)}; mature24h={mature_count}; "
         f"evidence_count={evidence}; analytics_enabled={model['analytics_enabled']}."
     )
 
