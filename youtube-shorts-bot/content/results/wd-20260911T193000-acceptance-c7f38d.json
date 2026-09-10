@@ -1,0 +1,402 @@
+{
+  "schema_version": 3,
+  "content_id": "wd-20260911T193000-acceptance-c7f38d",
+  "request_path": "youtube-shorts-bot/content/requests/wd-20260911T193000-acceptance-c7f38d.json",
+  "request_blob_sha": "8e4cf3bc0c5df80f1912e9cec68a6da628e11862",
+  "source_commit_sha": "e99aa494829798c23852622f807da5011df17675",
+  "youtube_video_id": "gyHV9J4e3EE",
+  "youtube_url": "https://www.youtube.com/watch?v=gyHV9J4e3EE",
+  "youtube_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "publication_mode": "scheduled",
+  "privacy_status": "private",
+  "publish_at": "2026-09-11T19:30:00Z",
+  "publish_at_absent": false,
+  "verification_state": "verified_scheduled",
+  "verification": {
+    "passed": true,
+    "state": "verified_scheduled",
+    "verified_at": "2026-09-10T19:18:13.450222+00:00",
+    "content_id": "wd-20260911T193000-acceptance-c7f38d",
+    "request_path": "youtube-shorts-bot/content/requests/wd-20260911T193000-acceptance-c7f38d.json",
+    "request_blob_sha": "8e4cf3bc0c5df80f1912e9cec68a6da628e11862",
+    "source_commit_sha": "e99aa494829798c23852622f807da5011df17675",
+    "youtube_video_id": "gyHV9J4e3EE",
+    "channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+    "channel_title": "Wacky Dramas",
+    "channel_handle": "@wackydramas",
+    "privacy_status": "private",
+    "publish_at": "2026-09-11T19:30:00Z",
+    "publish_at_absent": false,
+    "upload_status": "processed",
+    "association_method": "immutable_github_upload_record",
+    "observed_marker_tags": [
+      "wd-id-46e291e08a9f1eb9fcec"
+    ],
+    "attempts": 6,
+    "prior_observations": [
+      {
+        "attempt": 1,
+        "observed_at": "2026-09-10T19:17:46.797239+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 2,
+        "observed_at": "2026-09-10T19:17:48.948354+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 3,
+        "observed_at": "2026-09-10T19:17:53.040861+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 4,
+        "observed_at": "2026-09-10T19:18:01.156017+00:00",
+        "state": "YouTube processing not complete"
+      },
+      {
+        "attempt": 5,
+        "observed_at": "2026-09-10T19:18:09.279925+00:00",
+        "state": "YouTube processing not complete"
+      }
+    ]
+  },
+  "planning": {
+    "plan_date": "2026-09-12",
+    "editorial_score": 90,
+    "editorial_components": {
+      "opening_hook_potential": 90,
+      "curiosity_gap": 90,
+      "emotional_stakes": 90,
+      "escalation_potential": 90,
+      "payoff_quality": 90,
+      "title_potential": 90,
+      "broad_relatability": 90,
+      "originality": 90,
+      "narration_suitability": 90
+    },
+    "analytics_score": null,
+    "analytics_weight": 0,
+    "final_score": 90,
+    "title_candidates": [
+      {
+        "title": "My Boss Took Credit for My Work—Until the Client Called Me #Shorts",
+        "style": "HIDDEN_REVELATION",
+        "truthful": true,
+        "score": 93,
+        "score_components": {
+          "curiosity_gap": 93,
+          "emotional_impact": 93,
+          "unanswered_question": 93,
+          "immediate_comprehension": 93,
+          "specificity": 93,
+          "natural_phrasing": 93,
+          "conciseness": 93,
+          "truthful_reflection": 93
+        }
+      },
+      {
+        "title": "The Client Asked Who Saved the Project. My Boss Froze #Shorts",
+        "style": "CONSEQUENCE_FIRST",
+        "truthful": true,
+        "score": 90,
+        "score_components": {
+          "curiosity_gap": 90,
+          "emotional_impact": 90,
+          "unanswered_question": 90,
+          "immediate_comprehension": 90,
+          "specificity": 90,
+          "natural_phrasing": 90,
+          "conciseness": 90,
+          "truthful_reflection": 90
+        }
+      },
+      {
+        "title": "He Claimed the Credit Until the Email Thread Appeared #Shorts",
+        "style": "NORMAL_TO_ABNORMAL",
+        "truthful": true,
+        "score": 88,
+        "score_components": {
+          "curiosity_gap": 88,
+          "emotional_impact": 88,
+          "unanswered_question": 88,
+          "immediate_comprehension": 88,
+          "specificity": 88,
+          "natural_phrasing": 88,
+          "conciseness": 88,
+          "truthful_reflection": 88
+        }
+      },
+      {
+        "title": "I Stayed Quiet Until the Client Turned the Screen Around #Shorts",
+        "style": "DELAYED_REVELATION",
+        "truthful": true,
+        "score": 86,
+        "score_components": {
+          "curiosity_gap": 86,
+          "emotional_impact": 86,
+          "unanswered_question": 86,
+          "immediate_comprehension": 86,
+          "specificity": 86,
+          "natural_phrasing": 86,
+          "conciseness": 86,
+          "truthful_reflection": 86
+        }
+      },
+      {
+        "title": "Minutes Before the Meeting, He Took Credit for My Work #Shorts",
+        "style": "COUNTDOWN",
+        "truthful": true,
+        "score": 84,
+        "score_components": {
+          "curiosity_gap": 84,
+          "emotional_impact": 84,
+          "unanswered_question": 84,
+          "immediate_comprehension": 84,
+          "specificity": 84,
+          "natural_phrasing": 84,
+          "conciseness": 84,
+          "truthful_reflection": 84
+        }
+      }
+    ],
+    "selected_title_score": 93,
+    "hook_score": 92,
+    "selection_class": "exploit",
+    "selection_reason": "Strong workplace injustice, escalating proof and a clear public reversal.",
+    "similarity": {
+      "max_recent_similarity": 0.24
+    },
+    "attributes": {
+      "subtype": "CREDIT_THEFT_BACKFIRE",
+      "conflict": "STOLEN_CREDIT",
+      "primary_emotion": "INJUSTICE",
+      "protagonist_role": "EMPLOYEE",
+      "antagonist_role": "BOSS",
+      "opening_style": "CONSEQUENCE_FIRST",
+      "title_style": "HIDDEN_REVELATION",
+      "ending_style": "JUSTICE"
+    },
+    "target_duration_seconds": 150
+  },
+  "background_requested_primary_id": "satisfying-014",
+  "background_requested_backup_id": "satisfying-020",
+  "background_asset_id": "satisfying-014",
+  "background_selection": "primary",
+  "background_usage": {
+    "logical_asset_id": "satisfying-014",
+    "selection": "primary",
+    "counts_for_diversity": true,
+    "source": "verified_immutable_success_receipt"
+  },
+  "background_rendition": {
+    "id": "12686079",
+    "width": 1920,
+    "height": 1080,
+    "fps": 29.97003,
+    "file_type": "video/mp4",
+    "quality": "",
+    "direct_url": "https://videos.pexels.com/video-files/29470941/12686079_1920_1080_30fps.mp4",
+    "file_size_bytes": 5989996,
+    "codec": "h264",
+    "selection_reason": "lowest_cost_production_suitable_rendition"
+  },
+  "background_target": {
+    "width": 720,
+    "height": 1280,
+    "fps": 30
+  },
+  "background_rendition_fallback_used": false,
+  "background_logical_fallback_used": false,
+  "background_generic_source_fallback_used": false,
+  "narration_engine": "kokoro",
+  "narration_voice": "af_heart",
+  "narration_speed": 1.75,
+  "narration_seconds": 106.314667,
+  "video_seconds": 106.666667,
+  "resolution": "720x1280",
+  "fps": 30.0,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "audio_stream_count": 1,
+  "render_verification": {
+    "content_id": "wd-20260911T193000-acceptance-c7f38d",
+    "narration_engine": "kokoro",
+    "narration_backend_requested": "onnx-fp32",
+    "narration_backend_used": "onnx-fp32",
+    "narration_fallback_used": false,
+    "narration_fallback_reason": null,
+    "narration_voice": "af_heart",
+    "narration_speed": 1.75,
+    "narration_seconds": 106.314667,
+    "narration_audio_metrics": {
+      "peak": 0.818575,
+      "rms": 0.074042,
+      "clipped_fraction": 0.0
+    },
+    "card_title_text": "The Client Asked for the Person Who Saved the Project",
+    "start_lead_seconds": 0.5,
+    "card_title_seconds": 1.856,
+    "card_transition_seconds": 0.3,
+    "story_start_seconds": 2.656,
+    "story_narration_seconds": 103.658667,
+    "video_seconds": 106.666667,
+    "resolution": "720x1280",
+    "fps": 30.0,
+    "end_tail_seconds": 0.35,
+    "production_ceiling_seconds": 178.0,
+    "test_mode": false,
+    "test_render_max_seconds": null,
+    "narration_excerpt": null,
+    "ffmpeg_duration_seconds": 41.144901,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "ffmpeg_threads": 2,
+    "inline_blackdetect_passed": true,
+    "inline_blackdetect_max_duration_seconds": 0.0,
+    "inline_blackdetect_filter": "blackdetect=d=0.50:pic_th=0.98:pix_th=0.10",
+    "inline_blackdetect_fail_threshold_seconds": 0.75,
+    "onnx_init_duration_seconds": 0.709589,
+    "pytorch_fallback_init_duration_seconds": 0.0,
+    "tts_generation_duration_seconds": 48.816629,
+    "render_process_duration_seconds": 102.59626,
+    "render_started_at": "2026-09-10T19:15:54.846002+00:00",
+    "production_elapsed_through_render_seconds": 104.969009,
+    "caption_timing_mode": "word_aligned",
+    "caption_alignment_backend": "torchaudio-2.8.0/wav2vec2-base-960h-ctc",
+    "caption_alignment_word_count": 518,
+    "caption_alignment_coverage": 1.0,
+    "caption_alignment_duration_seconds": 11.543654,
+    "caption_alignment_error": null,
+    "caption_alignment_model": "WAV2VEC2_ASR_BASE_960H",
+    "caption_alignment_torch_version": "2.8.0+cpu",
+    "caption_alignment_torchaudio_version": "2.8.0+cpu",
+    "caption_alignment_torch_threads": 2,
+    "caption_alignment_torch_interop_threads": 1,
+    "render_verified": true,
+    "render_verified_at": "2026-09-10T19:17:38.432495+00:00",
+    "render_verification_source": "ffprobe_frame_decode_and_inline_blackdetect",
+    "render_verification_duration_seconds": 0.655996,
+    "verified_blackdetect_max_duration_seconds": 0.0,
+    "configured_video_seconds": 106.664667,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_stream_count": 1,
+    "video_stream_count": 1,
+    "audio_source": "narration.wav only (input 3:a:0)",
+    "video_sha256": "be5bc9ec5738f4b9925270be4b5145ea1944e7cec1ba9506a41580bd6292e404"
+  },
+  "renderer_source_commit": "8ae1f8c599bab8cb37b0369d4781666277a8ec3a",
+  "upload_workflow": {
+    "name": "Production Execution",
+    "run_id": "34519260395",
+    "run_attempt": "1",
+    "code_commit_sha": "8ae1f8c599bab8cb37b0369d4781666277a8ec3a"
+  },
+  "workflow_name": "Production Execution",
+  "workflow_run_id": "34519260395",
+  "workflow_run_attempt": "1",
+  "verification_source_commit": "8ae1f8c599bab8cb37b0369d4781666277a8ec3a",
+  "uploaded_at": "2026-09-10T19:17:44.545670+00:00",
+  "youtube_verified_at": "2026-09-10T19:18:13.450222+00:00",
+  "receipt_created_at": "2026-09-10T19:18:13.551144+00:00",
+  "production_metrics": {
+    "resolution_started_at": "2026-09-10T19:15:52.469380+00:00",
+    "preflight_duration_seconds": 0.065438,
+    "background_resolution_duration_seconds": 2.237931,
+    "downloaded_bytes": 5989996,
+    "download_duration_seconds": 0.052607,
+    "background_sha256": "39558fd9f527ff0015cab5278cf2eebac2f93bafaab6456a8fa0cdf0189fdf50",
+    "render_background_bytes": 7189718,
+    "render_background_sha256": "b67c3fe32bef9cc796f96df27953c861d4169ea7607247473fe76fcc5b862116",
+    "source_probe": {
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.97003
+    },
+    "background_normalization_applied": true,
+    "background_normalization_duration_seconds": 2.023246,
+    "render_probe": {
+      "codec": "h264",
+      "width": 720,
+      "height": 1280,
+      "fps": 30.0
+    },
+    "ffmpeg_duration_seconds": 41.144901,
+    "x264_preset": "superfast",
+    "x264_crf": 19,
+    "tts_generation_duration_seconds": 48.816629,
+    "caption_alignment_duration_seconds": 11.543654,
+    "render_process_duration_seconds": 102.59626,
+    "production_elapsed_through_render_seconds": 104.969009,
+    "total_production_duration_seconds": 141.081764
+  },
+  "test_mode": false,
+  "recovery": {
+    "record_path": "youtube-shorts-bot/content/recovery/wd-20260911T193000-acceptance-c7f38d/upload.json",
+    "record_blob_sha": "0449ba1f894e2b082c0125f7f53c587ecba07ea5",
+    "recovered": false,
+    "association": {
+      "kind": "youtube_insert_response",
+      "intent_blob_sha": "343625f0dabf7d925be61eb713e26a3479645381",
+      "intent_commit_sha": "b44fcc7f00277590cc9624186ffaabc1871817fe",
+      "response": {
+        "kind": "youtube#video",
+        "etag": "jZBLzq7AZ2NCPJvubMFG3T6rveU",
+        "id": "gyHV9J4e3EE",
+        "snippet": {
+          "publishedAt": "2026-09-10T19:17:41Z",
+          "channelId": "UCvrq2m9G4yrwPfL_X-QPzMA",
+          "title": "My Boss Took Credit for My Work—Until the Client Called Me #Shorts",
+          "description": "He took credit for the overnight rescue—until the client opened the email thread. What would you have done?\n\n#Shorts #WackyDramas #WorkplaceDrama #Storytime",
+          "thumbnails": {
+            "default": {
+              "url": "https://i9.ytimg.com/vi/gyHV9J4e3EE/default.jpg?sqp=CLSDjNUG&rs=AOn4CLAaUtsBVenmFWUwFbyq6fnZJN7xAg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i9.ytimg.com/vi/gyHV9J4e3EE/mqdefault.jpg?sqp=CLSDjNUG&rs=AOn4CLBc3XoIc6igD0f3LNyYxidE3ZNOWQ",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i9.ytimg.com/vi/gyHV9J4e3EE/hqdefault.jpg?sqp=CLSDjNUG&rs=AOn4CLDk_zFVoIAPukZp9K-K2gTbPCUnrQ",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Wacky Dramas",
+          "tags": [
+            "Shorts",
+            "WackyDramas",
+            "WorkplaceDrama",
+            "boss takes credit",
+            "client call",
+            "office story",
+            "storytime",
+            "wacky dramas",
+            "wd-id-46e291e08a9f1eb9fcec",
+            "workplace drama"
+          ],
+          "categoryId": "24",
+          "liveBroadcastContent": "none",
+          "localized": {
+            "title": "My Boss Took Credit for My Work—Until the Client Called Me #Shorts",
+            "description": "He took credit for the overnight rescue—until the client opened the email thread. What would you have done?\n\n#Shorts #WackyDramas #WorkplaceDrama #Storytime"
+          }
+        },
+        "status": {
+          "uploadStatus": "uploaded",
+          "privacyStatus": "private",
+          "publishAt": "2026-09-11T19:30:00Z",
+          "license": "youtube",
+          "embeddable": true,
+          "publicStatsViewable": true,
+          "selfDeclaredMadeForKids": false
+        }
+      }
+    }
+  }
+}
