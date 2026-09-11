@@ -23,7 +23,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/resources/validate.py` | Registry and selected-background validation |
 | `runtime/transform/synth.py` | Narration synthesis backends |
 | `runtime/transform/align.py` | Word-level narration alignment |
-| `runtime/transform/compose.py` | 720x1280 visual/audio composition |
+| `runtime/transform/compose.py` | 1080x1920 visual/audio composition |
 | `runtime/transform/process.py` | Synthesis, alignment, and composition entry point |
 | `runtime/transform/verify.py` | Final media integrity verification |
 | `runtime/output/access.py` | OAuth refresh and pinned-channel read-only preflight |
@@ -54,7 +54,6 @@ Execution failures write detailed traces to:
 
 Public logs intentionally retain only stage, item ordinal, stable error code, and aggregate counts. Canonical requests, schedules, content IDs, result receipts, analytics, and recovery records remain private.
 
-
 ## Check stage aliases
 
 | Public alias | Owner meaning |
@@ -80,7 +79,6 @@ These aliases change only the names repeated in public Actions logs. Secret valu
 ## Manual recovery identity
 
 A manual recovery batch ID hashes the immutable item identities together with `github.run_id`. A new manual trigger therefore gets a new immutable completion namespace, while reruns of the same workflow run retain the same batch ID. Durable per-item upload records remain the duplicate-publication authority.
-
 
 ## 1080p, readability and voice contract
 
