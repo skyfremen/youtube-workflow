@@ -1,6 +1,5 @@
 import json
-import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -18,6 +17,7 @@ REPO_ROOT = BASE.parent
 RESULTS = BASE / "content" / "results"
 ANALYTICS = BASE / "analytics"
 ANALYTICS.mkdir(exist_ok=True)
+RAW_PATH = REPO_ROOT / ".state" / "observations" / "latest.json"
 MILESTONES_PATH = ANALYTICS / "milestones.json"
 MODEL_PATH = ANALYTICS / "model.json"
 LATEST_PATH = ANALYTICS / "latest.json"
@@ -131,6 +131,7 @@ def rate_per_1000(value, views):
 
 
 def enrich_row(row, receipt, now_utc=None):
+    row = dict(row)
     views = float(row.get("views") or 0)
     engaged = row.get("engagedViews")
     duration = float(receipt.get("video_seconds") or 0)
@@ -217,6 +218,7 @@ def capture_milestones(rows, captured_at):
                         "shares_per_1000_views",
                         "likes_per_1000_views",
                         "comments_per_1000_views",
+                        "data_source",
                     )
                 },
             }
@@ -253,7 +255,7 @@ def evidence_count(rows, milestones):
     return min(mature_count, view_units), mature_count, int(total_evidence_views)
 
 
-def write_snapshot(payload, dated=False):
+def write_snapshot(payload, dated=False, now_utc=None):
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     LATEST_PATH.write_text(text, encoding="utf-8")
     MODEL_PATH.write_text(
@@ -261,16 +263,57 @@ def write_snapshot(payload, dated=False):
         encoding="utf-8",
     )
     if dated:
-        (ANALYTICS / f"{singapore_date().isoformat()}.json").write_text(text, encoding="utf-8")
+        (ANALYTICS / f"{singapore_date(now_utc).isoformat()}.json").write_text(
+            text, encoding="utf-8"
+        )
+
+
+def load_raw_snapshot():
+    try:
+        payload = json.loads(RAW_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None
+    if payload.get("schema_version") != 1:
+        raise ValueError("unsupported raw analytics schema")
+    captured_at = _instant(payload.get("captured_at"))
+    if captured_at is None:
+        raise ValueError("invalid raw analytics captured_at")
+    if not isinstance(payload.get("aggregate"), list) or not isinstance(
+        payload.get("recent"), list
+    ):
+        raise ValueError("invalid raw analytics rows")
+    return payload, captured_at
+
+
+def raw_rows_by_video(raw):
+    aggregate = {}
+    for row in raw.get("aggregate", []):
+        video_id = str(row.get("video", "")).strip()
+        if video_id:
+            aggregate[video_id] = dict(row)
+    recent = {}
+    for row in raw.get("recent", []):
+        video_id = str(row.get("video", "")).strip()
+        if video_id:
+            recent[video_id] = dict(row)
+    merged = dict(recent)
+    merged.update(aggregate)
+    return merged
 
 
 def main():
+    loaded = load_raw_snapshot()
+    if loaded is None:
+        print("No raw observation snapshot yet; analytics unchanged.")
+        return
+    raw, now_utc = loaded
+    captured_at = now_utc.isoformat().replace("+00:00", "Z")
     receipts = load_receipts()
     video_ids = list(receipts)
-    captured_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     if not video_ids:
         payload = {
             "captured_at": captured_at,
+            "window": raw.get("window", {}),
             "result_receipt_video_count": 0,
             "video_count": 0,
             "published_video_count": 0,
@@ -280,108 +323,23 @@ def main():
             "videos": [],
         }
         payload["analytics_model"] = build_model(payload, {"videos": {}})
-        write_snapshot(payload)
-        print("No Wacky Dramas production receipts yet; analytics remains at 0%.")
+        write_snapshot(payload, now_utc=now_utc)
+        print("No production receipts yet; analytics remains at 0%.")
         return
 
-    from google.auth.exceptions import RefreshError
-    from google.oauth2.credentials import Credentials
-    from googleapiclient.discovery import build
-    from googleapiclient.errors import HttpError
-
-    credentials = Credentials(
-        token=None,
-        refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
-        token_uri="https://oauth2.googleapis.com/token",
-        client_id=os.environ["YOUTUBE_CLIENT_ID"],
-        client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
-        scopes=[
-            "https://www.googleapis.com/auth/yt-analytics.readonly",
-            "https://www.googleapis.com/auth/youtube.readonly",
-        ],
-    )
-    oldest_publish_date = min(_instant(receipt["publish_at"]).date() for receipt in receipts.values())
-    today = singapore_date()
-    start_date = max(today - timedelta(days=90), oldest_publish_date).isoformat()
-    end_date = today.isoformat()
-    metrics = (
-        "views,engagedViews,likes,comments,shares,estimatedMinutesWatched,"
-        "averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost"
-    )
-    rows_by_video = {}
-    try:
-        service = build(
-            "youtubeAnalytics", "v2", credentials=credentials, cache_discovery=False
-        )
-        for offset in range(0, len(video_ids), 200):
-            batch = video_ids[offset : offset + 200]
-            result = service.reports().query(
-                ids="channel==MINE",
-                startDate=start_date,
-                endDate=end_date,
-                metrics=metrics,
-                dimensions="video",
-                filters="video==" + ",".join(batch),
-                sort="-views",
-                maxResults=200,
-            ).execute()
-            headers = [column["name"] for column in result.get("columnHeaders", [])]
-            for values in result.get("rows", []) or []:
-                row = dict(zip(headers, values))
-                video_id = str(row.get("video", "")).strip()
-                if video_id:
-                    row["data_source"] = "youtube_analytics"
-                    rows_by_video[video_id] = row
-
-        missing = [video_id for video_id in video_ids if video_id not in rows_by_video]
-        if missing:
-            youtube = build("youtube", "v3", credentials=credentials, cache_discovery=False)
-            for offset in range(0, len(missing), 50):
-                batch = missing[offset : offset + 50]
-                result = youtube.videos().list(
-                    part="statistics", id=",".join(batch), maxResults=50
-                ).execute()
-                for item in result.get("items", []) or []:
-                    video_id = item["id"]
-                    stats = item.get("statistics", {})
-                    rows_by_video[video_id] = {
-                        "video": video_id,
-                        "views": int(stats.get("viewCount", 0) or 0),
-                        "engagedViews": None,
-                        "likes": int(stats.get("likeCount", 0) or 0),
-                        "comments": int(stats.get("commentCount", 0) or 0),
-                        "shares": None,
-                        "estimatedMinutesWatched": None,
-                        "averageViewDuration": None,
-                        "averageViewPercentage": None,
-                        "subscribersGained": None,
-                        "subscribersLost": None,
-                        "data_source": "youtube_data_api_fallback",
-                    }
-    except RefreshError:
-        print("ANALYTICS_AUTHORIZATION_REQUIRED")
-        return
-    except HttpError as exc:
-        status = getattr(exc.resp, "status", None)
-        if status in (400, 401, 403):
-            print(f"ANALYTICS_UNAVAILABLE_HTTP_{status or 'unknown'}")
-            return
-        raise
-
-    now_utc = datetime.now(timezone.utc)
+    observations = raw_rows_by_video(raw)
     rows = [
-        enrich_row(rows_by_video[video_id], receipts[video_id], now_utc=now_utc)
+        enrich_row(observations[video_id], receipts[video_id], now_utc=now_utc)
         for video_id in video_ids
-        if video_id in rows_by_video
+        if video_id in observations
     ]
-    captured_at = now_utc.isoformat().replace("+00:00", "Z")
     milestones = capture_milestones(rows, captured_at)
     evidence, mature_count, evidence_views = evidence_count(rows, milestones)
     eligible_rows = [row for row in rows if row.get("cohort_eligible")]
 
     payload = {
         "captured_at": captured_at,
-        "window": {"start_date": start_date, "end_date": end_date},
+        "window": raw.get("window", {}),
         "result_receipt_video_count": len(video_ids),
         "video_count": len(rows),
         "published_video_count": len(eligible_rows),
@@ -393,7 +351,9 @@ def main():
                 "planner evidence-equivalent count: zero until >=10 24h snapshots, "
                 "then min(mature videos, comparable views/500)"
             ),
-            "qualified_shorts_views": "engagedViews when available from YouTube Analytics",
+            "qualified_shorts_views": (
+                "engagedViews when available from the aggregate analytics source"
+            ),
             "viewed_vs_swiped_away": (
                 "not exposed by this targeted API path; never fabricated"
             ),
@@ -403,14 +363,18 @@ def main():
             "net_subscribers_per_1000_views": (
                 "(subscribersGained-subscribersLost)/views*1000"
             ),
+            "source_precedence": (
+                "aggregate analytics rows take precedence; recent statistics are "
+                "used only when aggregate analytics has no row for a video"
+            ),
         },
         "videos": rows,
     }
     model = build_model(payload, milestones)
     payload["analytics_model"] = model
-    write_snapshot(payload, dated=True)
+    write_snapshot(payload, dated=True, now_utc=now_utc)
     print(
-        f"Collected analytics for {len(rows)}/{len(video_ids)} videos; "
+        f"Processed analytics for {len(rows)}/{len(video_ids)} videos; "
         f"published={len(eligible_rows)}; mature24h={mature_count}; "
         f"evidence_count={evidence}; analytics_enabled={model['analytics_enabled']}."
     )
