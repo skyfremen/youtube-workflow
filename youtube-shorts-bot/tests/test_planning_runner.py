@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -6,6 +7,7 @@ import unittest
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1]
+ROOT = BASE.parent
 sys.path.insert(0, str(BASE))
 
 from planning.planning_engine import build_acceptance_fixture, evaluate, filter_candidates
@@ -28,6 +30,7 @@ class PlanningRunnerTests(unittest.TestCase):
             envelope["execution"]["entry_points"],
             ["planning.planning_engine.filter_candidates"],
         )
+        self.assertRegex(envelope["execution"]["source_sha"], r"^[0-9a-f]{40}$")
         self.assertEqual(len(envelope["execution"]["implementation_sha256"]), 64)
         self.assertEqual(len(envelope["execution"]["input_sha256"]), 64)
 
@@ -81,6 +84,8 @@ class PlanningRunnerTests(unittest.TestCase):
             output_path = tmp / "output.json"
             input_path.write_text(json.dumps({"raw_candidates": []}), encoding="utf-8")
             output_path.write_text("stale", encoding="utf-8")
+            env = dict(os.environ)
+            env["PYTHONPATH"] = str(BASE)
             proc = subprocess.run(
                 [
                     sys.executable,
@@ -92,7 +97,8 @@ class PlanningRunnerTests(unittest.TestCase):
                     "--output",
                     str(output_path),
                 ],
-                cwd=BASE,
+                cwd=ROOT,
+                env=env,
                 capture_output=True,
                 text=True,
             )
