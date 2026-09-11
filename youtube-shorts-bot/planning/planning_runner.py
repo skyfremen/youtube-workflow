@@ -44,11 +44,14 @@ def implementation_digest():
 
 def source_sha():
     try:
-        return subprocess.check_output(
+        sha = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, stderr=subprocess.DEVNULL
         ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        return None
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise PlanningError("cannot resolve checked-out source SHA") from exc
+    if len(sha) != 40 or any(ch not in "0123456789abcdef" for ch in sha.lower()):
+        raise PlanningError("checked-out source SHA is not a full Git commit SHA")
+    return sha.lower()
 
 
 def _require_list(payload, key):
@@ -202,7 +205,7 @@ def main():
 
     print(
         f"Canonical planning executed: stage={args.stage}; "
-        f"source_sha={envelope['execution']['source_sha'] or 'unavailable'}; "
+        f"source_sha={envelope['execution']['source_sha']}; "
         f"output={output}"
     )
 
