@@ -1,0 +1,129 @@
+name: Ad-hoc Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      content_id:
+        description: One immutable content ID
+        required: true
+        type: string
+
+concurrency:
+  group: private-adhoc-${{ inputs.content_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load private state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Create opaque execution
+        id: batch
+        env:
+          CONTENT_ID: ${{ inputs.content_id }}
+          EXECUTION_RUN_ID: ${{ github.run_id }}
+          EXECUTION_ATTEMPT: ${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          content_id = os.environ.get('CONTENT_ID', '').strip()
+          if not re.fullmatch(r'wd-[A-Za-z0-9-]+', content_id):
+              raise SystemExit('Invalid immutable content ID')
+          path = Path(f'youtube-shorts-bot/content/requests/{content_id}.json')
+          if not path.is_file():
+              raise SystemExit('Request is not present in canonical state')
+          commits = subprocess.check_output(
+              ['git', 'log', '--diff-filter=A', '--format=%H', '--', str(path)], text=True
+          ).splitlines()
+          if not commits:
+              raise SystemExit('Cannot resolve immutable request source')
+          item = {'content_id': content_id, 'source_commit_sha': commits[-1]}
+          execution = {
+              'item': item,
+              'workflow_run_id': os.environ.get('EXECUTION_RUN_ID', ''),
+              'workflow_run_attempt': os.environ.get('EXECUTION_ATTEMPT', ''),
+          }
+          if not execution['workflow_run_id'].isdigit() or not execution['workflow_run_attempt'].isdigit():
+              raise SystemExit('Cannot resolve unique execution identity')
+          canonical = json.dumps(execution, sort_keys=True, separators=(',', ':')).encode()
+          batch_id = 'r_' + hashlib.sha256(canonical).hexdigest()[:30]
+          target = Path(f'youtube-shorts-bot/content/recovery/batches/{batch_id}.json')
+          rendered = json.dumps({
+              'schema_version': 1,
+              'batch_id': batch_id,
+              'items': [item],
+          }, indent=2, sort_keys=True) + '\n'
+          if target.exists() and target.read_text(encoding='utf-8') != rendered:
+              raise SystemExit('Existing immutable execution manifest differs')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_text(rendered, encoding='utf-8')
+          Path('/tmp/private-batch-id').write_text(batch_id)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add youtube-shorts-bot/content/recovery/batches/
+          if ! git diff --cached --quiet; then
+            git commit -m "[skip upload] add immutable single execution"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "batch_id=$(cat /tmp/private-batch-id)" >> "${GITHUB_OUTPUT}"
+          echo "source_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve compatibility contract
+        id: contract
+        working-directory: youtube-shorts-bot
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_hash="$(python -m common.runtime_contract)"
+          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::Invalid compatibility fingerprint"
+            exit 1
+          fi
+          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch isolated execution
+        env:
+          PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
+          BATCH_ID: ${{ steps.batch.outputs.batch_id }}
+          SOURCE_SHA: ${{ steps.batch.outputs.source_sha }}
+          CONTRACT_HASH: ${{ steps.contract.outputs.contract_hash }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+              'ref': 'main',
+              'inputs': {
+                  'batch_id': os.environ['BATCH_ID'],
+                  'source_sha': os.environ['SOURCE_SHA'],
+                  'contract_hash': os.environ['CONTRACT_HASH'],
+                  'profile': 'single',
+              },
+          }, separators=(',', ':')))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/run.yml/dispatches \
+            -d "${payload}"
+          echo "One opaque isolated execution dispatched."

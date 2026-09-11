@@ -14,6 +14,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertEqual(
             {path.name for path in WORKFLOWS.glob("*.yml")},
             {
+                "adhoc-production.yml",
                 "analytics-collection.yml",
                 "background-management.yml",
                 "daily-production.yml",

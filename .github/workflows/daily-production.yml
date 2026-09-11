@@ -129,6 +129,7 @@ jobs:
                   'batch_id': os.environ['BATCH_ID'],
                   'source_sha': os.environ['SOURCE_SHA'],
                   'contract_hash': os.environ['CONTRACT_HASH'],
+                  'profile': 'paired',
               },
           }, separators=(',', ':')))
           PY
