@@ -169,6 +169,7 @@ def decide(s, now, policy):
         s.latest_event == "none"
         and not fast_no_start
         and not explicit_dispatch_failure
+        and not s.forced_source_failure
         and s.current_dispatch_started_at is None
         and s.latest_dispatched_at is None
     ):
