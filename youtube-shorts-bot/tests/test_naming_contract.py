@@ -15,6 +15,7 @@ class ArchitectureContractTests(unittest.TestCase):
             {path.name for path in WORKFLOWS.glob("*.yml")},
             {
                 "analytics-collection.yml",
+                "automatic-recovery.yml",
                 "background-management.yml",
                 "daily-production.yml",
                 "dry-run.yml",
