@@ -127,9 +127,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           persist_evidence() {
-            git add youtube-shorts-bot/content/recovery/dispatch-intents/ \
-                    youtube-shorts-bot/content/recovery/dispatches/ \
-                    youtube-shorts-bot/content/recovery/dispatch-failures/ 2>/dev/null || true
+            for path in \
+              youtube-shorts-bot/content/recovery/dispatch-intents \
+              youtube-shorts-bot/content/recovery/dispatches \
+              youtube-shorts-bot/content/recovery/dispatch-failures; do
+              if [ -d "${path}" ]; then
+                git add "${path}"
+              fi
+            done
             if ! git diff --cached --quiet; then
               git commit -m "[skip upload] record opaque dispatch evidence"
               git pull --rebase origin main
