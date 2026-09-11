@@ -16,7 +16,6 @@ class ArchitectureContractTests(unittest.TestCase):
             {
                 "analytics-collection.yml",
                 "background-management.yml",
-                "build-image.yml",
                 "daily-production.yml",
                 "dry-run.yml",
             },
@@ -103,6 +102,9 @@ class ArchitectureContractTests(unittest.TestCase):
             BOT_ROOT / "publishing/finalize_receipt.py",
             BOT_ROOT / "publishing/publish.py",
             BOT_ROOT / "publishing/verify_publication.py",
+            BOT_ROOT / "Dockerfile",
+            BOT_ROOT / "requirements.txt",
+            WORKFLOWS / "build-image.yml",
         ]
         paths.extend((BOT_ROOT / "production").glob("*.py"))
         paths.extend((BOT_ROOT / "rendering").glob("*.py"))
@@ -144,11 +146,12 @@ class ArchitectureContractTests(unittest.TestCase):
 
         analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
         backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
-        image = (WORKFLOWS / "build-image.yml").read_text(encoding="utf-8")
         self.assertIn("analytics/analytics_collection.py", analytics)
         self.assertIn("media/pexels_registry.py", backgrounds)
         self.assertIn("media/validate_media_library.py", backgrounds)
-        self.assertIn("youtube-shorts-bot/Dockerfile", image)
+        self.assertFalse((WORKFLOWS / "build-image.yml").exists())
+        self.assertFalse((BOT_ROOT / "Dockerfile").exists())
+        self.assertFalse((BOT_ROOT / "requirements.txt").exists())
 
     def test_analytics_contract_is_current_and_consistent(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
