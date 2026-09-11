@@ -104,10 +104,37 @@ jobs:
           BATCH_ID: ${{ steps.batch.outputs.batch_id }}
           SOURCE_SHA: ${{ steps.batch.outputs.source_sha }}
           CONTRACT_HASH: ${{ steps.contract.outputs.contract_hash }}
+          PRIVATE_RUN_ID: ${{ github.run_id }}
+          PRIVATE_RUN_ATTEMPT: ${{ github.run_attempt }}
         shell: bash
         run: |
           set -euo pipefail
-          payload="$(python - <<'PY'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          persist_evidence() {
+            for path in \
+              youtube-shorts-bot/content/recovery/dispatch-intents \
+              youtube-shorts-bot/content/recovery/dispatches \
+              youtube-shorts-bot/content/recovery/dispatch-failures; do
+              if [ -d "${path}" ]; then
+                git add "${path}"
+              fi
+            done
+            if ! git diff --cached --quiet; then
+              git commit -m "[skip upload] record opaque dispatch evidence"
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          }
+
+          dispatch_id="$(python youtube-shorts-bot/recovery/evidence.py prepare \
+            --batch-id "${BATCH_ID}" --source-sha "${SOURCE_SHA}" \
+            --contract-hash "${CONTRACT_HASH}" --dispatch-kind adhoc \
+            --run-id "${PRIVATE_RUN_ID}" --run-attempt "${PRIVATE_RUN_ATTEMPT}")"
+          persist_evidence
+
+          payload="$(DISPATCH_ID="${dispatch_id}" python - <<'PY'
           import json, os
           print(json.dumps({
               'ref': 'main',
@@ -115,14 +142,30 @@ jobs:
                   'batch_id': os.environ['BATCH_ID'],
                   'source_sha': os.environ['SOURCE_SHA'],
                   'contract_hash': os.environ['CONTRACT_HASH'],
+                  'dispatch_id': os.environ['DISPATCH_ID'],
               },
           }, separators=(',', ':')))
           PY
           )"
-          curl --fail --silent --show-error -X POST \
+          if ! curl --fail --silent --show-error -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/single.yml/dispatches \
-            -d "${payload}"
+            -d "${payload}"; then
+            python youtube-shorts-bot/recovery/evidence.py fail \
+              --batch-id "${BATCH_ID}" --source-sha "${SOURCE_SHA}" \
+              --contract-hash "${CONTRACT_HASH}" --dispatch-kind adhoc \
+              --run-id "${PRIVATE_RUN_ID}" --run-attempt "${PRIVATE_RUN_ATTEMPT}" \
+              --dispatch-id "${dispatch_id}"
+            persist_evidence
+            exit 1
+          fi
+
+          python youtube-shorts-bot/recovery/evidence.py accept \
+            --batch-id "${BATCH_ID}" --source-sha "${SOURCE_SHA}" \
+            --contract-hash "${CONTRACT_HASH}" --dispatch-kind adhoc \
+            --run-id "${PRIVATE_RUN_ID}" --run-attempt "${PRIVATE_RUN_ATTEMPT}" \
+            --dispatch-id "${dispatch_id}"
+          persist_evidence
           echo "One opaque isolated execution dispatched."
