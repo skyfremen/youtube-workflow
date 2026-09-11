@@ -7,9 +7,14 @@ from common.workflow_common import marker_tag, request_content_id
 def expected_publication(request_data, *, require_future=True, now_utc=None):
     publication = request_data.get("publication")
     if not isinstance(publication, dict):
-        raise ValueError("Scheduled publication contract is required")
-    if publication.get("mode") != "scheduled":
-        raise ValueError("publication.mode must be scheduled")
+        raise ValueError("Publication contract is required")
+    mode = publication.get("mode")
+    if mode == "immediate":
+        if publication.get("publish_at") is not None:
+            raise ValueError("Immediate publication requires publish_at=null")
+        return None
+    if mode != "scheduled":
+        raise ValueError("publication.mode must be scheduled or immediate")
     raw = str(publication.get("publish_at", ""))
     if not raw.endswith("Z"):
         raise ValueError("Scheduled publish_at must be UTC RFC3339 ending Z")
@@ -36,10 +41,11 @@ def _append_unique_tag(tags, seen, value):
 
 
 def build_upload_body(request_data, *, require_future=True, now_utc=None):
-    """Build the canonical private + publishAt YouTube request body."""
+    """Build the canonical scheduled or immediate-public YouTube request body."""
     publish_at = expected_publication(
         request_data, require_future=require_future, now_utc=now_utc
     )
+    mode = request_data["publication"]["mode"]
     marker = marker_tag(request_content_id(request_data))
     youtube = request_data["youtube"]
     description = str(youtube["description"]).strip()
@@ -71,6 +77,13 @@ def build_upload_body(request_data, *, require_future=True, now_utc=None):
     if tag_cost > 500:
         raise ValueError("Tags exceed YouTube's combined 500-character limit")
 
+    status = {
+        "privacyStatus": "public" if mode == "immediate" else "private",
+        "selfDeclaredMadeForKids": bool(youtube["made_for_kids"]),
+    }
+    if mode == "scheduled":
+        status["publishAt"] = publish_at
+
     return {
         "snippet": {
             "title": str(youtube["title"]),
@@ -78,9 +91,5 @@ def build_upload_body(request_data, *, require_future=True, now_utc=None):
             "tags": tags,
             "categoryId": str(youtube["category_id"]),
         },
-        "status": {
-            "privacyStatus": "private",
-            "selfDeclaredMadeForKids": bool(youtube["made_for_kids"]),
-            "publishAt": publish_at,
-        },
+        "status": status,
     }
