@@ -69,7 +69,7 @@ The schedule is bound to the same immutable request bytes and source commit as t
 
 ## Batch production and Actions cost
 
-`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow runs one heavy container job with bounded internal concurrency of two, while all canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private.
+`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow prepares once, deterministically partitions a normal 24-item batch into 12 two-item matrix units with internal concurrency two, then performs one authoritative aggregation/finalization. All canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private. Ad-hoc generation uses the separate one-job `single.yml` path at concurrency one.
 
 The public repository also owns the canonical runtime-image build through `base.yml`, `base/Dockerfile`, and `base/dependencies.txt`. The private repository does not contain a Dockerfile, runtime dependency manifest, or image-build workflow.
 
@@ -101,7 +101,7 @@ The verifier checks duration, **1080×1920** resolution, 30 fps, H.264 High vide
 
 ## Analytics
 
-Raw YouTube observations are collected by the public `production-runtime/.github/workflows/check.yml` approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore** and written into private state. The private `analytics-collection.yml` processes/enriches the latest observations once per day at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
+Raw YouTube observations are collected by the public `production-runtime/.github/workflows/observe.yml` approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore** and written into private state. Public runtime validation is isolated in credential-free `dry-run.yml`. The private `analytics-collection.yml` processes/enriches the latest observations once per day at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
 
 Analytics accepts canonical scheduled schema-v3 or schema-v4 success receipts with planning metadata. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
 

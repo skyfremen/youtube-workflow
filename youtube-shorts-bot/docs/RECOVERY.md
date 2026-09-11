@@ -70,4 +70,4 @@ If recovery reports conflicting videos, mismatched evidence, an intent with no o
 
 ## Safe verification
 
-Private planning/state changes should use `dry-run.yml`; runtime changes should use the public repository's `check.yml`. A production YouTube upload is not part of cleanup verification.
+Private planning/state changes should use private `dry-run.yml`; runtime changes should use the public repository's `dry-run.yml`. Scheduled observation is isolated in public `observe.yml`. A production YouTube upload is not part of cleanup verification.

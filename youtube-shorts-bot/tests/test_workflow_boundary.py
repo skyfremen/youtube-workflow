@@ -14,6 +14,9 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def recovery(self):
         return (WORKFLOWS / "automatic-recovery.yml").read_text(encoding="utf-8")
 
+    def adhoc(self):
+        return (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
+
     def analytics(self):
         return (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
 
@@ -37,6 +40,19 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", text)
         self.assertNotIn("'content_ids': os.environ", text)
         self.assertIn("b_$(printf", text)
+
+    def test_opaque_routing_targets_are_stable(self):
+        daily = self.daily()
+        adhoc = self.adhoc()
+        recovery = self.recovery()
+        self.assertIn("actions/workflows/run.yml/dispatches", daily)
+        self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
+        self.assertIn("actions/workflows/run.yml/dispatches", recovery)
+        for workflow in (daily, adhoc, recovery):
+            for field in ("batch_id", "source_sha", "contract_hash"):
+                self.assertIn(f"'{field}'", workflow)
+            for forbidden in ("'story'", "'title'", "'voice'", "'background'"):
+                self.assertNotIn(forbidden, workflow)
 
     def test_manual_recovery_is_private_manifest_state(self):
         text = self.daily()

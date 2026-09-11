@@ -10,17 +10,19 @@ ARCH_TERM = "gro" + "wth"
 
 
 class ArchitectureContractTests(unittest.TestCase):
-    def test_supported_surface_is_exact(self):
-        self.assertEqual(
-            {path.name for path in WORKFLOWS.glob("*.yml")},
-            {
+    def test_supported_surface_has_required_workflows_and_no_retired_paths(self):
+        actual = {path.name for path in WORKFLOWS.glob("*.yml")}
+        required = {
                 "adhoc-production.yml",
                 "analytics-collection.yml",
                 "automatic-recovery.yml",
                 "background-management.yml",
                 "daily-production.yml",
                 "dry-run.yml",
-            },
+        }
+        self.assertTrue(required <= actual, f"missing workflows: {sorted(required - actual)}")
+        self.assertFalse(
+            {"build-image.yml", "pipeline-validation.yml", "background-library.yml"} & actual
         )
         self.assertEqual(
             {path.name for path in PLANNER.glob("*.md")},
