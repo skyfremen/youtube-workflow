@@ -27,7 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Load private state
-        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
@@ -101,18 +100,36 @@ jobs:
           echo "batch_id=${batch_id}" >> "${GITHUB_OUTPUT}"
           echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
 
+      - name: Resolve compatibility contract
+        id: contract
+        working-directory: youtube-shorts-bot
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_hash="$(python -m common.runtime_contract)"
+          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::Invalid compatibility fingerprint"
+            exit 1
+          fi
+          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
+
       - name: Dispatch public execution
         env:
           PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
           BATCH_ID: ${{ steps.batch.outputs.batch_id }}
           SOURCE_SHA: ${{ steps.batch.outputs.source_sha }}
+          CONTRACT_HASH: ${{ steps.contract.outputs.contract_hash }}
         run: |
           set -euo pipefail
           payload="$(python - <<'PY'
           import json, os
           print(json.dumps({
               'ref': 'main',
-              'inputs': {'batch_id': os.environ['BATCH_ID'], 'source_sha': os.environ['SOURCE_SHA']},
+              'inputs': {
+                  'batch_id': os.environ['BATCH_ID'],
+                  'source_sha': os.environ['SOURCE_SHA'],
+                  'contract_hash': os.environ['CONTRACT_HASH'],
+              },
           }, separators=(',', ':')))
           PY
           )"
@@ -124,4 +141,3 @@ jobs:
             https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/run.yml/dispatches \
             -d "${payload}"
           echo "One opaque production batch dispatched."
-
