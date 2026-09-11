@@ -96,7 +96,7 @@ jobs:
               'def authorize_fresh_upload(',
               'def execute_upload(',
               'videos().insert(',
-              'YOUTUBE_REFRESH_TOKEN',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
               'youtube.upload',
           )
           for required in required_contract:
