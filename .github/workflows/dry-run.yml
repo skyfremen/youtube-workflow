@@ -221,6 +221,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import re
           from pathlib import Path
 
           dry = Path('.github/workflows/dry-run.yml').read_text()
@@ -236,12 +237,10 @@ jobs:
           for secret in secret_names:
               assert secret not in dry
               assert secret not in recovery
-          for secret in (
-              'PRIVATE_' + 'STATE_TOKEN',
-              'PEXELS_' + 'API_KEY',
-              'PUBLIC_' + 'PRODUCTION_TOKEN',
-          ):
-              assert secret not in dry, f'E_SECRET_PRIVATE_DRY_RUN references {secret}'
+          secret_refs = set(re.findall(r'secrets\.([A-Z0-9_]+)', dry))
+          assert not secret_refs, (
+              f'E_SECRET_PRIVATE_DRY_RUN secret references: {sorted(secret_refs)}'
+          )
           assert ('container' + ':') not in dry
           assert ('container' + ':') not in recovery
           assert 'group: private-production-dispatch-' in batch
