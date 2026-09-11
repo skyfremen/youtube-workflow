@@ -11,11 +11,17 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from validation.validate_content import SCHEMA_VERSION
+
 ROOT = Path(__file__).resolve().parents[1]
 CID = re.compile(r"wd-[A-Za-z0-9-]+")
 SHA = re.compile(r"[0-9a-f]{40}")
 VIDEO = re.compile(r"[A-Za-z0-9_-]{11}")
 BATCH = re.compile(r"[br]_[0-9a-f]{30}")
+
+
+class ManualOnly(RuntimeError):
+    """The request is valid historical state but is not eligible for automatic recovery."""
 
 
 @dataclass(frozen=True)
@@ -245,6 +251,8 @@ class Repository:
 
     def snapshot(self, request_path, *, now, failed_source_sha=""):
         request = self.load(request_path)
+        if request.get("schema_version") != SCHEMA_VERSION:
+            raise ManualOnly("non_current_request_schema")
         content_id = str(request.get("content_id", ""))
         if content_id != request_path.stem or not CID.fullmatch(content_id):
             raise ValueError("invalid immutable request identity")
@@ -317,6 +325,9 @@ def reconcile(repo, *, now, policy, write, failed_source_sha=""):
         try:
             snap = repo.snapshot(path, now=now, failed_source_sha=failed_source_sha)
             decision = decide(snap, now, policy)
+        except ManualOnly as exc:
+            decisions.append({"content_id": path.stem, "state": "manual_only", "reason": str(exc)})
+            continue
         except (OSError, ValueError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
             decisions.append({"content_id": path.stem, "state": "terminal",
                               "reason": f"invalid_private_state:{type(exc).__name__}"})
