@@ -23,9 +23,15 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def test_private_daily_workflow_is_dispatch_only(self):
         text = self.daily()
         for forbidden in (
-            "container:", "youtube-shorts-runner", "media_resolver.py",
-            "render_aligned.py", "verify_publication.py", "finalize_receipt.py",
-            "upload-artifact", "YOUTUBE_CLIENT_ID", "PEXELS_API_KEY",
+            "container:",
+            "youtube-shorts-runner",
+            "media_resolver.py",
+            "render_aligned.py",
+            "verify_publication.py",
+            "finalize_receipt.py",
+            "upload-artifact",
+            "YOUTUBE_CLIENT_ID",
+            "PEXELS_API_KEY",
         ):
             self.assertNotIn(forbidden, text)
         self.assertIn("actions/workflows/run.yml/dispatches", text)
@@ -33,7 +39,9 @@ class WorkflowBoundaryContracts(unittest.TestCase):
 
     def test_one_push_batch_produces_one_opaque_dispatch(self):
         text = self.daily()
-        self.assertIn("contains(github.event.head_commit.message, '[daily production]')", text)
+        self.assertIn(
+            "contains(github.event.head_commit.message, '[daily production]')", text
+        )
         self.assertIn("python -m common.runtime_contract", text)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", text)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", text)
@@ -64,7 +72,8 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def test_dispatcher_preserves_original_triggers(self):
         text = self.daily()
         for path in (
-            "content/requests/*.json", "content/planning/*.json",
+            "content/requests/*.json",
+            "content/planning/*.json",
             "content/background-sourcing/*.json",
         ):
             self.assertIn(path, text)
@@ -76,7 +85,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("recovery/controller.py", text)
         self.assertIn("content/diagnostics/**/*.json", text)
         self.assertIn("workflow_run:", text)
-        self.assertIn("workflows: ['Daily Production']", text)
+        self.assertIn("workflows: ['Daily Production', 'Ad-hoc Production']", text)
         self.assertIn("schedule:", text)
         self.assertIn("cron: '17 */2 * * *'", text)
         self.assertIn("RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'", text)
@@ -86,8 +95,12 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("PUBLIC_PRODUCTION_TOKEN", text)
         self.assertIn("cancel-in-progress: false", text)
         for forbidden in (
-            "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN",
-            "PEXELS_API_KEY", "videos().insert", "render_aligned.py",
+            "YOUTUBE_CLIENT_ID",
+            "YOUTUBE_CLIENT_SECRET",
+            "YOUTUBE_REFRESH_TOKEN",
+            "PEXELS_API_KEY",
+            "videos().insert",
+            "render_aligned.py",
         ):
             self.assertNotIn(forbidden, text)
 
@@ -112,7 +125,9 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertNotIn("content/completions/*.json", workflow)
         self.assertNotIn("content/results/*.json", workflow)
         for secret in (
-            "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN",
+            "YOUTUBE_CLIENT_ID",
+            "YOUTUBE_CLIENT_SECRET",
+            "YOUTUBE_REFRESH_TOKEN",
         ):
             self.assertNotIn(secret, workflow)
 
