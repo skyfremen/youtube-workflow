@@ -54,19 +54,20 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn("10 million qualified public Shorts views", text)
         self.assertIn("business-purpose language only", overview)
 
-    def test_private_request_and_publication_contract_is_schema_v3_only(self):
+    def test_private_request_contract_is_v4_with_v3_recovery(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
         upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
 
-        self.assertIn("SCHEMA_VERSION = 3", validator)
+        self.assertIn("SCHEMA_VERSION = 4", validator)
+        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
         self.assertNotIn("schema in {2, 3}", validator)
         self.assertIn('"privacyStatus": "private"', upload)
         self.assertIn('"publishAt": publish_at', upload)
         self.assertIn("Scheduled publication contract is required", upload)
         self.assertNotIn('"mode": "public"', upload)
-        self.assertIn("Schema v3 is the only supported production request format", overview)
+        self.assertIn("Schema v4 is the current production request format", overview)
 
         forbidden = [
             "schema " + "v2",
