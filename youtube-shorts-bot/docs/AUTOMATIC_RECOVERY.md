@@ -15,13 +15,15 @@ The public runtime's existing durable upload state remains the exactly-once fenc
 
 ## Controller
 
-`recovery/controller.py` scans immutable requests and classifies each item as one of:
+`recovery/controller.py` scans immutable requests and classifies each eligible item as one of:
 
 - `completed` — a valid immutable verified receipt exists.
 - `active` — the most recent execution is still inside the recovery grace period.
 - `pending` — a retryable failure exists but its retry backoff has not elapsed.
 - `recoverable` — the item is stale or has retryable/durable evidence that should be reconciled.
 - `terminal` — automatic retry is unsafe or the bounded attempt limit is exhausted.
+
+Automatic recovery is intentionally limited to the repository's **current request schema** (`SCHEMA_VERSION`). Historical request schemas remain `manual_only` even when the runtime still supports them for operator recovery. This prevents old acceptance/migration artifacts from being resurrected by a newly enabled watchdog while preserving manual recovery for those immutable requests.
 
 The controller never renders, uploads, or edits an immutable request. When recovery is safe it writes the same recovery-manifest contract already consumed by `production-runtime`.
 
