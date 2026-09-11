@@ -128,8 +128,10 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("name: Daily Production", batch)
         self.assertIn("contains(github.event.head_commit.message, '[daily production]')", batch)
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
-        self.assertIn("'inputs': {'batch_id':", batch)
-        self.assertIn("'source_sha':", batch)
+        self.assertIn("python -m common.runtime_contract", batch)
+        self.assertIn("'batch_id': os.environ['BATCH_ID']", batch)
+        self.assertIn("'source_sha': os.environ['SOURCE_SHA']", batch)
+        self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", batch)
 
     def test_execution_chain_uses_current_components(self):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
