@@ -30,6 +30,24 @@ STOPWORDS = {
 }
 
 
+LEAD_GENDERS = {"female", "male"}
+NATURAL_TONES = {"natural", "general", "conversational", "warm", "calm"}
+EXPRESSIVE_TONES = {"comedy", "dramatic", "sarcastic", "dramatic_comedy", "absurd", "expressive"}
+
+
+def select_narration_voice(lead_gender, story_tone):
+    """Map planner-resolved perspective and tone to the approved voice pool."""
+    gender = str(lead_gender or "").strip().lower()
+    tone = str(story_tone or "").strip().lower()
+    if gender not in LEAD_GENDERS:
+        raise PlanningError("lead_gender must be resolved as female or male")
+    if tone not in NATURAL_TONES | EXPRESSIVE_TONES:
+        raise PlanningError("story_tone is not a controlled value")
+    if gender == "female":
+        return "af_bella" if tone in EXPRESSIVE_TONES else "af_heart"
+    return "am_fenrir" if tone in EXPRESSIVE_TONES else "am_echo"
+
+
 class PlanningError(ValueError):
     pass
 
