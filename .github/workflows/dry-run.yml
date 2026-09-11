@@ -132,6 +132,20 @@ jobs:
       - name: Run private planning, state, and contract tests
         run: python -m unittest discover -s youtube-shorts-bot/tests -v
 
+      - name: Verify cross-repository contract parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/production-runtime-contract
+          git clone --quiet --depth 1 https://github.com/skyfremen/production-runtime.git /tmp/production-runtime-contract
+          private_hash="$(cd youtube-shorts-bot && python -m common.runtime_contract)"
+          public_hash="$(cd /tmp/production-runtime-contract && PYTHONPATH=runtime python -m base.compat)"
+          if [ "${private_hash}" != "${public_hash}" ]; then
+            echo "::error::Cross-repository execution contract drift detected"
+            exit 1
+          fi
+          echo "Cross-repository execution contract parity PASS"
+
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/media/validate_media_library.py
 
@@ -183,6 +197,7 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
+          assert 'Cross-repository execution contract parity PASS' in dry
           for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
               assert forbidden not in batch
           assert 'branches: [main]' in maintenance
