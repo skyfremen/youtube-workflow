@@ -242,8 +242,8 @@ jobs:
               assert secret not in dry
               assert secret not in recovery
           secret_refs = set(re.findall(r'secrets\.([A-Z0-9_]+)', dry))
-          assert not secret_refs, (
-              f'E_SECRET_PRIVATE_DRY_RUN secret references: {sorted(secret_refs)}'
+          assert secret_refs == {'PUBLIC_PRODUCTION_TOKEN'}, (
+              f'E_SECRET_PRIVATE_DRY_RUN unexpected secret references: {sorted(secret_refs)}'
           )
           assert ('container' + ':') not in dry
           assert ('container' + ':') not in recovery
@@ -257,6 +257,7 @@ jobs:
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
           assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
+          assert 'actions/workflows/dry-run.yml/dispatches' in dry
           assert 'Cross-repository execution contract parity PASS' in dry
           assert 'content/diagnostics/**/*.json' in recovery
           assert "workflows: ['Daily Production', 'Ad-hoc Production']" in recovery
@@ -269,7 +270,7 @@ jobs:
               assert forbidden not in batch
               assert forbidden not in recovery
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, ad-hoc routing, automatic recovery, and opaque public routing verified.')
+          print('Dry-run isolation, linked public validation, ad-hoc routing, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
@@ -285,3 +286,18 @@ jobs:
             fi
           done
           echo 'Private dry run passed with no render or upload side effects.'
+
+      - name: Dispatch public dry run
+        shell: bash
+        env:
+          PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/dry-run.yml/dispatches \
+            -d '{"ref":"main"}'
+          echo 'Public runtime dry run dispatched.'
