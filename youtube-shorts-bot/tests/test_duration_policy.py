@@ -28,7 +28,7 @@ class DurationPolicyTests(unittest.TestCase):
 
     def test_default_canvas(self):
         with patch.dict(os.environ, {}, clear=True):
-            self.assertEqual(expected_video_config(), {"width": 720, "height": 1280, "fps": 30})
+            self.assertEqual(expected_video_config(), {"width": 1080, "height": 1920, "fps": 30})
 
     def test_five_second_test_config_can_be_set(self):
         with patch.dict(os.environ, {"STORY_TEST_MODE": "true", "STORY_RENDER_MAX_SECONDS": "5"}):
