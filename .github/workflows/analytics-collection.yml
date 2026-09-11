@@ -4,10 +4,9 @@ env:
   PYTHONPATH: youtube-shorts-bot
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.state/observations/latest.json'
+  schedule:
+    # 19:45 Asia/Singapore (UTC+8), before the 20:00 planning run
+    - cron: '45 11 * * *'
   workflow_dispatch:
 
 concurrency:
