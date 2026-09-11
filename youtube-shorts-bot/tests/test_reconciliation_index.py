@@ -126,6 +126,15 @@ class ReconciliationIndexTests(unittest.TestCase):
         self.assertEqual(report["upload_record_count"], 0)
         self.assertEqual(report["verified_receipt_count"], 1)
 
+    def test_repository_private_state_is_fully_indexed(self):
+        report = bootstrap(BOT, write=False)
+        self.assertGreaterEqual(report["mapping_count"], 2)
+        self.assertEqual(report["conflicts"], 0)
+        self.assertEqual(report["created"], 0)
+        self.assertEqual(report["reused"], report["mapping_count"])
+        self.assertTrue(report["bootstrap_present"])
+        self.assertFalse(report["youtube_api_required"])
+
 
 if __name__ == "__main__":
     unittest.main()
