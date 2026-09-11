@@ -229,6 +229,7 @@ jobs:
           adhoc = Path('.github/workflows/adhoc-production.yml').read_text()
           recovery = Path('.github/workflows/automatic-recovery.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
+          evidence = Path('youtube-shorts-bot/recovery/evidence.py')
           secret_names = (
               'YOUTUBE_' + 'CLIENT_ID',
               'YOUTUBE_' + 'CLIENT_SECRET',
@@ -243,6 +244,7 @@ jobs:
           )
           assert ('container' + ':') not in dry
           assert ('container' + ':') not in recovery
+          assert evidence.is_file()
           assert 'group: private-production-dispatch-' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
@@ -251,21 +253,29 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
+          assert "'dispatch_id': os.environ['DISPATCH_ID']" in batch
+          assert 'recovery/evidence.py prepare' in batch
+          assert 'recovery/evidence.py accept' in batch
+          assert 'recovery/evidence.py fail' in batch
           assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
+          assert "'dispatch_id': os.environ['DISPATCH_ID']" in adhoc
           assert 'Cross-repository execution contract parity PASS' in dry
           assert 'content/diagnostics/**/*.json' in recovery
           assert "workflows: ['Daily Production']" in recovery
-          assert "cron: '17 */2 * * *'" in recovery
+          assert "cron: '17,47 * * * *'" in recovery
+          assert "RECOVERY_STARTUP_GRACE_MINUTES: '25'" in recovery
           assert 'recovery/controller.py' in recovery
           assert 'RECOVERY_MAX_AUTOMATIC_ATTEMPTS' in recovery
           assert 'actions/workflows/run.yml/dispatches' in recovery
+          assert "'dispatch_id': os.environ['DISPATCH_ID']" in recovery
+          assert 'no-start-retry' in recovery
           assert 'PUBLIC_PRODUCTION_TOKEN' in recovery
           for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
               assert forbidden not in batch
               assert forbidden not in recovery
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, ad-hoc routing, automatic recovery, and opaque public routing verified.')
+          print('Dry-run isolation, heartbeat recovery, ad-hoc routing, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
