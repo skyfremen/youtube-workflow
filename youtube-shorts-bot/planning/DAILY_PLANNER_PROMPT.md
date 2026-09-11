@@ -15,13 +15,13 @@ When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **c
 Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
 
 ## Canonical production contract
-Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; Kokoro af_heart 1.75x; 720×1280/30fps H.264 + AAC; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
+Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; story-aware approved Kokoro voice at 1.75x; 1080×1920/30fps H.264 High, yuv420p, BT.709 + AAC-LC 48kHz; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
 
 Read before planning: `planner/STORY_RULES.md`, `planning/planning_config.py`, `planning/planning_engine.py`, `media/background_policy.py`, `media/background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
 
 ## Funnel
 Use progressive detail, not 120 full scripts:
-`>=120 raw premises → hard rejection/duplicate filtering → ~60 qualified → ~36 semifinalists → concrete ending/outline/opening + >=5 truthful titles → title/hook competition → analytics adjustment → diversity + ~80/20 exploit/explore → <=24 winners → full 120–175s scripts → background selection → immutable schema-v3 requests`.
+`>=120 raw premises → hard rejection/duplicate filtering → ~60 qualified → ~36 semifinalists → concrete ending/outline/opening + >=5 truthful titles → title/hook competition → analytics adjustment → diversity + ~80/20 exploit/explore → <=24 winners → full 120–175s scripts → background selection → immutable schema-v4 requests`.
 Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial swap concepts.
 
 ## Editorial and title competition
@@ -66,6 +66,25 @@ Only after winner selection/background planning write full scripts and requests.
 
 ## Daily planning audit
 Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. It must contain the exact top-level keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`, in addition to the existing funnel/diversity/analytics/background/metadata audit details. `content_ids` must exactly equal the stems of the new request filenames in the same commit, with no extra or missing IDs, and `final_selected` must equal the number of those requests. Record catch-up reference time, eligible slots, and omitted elapsed/too-close slots when applicable. If no candidate clears hard gates, commit no weak filler.
+
+## Canonical narrator decision
+
+For every final winner, determine whose experience drives the setup and payoff. Resolve `story.lead_gender` as `female` or `male`; do not count isolated relationship words or infer from a secondary character. Resolve ambiguous cases from the narrator whose perspective carries the setup and punchline. If that still cannot be established, explicitly choose the narrator perspective before creating the request.
+
+Freeze `story.story_tone` and `narration.voice` in schema-v4:
+
+- female + natural/general → `af_heart`
+- female + funny/dramatic/expressive → `af_bella`
+- male + natural/general → `am_echo`
+- male + funny/dramatic/expressive → `am_fenrir`
+
+Use one voice for the complete Short. Never randomly rotate voices or switch per sentence.
+
+## Canonical visual-quality decision
+
+White subtitles must remain readable throughout the used segment. Logical primary/backup selection must prioritize caption-safe-region readability above aesthetics, alongside motion, loopability and semantic fit. Reject bright-white, flashing or highly cluttered caption regions unless the approved outline, shadow and subtle darkening treatment can protect them.
+
+The frozen request still contains only logical primary and backup IDs. Runtime chooses the smallest physical rendition whose effective 9:16 crop can produce 1080×1920 without more than very minor enlargement. Prefer native vertical, then downscaling; use 4K landscape only when its post-crop resolution is necessary. Never substitute an unrelated third asset.
 
 ## Commit and handoff
 The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; `daily-production.yml` (**Daily Production**) owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
