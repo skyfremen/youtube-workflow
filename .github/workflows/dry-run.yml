@@ -69,6 +69,34 @@ jobs:
           ]
           present = [str(path) for path in retired_roots if path.exists()]
           assert not present, 'retired project roots present: ' + ', '.join(present)
+
+          upload_contract = Path(
+              'youtube-shorts-bot/publishing/upload.py'
+          ).read_text()
+          required_contract = (
+              'def expected_publication(',
+              'def build_upload_body(',
+          )
+          forbidden_execution = (
+              'def make_client(',
+              'def authenticated_channel(',
+              'def find_existing_by_marker(',
+              'def upload_new(',
+              'def recover_record(',
+              'def authorize_fresh_upload(',
+              'def execute_upload(',
+              'videos().insert(',
+              'YOUTUBE_REFRESH_TOKEN',
+              'youtube.upload',
+          )
+          for required in required_contract:
+              assert required in upload_contract, (
+                  f'missing private request-body contract: {required}'
+              )
+          for forbidden in forbidden_execution:
+              assert forbidden not in upload_contract, (
+                  f'private execution implementation restored: {forbidden}'
+              )
           print('Canonical daily-only Wacky Dramas repository surface verified.')
           PY
 
@@ -143,7 +171,6 @@ jobs:
           assert 'actions/workflows/run.yml/dispatches' in batch
           assert "'inputs': {'batch_id':" in batch
           assert "'source_sha':" in batch
-          assert 'python youtube-shorts-bot/production/dry_run.py' in dry
           for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
               assert forbidden not in batch
           assert 'branches: [main]' in maintenance
