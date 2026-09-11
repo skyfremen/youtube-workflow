@@ -38,6 +38,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("'batch_id': os.environ['BATCH_ID']", text)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", text)
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", text)
+        self.assertIn("'dispatch_id': os.environ['DISPATCH_ID']", text)
         self.assertNotIn("'content_ids': os.environ", text)
         self.assertIn("b_$(printf", text)
 
@@ -49,10 +50,24 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
         self.assertIn("actions/workflows/run.yml/dispatches", recovery)
         for workflow in (daily, adhoc, recovery):
-            for field in ("batch_id", "source_sha", "contract_hash"):
+            for field in ("batch_id", "source_sha", "contract_hash", "dispatch_id"):
                 self.assertIn(f"'{field}'", workflow)
             for forbidden in ("'story'", "'title'", "'voice'", "'background'"):
                 self.assertNotIn(forbidden, workflow)
+
+    def test_dispatch_evidence_wraps_daily_adhoc_and_recovery_calls(self):
+        for workflow in (self.daily(), self.adhoc(), self.recovery()):
+            self.assertIn("recovery/evidence.py prepare", workflow)
+            self.assertIn("recovery/evidence.py accept", workflow)
+            self.assertIn("recovery/evidence.py fail", workflow)
+            self.assertLess(
+                workflow.index("recovery/evidence.py prepare"),
+                workflow.index("-X POST"),
+            )
+            self.assertGreater(
+                workflow.index("recovery/evidence.py accept"),
+                workflow.index("-X POST"),
+            )
 
     def test_manual_recovery_is_private_manifest_state(self):
         text = self.daily()
@@ -78,12 +93,14 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("workflow_run:", text)
         self.assertIn("workflows: ['Daily Production']", text)
         self.assertIn("schedule:", text)
-        self.assertIn("cron: '17 */2 * * *'", text)
+        self.assertIn("cron: '17,47 * * * *'", text)
+        self.assertIn("RECOVERY_STARTUP_GRACE_MINUTES: '25'", text)
         self.assertIn("RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'", text)
         self.assertIn("RECOVERY_ACTIVE_GRACE_MINUTES: '210'", text)
         self.assertIn("actions/workflows/run.yml/dispatches", text)
         self.assertIn("python -m common.runtime_contract", text)
         self.assertIn("PUBLIC_PRODUCTION_TOKEN", text)
+        self.assertIn("no-start-retry", text)
         self.assertIn("cancel-in-progress: false", text)
         for forbidden in (
             "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN",
