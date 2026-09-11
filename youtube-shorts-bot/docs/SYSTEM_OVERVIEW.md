@@ -57,7 +57,7 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 
 ## Immutable request contract
 
-**Schema v3 is the only supported production request format.** Every request contains the canonical story, narration, visual and YouTube fields plus:
+**Schema v4 is the current production request format; schema v3 remains accepted only for immutable recovery.** Every request contains the canonical story, narration, visual and YouTube fields plus:
 
 - immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, and exact UTC `publish_at`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
@@ -92,7 +92,7 @@ A schema-v3 result receipt is created only after exact YouTube state and render 
 
 The production render writes inline black-detection evidence during the render pass. `rendering/verify_render.py` requires that evidence and fails closed if it is missing or failed.
 
-The verifier independently checks duration, 720×1280 resolution, 30 fps, H.264 video, exactly one AAC narration stream, representative frame decoding, render metadata identity and the final video SHA.
+The verifier independently checks duration, 1080×1920 resolution, 30 fps, H.264 video, exactly one AAC narration stream, representative frame decoding, render metadata identity and the final video SHA.
 
 ## Analytics
 
