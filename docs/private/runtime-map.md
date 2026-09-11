@@ -76,3 +76,7 @@ Public logs intentionally retain only stage, item ordinal, stable error code, an
 | `RUNTIME_SOURCE_KEY` | `PEXELS_API_KEY` |
 
 These aliases change only the names repeated in public Actions logs. Secret values and integration semantics are unchanged.
+
+## Manual recovery identity
+
+A manual recovery batch ID hashes the immutable item identities together with `github.run_id`. A new manual trigger therefore gets a new immutable completion namespace, while reruns of the same workflow run retain the same batch ID. Durable per-item upload records remain the duplicate-publication authority.
