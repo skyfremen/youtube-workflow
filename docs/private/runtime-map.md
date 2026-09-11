@@ -53,3 +53,15 @@ Execution failures write detailed traces to:
 `youtube-shorts-bot/content/diagnostics/<batch_id>/<run_id>-<attempt>.json`.
 
 Public logs intentionally retain only stage, item ordinal, stable error code, and aggregate counts. Canonical requests, schedules, content IDs, result receipts, analytics, and recovery records remain private.
+
+
+## Check stage aliases
+
+| Public alias | Owner meaning |
+| --- | --- |
+| `s01` | Representative batch construction and failure isolation |
+| `s02` | Transformation smoke test |
+| `s02a`–`s02i`, `s02x` | Transformation asset, encoding, layout, metadata, or classified exception |
+| `s03` | Narration backend exercise |
+| `s04` | Word-alignment exercise |
+| `s05` | Check completed |
