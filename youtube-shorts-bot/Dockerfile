@@ -7,9 +7,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HF_HOME=/opt/huggingface \
     HF_HUB_CACHE=/opt/huggingface/hub \
     TORCH_HOME=/opt/torch-cache \
-    KOKORO_ONNX_HOME=/opt/kokoro-onnx \
-    KOKORO_ONNX_MODEL=/opt/kokoro-onnx/kokoro-v1.0.onnx \
-    KOKORO_ONNX_VOICES=/opt/kokoro-onnx/voices-v1.0.bin
+    RUNTIME_RESOURCE_HOME=/opt/kokoro-onnx \
+    RUNTIME_RESOURCE_A=/opt/kokoro-onnx/kokoro-v1.0.onnx \
+    RUNTIME_RESOURCE_B=/opt/kokoro-onnx/voices-v1.0.bin
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -36,18 +36,18 @@ RUN python -m spacy download en_core_web_sm
 
 # Bake the exact FP32 model and voices used by benchmark run 34307845596.
 # Production must never download these 350+ MB assets at request time.
-RUN mkdir -p "$KOKORO_ONNX_HOME" \
+RUN mkdir -p "$RUNTIME_RESOURCE_HOME" \
     && python - <<'PY'
 import os
 import urllib.request
 from pathlib import Path
 
 assets = {
-    Path(os.environ['KOKORO_ONNX_MODEL']): (
+    Path(os.environ['RUNTIME_RESOURCE_A']): (
         'https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx',
         300_000_000,
     ),
-    Path(os.environ['KOKORO_ONNX_VOICES']): (
+    Path(os.environ['RUNTIME_RESOURCE_B']): (
         'https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin',
         20_000_000,
     ),
@@ -75,11 +75,11 @@ options = onnxruntime.SessionOptions()
 options.intra_op_num_threads = max(1, int(os.cpu_count() or 2))
 options.inter_op_num_threads = 1
 session = onnxruntime.InferenceSession(
-    os.environ['KOKORO_ONNX_MODEL'],
+    os.environ['RUNTIME_RESOURCE_A'],
     providers=['CPUExecutionProvider'],
     sess_options=options,
 )
-engine = Kokoro.from_session(session, os.environ['KOKORO_ONNX_VOICES'])
+engine = Kokoro.from_session(session, os.environ['RUNTIME_RESOURCE_B'])
 audio, sample_rate = engine.create(
     'Wacky Dramas ONNX runner validation.',
     voice='af_heart', speed=1.75, lang='en-us',
