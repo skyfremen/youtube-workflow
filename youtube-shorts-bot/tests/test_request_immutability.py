@@ -16,6 +16,8 @@ class RequestImmutabilityTests(unittest.TestCase):
             "youtube-shorts-bot/content/requests/test.json",
             "youtube-shorts-bot/content/results/test.json",
             "youtube-shorts-bot/content/recovery/test/upload.json",
+            "youtube-shorts-bot/content/recovery/index/test.json",
+            "youtube-shorts-bot/content/recovery/index/bootstrap.json",
             "youtube-shorts-bot/content/planning/2099-01-01.json",
             "youtube-shorts-bot/content/background-sourcing/2099-01-01.json",
         )
@@ -35,6 +37,8 @@ class RequestImmutabilityTests(unittest.TestCase):
             "youtube-shorts-bot/content/requests/test.json",
             "youtube-shorts-bot/content/results/test.json",
             "youtube-shorts-bot/content/recovery/test/upload.json",
+            "youtube-shorts-bot/content/recovery/index/test.json",
+            "youtube-shorts-bot/content/recovery/index/bootstrap.json",
             "youtube-shorts-bot/content/planning/2099-01-01.json",
             "youtube-shorts-bot/content/background-sourcing/2099-01-01.json",
         )
