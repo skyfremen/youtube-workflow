@@ -34,12 +34,12 @@ The rendered opening has four strict phases:
 Planning rules:
 
 - `story.hook` is the spoken opening-card title/headline, not the first paragraph of the story.
-- Keep it crisp and immediately intriguing; prefer roughly **5–10 words** when natural so it reads quickly at `af_heart` / `1.75×`.
+- Keep it crisp and immediately intriguing; prefer roughly **5–10 words** when natural so it reads quickly at the frozen approved voice / `1.75×`.
 - `story.script` starts directly after the hook and **must not repeat the hook verbatim**. The request validator rejects a script that starts by repeating `story.hook`.
 - The first story-body sentence should deepen curiosity immediately through a contradiction, discovery, consequence, evidence, urgent conflict or unanswered event.
 - Avoid generic introductions such as “for context”, relationship-length history, unnecessary ages, family trees, or “this happened a few years ago” before the interesting event unless essential.
 - Narrate in first person and make the conflict easy to follow on first listen.
-- Default Kokoro configuration: `voice=af_heart`, `speed=1.75`. The production primary backend is ONNX FP32; the request contract remains `engine=kokoro`.
+- Select one approved Kokoro voice from explicit lead gender first and tone second: female natural `af_heart`, female expressive `af_bella`, male natural `am_echo`, male expressive `am_fenrir`; speed remains `1.75`. Freeze `lead_gender`, `story_tone`, and the voice in schema-v4.
 - Aim for **120–175 seconds of total rendered narration sequence** at the configured voice/speed. This includes the 0.50-second opening silence, spoken card title, card transition, story narration, and 0.35-second ending silence.
 - The renderer includes **0.50 seconds of silence at the beginning** and **0.35 seconds at the end**.
 - **178 seconds is the hard production ceiling** for the complete encoded Short. The renderer reserves an additional 0.10-second encode safety margin, and the encoded-file verifier independently rejects anything over 178 seconds.
@@ -73,7 +73,7 @@ Never output retired branding, old CTA fields, series/Part-2 fields, music requi
 
 ## Daily planning
 
-`DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v3 scheduled requests through `daily-production.yml`.
+`DAILY_PLANNER_PROMPT.md` is the canonical daily funnel for schema-v4 scheduled requests through `daily-production.yml`.
 
 The daily funnel generates at least 120 meaningfully distinct raw premises, rejects weak/duplicate ideas cheaply, develops only semifinalists, competes at least five truthful titles per semifinalist, applies cold-start/analytics scoring plus diversity, and creates at most 24 immutable production requests.
 
@@ -89,7 +89,7 @@ The centralized policy balances semantic fit with visual satisfaction, loopabili
 - Apply a strong recency penalty to uses 10–19 Shorts ago and a tapering penalty through 29 Shorts ago.
 - Prefer never-used assets only when they are genuinely strong matches.
 - Require two strong, fresh candidates for primary and backup.
-- Require each new selection to have at least one registered rendition capable of 720×1280 crop-fill without upscaling; this is an availability gate, not rendition selection.
+- Require each new selection to have at least one registered rendition whose effective 9:16 crop can produce 1080×1920 with no more than 5% enlargement; this is an availability gate, not rendition selection. Caption readability in the subtitle-safe region has priority over aesthetics.
 - If fewer than two exist, stop request creation and expand the registry through the planning-only Pexels tooling.
 - Never select a poor match solely for age or novelty.
 
