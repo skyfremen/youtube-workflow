@@ -71,23 +71,42 @@ jobs:
           assert not present, 'retired project/build roots present: ' + ', '.join(present)
 
           expected_publishing = {'__init__.py', 'upload.py'}
-          actual_publishing = {path.name for path in Path('youtube-shorts-bot/publishing').glob('*.py')}
+          actual_publishing = {
+              path.name
+              for path in Path('youtube-shorts-bot/publishing').glob('*.py')
+          }
           assert actual_publishing == expected_publishing, (
-              'unexpected private publishing surface: ' + ', '.join(sorted(actual_publishing))
+              'unexpected private publishing surface: '
+              + ', '.join(sorted(actual_publishing))
           )
 
-          upload_contract = Path('youtube-shorts-bot/publishing/upload.py').read_text()
-          required_contract = ('def expected_publication(', 'def build_upload_body(')
+          upload_contract = Path(
+              'youtube-shorts-bot/publishing/upload.py'
+          ).read_text()
+          required_contract = (
+              'def expected_publication(',
+              'def build_upload_body(',
+          )
           forbidden_execution = (
-              'def make_client(', 'def authenticated_channel(', 'def find_existing_by_marker(',
-              'def upload_new(', 'def recover_record(', 'def authorize_fresh_upload(',
-              'def execute_upload(', 'videos().insert(', 'YOUTUBE_' + 'REFRESH_TOKEN',
+              'def make_client(',
+              'def authenticated_channel(',
+              'def find_existing_by_marker(',
+              'def upload_new(',
+              'def recover_record(',
+              'def authorize_fresh_upload(',
+              'def execute_upload(',
+              'videos().insert(',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
               'youtube.upload',
           )
           for required in required_contract:
-              assert required in upload_contract, f'missing private request-body contract: {required}'
+              assert required in upload_contract, (
+                  f'missing private request-body contract: {required}'
+              )
           for forbidden in forbidden_execution:
-              assert forbidden not in upload_contract, f'private execution implementation restored: {forbidden}'
+              assert forbidden not in upload_contract, (
+                  f'private execution implementation restored: {forbidden}'
+              )
           print('Canonical daily-only Wacky Dramas repository surface verified.')
           PY
 
@@ -166,7 +185,11 @@ jobs:
           batch = Path('.github/workflows/daily-production.yml').read_text()
           recovery = Path('.github/workflows/automatic-recovery.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
-          secret_names = ('YOUTUBE_' + 'CLIENT_ID', 'YOUTUBE_' + 'CLIENT_SECRET', 'YOUTUBE_' + 'REFRESH_TOKEN')
+          secret_names = (
+              'YOUTUBE_' + 'CLIENT_ID',
+              'YOUTUBE_' + 'CLIENT_SECRET',
+              'YOUTUBE_' + 'REFRESH_TOKEN',
+          )
           for secret in secret_names:
               assert secret not in dry
               assert secret not in recovery
