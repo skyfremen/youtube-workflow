@@ -7,29 +7,23 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/completions/*.json'
+      - '.state/observations/latest.json'
   workflow_dispatch:
+
+concurrency:
+  group: analytics-collection
+  cancel-in-progress: false
 
 jobs:
   analytics:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - name: Install analytics-only dependencies
-        run: |
-          python -m pip install --disable-pip-version-check --no-input \
-            google-api-python-client==2.187.0 \
-            google-auth-httplib2==0.2.0 \
-            google-auth-oauthlib==1.2.2
-      - name: Collect age-matched video analytics
+      - name: Process private analytics state
         run: python youtube-shorts-bot/analytics/analytics_collection.py
       - name: Commit analytics snapshot and learning model
         shell: bash
@@ -42,6 +36,6 @@ jobs:
             echo "No analytics changes to commit."
             exit 0
           fi
-          git commit -m "[skip upload] update YouTube analytics"
+          git commit -m "[skip upload] update analytics model"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
