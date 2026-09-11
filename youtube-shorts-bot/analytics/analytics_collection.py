@@ -22,6 +22,7 @@ MILESTONES_PATH = ANALYTICS / "milestones.json"
 MODEL_PATH = ANALYTICS / "model.json"
 LATEST_PATH = ANALYTICS / "latest.json"
 SINGAPORE_TZ = ZoneInfo("Asia/Singapore")
+SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}
 
 
 def singapore_date(now_utc=None):
@@ -44,7 +45,7 @@ def _instant(raw):
 
 def receipt_eligible(receipt):
     return bool(
-        receipt.get("schema_version") == 3
+        receipt.get("schema_version") in SUPPORTED_RECEIPT_SCHEMA_VERSIONS
         and receipt.get("publication_mode") == "scheduled"
         and isinstance(receipt.get("planning"), dict)
         and _instant(receipt.get("publish_at")) is not None
@@ -52,7 +53,7 @@ def receipt_eligible(receipt):
 
 
 def load_receipts():
-    """Load canonical scheduled schema-v3 success receipts."""
+    """Load canonical scheduled success receipts for supported request schemas."""
     records = {}
     if not RESULTS.exists():
         return records
@@ -73,12 +74,15 @@ def load_request(receipt):
     raw = str(receipt.get("request_path") or "").strip()
     if not raw:
         return {}
+    schema_version = receipt.get("schema_version")
+    if schema_version not in SUPPORTED_RECEIPT_SCHEMA_VERSIONS:
+        return {}
     path = REPO_ROOT / raw
     try:
         request = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
-    return request if request.get("schema_version") == 3 else {}
+    return request if request.get("schema_version") == schema_version else {}
 
 
 def content_dimensions(receipt):
