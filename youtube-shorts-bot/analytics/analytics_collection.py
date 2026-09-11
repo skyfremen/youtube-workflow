@@ -46,14 +46,14 @@ def _instant(raw):
 def receipt_eligible(receipt):
     return bool(
         receipt.get("schema_version") in SUPPORTED_RECEIPT_SCHEMA_VERSIONS
-        and receipt.get("publication_mode") == "scheduled"
+        and receipt.get("publication_mode") in {"scheduled", "immediate"}
         and isinstance(receipt.get("planning"), dict)
         and _instant(receipt.get("publish_at")) is not None
     )
 
 
 def load_receipts():
-    """Load canonical scheduled success receipts for supported request schemas."""
+    """Load canonical published success receipts for supported request schemas."""
     records = {}
     if not RESULTS.exists():
         return records
