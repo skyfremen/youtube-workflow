@@ -70,6 +70,16 @@ jobs:
           present = [str(path) for path in retired_roots if path.exists()]
           assert not present, 'retired project roots present: ' + ', '.join(present)
 
+          expected_publishing = {'__init__.py', 'upload.py'}
+          actual_publishing = {
+              path.name
+              for path in Path('youtube-shorts-bot/publishing').glob('*.py')
+          }
+          assert actual_publishing == expected_publishing, (
+              'unexpected private publishing surface: '
+              + ', '.join(sorted(actual_publishing))
+          )
+
           upload_contract = Path(
               'youtube-shorts-bot/publishing/upload.py'
           ).read_text()
