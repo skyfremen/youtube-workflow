@@ -37,6 +37,7 @@ jobs:
         shell: bash
         env:
           MANUAL_CONTENT_IDS: ${{ inputs.content_ids }}
+          RECOVERY_RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
@@ -68,7 +69,14 @@ jobs:
                   raise SystemExit('Cannot resolve immutable request source')
               items.append({'content_id': content_id, 'source_commit_sha': commits[-1]})
 
-          canonical = json.dumps(items, sort_keys=True, separators=(',', ':')).encode()
+          recovery_run_id = os.environ.get('RECOVERY_RUN_ID', '')
+          if not recovery_run_id.isdigit():
+              raise SystemExit('Cannot resolve stable recovery run identity')
+          canonical = json.dumps(
+              {'items': items, 'workflow_run_id': recovery_run_id},
+              sort_keys=True,
+              separators=(',', ':'),
+          ).encode()
           batch_id = 'r_' + hashlib.sha256(canonical).hexdigest()[:30]
           target = Path(f'youtube-shorts-bot/content/recovery/batches/{batch_id}.json')
           payload = {'schema_version': 1, 'batch_id': batch_id, 'items': items}
