@@ -132,7 +132,7 @@ class BackgroundSelectorTests(unittest.TestCase):
         recent = asset(1)
         oversized = asset(2)
         oversized["renditions"] = [{
-            "id": "4k", "width": 3840, "height": 2160, "fps": 30,
+            "id": "oversized", "width": 7680, "height": 4320, "fps": 30,
             "file_type": "video/mp4", "direct_url": "https://videos.pexels.com/4k.mp4",
         }]
         audit = audit_ai_selection(
@@ -141,7 +141,7 @@ class BackgroundSelectorTests(unittest.TestCase):
         )
         self.assertFalse(audit["passed"])
         self.assertTrue(any("last 10 Shorts" in message for message in audit["errors"]))
-        self.assertTrue(any("<=1080p" in message for message in audit["errors"]))
+        self.assertTrue(any("1080x1920" in message for message in audit["errors"]))
 
 
 if __name__ == "__main__":
