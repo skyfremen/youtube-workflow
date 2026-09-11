@@ -16,8 +16,10 @@ from validation.validate_content import SCHEMA_VERSION
 ROOT = Path(__file__).resolve().parents[1]
 CID = re.compile(r"wd-[A-Za-z0-9-]+")
 SHA = re.compile(r"[0-9a-f]{40}")
+CONTRACT = re.compile(r"[0-9a-f]{64}")
 VIDEO = re.compile(r"[A-Za-z0-9_-]{11}")
 BATCH = re.compile(r"[br]_[0-9a-f]{30}")
+DISPATCH = re.compile(r"d_[0-9a-f]{24}")
 
 
 class ManualOnly(RuntimeError):
@@ -30,6 +32,7 @@ class Policy:
     schedule_buffer_minutes: int = 10
     max_automatic_attempts: int = 3
     retry_backoff_minutes: tuple[int, ...] = (0, 120, 240)
+    startup_grace_minutes: int = 25
 
 
 @dataclass(frozen=True)
@@ -51,6 +54,14 @@ class Snapshot:
     latest_stage: str | None
     terminal_exists: bool = False
     forced_source_failure: bool = False
+    latest_dispatch_id: str = ""
+    latest_dispatch_source_sha: str = ""
+    latest_dispatch_contract_hash: str = ""
+    latest_prepared_at: datetime | None = None
+    latest_dispatched_at: datetime | None = None
+    latest_dispatch_failed_at: datetime | None = None
+    latest_started_at: datetime | None = None
+    latest_started_dispatch_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -59,6 +70,7 @@ class Decision:
     reason: str
     dispatch: bool = False
     terminal: bool = False
+    reuse_batch: bool = False
 
 
 def parse_instant(raw):
@@ -107,12 +119,62 @@ def decide(s, now, policy):
     if s.terminal_exists:
         return Decision("terminal", "terminal_state_exists")
 
-    age = now - s.latest_batch_started_at.astimezone(timezone.utc)
-    if s.latest_event == "none" and not s.forced_source_failure:
-        if age < timedelta(minutes=policy.active_grace_minutes):
-            return Decision("active", "production_or_recovery_still_within_grace")
-
     durable = s.has_intent or s.has_upload
+
+    # Any real runner-start moves this exact batch to the conservative long-running path.
+    # This also protects a delayed original run that starts after a no-start redispatch.
+    if s.latest_event == "none" and s.latest_started_at is not None:
+        if now - s.latest_started_at < timedelta(minutes=policy.active_grace_minutes):
+            return Decision("active", "started_production_within_long_grace")
+
+    # Upload-side-effect evidence always outranks no-start recovery.
+    if durable and s.latest_event == "none":
+        anchor = s.latest_started_at or s.latest_dispatched_at or s.latest_batch_started_at
+        if now - anchor < timedelta(minutes=policy.active_grace_minutes):
+            return Decision("active", "durable_upload_state_within_long_grace")
+
+    # A positively accepted dispatch with no STARTED evidence is the fast recovery path.
+    if (
+        not durable
+        and s.latest_event == "none"
+        and s.latest_dispatched_at is not None
+        and s.latest_started_at is None
+    ):
+        if now - s.latest_dispatched_at < timedelta(minutes=policy.startup_grace_minutes):
+            return Decision("active", "startup_grace_active")
+        fast_no_start = True
+    else:
+        fast_no_start = False
+
+    # A dispatch API failure is explicit and can retry immediately. A prepared attempt
+    # with neither accepted nor failed evidence remains ambiguous and therefore keeps
+    # the long conservative grace rather than being guessed as a failed dispatch.
+    explicit_dispatch_failure = (
+        not durable
+        and s.latest_event == "none"
+        and s.latest_dispatch_failed_at is not None
+        and (
+            s.latest_dispatched_at is None
+            or s.latest_dispatch_failed_at >= s.latest_dispatched_at
+        )
+        and s.latest_started_at is None
+    )
+
+    if (
+        s.latest_event == "none"
+        and not fast_no_start
+        and not explicit_dispatch_failure
+        and s.latest_started_at is None
+    ):
+        anchor = s.latest_prepared_at or s.latest_batch_started_at
+        if now - anchor < timedelta(minutes=policy.active_grace_minutes):
+            reason = (
+                "dispatch_outcome_uncertain_within_long_grace"
+                if s.latest_prepared_at is not None and s.latest_dispatched_at is None
+                else "production_or_recovery_still_within_grace"
+            )
+            return Decision("active", reason)
+
     if s.publish_at <= now + timedelta(minutes=policy.schedule_buffer_minutes) and not durable:
         return Decision("terminal", "scheduled_window_closed_without_upload_evidence", terminal=True)
 
@@ -133,12 +195,16 @@ def decide(s, now, policy):
 
     if durable:
         return Decision("recoverable", "durable_upload_state_needs_reconciliation", True)
-    if s.forced_source_failure:
-        return Decision("recoverable", "private_dispatch_failed", True)
+    if explicit_dispatch_failure:
+        return Decision("recoverable", "private_dispatch_failed", True, reuse_batch=True)
+    if fast_no_start:
+        return Decision("recoverable", "startup_timeout_without_started_evidence", True, reuse_batch=True)
     if s.latest_event == "diagnostic":
         return Decision("recoverable", "retryable_runtime_failure", True)
     if s.latest_event == "completion":
         return Decision("recoverable", "batch_completed_without_authoritative_receipt", True)
+    if s.forced_source_failure and s.latest_prepared_at is None:
+        return Decision("recoverable", "private_dispatch_failed", True)
     return Decision("recoverable", "stale_unresolved_request", True)
 
 
@@ -152,6 +218,10 @@ class Repository:
         self.recovery = self.content / "recovery"
         self.batches = self.recovery / "batches"
         self.terminal = self.recovery / "terminal"
+        self.dispatch_intents = self.recovery / "dispatch-intents"
+        self.dispatches = self.recovery / "dispatches"
+        self.dispatch_failures = self.recovery / "dispatch-failures"
+        self.starts = self.recovery / "starts"
         self.diagnostics = self.content / "diagnostics"
         self.completions = self.content / "completions"
 
@@ -209,6 +279,112 @@ class Repository:
             if BATCH.fullmatch(str(payload.get("batch_id", ""))):
                 yield path, payload
 
+    def _dispatch_records(self, root, batch_id, expected_state, timestamp_key):
+        records = []
+        directory = root / batch_id
+        if not directory.exists():
+            return records
+        for path in sorted(directory.glob("*.json")):
+            try:
+                payload = self.load(path)
+                if payload.get("schema_version") != 1 or payload.get("state") != expected_state:
+                    continue
+                if payload.get("batch_id") != batch_id:
+                    continue
+                dispatch_id = str(payload.get("dispatch_id", ""))
+                source_sha = str(payload.get("source_sha", ""))
+                contract_hash = str(payload.get("contract_hash", ""))
+                if (
+                    not DISPATCH.fullmatch(dispatch_id)
+                    or not SHA.fullmatch(source_sha)
+                    or not CONTRACT.fullmatch(contract_hash)
+                ):
+                    continue
+                when = parse_instant(payload.get(timestamp_key))
+            except (OSError, ValueError, json.JSONDecodeError):
+                continue
+            records.append({
+                "path": path,
+                "dispatch_id": dispatch_id,
+                "source_sha": source_sha,
+                "contract_hash": contract_hash,
+                "dispatch_kind": str(payload.get("dispatch_kind", "")),
+                "at": when,
+            })
+        return records
+
+    def dispatch_state(self, batch_id):
+        prepared = self._dispatch_records(
+            self.dispatch_intents, batch_id, "prepared", "prepared_at"
+        )
+        prepared_by_id = {item["dispatch_id"]: item for item in prepared}
+
+        accepted = []
+        for item in self._dispatch_records(
+            self.dispatches, batch_id, "dispatched", "dispatched_at"
+        ):
+            intent = prepared_by_id.get(item["dispatch_id"])
+            if (
+                intent
+                and intent["source_sha"] == item["source_sha"]
+                and intent["contract_hash"] == item["contract_hash"]
+            ):
+                accepted.append(item)
+
+        failed = []
+        for item in self._dispatch_records(
+            self.dispatch_failures, batch_id, "failed", "failed_at"
+        ):
+            intent = prepared_by_id.get(item["dispatch_id"])
+            if (
+                intent
+                and intent["source_sha"] == item["source_sha"]
+                and intent["contract_hash"] == item["contract_hash"]
+            ):
+                failed.append(item)
+
+        starts = []
+        start_dir = self.starts / batch_id
+        if start_dir.exists():
+            for path in sorted(start_dir.glob("*/*.json")):
+                try:
+                    payload = self.load(path)
+                    dispatch_id = str(payload.get("dispatch_id", ""))
+                    intent = prepared_by_id.get(dispatch_id)
+                    if (
+                        payload.get("schema_version") != 1
+                        or payload.get("state") != "started"
+                        or payload.get("batch_id") != batch_id
+                        or intent is None
+                        or payload.get("source_sha") != intent["source_sha"]
+                        or payload.get("contract_hash") != intent["contract_hash"]
+                    ):
+                        continue
+                    started_at = parse_instant(payload.get("started_at"))
+                except (OSError, ValueError, json.JSONDecodeError):
+                    continue
+                starts.append({
+                    "dispatch_id": dispatch_id,
+                    "source_sha": intent["source_sha"],
+                    "contract_hash": intent["contract_hash"],
+                    "at": started_at,
+                })
+
+        latest_prepared = max(prepared, key=lambda x: x["at"]) if prepared else None
+        latest_accepted = max(accepted, key=lambda x: x["at"]) if accepted else None
+        latest_failed = max(failed, key=lambda x: x["at"]) if failed else None
+        latest_start = max(starts, key=lambda x: x["at"]) if starts else None
+        no_start_retries = sum(1 for item in prepared if item["dispatch_kind"] == "no-start-retry")
+        identity = latest_accepted or latest_prepared
+        return {
+            "latest_prepared": latest_prepared,
+            "latest_accepted": latest_accepted,
+            "latest_failed": latest_failed,
+            "latest_start": latest_start,
+            "identity": identity,
+            "no_start_retries": no_start_retries,
+        }
+
     def batches_for(self, content_id, source_sha):
         normal_started = self.commit_time(source_sha)
         batches = [{"batch_id": normal_batch_id(source_sha), "started_at": normal_started,
@@ -264,7 +440,10 @@ class Repository:
         batches = self.batches_for(content_id, source_sha)
         latest = max(batches, key=lambda x: x["started_at"])
         event = self.batch_event(latest)
-        attempts = max([x["automatic_attempt"] for x in batches if x["automatic"]] or [0])
+        dispatch = self.dispatch_state(latest["batch_id"])
+        base_attempts = max([x["automatic_attempt"] for x in batches if x["automatic"]] or [0])
+        attempts = base_attempts + dispatch["no_start_retries"]
+        identity = dispatch["identity"] or {}
         return Snapshot(
             content_id, source_sha, source_started, parse_instant(publication.get("publish_at")),
             self.receipt_state(request_path, source_sha),
@@ -273,6 +452,14 @@ class Repository:
             attempts, latest["batch_id"], latest["started_at"], event["kind"], event["at"],
             event["retryable"], event["error_code"], event["stage"],
             (self.terminal / f"{content_id}.json").is_file(), source_sha == failed_source_sha,
+            str(identity.get("dispatch_id", "")),
+            str(identity.get("source_sha", "")),
+            str(identity.get("contract_hash", "")),
+            dispatch["latest_prepared"]["at"] if dispatch["latest_prepared"] else None,
+            dispatch["latest_accepted"]["at"] if dispatch["latest_accepted"] else None,
+            dispatch["latest_failed"]["at"] if dispatch["latest_failed"] else None,
+            dispatch["latest_start"]["at"] if dispatch["latest_start"] else None,
+            dispatch["latest_start"]["dispatch_id"] if dispatch["latest_start"] else "",
         )
 
     def write_terminal(self, s, decision, *, now, policy):
@@ -288,6 +475,7 @@ class Repository:
             "latest_retryable": s.latest_retryable, "publish_at": iso_z(s.publish_at),
             "manual_recovery_available": True,
             "policy": {"active_grace_minutes": policy.active_grace_minutes,
+                       "startup_grace_minutes": policy.startup_grace_minutes,
                        "schedule_buffer_minutes": policy.schedule_buffer_minutes,
                        "max_automatic_attempts": policy.max_automatic_attempts},
         }
@@ -312,6 +500,7 @@ class Repository:
         payload = {"schema_version": 1, "batch_id": batch_id, "items": items,
                    "recovery_control": {"kind": "automatic", "created_at": iso_z(now),
                     "policy": {"active_grace_minutes": policy.active_grace_minutes,
+                               "startup_grace_minutes": policy.startup_grace_minutes,
                                "schedule_buffer_minutes": policy.schedule_buffer_minutes,
                                "max_automatic_attempts": policy.max_automatic_attempts,
                                "retry_backoff_minutes": list(policy.retry_backoff_minutes)}}}
@@ -340,27 +529,82 @@ def reconcile(repo, *, now, policy, write, failed_source_sha=""):
         elif decision.terminal and not snap.terminal_exists:
             terminal.append((snap, decision))
 
-    recoverable = recoverable[:24]
-    written, batch_id = [], None
+    written = []
     if write:
         for snap, decision in terminal:
             written.append(str(repo.write_terminal(snap, decision, now=now, policy=policy)))
-        if recoverable:
-            batch_id, path = repo.write_batch(recoverable, now=now, policy=policy)
-            written.append(str(path))
-    return {"schema_version": 1, "evaluated_at": iso_z(now), "dispatch": bool(recoverable),
-            "batch_id": batch_id, "item_count": len(recoverable),
-            "content_ids": [s.content_id for s, _ in recoverable], "terminal_count": len(terminal),
-            "written": written, "decisions": decisions}
+
+    same_batch = [(s, d) for s, d in recoverable if d.reuse_batch]
+    if same_batch:
+        groups = {}
+        for snap, decision in same_batch:
+            groups.setdefault(snap.latest_batch_id, []).append((snap, decision))
+        selected = min(
+            groups.values(),
+            key=lambda group: min(
+                (item[0].latest_dispatched_at or item[0].latest_prepared_at or item[0].latest_batch_started_at)
+                for item in group
+            ),
+        )[:24]
+        first = selected[0][0]
+        if not (
+            BATCH.fullmatch(first.latest_batch_id)
+            and SHA.fullmatch(first.latest_dispatch_source_sha)
+            and CONTRACT.fullmatch(first.latest_dispatch_contract_hash)
+        ):
+            raise ValueError("same-batch recovery lacks exact dispatch identity")
+        return {
+            "schema_version": 1,
+            "evaluated_at": iso_z(now),
+            "dispatch": True,
+            "dispatch_mode": "same_batch",
+            "batch_id": first.latest_batch_id,
+            "dispatch_source_sha": first.latest_dispatch_source_sha,
+            "dispatch_contract_hash": first.latest_dispatch_contract_hash,
+            "item_count": len(selected),
+            "content_ids": [s.content_id for s, _ in selected],
+            "terminal_count": len(terminal),
+            "written": written,
+            "decisions": decisions,
+        }
+
+    recoverable = recoverable[:24]
+    batch_id = None
+    if write and recoverable:
+        batch_id, path = repo.write_batch(recoverable, now=now, policy=policy)
+        written.append(str(path))
+    return {
+        "schema_version": 1,
+        "evaluated_at": iso_z(now),
+        "dispatch": bool(recoverable),
+        "dispatch_mode": "new_recovery" if recoverable else "none",
+        "batch_id": batch_id,
+        "dispatch_source_sha": "",
+        "dispatch_contract_hash": "",
+        "item_count": len(recoverable),
+        "content_ids": [s.content_id for s, _ in recoverable],
+        "terminal_count": len(terminal),
+        "written": written,
+        "decisions": decisions,
+    }
 
 
 def policy_from_env():
     backoff = tuple(int(x) for x in os.getenv("RECOVERY_BACKOFF_MINUTES", "0,120,240").split(",") if x.strip())
-    policy = Policy(int(os.getenv("RECOVERY_ACTIVE_GRACE_MINUTES", "210")),
-                    int(os.getenv("RECOVERY_SCHEDULE_BUFFER_MINUTES", "10")),
-                    int(os.getenv("RECOVERY_MAX_AUTOMATIC_ATTEMPTS", "3")), backoff)
-    if policy.active_grace_minutes < 30 or policy.schedule_buffer_minutes < 0 \
-            or not 1 <= policy.max_automatic_attempts <= 10 or not backoff:
+    policy = Policy(
+        active_grace_minutes=int(os.getenv("RECOVERY_ACTIVE_GRACE_MINUTES", "210")),
+        schedule_buffer_minutes=int(os.getenv("RECOVERY_SCHEDULE_BUFFER_MINUTES", "10")),
+        max_automatic_attempts=int(os.getenv("RECOVERY_MAX_AUTOMATIC_ATTEMPTS", "3")),
+        retry_backoff_minutes=backoff,
+        startup_grace_minutes=int(os.getenv("RECOVERY_STARTUP_GRACE_MINUTES", "25")),
+    )
+    if (
+        policy.active_grace_minutes < 30
+        or not 10 <= policy.startup_grace_minutes < policy.active_grace_minutes
+        or policy.schedule_buffer_minutes < 0
+        or not 1 <= policy.max_automatic_attempts <= 10
+        or not backoff
+    ):
         raise ValueError("invalid automatic recovery policy")
     return policy
 
