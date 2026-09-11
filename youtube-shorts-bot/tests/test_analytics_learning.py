@@ -11,7 +11,7 @@ from planning.planning_config import ANALYTICS_MIN_MATURE_VIDEOS
 
 
 class AnalyticsLearningTests(unittest.TestCase):
-    def test_only_canonical_scheduled_receipts_are_eligible(self):
+    def test_only_canonical_published_receipts_are_eligible(self):
         canonical = {
             "schema_version": 3,
             "publication_mode": "scheduled",
@@ -19,6 +19,13 @@ class AnalyticsLearningTests(unittest.TestCase):
             "planning": {"attributes": {}},
         }
         self.assertTrue(analytics_collection.receipt_eligible(canonical))
+        immediate = {
+            **canonical,
+            "schema_version": 4,
+            "publication_mode": "immediate",
+            "publish_at": "2099-09-09T15:51:00Z",
+        }
+        self.assertTrue(analytics_collection.receipt_eligible(immediate))
 
         for change in (
             {"schema_version": 99},
@@ -184,10 +191,16 @@ class AnalyticsLearningTests(unittest.TestCase):
         weak = score_candidate(
             {
                 "category": "WORKPLACE",
+                "conflict": "UNSEEN",
+                "primary_emotion": "BETRAYAL",
+                "protagonist_role": "PARTNER",
+                "antagonist_role": "PARTNER",
                 "opening_style": "DISCOVERY",
+                "ending_style": "BACKFIRE",
+                "target_duration_seconds": 140,
                 "title_candidates": [
                     {
-                        "title": "Office #Shorts",
+                        "title": "Truth #Shorts",
                         "style": "DISCOVERY",
                         "truthful": True,
                         "score_components": components,
