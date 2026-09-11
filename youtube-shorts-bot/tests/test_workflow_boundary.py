@@ -51,17 +51,25 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("content_ids:", text)
 
     def test_analytics_runs_only_for_public_observation_snapshot(self):
-        text = self.analytics()
-        self.assertIn(".state/observations/latest.json", text)
-        self.assertIn("workflow_dispatch:", text)
-        self.assertNotIn("content/completions/*.json", text)
-        self.assertNotIn("content/results/*.json", text)
+        workflow = self.analytics()
+        processor = (BASE / "analytics" / "analytics_collection.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("analytics/analytics_collection.py", workflow)
+        self.assertIn(
+            'REPO_ROOT / ".state" / "observations" / "latest.json"',
+            processor,
+        )
+        self.assertIn("load_raw_snapshot()", processor)
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertNotIn("content/completions/*.json", workflow)
+        self.assertNotIn("content/results/*.json", workflow)
         for secret in (
             "YOUTUBE_CLIENT_ID",
             "YOUTUBE_CLIENT_SECRET",
             "YOUTUBE_REFRESH_TOKEN",
         ):
-            self.assertNotIn(secret, text)
+            self.assertNotIn(secret, workflow)
 
     def test_all_actions_are_full_sha_pinned(self):
         for workflow in WORKFLOWS.glob("*.yml"):
