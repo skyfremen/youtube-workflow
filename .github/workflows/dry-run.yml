@@ -8,8 +8,6 @@ on:
     paths:
       - 'README.md'
       - '.github/workflows/**'
-      - 'youtube-shorts-bot/Dockerfile'
-      - 'youtube-shorts-bot/requirements.txt'
       - 'youtube-shorts-bot/**/*.py'
       - 'youtube-shorts-bot/tests/**'
       - 'youtube-shorts-bot/planning/**'
@@ -49,7 +47,6 @@ jobs:
           expected_workflows = {
               'analytics-collection.yml',
               'background-management.yml',
-              'build-image.yml',
               'daily-production.yml',
               'dry-run.yml',
           }
@@ -66,9 +63,11 @@ jobs:
               Path('youtube-shorts-bot-backup'),
               Path('youtube-shorts-bot/production'),
               Path('youtube-shorts-bot/rendering'),
+              Path('youtube-shorts-bot/Dockerfile'),
+              Path('youtube-shorts-bot/requirements.txt'),
           ]
           present = [str(path) for path in retired_roots if path.exists()]
-          assert not present, 'retired project roots present: ' + ', '.join(present)
+          assert not present, 'retired project/build roots present: ' + ', '.join(present)
 
           expected_publishing = {'__init__.py', 'upload.py'}
           actual_publishing = {
@@ -144,6 +143,9 @@ jobs:
             echo "::error::Cross-repository execution contract drift detected"
             exit 1
           fi
+          test -f /tmp/production-runtime-contract/base/Dockerfile
+          test -f /tmp/production-runtime-contract/base/dependencies.txt
+          test -f /tmp/production-runtime-contract/.github/workflows/base.yml
           echo "Cross-repository execution contract parity PASS"
 
       - name: Validate satisfying-background registry
