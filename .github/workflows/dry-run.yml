@@ -116,7 +116,7 @@ jobs:
               assert forbidden not in upload_contract, (
                   f'private execution implementation restored: {forbidden}'
               )
-          print('Canonical daily-only Wacky Dramas repository surface verified.')
+          print('Canonical Wacky Dramas planner/publishing surface verified.')
           PY
 
       - name: Check immutable production history
@@ -259,7 +259,7 @@ jobs:
           assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'Cross-repository execution contract parity PASS' in dry
           assert 'content/diagnostics/**/*.json' in recovery
-          assert "workflows: ['Daily Production']" in recovery
+          assert "workflows: ['Daily Production', 'Ad-hoc Production']" in recovery
           assert "cron: '17 */2 * * *'" in recovery
           assert 'recovery/controller.py' in recovery
           assert 'RECOVERY_MAX_AUTOMATIC_ATTEMPTS' in recovery
