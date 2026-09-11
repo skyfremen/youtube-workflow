@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WORKFLOWS = ROOT.parent / ".github" / "workflows"
+WORKFLOWS = ROOT / ".github" / "workflows"
 
 
 class HeartbeatWorkflowContractTests(unittest.TestCase):
