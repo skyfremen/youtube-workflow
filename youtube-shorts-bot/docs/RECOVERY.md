@@ -13,7 +13,7 @@ The request bytes are bound to the exact commit that first added them. Productio
 
 ## Publication contract
 
-The supported production path is the scheduled schema-v3 daily path. Each immutable request carries `publication.mode=scheduled`; the uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
+The current production path is the scheduled schema-v4 daily path. Schema v3 remains supported only for immutable historical/recovery compatibility. Each immutable request carries `publication.mode=scheduled`; the uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition.
 
 The canonical private entry point is `daily-production.yml` (**Daily Production**). It creates one opaque public-runtime dispatch; publication behavior is determined by the immutable request contract.
 
@@ -34,11 +34,11 @@ A lost or ambiguous GitHub write acknowledgement is treated as unsafe. The code 
 
 ## Reruns
 
-Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The private workflow writes an immutable recovery manifest and sends only its opaque batch ID and exact source SHA to the public runtime. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
+Manual recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The private workflow writes an immutable recovery manifest and sends only its opaque batch ID, exact source SHA and compatibility fingerprint to the public runtime. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent or receipt rules.
 
 ## Scheduled-slot guard
 
-For fresh scheduled generation, the public runtime's publication pipeline skips new expensive work when the immutable slot is already past or is within the configured 10-minute generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
+For fresh scheduled generation, the public runtime's publication pipeline skips new expensive work when the immutable slot is already past or is within the configured generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
 
 The planner additionally avoids creating same-day catch-up slots that are too close to the current time. These are separate protections: planning chooses viable slots; publication guards prevent stale immutable slots from causing late generation.
 
@@ -55,12 +55,12 @@ A receipt cannot be finalized unless all of the following agree with the immutab
 - YouTube video ID and authenticated channel.
 - Scheduled publication state, including exact `publishAt`.
 - Verified render identity and SHA.
-- 720×1280 resolution, 30 fps, H.264 video, one AAC narration stream.
-- Kokoro narration using the request voice/speed contract.
+- **1080×1920** resolution, 30 fps, H.264 High video, yuv420p/BT.709, one AAC-LC narration stream at 48 kHz.
+- Kokoro narration using the request's frozen voice/speed contract.
 - Primary or backup background selected from the request and recorded with its rendition/provenance.
 - Workflow/source-commit provenance.
 
-The receipt itself is create-only. A rerun may reuse an existing verified receipt but may not mutate it.
+The receipt carries the same supported schema version as its immutable request. The receipt itself is create-only. A rerun may reuse an existing verified receipt but may not mutate it.
 
 ## Operator recovery
 
