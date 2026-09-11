@@ -16,6 +16,7 @@ class ArchitectureContractTests(unittest.TestCase):
             {
                 "adhoc-production.yml",
                 "analytics-collection.yml",
+                "automatic-recovery.yml",
                 "background-management.yml",
                 "daily-production.yml",
                 "dry-run.yml",
@@ -63,10 +64,10 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
         self.assertNotIn("schema in {2, 3}", validator)
-        self.assertIn('"privacyStatus": "private"', upload)
-        self.assertIn('"publishAt": publish_at', upload)
+        self.assertIn('\"privacyStatus\": \"private\"', upload)
+        self.assertIn('\"publishAt\": publish_at', upload)
         self.assertIn("Scheduled publication contract is required", upload)
-        self.assertNotIn('"mode": "public"', upload)
+        self.assertNotIn('\"mode\": \"public\"', upload)
         self.assertIn("Schema v4 is the current production request format", overview)
 
         forbidden = [
@@ -180,7 +181,7 @@ class ArchitectureContractTests(unittest.TestCase):
         model = (BOT_ROOT / "analytics" / "model.json").read_text(encoding="utf-8")
         for text in (prompt, collector, learning):
             self.assertIn("analytics_evidence_count", text)
-        self.assertIn('"model_version": 1', model)
+        self.assertIn('\"model_version\": 1', model)
         self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}", collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)

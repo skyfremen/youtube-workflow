@@ -47,6 +47,7 @@ jobs:
           expected_workflows = {
               'adhoc-production.yml',
               'analytics-collection.yml',
+              'automatic-recovery.yml',
               'background-management.yml',
               'daily-production.yml',
               'dry-run.yml',
@@ -184,6 +185,7 @@ jobs:
           dry = Path('.github/workflows/dry-run.yml').read_text()
           batch = Path('.github/workflows/daily-production.yml').read_text()
           adhoc = Path('.github/workflows/adhoc-production.yml').read_text()
+          recovery = Path('.github/workflows/automatic-recovery.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
           secret_names = (
               'YOUTUBE_' + 'CLIENT_ID',
@@ -192,7 +194,9 @@ jobs:
           )
           for secret in secret_names:
               assert secret not in dry
+              assert secret not in recovery
           assert ('container' + ':') not in dry
+          assert ('container' + ':') not in recovery
           assert 'group: private-production-dispatch-' in batch
           assert '[daily production]' in batch
           assert 'schedule:' not in batch.split('jobs:')[0]
@@ -204,10 +208,18 @@ jobs:
           assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'Cross-repository execution contract parity PASS' in dry
+          assert 'content/diagnostics/**/*.json' in recovery
+          assert "workflows: ['Daily Production']" in recovery
+          assert "cron: '17 */2 * * *'" in recovery
+          assert 'recovery/controller.py' in recovery
+          assert 'RECOVERY_MAX_AUTOMATIC_ATTEMPTS' in recovery
+          assert 'actions/workflows/run.yml/dispatches' in recovery
+          assert 'PUBLIC_PRODUCTION_TOKEN' in recovery
           for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
               assert forbidden not in batch
+              assert forbidden not in recovery
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation and opaque public production routing verified.')
+          print('Dry-run isolation, ad-hoc routing, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
