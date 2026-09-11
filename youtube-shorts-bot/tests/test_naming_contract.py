@@ -13,20 +13,27 @@ class ArchitectureContractTests(unittest.TestCase):
     def test_supported_surface_has_required_workflows_and_no_retired_paths(self):
         actual = {path.name for path in WORKFLOWS.glob("*.yml")}
         required = {
-                "adhoc-production.yml",
-                "analytics-collection.yml",
-                "automatic-recovery.yml",
-                "background-management.yml",
-                "daily-production.yml",
-                "dry-run.yml",
+            "adhoc-production.yml",
+            "analytics-collection.yml",
+            "automatic-recovery.yml",
+            "background-management.yml",
+            "daily-production.yml",
+            "dry-run.yml",
         }
-        self.assertTrue(required <= actual, f"missing workflows: {sorted(required - actual)}")
+        self.assertTrue(
+            required <= actual, f"missing workflows: {sorted(required - actual)}"
+        )
         self.assertFalse(
-            {"build-image.yml", "pipeline-validation.yml", "background-library.yml"} & actual
+            {"build-image.yml", "pipeline-validation.yml", "background-library.yml"}
+            & actual
         )
         self.assertEqual(
             {path.name for path in PLANNER.glob("*.md")},
-            {"DAILY_PLANNER_PROMPT.md", "STORY_RULES.md"},
+            {
+                "ADHOC_PLANNER_PROMPT.md",
+                "DAILY_PLANNER_PROMPT.md",
+                "STORY_RULES.md",
+            },
         )
 
     def test_growth_is_business_language_not_technical_architecture(self):
@@ -35,7 +42,9 @@ class ArchitectureContractTests(unittest.TestCase):
             for path in root.rglob("*"):
                 if path.is_file() and ARCH_TERM in path.name.lower():
                     path_hits.append(str(path.relative_to(REPO_ROOT)))
-        self.assertFalse(path_hits, "architecture term remains in filenames: " + "; ".join(path_hits))
+        self.assertFalse(
+            path_hits, "architecture term remains in filenames: " + "; ".join(path_hits)
+        )
 
         code_hits = []
         for path in [
@@ -47,10 +56,14 @@ class ArchitectureContractTests(unittest.TestCase):
                 continue
             if ARCH_TERM in path.read_text(encoding="utf-8").lower():
                 code_hits.append(str(path.relative_to(REPO_ROOT)))
-        self.assertFalse(code_hits, "architecture term remains in code: " + "; ".join(code_hits))
+        self.assertFalse(
+            code_hits, "architecture term remains in code: " + "; ".join(code_hits)
+        )
 
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
+            encoding="utf-8"
+        )
         for text in (prompt, overview):
             self.assertIn("subscriber and qualified-view " + ARCH_TERM, text)
             self.assertIn("1,000 subscribers", text)
@@ -58,17 +71,26 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("business-purpose language only", overview)
 
     def test_private_request_contract_is_v4_with_v3_recovery(self):
-        validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
+        validator = (BOT_ROOT / "validation/validate_content.py").read_text(
+            encoding="utf-8"
+        )
         upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
-        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("SCHEMA_VERSION = 4", validator)
         self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
         self.assertNotIn("schema in {2, 3}", validator)
-        self.assertIn('\"privacyStatus\": \"private\"', upload)
-        self.assertIn('\"publishAt\": publish_at', upload)
-        self.assertIn("Scheduled publication contract is required", upload)
+        self.assertIn('mode not in {"scheduled", "immediate"}', validator)
+        self.assertIn(
+            '"privacyStatus": "public" if mode == "immediate" else "private"',
+            upload,
+        )
+        self.assertIn('status["publishAt"] = publish_at', upload)
+        self.assertIn("Publication contract is required", upload)
+        self.assertIn("Immediate publication requires publish_at=null", upload)
         self.assertNotIn('\"mode\": \"public\"', upload)
         self.assertIn("Schema v4 is the current production request format", overview)
 
@@ -97,7 +119,20 @@ class ArchitectureContractTests(unittest.TestCase):
             for token in forbidden:
                 if token.lower() in text:
                     hits.append(f"{path.relative_to(REPO_ROOT)}: {token}")
-        self.assertFalse(hits, "compatibility/reset terminology remains: " + "; ".join(hits))
+        self.assertFalse(
+            hits, "compatibility/reset terminology remains: " + "; ".join(hits)
+        )
+
+    def test_ad_hoc_prompt_uses_immediate_public_single_path(self):
+        prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
+        self.assertIn('"mode": "immediate"', prompt)
+        self.assertIn('"publish_at": null', prompt)
+        self.assertIn("privacyStatus: public", prompt)
+        self.assertIn("adhoc-production.yml", prompt)
+        self.assertIn("single.yml", prompt)
+        self.assertIn("[adhoc production] YYYY-MM-DD", prompt)
+        self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
 
     def test_heavy_execution_modules_are_public_only(self):
         paths = [
@@ -113,7 +148,9 @@ class ArchitectureContractTests(unittest.TestCase):
         paths.extend((BOT_ROOT / "production").glob("*.py"))
         paths.extend((BOT_ROOT / "rendering").glob("*.py"))
         for path in paths:
-            self.assertFalse(path.exists(), f"obsolete private runtime copy remains: {path}")
+            self.assertFalse(
+                path.exists(), f"obsolete private runtime copy remains: {path}"
+            )
 
     def test_planner_handoff_matches_daily_production(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
@@ -132,7 +169,9 @@ class ArchitectureContractTests(unittest.TestCase):
         ):
             self.assertIn(token, prompt)
         self.assertIn("name: Daily Production", batch)
-        self.assertIn("contains(github.event.head_commit.message, '[daily production]')", batch)
+        self.assertIn(
+            "contains(github.event.head_commit.message, '[daily production]')", batch
+        )
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
         self.assertIn("python -m common.runtime_contract", batch)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", batch)
@@ -143,13 +182,19 @@ class ArchitectureContractTests(unittest.TestCase):
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
         for token in (
-            "media/media_resolver.py", "rendering/render_aligned.py",
-            "publishing/verify_publication.py", "publishing/finalize_receipt.py",
+            "media/media_resolver.py",
+            "rendering/render_aligned.py",
+            "publishing/verify_publication.py",
+            "publishing/finalize_receipt.py",
         ):
             self.assertNotIn(token, batch)
 
-        analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
-        backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
+        analytics = (WORKFLOWS / "analytics-collection.yml").read_text(
+            encoding="utf-8"
+        )
+        backgrounds = (WORKFLOWS / "background-management.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("analytics/analytics_collection.py", analytics)
         self.assertIn("media/pexels_registry.py", backgrounds)
         self.assertIn("media/validate_media_library.py", backgrounds)
@@ -159,9 +204,13 @@ class ArchitectureContractTests(unittest.TestCase):
 
     def test_docs_match_current_runtime_ownership_and_media_contract(self):
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
+            encoding="utf-8"
+        )
         recovery = (BOT_ROOT / "docs" / "RECOVERY.md").read_text(encoding="utf-8")
-        runtime_map = (REPO_ROOT / "docs" / "private" / "runtime-map.md").read_text(encoding="utf-8")
+        runtime_map = (REPO_ROOT / "docs" / "private" / "runtime-map.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertNotIn("`build-image.yml`", readme)
         self.assertNotIn("`youtube-shorts-bot/Dockerfile`", readme)
@@ -178,13 +227,18 @@ class ArchitectureContractTests(unittest.TestCase):
 
     def test_analytics_contract_is_current_and_consistent(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(encoding="utf-8")
-        learning = (BOT_ROOT / "analytics/analytics_learning.py").read_text(encoding="utf-8")
+        collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(
+            encoding="utf-8"
+        )
+        learning = (BOT_ROOT / "analytics/analytics_learning.py").read_text(
+            encoding="utf-8"
+        )
         model = (BOT_ROOT / "analytics" / "model.json").read_text(encoding="utf-8")
         for text in (prompt, collector, learning):
             self.assertIn("analytics_evidence_count", text)
         self.assertIn('\"model_version\": 1', model)
         self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}", collector)
+        self.assertIn('in {"scheduled", "immediate"}', collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)
         self.assertIn(
