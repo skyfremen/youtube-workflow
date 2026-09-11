@@ -23,7 +23,7 @@ def _title_candidate(title, style, score):
 def valid_request():
     selected_title = "My Boss Said the File Was Gone… Then IT Found the Backup #Shorts"
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "content_id": "wd-20990910T000000-backup-proof-a7c42f",
         "channel": {"name": "Wacky Dramas", "handle": "@WACKYDRAMAS"},
         "story": {
@@ -35,6 +35,8 @@ def valid_request():
                 "I opened the archived workspace and found the timestamped copy."
             ),
             "card_emojis": ["💼", "🗂️", "😳", "💾", "🔥"],
+            "lead_gender": "female",
+            "story_tone": "natural",
         },
         "narration": {"engine": "kokoro", "voice": "af_heart", "speed": 1.75},
         "visual": {
@@ -126,7 +128,7 @@ class RequestSchemaTests(unittest.TestCase):
     def test_noncanonical_schema_is_rejected(self):
         data = valid_request()
         data["schema_version"] = 99
-        self.assertIn("schema_version must be 3", validate_request_data(data))
+        self.assertIn("schema_version must be 3 or 4", validate_request_data(data))
 
     def test_publication_and_planning_are_required(self):
         for field in ("publication", "planning"):
@@ -154,6 +156,25 @@ class RequestSchemaTests(unittest.TestCase):
         self.assertTrue(
             any("must differ" in error for error in validate_request_data(data))
         )
+
+    def test_canonical_voice_mapping(self):
+        cases = (
+            ("female", "natural", "af_heart"),
+            ("female", "dramatic", "af_bella"),
+            ("male", "general", "am_echo"),
+            ("male", "comedy", "am_fenrir"),
+        )
+        for gender, tone, voice in cases:
+            with self.subTest(gender=gender, tone=tone):
+                data = valid_request()
+                data["story"].update(lead_gender=gender, story_tone=tone)
+                data["narration"]["voice"] = voice
+                self.assertEqual(validate_request_data(data), [])
+
+    def test_invalid_voice_gender_pair_fails(self):
+        data = valid_request()
+        data["narration"]["voice"] = "am_fenrir"
+        self.assertTrue(any("narration.voice" in error for error in validate_request_data(data)))
 
     def test_fixture_is_isolated_per_call(self):
         first = valid_request()
