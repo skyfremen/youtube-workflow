@@ -28,8 +28,10 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def test_one_push_batch_produces_one_opaque_dispatch(self):
         text = self.daily()
         self.assertIn("contains(github.event.head_commit.message, '[daily production]')", text)
-        self.assertIn("'inputs': {'batch_id':", text)
-        self.assertIn("'source_sha':", text)
+        self.assertIn("python -m common.runtime_contract", text)
+        self.assertIn("'batch_id': os.environ['BATCH_ID']", text)
+        self.assertIn("'source_sha': os.environ['SOURCE_SHA']", text)
+        self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", text)
         self.assertNotIn("'content_ids': os.environ", text)
         self.assertIn("b_$(printf", text)
 
