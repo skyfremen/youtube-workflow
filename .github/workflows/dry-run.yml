@@ -59,7 +59,11 @@ jobs:
           restored = retired & actual_workflows
           assert not restored, f'E_ARCH_RETIRED restored workflows: {sorted(restored)}'
 
-          expected_planner_docs = {'DAILY_PLANNER_PROMPT.md', 'STORY_RULES.md'}
+          expected_planner_docs = {
+              'ADHOC_PLANNER_PROMPT.md',
+              'DAILY_PLANNER_PROMPT.md',
+              'STORY_RULES.md',
+          }
           actual_planner_docs = {path.name for path in Path('youtube-shorts-bot/planning').glob('*.md')}
           assert actual_planner_docs == expected_planner_docs, f'unexpected planner docs: {sorted(actual_planner_docs)}'
 
