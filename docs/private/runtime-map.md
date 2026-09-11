@@ -80,3 +80,14 @@ These aliases change only the names repeated in public Actions logs. Secret valu
 ## Manual recovery identity
 
 A manual recovery batch ID hashes the immutable item identities together with `github.run_id`. A new manual trigger therefore gets a new immutable completion namespace, while reruns of the same workflow run retain the same batch ID. Durable per-item upload records remain the duplicate-publication authority.
+
+
+## 1080p, readability and voice contract
+
+- `resources/policy.py` / private `media/background_policy.py`: effective post-crop rendition gate; 1080×1920 target; maximum 1.05× enlargement.
+- `resources/quality.py`: samples 12 frames across the used segment's subtitle-safe region and chooses the bounded soft darkening strength.
+- `transform/compose.py`: 1080×1920/30, H.264 High CRF 19, yuv420p/BT.709, AAC-LC 48 kHz, scaled design and subtitle treatment.
+- `guard/schema.py`: schema-v4 frozen lead gender/tone/voice validation; schema-v3 remains accepted only for recovery.
+- `E_RESOURCE_001`: physical rendition/readability/preflight failure. Inspect the private diagnostic record for requested IDs, attempted rendition and underlying reason.
+
+Voice map: female natural/general `af_heart`; female expressive `af_bella`; male natural/general `am_echo`; male expressive `am_fenrir`.
