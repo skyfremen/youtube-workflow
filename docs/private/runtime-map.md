@@ -65,3 +65,14 @@ Public logs intentionally retain only stage, item ordinal, stable error code, an
 | `s03` | Narration backend exercise |
 | `s04` | Word-alignment exercise |
 | `s05` | Check completed |
+
+## Public environment aliases
+
+| Public alias | Private environment secret |
+| --- | --- |
+| `RUNTIME_AUTH_A` | `YOUTUBE_CLIENT_ID` |
+| `RUNTIME_AUTH_B` | `YOUTUBE_CLIENT_SECRET` |
+| `RUNTIME_AUTH_C` | `YOUTUBE_REFRESH_TOKEN` |
+| `RUNTIME_SOURCE_KEY` | `PEXELS_API_KEY` |
+
+These aliases change only the names repeated in public Actions logs. Secret values and integration semantics are unchanged.
