@@ -7,9 +7,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HF_HOME=/opt/huggingface \
     HF_HUB_CACHE=/opt/huggingface/hub \
     TORCH_HOME=/opt/torch-cache \
-    RUNTIME_RESOURCE_HOME=/opt/kokoro-onnx \
-    RUNTIME_RESOURCE_A=/opt/kokoro-onnx/kokoro-v1.0.onnx \
-    RUNTIME_RESOURCE_B=/opt/kokoro-onnx/voices-v1.0.bin
+    RUNTIME_RESOURCE_HOME=/opt/runtime-resources \
+    RUNTIME_RESOURCE_A=/opt/runtime-resources/a.bin \
+    RUNTIME_RESOURCE_B=/opt/runtime-resources/b.bin
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
