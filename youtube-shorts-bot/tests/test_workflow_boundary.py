@@ -11,6 +11,9 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def daily(self):
         return (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
 
+    def recovery(self):
+        return (WORKFLOWS / "automatic-recovery.yml").read_text(encoding="utf-8")
+
     def analytics(self):
         return (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
 
@@ -52,6 +55,32 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("workflow_dispatch:", text)
         self.assertIn("content_ids:", text)
 
+    def test_automatic_recovery_stays_in_private_control_plane(self):
+        text = self.recovery()
+        self.assertIn("recovery/controller.py", text)
+        self.assertIn("content/diagnostics/**/*.json", text)
+        self.assertIn("workflow_run:", text)
+        self.assertIn("workflows: ['Daily Production']", text)
+        self.assertIn("schedule:", text)
+        self.assertIn("cron: '17 */2 * * *'", text)
+        self.assertIn("RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'", text)
+        self.assertIn("RECOVERY_ACTIVE_GRACE_MINUTES: '210'", text)
+        self.assertIn("actions/workflows/run.yml/dispatches", text)
+        self.assertIn("python -m common.runtime_contract", text)
+        self.assertIn("PUBLIC_PRODUCTION_TOKEN", text)
+        self.assertIn("cancel-in-progress: false", text)
+        for forbidden in (
+            "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN",
+            "PEXELS_API_KEY", "videos().insert", "render_aligned.py",
+        ):
+            self.assertNotIn(forbidden, text)
+
+    def test_automatic_recovery_manual_default_is_plan_only(self):
+        text = self.recovery()
+        self.assertRegex(text, r"workflow_dispatch:[\s\S]*default: plan")
+        self.assertIn('if [ "${mode}" = "execute" ]', text)
+        self.assertIn("--write", text)
+
     def test_analytics_runs_only_for_public_observation_snapshot(self):
         workflow = self.analytics()
         processor = (BASE / "analytics" / "analytics_collection.py").read_text(
@@ -67,9 +96,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertNotIn("content/completions/*.json", workflow)
         self.assertNotIn("content/results/*.json", workflow)
         for secret in (
-            "YOUTUBE_CLIENT_ID",
-            "YOUTUBE_CLIENT_SECRET",
-            "YOUTUBE_REFRESH_TOKEN",
+            "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN",
         ):
             self.assertNotIn(secret, workflow)
 
