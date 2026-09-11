@@ -62,6 +62,7 @@ class Snapshot:
     latest_dispatch_failed_at: datetime | None = None
     latest_started_at: datetime | None = None
     latest_started_dispatch_id: str = ""
+    current_dispatch_started_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -121,8 +122,9 @@ def decide(s, now, policy):
 
     durable = s.has_intent or s.has_upload
 
-    # Any real runner-start moves this exact batch to the conservative long-running path.
-    # This also protects a delayed original run that starts after a no-start redispatch.
+    # Any recent START for the same immutable batch means a runner is active or was
+    # recently active. This protects a delayed original attempt that begins after a
+    # no-start retry was submitted. Old START records do not mask newer attempts.
     if s.latest_event == "none" and s.latest_started_at is not None:
         if now - s.latest_started_at < timedelta(minutes=policy.active_grace_minutes):
             return Decision("active", "started_production_within_long_grace")
@@ -133,18 +135,23 @@ def decide(s, now, policy):
         if now - anchor < timedelta(minutes=policy.active_grace_minutes):
             return Decision("active", "durable_upload_state_within_long_grace")
 
-    # A positively accepted dispatch with no STARTED evidence is the fast recovery path.
+    # A positively accepted current dispatch with no matching START uses the short
+    # startup grace. A stale START belonging to another attempt does not satisfy it.
+    fast_no_start = (
+        not durable
+        and s.latest_event == "none"
+        and s.latest_dispatched_at is not None
+        and s.current_dispatch_started_at is None
+        and now - s.latest_dispatched_at >= timedelta(minutes=policy.startup_grace_minutes)
+    )
     if (
         not durable
         and s.latest_event == "none"
         and s.latest_dispatched_at is not None
-        and s.latest_started_at is None
+        and s.current_dispatch_started_at is None
+        and not fast_no_start
     ):
-        if now - s.latest_dispatched_at < timedelta(minutes=policy.startup_grace_minutes):
-            return Decision("active", "startup_grace_active")
-        fast_no_start = True
-    else:
-        fast_no_start = False
+        return Decision("active", "startup_grace_active")
 
     # A dispatch API failure is explicit and can retry immediately. A prepared attempt
     # with neither accepted nor failed evidence remains ambiguous and therefore keeps
@@ -152,25 +159,24 @@ def decide(s, now, policy):
     explicit_dispatch_failure = (
         not durable
         and s.latest_event == "none"
+        and s.latest_prepared_at is not None
+        and s.latest_dispatched_at is None
         and s.latest_dispatch_failed_at is not None
-        and (
-            s.latest_dispatched_at is None
-            or s.latest_dispatch_failed_at >= s.latest_dispatched_at
-        )
-        and s.latest_started_at is None
+        and s.current_dispatch_started_at is None
     )
 
     if (
         s.latest_event == "none"
         and not fast_no_start
         and not explicit_dispatch_failure
-        and s.latest_started_at is None
+        and s.current_dispatch_started_at is None
+        and s.latest_dispatched_at is None
     ):
         anchor = s.latest_prepared_at or s.latest_batch_started_at
         if now - anchor < timedelta(minutes=policy.active_grace_minutes):
             reason = (
                 "dispatch_outcome_uncertain_within_long_grace"
-                if s.latest_prepared_at is not None and s.latest_dispatched_at is None
+                if s.latest_prepared_at is not None
                 else "production_or_recovery_still_within_grace"
             )
             return Decision("active", reason)
@@ -371,17 +377,30 @@ class Repository:
                 })
 
         latest_prepared = max(prepared, key=lambda x: x["at"]) if prepared else None
-        latest_accepted = max(accepted, key=lambda x: x["at"]) if accepted else None
-        latest_failed = max(failed, key=lambda x: x["at"]) if failed else None
+        current_id = latest_prepared["dispatch_id"] if latest_prepared else ""
+        current_accepted = max(
+            (item for item in accepted if item["dispatch_id"] == current_id),
+            key=lambda x: x["at"],
+            default=None,
+        )
+        current_failed = max(
+            (item for item in failed if item["dispatch_id"] == current_id),
+            key=lambda x: x["at"],
+            default=None,
+        )
+        current_start = max(
+            (item for item in starts if item["dispatch_id"] == current_id),
+            key=lambda x: x["at"],
+            default=None,
+        )
         latest_start = max(starts, key=lambda x: x["at"]) if starts else None
         no_start_retries = sum(1 for item in prepared if item["dispatch_kind"] == "no-start-retry")
-        identity = latest_accepted or latest_prepared
         return {
             "latest_prepared": latest_prepared,
-            "latest_accepted": latest_accepted,
-            "latest_failed": latest_failed,
+            "current_accepted": current_accepted,
+            "current_failed": current_failed,
+            "current_start": current_start,
             "latest_start": latest_start,
-            "identity": identity,
             "no_start_retries": no_start_retries,
         }
 
@@ -443,7 +462,7 @@ class Repository:
         dispatch = self.dispatch_state(latest["batch_id"])
         base_attempts = max([x["automatic_attempt"] for x in batches if x["automatic"]] or [0])
         attempts = base_attempts + dispatch["no_start_retries"]
-        identity = dispatch["identity"] or {}
+        current = dispatch["latest_prepared"] or {}
         return Snapshot(
             content_id, source_sha, source_started, parse_instant(publication.get("publish_at")),
             self.receipt_state(request_path, source_sha),
@@ -452,14 +471,15 @@ class Repository:
             attempts, latest["batch_id"], latest["started_at"], event["kind"], event["at"],
             event["retryable"], event["error_code"], event["stage"],
             (self.terminal / f"{content_id}.json").is_file(), source_sha == failed_source_sha,
-            str(identity.get("dispatch_id", "")),
-            str(identity.get("source_sha", "")),
-            str(identity.get("contract_hash", "")),
+            str(current.get("dispatch_id", "")),
+            str(current.get("source_sha", "")),
+            str(current.get("contract_hash", "")),
             dispatch["latest_prepared"]["at"] if dispatch["latest_prepared"] else None,
-            dispatch["latest_accepted"]["at"] if dispatch["latest_accepted"] else None,
-            dispatch["latest_failed"]["at"] if dispatch["latest_failed"] else None,
+            dispatch["current_accepted"]["at"] if dispatch["current_accepted"] else None,
+            dispatch["current_failed"]["at"] if dispatch["current_failed"] else None,
             dispatch["latest_start"]["at"] if dispatch["latest_start"] else None,
             dispatch["latest_start"]["dispatch_id"] if dispatch["latest_start"] else "",
+            dispatch["current_start"]["at"] if dispatch["current_start"] else None,
         )
 
     def write_terminal(self, s, decision, *, now, policy):
