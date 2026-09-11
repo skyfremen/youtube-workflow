@@ -153,6 +153,25 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertFalse((BOT_ROOT / "Dockerfile").exists())
         self.assertFalse((BOT_ROOT / "requirements.txt").exists())
 
+    def test_docs_match_current_runtime_ownership_and_media_contract(self):
+        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
+        recovery = (BOT_ROOT / "docs" / "RECOVERY.md").read_text(encoding="utf-8")
+        runtime_map = (REPO_ROOT / "docs" / "private" / "runtime-map.md").read_text(encoding="utf-8")
+
+        self.assertNotIn("`build-image.yml`", readme)
+        self.assertNotIn("`youtube-shorts-bot/Dockerfile`", readme)
+        self.assertIn("public `production-runtime` repository owns", readme)
+        self.assertIn("Schema v4 is the current production request format", overview)
+        self.assertIn("schema-v4 daily path", recovery)
+        for text in (readme, overview, recovery, runtime_map):
+            self.assertNotIn("720×1280", text)
+            self.assertNotIn("720x1280", text)
+        self.assertIn("1080×1920", readme)
+        self.assertIn("1080×1920", overview)
+        self.assertIn("1080×1920", recovery)
+        self.assertIn("1080x1920", runtime_map)
+
     def test_analytics_contract_is_current_and_consistent(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(encoding="utf-8")
@@ -161,6 +180,7 @@ class ArchitectureContractTests(unittest.TestCase):
         for text in (prompt, collector, learning):
             self.assertIn("analytics_evidence_count", text)
         self.assertIn('"model_version": 1', model)
+        self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}", collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)
         self.assertIn(
