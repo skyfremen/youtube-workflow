@@ -17,7 +17,7 @@ Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **no
 ## Canonical production contract
 Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; story-aware approved Kokoro voice at 1.75x; 1080×1920/30fps H.264 High, yuv420p, BT.709 + AAC-LC 48kHz; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
 
-Read before planning: `planner/STORY_RULES.md`, `planning/planning_config.py`, `planning/planning_engine.py`, `media/background_policy.py`, `media/background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
+Read before planning: `planning/STORY_RULES.md`, `planning/planning_config.py`, `planning/planning_engine.py`, `media/background_policy.py`, `media/background_selector.py`, `media-library/backgrounds.json`, recent immutable requests/results, and valid `analytics/latest.json`.
 
 ## Funnel
 Use progressive detail, not 120 full scripts:
