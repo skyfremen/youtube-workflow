@@ -43,6 +43,36 @@ class RawAnalyticsTests(unittest.TestCase):
         self.assertEqual(loaded["captured_at"], payload["captured_at"])
         self.assertEqual(captured.isoformat(), "2026-09-11T06:30:00+00:00")
 
+    def test_receipt_eligibility_supports_current_and_recovery_schemas(self):
+        base = {
+            "publication_mode": "scheduled",
+            "planning": {"target_duration_seconds": 150},
+            "publish_at": "2026-09-11T00:00:00Z",
+        }
+        self.assertTrue(analytics_collection.receipt_eligible({**base, "schema_version": 3}))
+        self.assertTrue(analytics_collection.receipt_eligible({**base, "schema_version": 4}))
+        self.assertFalse(analytics_collection.receipt_eligible({**base, "schema_version": 2}))
+
+    def test_load_request_accepts_v4_and_rejects_schema_mismatch(self):
+        with tempfile.TemporaryDirectory() as temp:
+            repo_root = Path(temp)
+            request_path = repo_root / "youtube-shorts-bot/content/requests/example.json"
+            request_path.parent.mkdir(parents=True)
+            request_path.write_text(
+                json.dumps({"schema_version": 4, "story": {"category": "RELATIONSHIP"}}),
+                encoding="utf-8",
+            )
+            receipt = {
+                "schema_version": 4,
+                "request_path": "youtube-shorts-bot/content/requests/example.json",
+            }
+            with patch.object(analytics_collection, "REPO_ROOT", repo_root):
+                loaded = analytics_collection.load_request(receipt)
+                mismatched = analytics_collection.load_request({**receipt, "schema_version": 3})
+        self.assertEqual(loaded["schema_version"], 4)
+        self.assertEqual(loaded["story"]["category"], "RELATIONSHIP")
+        self.assertEqual(mismatched, {})
+
 
 if __name__ == "__main__":
     unittest.main()
