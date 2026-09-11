@@ -1,0 +1,14 @@
+{
+  "batch_id": "r_b546683d13c5b0a08450fad7fd0186",
+  "detail": "Traceback (most recent call last):\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 154, in <module>\n    main()\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 136, in main\n    run(args.manifest, args.concurrency)\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 128, in run\n    raise RunnerError(\"One or more items failed; recovery remains authoritative\")\nRunnerError: One or more items failed; recovery remains authoritative\n",
+  "error_code": "E_EXEC_001",
+  "execution_started": true,
+  "retryable": true,
+  "runtime_commit_sha": "1e82fd4f96e5040c39c87fe7b87db0c972c4db30",
+  "schema_version": 1,
+  "source_sha": "360d869ae02bf1aa1abd21b3115e4f2add71bfd9",
+  "stage": "execute",
+  "verification_completed": false,
+  "workflow_run_attempt": "1",
+  "workflow_run_id": "34550606536"
+}
