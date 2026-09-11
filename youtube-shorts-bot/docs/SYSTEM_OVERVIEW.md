@@ -21,15 +21,17 @@ Daily planner
   -> diversity + ~80/20 exploit/explore
   -> <=24 winners
   -> full scripts + verified background IDs
-  -> immutable schema-v3 requests
-  -> one lightweight private dispatch (batch_id + source_sha)
+  -> immutable schema-v4 requests
+  -> one lightweight private dispatch (batch_id + source_sha + contract_hash)
   -> one public runtime workflow and one production job
   -> render selected stories only
   -> upload each exactly once as private + publishAt
   -> verify exact YouTube state
-  -> immutable schema-v3 receipt
+  -> immutable verified receipt using the request schema version
   -> age-matched 24h / 72h / 7d analytics learning
 ```
+
+Schema v4 is the current production request format. Schema v3 remains accepted only so immutable historical/recovery state remains operable.
 
 There is no mutable hourly queue and no hourly render cron. Publication cadence is delegated to YouTube's scheduled publication state after selected videos are prepared in advance.
 
@@ -41,7 +43,7 @@ Raw candidates are cheap structured premises. They do not trigger media download
 
 Central strategy values live in `planning/planning_config.py`. `planning/planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change weighting.
 
-With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap of **60%** so editorial judgment and exploration always remain material.
+With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap so editorial judgment and exploration always remain material.
 
 Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics/analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning/planning_engine.py` only as normalized `historical_attribute_fit`.
 
@@ -57,16 +59,19 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 
 ## Immutable request contract
 
-**Schema v4 is the current production request format; schema v3 remains accepted only for immutable recovery.** Every request contains the canonical story, narration, visual and YouTube fields plus:
+**Schema v4 is the current production request format; schema v3 remains accepted only for immutable recovery.** Every current request contains the canonical story, narration, visual and YouTube fields plus:
 
 - immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, and exact UTC `publish_at`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
+- schema-v4 story metadata that freezes lead gender and story tone so the approved narration voice can be selected deterministically
 
 The schedule is bound to the same immutable request bytes and source commit as the story. Production requires a complete scheduled publication contract.
 
 ## Batch production and Actions cost
 
-`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow runs one heavy container job with bounded internal concurrency of two, while all canonical requests, intents, upload evidence, receipts, completion state, and analytics remain private.
+`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow runs one heavy container job with bounded internal concurrency of two, while all canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private.
+
+The public repository also owns the canonical runtime-image build through `base.yml`, `base/Dockerfile`, and `base/dependencies.txt`. The private repository does not contain a Dockerfile, runtime dependency manifest, or image-build workflow.
 
 The batch continues after individual failures so one bad story does not prevent already-good stories from completing. The job ultimately fails if any item failed, making partial state visible. A rerun does not blindly upload again: each content ID first resolves its immutable receipt, upload intent and upload evidence.
 
@@ -86,19 +91,19 @@ Once an intent exists, absence of a visible video is **never** permission to ins
 
 If verification happens after a scheduled video has already transitioned public, recovery may accept that state only when durable evidence proves the exact intended schedule and YouTube is not observed public before that instant.
 
-A schema-v3 result receipt is created only after exact YouTube state and render evidence verify successfully. Existing receipts are immutable and reused unchanged.
+A verified result receipt uses the same supported schema version as its immutable request and is created only after exact YouTube state and render evidence verify successfully. Existing receipts are immutable and reused unchanged.
 
 ## Render verification
 
-The production render writes inline black-detection evidence during the render pass. `rendering/verify_render.py` requires that evidence and fails closed if it is missing or failed.
+The public runtime's transformation/verification pipeline fails closed when required render evidence is missing or invalid.
 
-The verifier independently checks duration, 1080×1920 resolution, 30 fps, H.264 video, exactly one AAC narration stream, representative frame decoding, render metadata identity and the final video SHA.
+The verifier checks duration, **1080×1920** resolution, 30 fps, H.264 High video, yuv420p/BT.709, exactly one AAC-LC narration stream at 48 kHz, representative frame decoding, render metadata identity and the final video SHA.
 
 ## Analytics
 
-`analytics/analytics_collection.py` runs at approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore**. The 19:30 snapshot is the final refresh before the normal 20:00 daily planner.
+Raw YouTube observations are collected by the public `production-runtime/.github/workflows/check.yml` approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore** and written into private state. The private `analytics-collection.yml` processes/enriches the latest observations once per day at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
 
-Analytics reads only canonical scheduled schema-v3 receipts with planning metadata. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
+Analytics accepts canonical scheduled schema-v3 or schema-v4 success receipts with planning metadata. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
 
 The performance model uses available signals including engaged-view continuation, average percentage viewed, qualified views, **net subscribers per 1,000 views**, shares, likes and comments. Metrics are normalized within the selected cohort before aggregation.
 
@@ -108,11 +113,11 @@ The planner prefers the most mature cohort with enough usable evidence: 7d, othe
 
 ## Daily content commit
 
-The external daily planner follows `planner/DAILY_PLANNER_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v3 request files in one content-only commit whose message begins:
+The external daily planner follows `planning/DAILY_PLANNER_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v4 request files in one content-only commit whose message begins:
 
 `[daily production] YYYY-MM-DD`
 
-That commit is routed to `daily-production.yml`, which dispatches the only authoritative upload implementation in the public runtime.
+That commit is routed to `daily-production.yml`, which dispatches the only authoritative execution/upload implementation in the public runtime.
 
 ## Repository state hygiene
 
@@ -129,3 +134,4 @@ Before a production change is merged:
 5. production must retain durable intent and duplicate-recovery invariants
 6. current secrets must remain referenced only through GitHub Actions secret expressions
 7. the public runtime must write canonical state only to this private repository
+8. the private/public semantic contract fingerprints must remain equal
