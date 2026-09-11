@@ -201,10 +201,8 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
-          assert "'profile': 'paired'" in batch
-          assert "'profile': 'single'" in adhoc
           assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
-          assert 'actions/workflows/run.yml/dispatches' in adhoc
+          assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'Cross-repository execution contract parity PASS' in dry
           for forbidden in ('youtube-shorts-runner', 'media_resolver.py', 'render_aligned.py', 'PEXELS_API_KEY'):
               assert forbidden not in batch
