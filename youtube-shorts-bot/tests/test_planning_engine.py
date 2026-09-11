@@ -20,6 +20,7 @@ from planning.planning_engine import (
     select_diverse,
     similarity,
     title_score,
+    select_narration_voice,
 )
 from planning.planning_config import EDITORIAL_WEIGHTS, TITLE_WEIGHTS
 
@@ -150,6 +151,18 @@ class PlanningEngineTests(unittest.TestCase):
         result = evaluate(raw, semifinalists, "2026-09-10", analytics_video_count=5)
         self.assertGreater(result["analytics_weight"], 0)
         self.assertLess(result["analytics_weight"], 0.75)
+
+
+class VoiceSelectionTests(unittest.TestCase):
+    def test_gender_then_tone_mapping_is_deterministic(self):
+        self.assertEqual(select_narration_voice("female", "natural"), "af_heart")
+        self.assertEqual(select_narration_voice("female", "dramatic"), "af_bella")
+        self.assertEqual(select_narration_voice("male", "general"), "am_echo")
+        self.assertEqual(select_narration_voice("male", "comedy"), "am_fenrir")
+
+    def test_ambiguous_lead_fails_before_request_creation(self):
+        with self.assertRaises(ValueError):
+            select_narration_voice("ambiguous", "comedy")
 
 
 if __name__ == "__main__":
