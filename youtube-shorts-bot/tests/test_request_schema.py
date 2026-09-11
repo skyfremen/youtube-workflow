@@ -125,6 +125,22 @@ class RequestSchemaTests(unittest.TestCase):
     def test_valid_request_passes(self):
         self.assertEqual(validate_request_data(valid_request()), [])
 
+    def test_immediate_publication_passes_with_null_publish_at(self):
+        data = valid_request()
+        data["publication"] = {
+            "mode": "immediate",
+            "timezone": "Asia/Singapore",
+            "publish_at": None,
+        }
+        self.assertEqual(validate_request_data(data), [])
+
+    def test_immediate_publication_rejects_non_null_publish_at(self):
+        data = valid_request()
+        data["publication"]["mode"] = "immediate"
+        self.assertTrue(
+            any("must be null" in error for error in validate_request_data(data))
+        )
+
     def test_noncanonical_schema_is_rejected(self):
         data = valid_request()
         data["schema_version"] = 99
@@ -142,7 +158,10 @@ class RequestSchemaTests(unittest.TestCase):
         data = valid_request()
         data["setup"] = "obsolete"
         self.assertTrue(
-            any("unexpected" in error or "forbidden" in error for error in validate_request_data(data))
+            any(
+                "unexpected" in error or "forbidden" in error
+                for error in validate_request_data(data)
+            )
         )
 
     def test_wrong_brand_fails(self):
@@ -152,7 +171,9 @@ class RequestSchemaTests(unittest.TestCase):
 
     def test_primary_backup_must_differ(self):
         data = valid_request()
-        data["visual"]["background_backup_id"] = data["visual"]["background_primary_id"]
+        data["visual"]["background_backup_id"] = data["visual"][
+            "background_primary_id"
+        ]
         self.assertTrue(
             any("must differ" in error for error in validate_request_data(data))
         )
@@ -174,7 +195,9 @@ class RequestSchemaTests(unittest.TestCase):
     def test_invalid_voice_gender_pair_fails(self):
         data = valid_request()
         data["narration"]["voice"] = "am_fenrir"
-        self.assertTrue(any("narration.voice" in error for error in validate_request_data(data)))
+        self.assertTrue(
+            any("narration.voice" in error for error in validate_request_data(data))
+        )
 
     def test_fixture_is_isolated_per_call(self):
         first = valid_request()
