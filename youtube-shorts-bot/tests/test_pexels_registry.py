@@ -68,7 +68,7 @@ class PexelsRegistryTests(unittest.TestCase):
             self.assertEqual(added["id"], "satisfying-031")
             self.assertEqual(stored["assets"][-1]["provider_asset_id"], "424242")
             self.assertEqual(len(stored["assets"][-1]["renditions"]), 3)
-            self.assertFalse(stored["rendition_policy"]["uhd_downloads_allowed"])
+            self.assertTrue(stored["rendition_policy"]["uhd_downloads_allowed_when_required_after_crop"])
 
     def test_sourcing_manifest_requires_deterministic_provider_id(self):
         manifest = {
@@ -104,7 +104,7 @@ class PexelsRegistryTests(unittest.TestCase):
             self.assertEqual(len(stored["assets"]), 1)
             self.assertEqual(stored["assets"][0]["provider_asset_id"], "424242")
             self.assertEqual(len(stored["assets"][0]["renditions"]), 3)
-            self.assertFalse(stored["rendition_policy"]["uhd_downloads_allowed"])
+            self.assertTrue(stored["rendition_policy"]["uhd_downloads_allowed_when_required_after_crop"])
 
 
 if __name__ == "__main__":
