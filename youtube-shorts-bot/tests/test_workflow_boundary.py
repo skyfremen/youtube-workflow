@@ -20,6 +20,9 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def analytics(self):
         return (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
 
+    def backgrounds(self):
+        return (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
+
     def test_private_daily_workflow_is_dispatch_only(self):
         text = self.daily()
         for forbidden in (
@@ -102,6 +105,28 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertNotIn("content/background-sourcing/*.json", trigger)
         self.assertIn("workflow_dispatch:", trigger)
         self.assertIn("content_ids:", trigger)
+
+    def test_shared_media_maintenance_is_merge_safe_and_planning_only(self):
+        text = self.backgrounds()
+        trigger = text.split("concurrency:", 1)[0]
+        self.assertIn("branches: [main]", trigger)
+        self.assertIn("content/background-sourcing/readiness/*.json", trigger)
+        self.assertIn("media-library/reset-selection-*.json", trigger)
+        self.assertIn("BEFORE_SHA: ${{ github.event.before }}", text)
+        self.assertIn('git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}"', text)
+        self.assertIn("media.media_readiness retire-current", text)
+        self.assertIn("media.media_readiness audit", text)
+        self.assertIn("media/pexels_registry.py ingest-manifest", text)
+        self.assertIn("PEXELS_API_KEY", text)
+        self.assertIn("contents: write", text)
+        for forbidden in (
+            "render_aligned.py",
+            "videos().insert",
+            "YOUTUBE_CLIENT_ID",
+            "YOUTUBE_CLIENT_SECRET",
+            "YOUTUBE_REFRESH_TOKEN",
+        ):
+            self.assertNotIn(forbidden, text)
 
     def test_automatic_recovery_stays_in_private_control_plane(self):
         text = self.recovery()
