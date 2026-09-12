@@ -1,10 +1,18 @@
+import inspect
 import unittest
+from pathlib import Path
 
 from validation.public_dry_run import (
     PublicDryRunError,
     correlation_id,
+    dispatch_and_verify,
+    expected_sha,
     select_correlated_run,
 )
+
+
+ROOT = Path(__file__).resolve().parents[2]
+DRY_RUN = ROOT / '.github/workflows/dry-run.yml'
 
 
 class PublicDryRunTests(unittest.TestCase):
@@ -13,6 +21,27 @@ class PublicDryRunTests(unittest.TestCase):
         self.assertRegex(value, r'^dr_[0-9a-f]{24}$')
         self.assertEqual(value, correlation_id('12345', '2', 'a' * 40))
         self.assertNotEqual(value, correlation_id('12345', '3', 'a' * 40))
+
+    def test_expected_sha_is_fail_closed(self):
+        self.assertEqual(expected_sha('a' * 40), 'a' * 40)
+        for value in ('', 'main', 'A' * 40, 'a' * 39, 'a' * 41):
+            with self.assertRaisesRegex(PublicDryRunError, 'E_DRY_PUBLIC_SHA'):
+                expected_sha(value)
+
+    def test_dispatch_uses_pre_resolved_sha_and_never_re_resolves_main(self):
+        source = inspect.getsource(dispatch_and_verify)
+        self.assertIn("PUBLIC_EXPECTED_SHA", source)
+        self.assertNotIn("commits/main", source)
+
+    def test_workflow_resolves_one_sha_for_parity_and_dispatch(self):
+        text = DRY_RUN.read_text(encoding='utf-8')
+        self.assertIn('id: public_runtime', text)
+        self.assertIn("refs/heads/main", text)
+        self.assertIn('PUBLIC_RUNTIME_SHA: ${{ steps.public_runtime.outputs.sha }}', text)
+        self.assertIn('PUBLIC_EXPECTED_SHA: ${{ steps.public_runtime.outputs.sha }}', text)
+        self.assertIn('git -C /tmp/production-runtime-contract fetch --quiet --depth 1 origin "${PUBLIC_RUNTIME_SHA}"', text)
+        self.assertIn('test "$(git -C /tmp/production-runtime-contract rev-parse HEAD)" = "${PUBLIC_RUNTIME_SHA}"', text)
+        self.assertNotIn('git clone --quiet --depth 1 https://github.com/skyfremen/production-runtime.git', text)
 
     def test_selects_only_new_run_with_matching_job_correlation(self):
         runs = [
