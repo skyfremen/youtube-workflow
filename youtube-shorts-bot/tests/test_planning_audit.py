@@ -11,17 +11,25 @@ class PlanningAuditTests(unittest.TestCase):
     parent_sha = "a" * 40
     implementation_sha = "b" * 64
 
-    def plan(self, content_id="wd-20260912T200000-drama-cafe-a1b2c3"):
+    def plan(self, content_id=None, *, mode="normal_next_day", count=24):
+        content_ids = [
+            f"wd-20260913T{index:02d}0000-drama-cafe-{index:02d}a1b2"
+            for index in range(count)
+        ]
+        if content_id is not None:
+            content_ids[0] = content_id
         return {
             "plan_date": "2026-09-13",
-            "planning_mode": "normal_next_day",
-            "final_selected": 1,
-            "content_ids": [content_id],
+            "planning_mode": mode,
+            "final_selected": len(content_ids),
+            "content_ids": content_ids,
             "planning_execution": {
                 "editorial_selection_owner": "chatgpt",
                 "planning_method": "chatgpt_direct",
                 "rules_source_sha": self.parent_sha,
-                "selected_candidate_ids": ["candidate-001"],
+                "selected_candidate_ids": [
+                    f"candidate-{index:03d}" for index in range(len(content_ids))
+                ],
             },
         }
 
@@ -37,9 +45,22 @@ class PlanningAuditTests(unittest.TestCase):
         )
 
     def test_valid_core_accepts_chatgpt_direct_provenance(self):
-        plan_date, content_ids = self.validate()
+        plan = self.plan()
+        plan_date, content_ids = self.validate(plan)
         self.assertEqual(plan_date, "2026-09-13")
-        self.assertEqual(content_ids, self.plan()["content_ids"])
+        self.assertEqual(content_ids, plan["content_ids"])
+        self.assertEqual(len(content_ids), 24)
+
+    def test_normal_next_day_requires_exactly_24_requests(self):
+        for count in (1, 23):
+            with self.subTest(count=count), self.assertRaises(PlanningAuditError):
+                self.validate(self.plan(count=count))
+
+    def test_same_day_catch_up_may_contain_fewer_than_24_requests(self):
+        plan = self.plan(mode="same_day_catch_up", count=3)
+        plan_date, content_ids = self.validate(plan)
+        self.assertEqual(plan_date, "2026-09-13")
+        self.assertEqual(len(content_ids), 3)
 
     def test_rules_source_must_equal_content_commit_parent(self):
         plan = self.plan()
@@ -69,8 +90,11 @@ class PlanningAuditTests(unittest.TestCase):
                 self.validate(self.plan(content_id))
 
     def test_content_ids_must_exactly_match_same_commit_request_files(self):
+        plan = self.plan()
+        request_ids = list(plan["content_ids"])
+        request_ids[0] = "wd-20260912T200000-other-a1b2c3"
         with self.assertRaises(PlanningAuditError):
-            self.validate(request_ids=["wd-20260912T200000-other-a1b2c3"])
+            self.validate(plan, request_ids=request_ids)
 
     def test_selected_candidate_count_and_uniqueness_are_enforced(self):
         plan = self.plan()
