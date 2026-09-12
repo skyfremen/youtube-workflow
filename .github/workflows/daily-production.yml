@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/planning/*.json'
+      - 'youtube-shorts-bot/content/candidate-pools/daily/*.json'
   workflow_dispatch:
     inputs:
       content_ids:
@@ -19,6 +19,9 @@ concurrency:
 permissions:
   contents: write
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 jobs:
   dispatch:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[daily production]') }}
@@ -29,13 +32,103 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate canonical daily planning audit
+      - name: Fast-forward canonical state
         if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+
+      - name: Global compatibility preflight
+        id: contract
         working-directory: youtube-shorts-bot
         shell: bash
         run: |
           set -euo pipefail
-          python -m validation.planning_audit --source-sha "${GITHUB_SHA}"
+          contract_hash="$(python -m common.runtime_contract)"
+          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::Invalid compatibility fingerprint"
+            exit 1
+          fi
+          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
+
+      - name: Validate 36 ranked candidates and promote first valid 24
+        if: ${{ github.event_name == 'push' }}
+        id: promote
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m planning.candidate_pool promote-daily \
+            --source-sha "${GITHUB_SHA}" \
+            --output /tmp/daily-promotion.json
+          python - <<'PY'
+          import json, os
+          payload = json.load(open('/tmp/daily-promotion.json', encoding='utf-8'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f"reused={'true' if payload['reused'] else 'false'}\n")
+              output.write(f"target_count={payload['target_count']}\n")
+              output.write(f"production_source_sha={payload.get('production_source_sha') or ''}\n")
+          PY
+
+      - name: Final strict request validation
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from media.validate_media_library import load_registry
+          from validation.validate_content import validate_request
+
+          payload = json.load(open('/tmp/daily-promotion.json', encoding='utf-8'))
+          registry = load_registry()
+          for path in payload['request_paths']:
+              validate_request(path, registry_data=registry, strict=True)
+          if len(payload['request_paths']) != payload['target_count']:
+              raise SystemExit('promoted Daily request count does not match target_count')
+          PY
+
+      - name: Persist promoted immutable Daily batch
+        if: ${{ github.event_name == 'push' && steps.promote.outputs.reused != 'true' }}
+        id: persist-daily
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mapfile -t paths < <(python - <<'PY'
+          import json
+          payload = json.load(open('/tmp/daily-promotion.json', encoding='utf-8'))
+          print(payload['plan_path'])
+          for path in payload['request_paths']:
+              print(path)
+          PY
+          )
+          git add -- "${paths[@]}"
+          expected="$(python - <<'PY'
+          import json
+          payload = json.load(open('/tmp/daily-promotion.json', encoding='utf-8'))
+          print(1 + len(payload['request_paths']))
+          PY
+          )"
+          actual="$(git diff --cached --name-only | wc -l | tr -d ' ')"
+          if [ "${actual}" != "${expected}" ]; then
+            echo "::error::Promotion must stage exactly one planning audit plus the selected immutable requests"
+            exit 1
+          fi
+          plan_date="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.load(open('/tmp/daily-promotion.json', encoding='utf-8'))
+          print(Path(payload['plan_path']).stem)
+          PY
+          )"
+          git commit -m "[daily production] ${plan_date}"
+          git pull --rebase origin main
+          source_sha="$(git rev-parse HEAD)"
+          python -m validation.planning_audit --source-sha "${source_sha}"
+          git push origin HEAD:main
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
 
       - name: Resolve opaque dispatch
         id: batch
@@ -43,11 +136,18 @@ jobs:
         env:
           MANUAL_CONTENT_IDS: ${{ inputs.content_ids }}
           RECOVERY_RUN_ID: ${{ github.run_id }}
+          NEW_SOURCE_SHA: ${{ steps.persist-daily.outputs.source_sha }}
+          REUSED_SOURCE_SHA: ${{ steps.promote.outputs.production_source_sha }}
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            batch_id="b_$(printf '%s' "${GITHUB_SHA}" | sha256sum | cut -c1-30)"
-            source_sha="${GITHUB_SHA}"
+            source_sha="${NEW_SOURCE_SHA:-${REUSED_SOURCE_SHA:-}}"
+            if [[ ! "${source_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::Cannot resolve promoted Daily production source SHA"
+              exit 1
+            fi
+            python -m validation.planning_audit --source-sha "${source_sha}"
+            batch_id="b_$(printf '%s' "${source_sha}" | sha256sum | cut -c1-30)"
           else
             python - <<'PY'
           import hashlib
@@ -105,19 +205,6 @@ jobs:
           fi
           echo "batch_id=${batch_id}" >> "${GITHUB_OUTPUT}"
           echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
-
-      - name: Resolve compatibility contract
-        id: contract
-        working-directory: youtube-shorts-bot
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_hash="$(python -m common.runtime_contract)"
-          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
-            echo "::error::Invalid compatibility fingerprint"
-            exit 1
-          fi
-          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
 
       - name: Dispatch public execution
         env:
