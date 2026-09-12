@@ -5,6 +5,8 @@ production policy without scattering magic numbers across the codebase.
 """
 
 DAILY_PUBLISH_COUNT = 24
+DAILY_RANKED_POOL_COUNT = 36
+ADHOC_RANKED_POOL_COUNT = 5
 RAW_CANDIDATE_COUNT = 120
 SEMIFINALIST_TARGET = 36
 TITLES_PER_SEMIFINALIST = 5
