@@ -24,9 +24,16 @@ class ArchitectureContractTests(unittest.TestCase):
             required <= actual, f"missing workflows: {sorted(required - actual)}"
         )
         self.assertFalse(
-            {"build-image.yml", "pipeline-validation.yml", "background-library.yml"}
+            {
+                "build-image.yml",
+                "pipeline-validation.yml",
+                "background-library.yml",
+                "planner-execution.yml",
+                "adhoc-request-dispatch.yml",
+            }
             & actual
         )
+        self.assertFalse((PLANNER / "execution_bridge.py").exists())
         self.assertEqual(
             {path.name for path in PLANNER.glob("*.md")},
             {
@@ -90,6 +97,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn('"segment_start_seconds"', validator)
         self.assertIn('"segment_duration_seconds"', validator)
         self.assertIn('"playback_rate"', validator)
+        self.assertIn("registry_data", validator)
+        self.assertIn("rendition_is_production_suitable", validator)
         self.assertIn('"punchline"', legacy_validator)
         self.assertIn("validate_punchline", legacy_validator)
         self.assertIn('"REVERSAL"', semantic)
@@ -137,12 +146,13 @@ class ArchitectureContractTests(unittest.TestCase):
             hits, "compatibility/reset terminology remains: " + "; ".join(hits)
         )
 
-    def test_ad_hoc_prompt_uses_immediate_public_single_path(self):
+    def test_ad_hoc_prompt_uses_ranked_immediate_public_single_path(self):
         prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
         self.assertIn('"mode": "immediate"', prompt)
         self.assertIn('"publish_at": null', prompt)
-        self.assertIn("privacyStatus: public", prompt)
+        self.assertIn("exactly **5 complete ranked Ad-hoc candidates**", prompt)
+        self.assertIn("content/candidate-pools/adhoc", prompt)
         self.assertIn("adhoc-production.yml", prompt)
         self.assertIn("single.yml", prompt)
         self.assertIn("[adhoc production] YYYY-MM-DD", prompt)
@@ -166,7 +176,7 @@ class ArchitectureContractTests(unittest.TestCase):
                 path.exists(), f"obsolete private runtime copy remains: {path}"
             )
 
-    def test_planner_handoff_matches_daily_production(self):
+    def test_planner_handoff_matches_daily_ranked_pool_production(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         for token in (
@@ -174,15 +184,16 @@ class ArchitectureContractTests(unittest.TestCase):
             "analytics_evidence_count",
             "daily-production.yml",
             "[daily production]",
-            "`plan_date`",
-            "`planning_mode`",
-            "`final_selected`",
-            "`content_ids`",
-            "`logical_id`",
-            "`required_by_content_ids`",
+            "exactly 36 complete ranked candidates",
+            "content/candidate-pools/daily/YYYY-MM-DD.json",
+            "first 24 valid candidates",
+            "rules_source_sha",
         ):
             self.assertIn(token, prompt)
         self.assertIn("name: Daily Production", batch)
+        self.assertIn("content/candidate-pools/daily/*.json", batch)
+        self.assertIn("planning.candidate_pool promote-daily", batch)
+        self.assertIn("validation.validate_content", batch)
         self.assertIn(
             "contains(github.event.head_commit.message, '[daily production]')", batch
         )
@@ -256,7 +267,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)
         self.assertIn(
-            "Do not substitute `video_count`, `published_video_count`, or `mature_video_count`",
+            "do **not** substitute `video_count`, `published_video_count`, or `mature_video_count`",
             prompt,
         )
 
