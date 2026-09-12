@@ -2,35 +2,49 @@
 
 ## Ownership boundary
 
-The private repository owns logical background planning, the registered logical asset library, licence/provenance metadata, and persistent creative history derived from immutable verified result receipts. The public runtime remains stateless across independent production runs and must not create a cross-run asset, segment, category, or playback-treatment ledger.
+The private repository owns logical background planning, the registered logical asset library, licence/provenance metadata, private successful-use history and all planning policy. The public runtime remains stateless across independent production runs and must not create a cross-run asset, segment, category or playback-treatment ledger.
 
-Schema v5 freezes the logical primary/backup IDs **and one immutable treatment for each slot**. The public runtime validates that frozen decision and owns physical work: rendition resolution, physical cache lookup, download, probing, post-crop quality validation, one-time normalization, application of the frozen treatment, caption-region analysis, and rendering.
+For newly authored schema-v5 ranked pools, **ChatGPT / Work owns the final logical background and treatment decisions**. It reads current registry/policy/history, chooses primary/backup assets, reasons about audit eligibility and repetition, and freezes one immutable treatment for each slot.
 
-A registered logical asset is not the same thing as a runner-local physical cache entry. A logical asset remains eligible when its physical file is absent from a runner cache. The normalized physical cache is an execution optimization, never persistent creative history.
+Private code independently validates hard facts. It may reject a candidate but must not choose a different story, background, segment or playback rate.
 
-Schema v4 remains readable only for staged migration and recovery of already-created requests. New Daily and Ad-hoc requests use schema v5.
+The public runtime owns physical work only: rendition resolution, physical cache lookup, download, probing, post-crop quality validation, normalization, application of the frozen treatment, caption-region analysis and rendering.
+
+Schema v4 remains executable only for historical immutable recovery. New Daily and Ad-hoc requests use schema v5.
 
 ## Retention-first logical selection
 
-The default ranking order is visual retention first, topic relevance second. Strong continuous movement and subtitle readability are more important than literal story depiction. A relationship, workplace, family, or dating story may therefore use an unrelated but engaging process background when it is visually stronger.
+The background is supporting motion for a narration-first Short; literal story reenactment is not required. Visual retention, continuous motion and subtitle readability are more important than literal topic match.
 
-Canonical high-retention categories are `cooking`, `baking`, `food_prep`, `satisfying_process`, `crafting`, `cleaning`, `assembly`, `pov_movement`, `city_motion`, and `licensed_gameplay`.
+Canonical high-retention categories include `cooking`, `baking`, `food_prep`, `satisfying_process`, `crafting`, `cleaning`, `assembly`, `pov_movement`, `city_motion`, and explicitly licensed `licensed_gameplay`.
 
-Older assets do not need a destructive migration. `media/background_selector.py` lazily infers a canonical category from existing title, visual-tag, and motion metadata when no explicit retention category exists. Useful existing assets remain available; weak generic assets simply rank below stronger retention footage.
+Older useful assets remain eligible. Weak/static/overused assets rank lower; they are not bulk-deleted solely for age or generic subject matter.
 
-`licensed_gameplay` must carry known commercial-use provenance. Creator footage from YouTube, TikTok, Instagram, Twitch, or similar social platforms is not automatically eligible merely because it can technically be downloaded or transformed.
+`licensed_gameplay` requires explicit commercial-use provenance. Creator footage from YouTube, TikTok, Instagram, Twitch or similar social platforms is not eligible merely because it can be downloaded or transformed.
+
+## Planning-time audit
+
+For every candidate ChatGPT checks the current private registry and policy before freezing a pair. Primary/backup must:
+
+- be distinct registered logical IDs;
+- be active and verified;
+- allow commercial use;
+- be watermark-free and free of embedded text;
+- meet the current quality floor;
+- have at least one production-suitable rendition after the real 9:16 crop;
+- satisfy current caption-readability and safety expectations.
+
+Recency, category variety, retention quality and semantic/story fit are planning judgments. Hard registry/licensing/rendition facts are independently rechecked by `validation/validate_content.py` during promotion.
+
+When a normal pair cannot safely satisfy policy, ChatGPT may choose the currently configured emergency default pair from `media/background_selector.py`. The emergency pair is not exempt from hard safety validation. There is no arbitrary third-asset runtime fallback.
 
 ## Asset, category, segment and playback anti-repetition
 
-Cross-run recency and usage counts come from private immutable successful result receipts. Current immediate-public Ad-hoc receipts and scheduled Daily receipts participate in the same history.
+Cross-run history comes only from private immutable successful receipts. Failed renders/uploads do not count as successful creative use.
 
-Daily planning may pass ephemeral `planned_asset_ids`, `planned_categories`, and `planned_treatments` while allocating the current batch. This scratch state exists only during private planning and is not committed as public mutable state.
+For a Daily 36-candidate pool, ChatGPT should reason across the entire candidate set so high-ranked and reserve candidates do not unnecessarily repeat the same assets, categories, temporal ranges or playback rates. Ad-hoc uses the same receipt-derived history for its five candidates.
 
-Logical asset selection happens first. `media/background_treatment.py` then reserves a deterministic treatment for each frozen primary/backup asset using private historical receipts plus the current Daily scratch list.
-
-For sufficiently long assets, the treatment allocator divides the source into useful temporal candidates and penalizes recently used or already-planned overlapping ranges. Short or older assets without trustworthy duration metadata remain compatible through full-source treatment.
-
-Playback rate is category/asset aware and globally constrained by the schema contract. It is a treatment, not a uniqueness loophole: changing speed does not make the same temporal content meaningfully new. The allocator rotates among safe rates only after segment/asset diversity rules are respected.
+`media/background_treatment.py` remains a private **policy/history reference and optional planning aid**. It documents current segment windows, category-aware speed ranges and receipt interpretation. Its deterministic selection helpers are not authoritative for new ranked-pool production. ChatGPT must freeze the final treatment in each candidate request; the promoter only validates it.
 
 The immutable schema-v5 treatment shape is:
 
@@ -42,63 +56,69 @@ The immutable schema-v5 treatment shape is:
 }
 ```
 
-`segment_duration_seconds: null` represents a full-source treatment and therefore requires a zero start offset.
+`segment_duration_seconds: null` represents full-source treatment and requires `segment_start_seconds: 0`.
 
-## Daily and Ad-hoc treatment history
+When registry duration is unknown or untrusted, ChatGPT must use that full-source representation rather than inventing an offset/window that cannot be mechanically bounded.
 
-Daily Production coordinates up to 24 winners privately. For each winner it selects logical primary/backup assets, invokes the canonical treatment allocator, freezes both treatments into the request, and appends both reservations to the in-progress `planned_treatments` list before moving to the next winner.
+Playback rate must remain within the current schema contract and current category/asset policy. Changing speed does not make the same temporal content meaningfully unique.
 
-Ad-hoc Production uses the same historical receipt rules for its one Short but has no 24-item scratch sequence. Its verified immediate-public receipt becomes private history for future Daily or Ad-hoc planning.
+## Daily and Ad-hoc planning pools
 
-No public cross-run usage ledger, segment database, playback database, or committed mutable runtime state is permitted.
+Daily ChatGPT authors **36** complete ranked candidates. Each candidate already contains final logical primary/backup IDs and both immutable treatments. `daily-production.yml` validates candidates in frozen rank order and promotes the first required valid candidates; it does not allocate treatments.
+
+Ad-hoc ChatGPT authors **5** complete ranked candidates. `adhoc-production.yml` promotes the first mechanically valid candidate; it does not allocate a new treatment.
+
+A later recovery always reuses the exact treatment stored in the promoted immutable request. Recovery never chooses a new segment/rate because an earlier run failed.
 
 ## Provenance
 
-Externally sourced logical assets must retain the provider, provider asset ID when available, original source page, creator when available, licence, commercial-use decision, verification/acquisition timestamps, and official provider rendition metadata. The Pexels integration uses the official API and stores physical rendition dimensions, FPS, media type, direct provider media URL, and file size when supplied.
+Externally sourced logical assets retain provider, provider asset ID when available, source page, creator when available, licence, commercial-use decision, verification/acquisition timestamps and official provider rendition metadata.
 
-The runtime records hashes for the actual downloaded source, normalized master, and treated job-local render input in execution evidence where applicable. This is preferable to pretending a logical asset has one permanent file hash when the provider exposes multiple physical renditions.
+The Pexels integration uses the official API. Random creator footage from social platforms must not be substituted for reviewed licensed sources.
+
+The runtime records hashes/evidence for the actual downloaded source, normalized master and treated job-local input when applicable. A logical asset may have multiple physical renditions; it should not be modeled as one permanent physical file hash.
 
 ## Physical rendition policy
 
-The fixed production target is 1080×1920 at 30 fps. Physical selection is based on the useful image that remains after the real 9:16 crop, not on source dimensions alone.
+Production target is **1080×1920 at 30 fps**. Physical selection uses the useful image remaining after the real 9:16 crop.
 
-The governing rule is **smallest sufficient after crop**:
+The rule is **smallest sufficient after crop**:
 
 1. discard unsupported or post-crop-insufficient renditions;
 2. prefer a suitable native vertical rendition;
 3. prefer exact production dimensions when available;
-4. prefer FPS closest to 30 fps;
-5. among equivalent geometry/FPS choices, prefer lower physical cost/file size when reliable;
+4. prefer FPS closest to 30;
+5. among equivalent choices, prefer lower physical/network/decode cost;
 6. download only the chosen suitable rendition and fall through to the next suitable rendition on physical failure.
 
-A 1920×1080 landscape source leaves only about 607.5×1080 of useful portrait crop. Producing 1080×1920 from it requires roughly 1.78× enlargement, so it is correctly rejected by the current bounded-upscale policy. A 3840×2160 landscape source may legitimately be selected when no smaller rendition survives the portrait crop. UHD is therefore neither always selected nor categorically prohibited.
+A 1920×1080 landscape source leaves only about 607.5×1080 of useful portrait crop and normally requires excessive enlargement. A 3840×2160 landscape rendition can be valid when its portrait crop remains sufficient. UHD is therefore neither always selected nor categorically forbidden.
 
-Unknown provider originals cannot bypass this policy. A generic/original URL is eligible only when its known metadata independently satisfies the same production suitability rules.
+Unknown provider originals cannot bypass the same suitability checks.
 
-## One-time normalization, treatment and physical cache
+## Normalization, cache and frozen treatment execution
 
-After download, the runtime probes the real file and re-validates post-crop suitability. A source that is not already render-ready H.264 1080×1920/30 is normalized once to the production geometry/FPS/codec. The normalized result is cached using logical asset, physical rendition, URL, target dimensions and FPS as cache identity.
+After download, the public runtime probes the real file and re-validates post-crop suitability. A non-render-ready source is normalized to production geometry/FPS/codec and may be cached physically.
 
-A cache hit reuses the production-ready normalized file without re-downloading or re-normalizing it. Segment/speed treatment is deliberately **not** part of this persistent physical-cache identity.
+Persistent physical-cache identity is based on logical asset, physical rendition/source and production target—not the creative segment/playback treatment.
 
-For schema v5, the runtime copies/reuses the normalized asset into the active job and then applies the immutable treatment to that job-local production-sized input. Treatment therefore does not make the renderer repeatedly scale an oversized provider original and does not contaminate the reusable normalized master.
+For schema v5, the runtime reuses/copies the normalized master into the active job and applies the request's immutable treatment to that job-local input. This keeps the normalized master reusable and avoids repeatedly scaling oversized provider originals.
 
-The final renderer continues to consume production-sized 1080×1920/30 frames. Treatment may trim the selected temporal range and adjust timestamps/playback speed, but it must not reintroduce unnecessary scale/crop work.
+The runtime records source dimensions/FPS, bytes, download duration, effective crop, upscale factor, normalization decision, hashes, treatment timing, treated-file evidence and cache hit/key where available.
 
-The runtime records source dimensions/FPS, downloaded bytes, download duration, effective crop dimensions, upscale factor, normalization decision/duration, normalized bytes/hash, treatment timing and treated bytes/hash, plus physical cache hit/key where available. These metrics are intended to catch regressions such as downloading a 90 MB 4K source when a much smaller production-sufficient rendition exists.
+## Compatibility and receipts
 
-## Compatibility and immutable receipts
+The private/public compatibility fingerprint includes the schema-v5 treatment contract and numeric bounds. Public execution retains schema-v4 compatibility only for already-existing immutable recovery requests.
 
-The private/public compatibility fingerprint includes schema-v5 treatment fields and treatment bounds. Public rollout explicitly retains the exact previous v4 fingerprint so public v5 can be deployed before private v5 without interrupting already-dispatched/legacy v4 work.
-
-A schema-v5 completion receipt records the selected logical asset and the treatment that was actually executed. Finalization fails closed if runtime treatment evidence differs from the frozen request slot. Those immutable receipts become the private source for future segment/playback anti-repetition.
+A schema-v5 verified result receipt records the selected logical slot and executed treatment. Finalization fails closed if runtime evidence differs from the immutable request. Those verified receipts become the private history ChatGPT reads during future planning.
 
 ## Subtitle safety and fallback
 
-The registry quality metadata includes caption readability. The runtime samples the caption-safe region of the treated physical clip and applies the existing bounded soft caption protection when needed. Selection should prefer a better candidate rather than excessively darkening footage.
+Caption readability remains mandatory across the used treatment. Runtime may apply the bounded caption-protection treatment already defined by rendering policy, but planning should prefer a better background rather than depend on excessive darkening.
 
-Logical fallback remains frozen primary then frozen backup; the public runtime must never substitute an unrelated third logical asset. Each logical slot carries its own immutable treatment. Within one logical asset, physical rendition failure may fall through to the next production-suitable rendition before the selected slot's treatment is applied.
+Logical fallback is frozen primary then frozen backup only. The public runtime never substitutes an unrelated third logical asset. Physical rendition fallback within the same logical slot is allowed only when it still satisfies the same production suitability rules and executes that slot's frozen treatment.
 
-If registered choices are insufficient during private Daily planning, use the existing reviewed licensed sourcing path. Ad-hoc remains governed by its existing cache/sourcing contract as implemented by the current planner/runtime.
+If registered choices are insufficient during Daily planning, use the reviewed licensed sourcing path before authoring the pool. Scheduled Ad-hoc remains cache-first/cache-only unless the canonical Ad-hoc policy explicitly changes.
 
-The existing library is retained. Do not bulk-delete assets merely because they are older, generic, or topic-oriented. Quarantine/remove only for objective corruption, unsupported/invalid media, confirmed licence problems, duplication, or clearly unusable quality.
+## Fail-closed principle
+
+If ChatGPT cannot author a safe background/treatment contract, reject or replenish the candidate before committing a ranked pool. If private hard validation later rejects the candidate, promotion moves to the next already-ranked reserve. Validation must never silently repair the candidate.
