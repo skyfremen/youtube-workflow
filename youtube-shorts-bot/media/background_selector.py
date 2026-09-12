@@ -427,9 +427,11 @@ def select_logical_backgrounds(
 
     primary = pool[0]
     backup = pool[1]
-    # Prefer a different visual category for backup when it is genuinely competitive;
-    # never force a poor clip just to satisfy rotation.
-    for candidate in pool[1:]:
+    # If two retention-qualified choices exist, rotation stays strictly within that
+    # tier. A different-category legacy fallback must never displace valid stronger
+    # retention footage merely to improve category variety.
+    rotation_pool = retention_pool[1:] if len(retention_pool) >= 2 else pool[1:]
+    for candidate in rotation_pool:
         if (
             candidate["retention_category"] != primary["retention_category"]
             and candidate["score"] >= backup["score"] - 5.0
