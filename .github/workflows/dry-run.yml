@@ -146,8 +146,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          public_sha="$(git ls-remote https://github.com/skyfremen/production-runtime.git refs/heads/main | awk 'NR==1 {print $1}')"
+          if [[ ! "${public_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::E_DRY_PUBLIC_SHA Unable to resolve exact public runtime revision"
+            exit 1
+          fi
+          echo "PUBLIC_EXPECTED_SHA=${public_sha}" >> "${GITHUB_ENV}"
+
           rm -rf /tmp/production-runtime-contract
-          git clone --quiet --depth 1 https://github.com/skyfremen/production-runtime.git /tmp/production-runtime-contract
+          git init --quiet /tmp/production-runtime-contract
+          git -C /tmp/production-runtime-contract remote add origin https://github.com/skyfremen/production-runtime.git
+          git -C /tmp/production-runtime-contract fetch --quiet --depth 1 origin "${public_sha}"
+          git -C /tmp/production-runtime-contract checkout --quiet --detach FETCH_HEAD
+          test "$(git -C /tmp/production-runtime-contract rev-parse HEAD)" = "${public_sha}"
+
           private_hash="$(cd youtube-shorts-bot && python -m common.runtime_contract)"
           public_hash="$(cd /tmp/production-runtime-contract && PYTHONPATH=runtime python -m base.compat)"
           if [ "${private_hash}" != "${public_hash}" ]; then
@@ -182,7 +194,7 @@ jobs:
               if 'workflow_dispatch:' not in trigger or 'schedule:' in trigger or '\n  push:' in trigger:
                   raise SystemExit(f'E_TRIGGER_EXEC unsafe trigger in {name}')
           PY
-          echo "Cross-repository execution contract parity PASS"
+          echo "Cross-repository execution contract parity PASS sha=${public_sha}"
 
       - name: Validate satisfying-background registry
         run: python youtube-shorts-bot/media/validate_media_library.py
@@ -259,6 +271,7 @@ jobs:
           assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'validation/public_dry_run.py' in dry
+          assert 'PUBLIC_EXPECTED_SHA=' in dry
           assert 'timeout-minutes: 20' in dry
           assert 'Cross-repository execution contract parity PASS' in dry
           assert 'content/diagnostics/**/*.json' in recovery
