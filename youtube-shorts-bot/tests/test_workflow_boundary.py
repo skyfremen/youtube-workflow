@@ -37,17 +37,20 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("actions/workflows/run.yml/dispatches", text)
         self.assertEqual(text.count("-X POST"), 1)
 
-    def test_one_push_batch_produces_one_opaque_dispatch(self):
+    def test_one_ranked_pool_produces_one_opaque_dispatch(self):
         text = self.daily()
         self.assertIn(
-            "contains(github.event.head_commit.message, '[daily production]')", text
+            "contains(github.event.head_commit.message, '[daily pool]')", text
         )
+        self.assertIn("planning.ranked_promotion daily", text)
+        self.assertIn("[daily production] ${plan_date}", text)
         self.assertIn("python -m common.runtime_contract", text)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", text)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", text)
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", text)
         self.assertNotIn("'content_ids': os.environ", text)
         self.assertIn("b_$(printf", text)
+        self.assertEqual(text.count("actions/workflows/run.yml/dispatches"), 1)
 
     def test_opaque_routing_targets_are_stable(self):
         daily = self.daily()
@@ -69,11 +72,12 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("Existing immutable recovery manifest differs", text)
         self.assertIn("1-24 unique content IDs", text)
 
-    def test_dispatcher_triggers_only_on_daily_plan_or_manual_recovery(self):
+    def test_dispatcher_triggers_only_on_daily_pool_or_manual_recovery(self):
         text = self.daily()
         trigger = text.split("concurrency:", 1)[0]
         self.assertIn("branches: [main]", trigger)
-        self.assertIn("youtube-shorts-bot/content/planning/*.json", trigger)
+        self.assertIn("youtube-shorts-bot/content/planning-pools/daily/*.json", trigger)
+        self.assertNotIn("content/planning/*.json", trigger)
         self.assertNotIn("content/requests/*.json", trigger)
         self.assertNotIn("content/background-sourcing/*.json", trigger)
         self.assertIn("workflow_dispatch:", trigger)
