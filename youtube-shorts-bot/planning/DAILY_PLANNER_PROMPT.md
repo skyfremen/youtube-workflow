@@ -1,10 +1,22 @@
 # Wacky Dramas — Daily Planner (schema v5 overlay)
 
-This is the canonical Daily planner entry point.
+This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
 
 Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements.
 
-Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
+Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `planning/planning_engine.py`, `planning/planning_runner.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
+
+## Preserved canonical operating rules
+
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering. When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+
+If `content/planning/YYYY-MM-DD.json` already exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Planning audits continue to record `planning_mode` as `normal_next_day` or `same_day_catch_up`, and catch-up audits record omitted elapsed/too-close slots.
+
+`planning/planning_engine.py` remains the deterministic planning policy implementation. Work must actually execute `planning/planning_runner.py` at the required raw-filter and final-selection checkpoints and consume its **actual returned result**. Do not substitute equivalent manual arithmetic. If either execution fails, fail closed.
+
+Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
+
+The content handoff remains one content-only commit beginning `[daily production] YYYY-MM-DD`, consumed by `daily-production.yml`. The planning audit retains the core keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`. Any background-sourcing manifest retains exact `logical_id` and `required_by_content_ids` linkage to that day's immutable requests.
 
 ## Schema-v5 override
 
