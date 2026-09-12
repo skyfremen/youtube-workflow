@@ -8,7 +8,7 @@ from pathlib import Path
 BOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BOT))
 
-from recovery.reconciliation_index import IndexConflict, bootstrap
+from recovery.reconciliation_index import IndexConflict, bootstrap, collect
 
 CID = "wd-20990101T000000-index-a1b2c3"
 VIDEO = "AbCdEfGh123"
@@ -127,20 +127,37 @@ class ReconciliationIndexTests(unittest.TestCase):
         self.assertEqual(report["upload_record_count"], 0)
         self.assertEqual(report["verified_receipt_count"], 1)
 
-    def test_repository_cutover_marker_is_complete_and_has_no_stale_mapping(self):
+    def test_repository_cutover_marker_is_complete_and_current_index_matches_trusted_evidence(self):
         report = bootstrap(BOT, write=False)
-        self.assertEqual(report["mapping_count"], 0)
+        records, upload_count, receipt_count = collect(BOT)
+        index = BOT / "content" / "recovery" / "index"
+        mapping_paths = sorted(
+            path for path in index.glob("*.json") if path.name != "bootstrap.json"
+        )
+
+        self.assertEqual(report["mapping_count"], len(records))
+        self.assertEqual(report["mapping_count"], len(mapping_paths))
+        self.assertEqual(report["upload_record_count"], upload_count)
+        self.assertEqual(report["verified_receipt_count"], receipt_count)
         self.assertEqual(report["conflicts"], 0)
         self.assertEqual(report["created"], 0)
-        self.assertEqual(report["reused"], 0)
+        self.assertEqual(report["reused"], len(records))
         self.assertTrue(report["bootstrap_present"])
         self.assertFalse(report["youtube_api_required"])
 
-        marker_path = BOT / "content" / "recovery" / "index" / "bootstrap.json"
+        self.assertEqual({path.stem for path in mapping_paths}, set(records))
+        for content_id, expected in records.items():
+            observed = json.loads(
+                (index / f"{content_id}.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(observed, expected)
+
+        marker_path = index / "bootstrap.json"
         marker = json.loads(marker_path.read_text(encoding="utf-8"))
         self.assertEqual(marker["schema_version"], 1)
         self.assertEqual(marker["status"], "complete")
         self.assertEqual(marker["conflicts"], 0)
+        # These counts are the immutable cutover snapshot, not live index counts.
         self.assertEqual(marker["historical_mapping_count"], 0)
         self.assertEqual(marker["upload_record_count"], 0)
         self.assertEqual(marker["verified_receipt_count"], 0)
