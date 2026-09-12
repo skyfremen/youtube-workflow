@@ -6,6 +6,7 @@ from media.media_readiness import (
     audit_registry,
     is_selectable,
 )
+from validation.validate_content import _validate_registry_asset
 
 
 def asset(asset_id, category, *, selection_enabled=True):
@@ -40,6 +41,17 @@ def asset(asset_id, category, *, selection_enabled=True):
 class MediaReadinessTests(unittest.TestCase):
     def test_retired_asset_is_not_selectable(self):
         self.assertFalse(is_selectable(asset("old", "cooking", selection_enabled=False)))
+
+    def test_new_production_rejects_retired_but_recovery_can_resolve_it(self):
+        retired = asset("old", "cooking", selection_enabled=False)
+        new_errors = _validate_registry_asset(
+            retired, "old", "visual.background_primary_id", allow_retired=False
+        )
+        recovery_errors = _validate_registry_asset(
+            retired, "old", "visual.background_primary_id", allow_retired=True
+        )
+        self.assertTrue(any("retired from new production" in item for item in new_errors))
+        self.assertEqual(recovery_errors, [])
 
     def test_empty_selectable_pool_requires_replenishment(self):
         report = audit_registry({"assets": [asset("old", "cooking", selection_enabled=False)]})
