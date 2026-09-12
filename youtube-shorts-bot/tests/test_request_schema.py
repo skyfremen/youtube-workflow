@@ -120,9 +120,28 @@ def valid_request():
     }
 
 
+def valid_v5_request():
+    data = valid_request()
+    data["schema_version"] = 5
+    data["visual"].update(
+        background_primary_treatment={
+            "segment_start_seconds": 0.0,
+            "segment_duration_seconds": 12.0,
+            "playback_rate": 1.25,
+        },
+        background_backup_treatment={
+            "segment_start_seconds": 0.0,
+            "segment_duration_seconds": 12.0,
+            "playback_rate": 1.25,
+        },
+    )
+    return data
+
+
 class RequestSchemaTests(unittest.TestCase):
     def test_valid_request_passes(self):
         self.assertEqual(validate_request_data(valid_request()), [])
+        self.assertEqual(validate_request_data(valid_v5_request()), [])
 
     def test_immediate_publication_passes_with_null_publish_at(self):
         data = valid_request()
@@ -138,10 +157,10 @@ class RequestSchemaTests(unittest.TestCase):
         data["publication"]["mode"] = "immediate"
         self.assertTrue(any("must be null" in error for error in validate_request_data(data)))
 
-    def test_only_schema_v4_is_supported(self):
+    def test_only_supported_schema_versions_are_accepted(self):
         data = valid_request()
         data["schema_version"] = 3
-        self.assertIn("schema_version must be 4", validate_request_data(data))
+        self.assertIn("schema_version must be 4 or 5", validate_request_data(data))
 
     def test_publication_and_planning_are_required(self):
         for field in ("publication", "planning"):
