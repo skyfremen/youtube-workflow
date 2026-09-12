@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 
 from planning.planning_runner import CONTRACT_VERSION, implementation_digest
 from publishing.upload import build_upload_body
-from validation.validate_content import validate_request_data
+from validation.validate_content import SCHEMA_VERSION, validate_request_data
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
@@ -224,8 +224,8 @@ def _validate_requests(plan_date, request_paths, expected_ids):
         errors = validate_request_data(data, path)
         if errors:
             _fail(f"request {content_id} failed canonical validation: {'; '.join(errors)}")
-        if data.get("schema_version") != 4:
-            _fail(f"new daily request {content_id} must use schema-v4")
+        if data.get("schema_version") != SCHEMA_VERSION:
+            _fail(f"new daily request {content_id} must use schema-v{SCHEMA_VERSION}")
         if data.get("content_id") != content_id:
             _fail(f"request {content_id} content_id does not match filename")
         if data.get("planning", {}).get("plan_date") != plan_date:
