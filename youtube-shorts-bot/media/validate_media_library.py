@@ -43,8 +43,8 @@ def validate_registry_data(data):
     if data.get("schema_version") != 3:
         errors.append("schema_version must be 3")
     assets = data.get("assets")
-    if not isinstance(assets, list) or not assets:
-        return errors + ["assets must be a non-empty list"]
+    if not isinstance(assets, list):
+        return errors + ["assets must be a list"]
 
     seen_ids, seen_direct, seen_provider, seen_rendition_urls = set(), set(), set(), set()
     for idx, asset in enumerate(assets, 1):

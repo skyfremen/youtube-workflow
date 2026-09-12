@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
 
-from media.validate_media_library import load_registry
+from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
 from planning import ranked_promotion
 from test_request_schema import valid_request
 from validation.validate_content import (
@@ -29,6 +29,51 @@ def v5_request():
         "playback_rate": 1.25,
     }
     return data
+
+
+def _ready_asset(asset_id, category, counter):
+    return {
+        "id": asset_id,
+        "status": "active",
+        "verified": True,
+        "commercial_use": True,
+        "has_watermark": False,
+        "has_embedded_text": False,
+        "retention_category": category,
+        "orientation": "vertical",
+        "motion_type": "continuous-process",
+        "motion_intensity": "high",
+        "visual_satisfaction_score": 100,
+        "loopability_score": 100,
+        "caption_readability_score": 100,
+        "duration_seconds": 16.0,
+        "renditions": [{
+            "id": f"test-r-{counter:03d}",
+            "width": 1080,
+            "height": 1920,
+            "fps": 30.0,
+            "file_type": "video/mp4",
+            "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
+        }],
+    }
+
+
+def ready_registry():
+    assets = []
+    counter = 0
+    for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
+        for _ in range(minimum):
+            counter += 1
+            asset_id = (
+                "satisfying-001" if counter == 1
+                else "satisfying-002" if counter == 2
+                else f"test-ready-{counter:03d}"
+            )
+            assets.append(_ready_asset(asset_id, category, counter))
+    while len(assets) < MIN_SELECTABLE_ASSETS:
+        counter += 1
+        assets.append(_ready_asset(f"test-ready-{counter:03d}", "satisfying_process", counter))
+    return {"schema_version": 3, "assets": assets}
 
 
 def ranked_items(count):
@@ -117,7 +162,7 @@ class RankedPoolContractTests(unittest.TestCase):
                 )
 
     def test_v5_hard_registry_validation_accepts_current_safe_defaults(self):
-        errors = validate_background_registry_contract(v5_request(), registry=load_registry())
+        errors = validate_background_registry_contract(v5_request(), registry=ready_registry())
         self.assertEqual(errors, [])
 
     def test_new_production_requires_shared_media_readiness(self):
@@ -137,7 +182,7 @@ class RankedPoolContractTests(unittest.TestCase):
             "segment_duration_seconds": 12.0,
             "playback_rate": 1.25,
         }
-        errors = validate_request_data(data, enforce_registry=True)
+        errors = validate_request_data(data, enforce_registry=True, registry=ready_registry())
         self.assertTrue(any("exceeds background" in error for error in errors))
 
     def test_v5_treatment_rejects_non_finite_numbers(self):
@@ -151,7 +196,7 @@ class RankedPoolContractTests(unittest.TestCase):
 
     def test_unknown_asset_duration_requires_full_source_treatment(self):
         data = v5_request()
-        registry = copy.deepcopy(load_registry())
+        registry = ready_registry()
         primary_id = data["visual"]["background_primary_id"]
         for asset in registry["assets"]:
             if asset["id"] == primary_id:
