@@ -14,6 +14,7 @@ from pathlib import Path
 from common.workflow_common import load_json
 from media.background_policy import rendition_is_production_suitable
 from media.background_selector_base import MIN_QUALITY_SCORE, quality_score
+from media.media_readiness import audit_registry
 from media.validate_media_library import asset_map, load_registry
 from validation import schema_v4 as legacy
 
@@ -303,13 +304,34 @@ def validate_request_data(data, request_path=None, *, enforce_registry=False, re
         existing_immutable_request = bool(
             request_path is not None and Path(request_path).is_file()
         )
-        errors.extend(
-            validate_background_registry_contract(
-                data,
-                registry=registry,
-                allow_retired=existing_immutable_request,
+        registry_data = registry
+        if registry_data is None:
+            try:
+                registry_data = load_registry()
+            except (OSError, TypeError, ValueError) as exc:
+                errors.append(f"background registry is unavailable or invalid: {exc}")
+                registry_data = None
+        if registry_data is not None:
+            if not existing_immutable_request:
+                readiness = audit_registry(registry_data)
+                if not readiness["ready"]:
+                    deficits = {
+                        key: value
+                        for key, value in readiness["category_deficits"].items()
+                        if value
+                    }
+                    errors.append(
+                        "shared background media readiness requires replenishment "
+                        f"before new production: selectable={readiness['selectable_assets']}/"
+                        f"{readiness['minimum_selectable_assets']}; category_deficits={deficits}"
+                    )
+            errors.extend(
+                validate_background_registry_contract(
+                    data,
+                    registry=registry_data,
+                    allow_retired=existing_immutable_request,
+                )
             )
-        )
     return errors + treatment_errors
 
 
