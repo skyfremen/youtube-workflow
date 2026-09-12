@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'README.md'
+      - 'docs/private/**'
       - '.github/workflows/**'
       - 'youtube-shorts-bot/**/*.py'
       - 'youtube-shorts-bot/tests/**'
@@ -74,6 +75,7 @@ jobs:
               Path('youtube-shorts-bot-backup'),
               Path('youtube-shorts-bot/production'),
               Path('youtube-shorts-bot/rendering'),
+              Path('youtube-shorts-bot/assets'),
               Path('youtube-shorts-bot/Dockerfile'),
               Path('youtube-shorts-bot/requirements.txt'),
           ]
@@ -268,7 +270,7 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
-          assert 'group: private-adhoc-${{ inputs.content_id }}' in adhoc
+          assert 'group: private-adhoc-production-${{ github.ref }}' in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'validation/public_dry_run.py' in dry
           assert 'PUBLIC_EXPECTED_SHA=' in dry
