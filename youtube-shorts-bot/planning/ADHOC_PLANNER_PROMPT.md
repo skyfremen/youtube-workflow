@@ -20,21 +20,24 @@ Read at minimum:
 - current `analytics/latest.json` and `analytics/model.json` when present
 - `validation/validate_content.py`
 - `publishing/upload.py`
+- `media/media_readiness.py`
 - `media/background_selector.py`
 - `media/background_treatment.py` as a **policy/history reference**, not an authoritative allocator
 - `media/background_policy.py`
+- `media/pexels_registry.py`
 - `docs/background-media-strategy.md`
 - `media-library/backgrounds.json`
 - recent immutable `content/requests/*.json` and verified `content/results/*.json`
+- `.github/workflows/background-management.yml`
 - `.github/workflows/adhoc-production.yml`
 
 Inspect `skyfremen/production-runtime` only when needed to verify the current single-item runtime/publication contract. Do not copy execution into the private repository.
 
 ## Ownership
 
-**ChatGPT / Work owns the complete creative planning path and freezes final rank #1 through #5.** This includes candidate generation/rejection, duplicate reasoning, scoring/analytics interpretation, editorial comparison, story/title/metadata writing, voice, punchline semantics, exact backgrounds, planning-time background audit reasoning, fallback decision and treatment values.
+**ChatGPT / Work owns the complete creative planning path and freezes final rank #1 through #5.** This includes candidate generation/rejection, duplicate reasoning, scoring/analytics interpretation, editorial comparison, story/title/metadata writing, voice, punchline semantics, exact backgrounds, planning-time background audit reasoning, replenishment candidate review, fallback decision and treatment values.
 
-GitHub does not creatively select, generate, rewrite or repair a winner. Repository code supplies authoritative contract discovery and deterministic validation only. `adhoc-production.yml` validates candidates mechanically in the frozen AI order and promotes the first valid candidate.
+GitHub does not creatively select, generate, rewrite or repair a winner. Repository code supplies authoritative contract discovery, deterministic validation, Pexels metadata enrichment and registry persistence only. `adhoc-production.yml` validates candidates mechanically in the frozen AI order and promotes the first valid candidate.
 
 There is no `planner-execution.yml`, no `planning/execution_bridge.py`, and no repository-side winner-selection round trip for new Ad-hoc pools.
 
@@ -59,13 +62,42 @@ Consume the actual returned JSON. Treat it as the live machine-readable planning
 - controlled planning values;
 - approved voices and tones;
 - narration constants;
-- exact immediate-public publication object.
+- exact immediate-public publication object;
+- the shared media-readiness minimum inventory and category minimums.
 
 Do not substitute remembered constants, stale cached output, manual arithmetic, or a previous run's contract output.
 
 If the contract command cannot execute successfully, fail closed before creating an immutable pool.
 
 `planner_contract.py` is a discovery surface only. It must import authoritative configuration/validation constants rather than become a second independently maintained copy of those rules.
+
+## Shared media readiness and replenishment prerequisite
+
+**Daily and Ad-hoc use the same media-readiness prerequisite. Ad-hoc is no longer cache-only.** Before fully authoring a ranked pool, execute from `youtube-shorts-bot`:
+
+```bash
+python -m media.media_readiness audit --allow-not-ready
+```
+
+Consume the actual JSON result.
+
+If `status` is `PASS`, continue planning using only selectable assets. Any asset with `selection_enabled=false` is recovery-only historical state and must never be chosen for a new candidate, including as an emergency default.
+
+If `status` is `REPLENISH`, do **not** author or commit an Ad-hoc ranked pool yet. Instead:
+
+1. Use the current `media_readiness` values returned by `planning.planner_contract` and the audit deficits as the authoritative inventory target.
+2. Search Pexels for production-appropriate continuous-motion footage, prioritizing the configured high-retention categories such as cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement and city/travel motion.
+3. Visually review each proposed source before setting `verified_preview=true`; reject watermarks, embedded text, unsafe material, static/weak footage and misleading metadata.
+4. Prefer portrait footage when quality is comparable, while allowing landscape/square only when current post-crop rendition policy can satisfy 1080x1920 output without prohibited upscaling.
+5. Use deterministic logical IDs `satisfying-px-<PexelsID>` and the exact sourcing-manifest schema from `media/pexels_registry.py`.
+6. Create exactly one new immutable manifest under:
+   `content/background-sourcing/readiness/<stable-id>.json`
+   containing enough reviewed candidates to satisfy the returned total/category deficits. `required_by_content_ids` must contain the stable upcoming Ad-hoc candidate content IDs that motivated the replenishment.
+7. Commit only that readiness manifest for the replenishment attempt. Background Management owns official Pexels API rendition enrichment, hard registry validation and persistence of the refreshed cache.
+8. Re-read current `main` after Background Management has persisted the registry, rerun `planning.planner_contract`, then rerun `python -m media.media_readiness audit --allow-not-ready`.
+9. Continue to ranked-pool authorship only when the new audit returns `status: PASS` and `ready: true`. If it still reports deficits, create a new immutable readiness-manifest attempt and repeat; never edit/delete an earlier manifest.
+
+Do not invent a local fallback, bypass readiness, use a retired old asset, or create a ranked pool against a `REPLENISH` registry. Repository validation independently rejects new production when shared readiness is not `PASS`. Existing immutable requests remain recoverable even when their historical background IDs are retired from new selection.
 
 ## Scheduled vs manual planning modes
 
@@ -108,21 +140,21 @@ When authoring score dictionaries, use the exact component names returned by the
 
 ## Background audit and treatment ownership
 
-For all five candidates ChatGPT must inspect current registry/policy/private receipt history and freeze final background decisions.
+For all five candidates ChatGPT must inspect the **readiness-PASS selectable registry**, current policy and private receipt history and freeze final background decisions.
 
 For each candidate:
 
 1. choose distinct primary/backup logical IDs;
-2. require current registered/active/verified/commercial-use/watermark/text/quality/rendition hard facts;
-3. apply retention/readability, recency and story-fit evidence as planning judgment;
-4. scheduled Ad-hoc remains cache-first/cache-only unless current canonical policy explicitly changes; do not mutate Daily background-sourcing state from the scheduled Ad-hoc run;
-5. when a normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency pair only if it independently remains safe;
+2. require current selectable/registered/active/verified/commercial-use/watermark/text/quality/rendition hard facts;
+3. reject any asset with `selection_enabled=false` even if it exists for historical recovery;
+4. apply retention/readability, recency and story-fit evidence as planning judgment;
+5. when a normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency pair only if it independently remains selectable and safe; retired defaults are not permitted;
 6. author both immutable treatments: `segment_start_seconds`, `segment_duration_seconds`, `playback_rate`;
 7. avoid recently repeated segments/rates using current private receipt history;
 8. `media/background_treatment.py` may be read for current treatment-policy constants/history interpretation, but its output is not an authoritative allocation decision;
 9. when source duration is unknown/untrusted, use `segment_start_seconds=0` and `segment_duration_seconds=null` with a valid rate.
 
-GitHub independently validates hard registry/licensing/rendition/treatment facts; it never invents a replacement story/background/treatment.
+GitHub independently validates shared readiness plus hard registry/licensing/rendition/treatment facts; it never invents a replacement story/background/treatment.
 
 ## Ranked-pool contract
 
@@ -198,25 +230,26 @@ After ChatGPT has authored and frozen all five complete candidates, but **before
    git rev-parse HEAD
    ```
 2. ensure `planning_execution.rules_source_sha` in the draft equals that exact SHA;
-3. write the complete pool to temporary working storage outside immutable repository state, for example `/tmp/wacky-adhoc-pool.json`;
-4. from `youtube-shorts-bot`, execute the canonical validator against that exact temporary file:
+3. rerun shared media readiness and require `status: PASS` immediately before draft validation;
+4. write the complete pool to temporary working storage outside immutable repository state, for example `/tmp/wacky-adhoc-pool.json`;
+5. from `youtube-shorts-bot`, execute the canonical validator against that exact temporary file:
    ```bash
    python -m planning.adhoc_precommit \
      --pool /tmp/wacky-adhoc-pool.json \
      --rules-source-sha <exact-head-sha>
    ```
-5. consume the actual JSON output;
-6. require all of the following:
+6. consume the actual JSON output;
+7. require all of the following:
    - `status == "PASS"`;
    - `commit_allowed == true`;
    - `valid_candidates == 5`;
    - `failed_candidates == 0`;
    - no pool errors;
    - every candidate result is `PASS`;
-7. if validation fails, ChatGPT must read the exact errors, repair its own draft, and execute the validator again;
-8. continue the repair/validation loop until the complete five-candidate draft passes;
-9. never override, bypass, weaken or edit the validator merely to make an authored candidate pass;
-10. never treat manual inspection or "this should pass" reasoning as a substitute for actual validator execution.
+8. if validation fails, ChatGPT must read the exact errors, repair its own draft, and execute the validator again;
+9. continue the repair/validation loop until the complete five-candidate draft passes;
+10. never override, bypass, weaken or edit the validator merely to make an authored candidate pass;
+11. never treat manual inspection or "this should pass" reasoning as a substitute for actual validator execution.
 
 The pre-commit validator must use the same live request/schema/background/upload-body validation surfaces used by production promotion and must additionally require **all five** candidates to pass. Production promotion may still retain first-valid-candidate semantics for resilience; pre-commit authorship is deliberately stricter.
 
@@ -232,7 +265,7 @@ After a 5/5 PASS:
 - do not reconstruct, reserialize, "clean up", or otherwise rewrite the pool after the successful validation;
 - if any byte changes after validation, validate the changed file again before committing.
 
-Immediately before committing, re-check that repository HEAD still equals `rules_source_sha`. If HEAD changed, fail closed, reload current repository rules, refresh the draft provenance as appropriate, and rerun the complete pre-commit validation. Do not commit a draft validated against a different parent.
+Immediately before committing, re-check that repository HEAD still equals `rules_source_sha`. If HEAD changed, fail closed, reload current repository rules, refresh the draft provenance as appropriate, rerun media readiness, and rerun the complete pre-commit validation. Do not commit a draft validated against a different parent.
 
 Only after these checks may ChatGPT create the immutable `[adhoc pool]` commit.
 
@@ -252,7 +285,8 @@ It must not re-rank, re-score, rewrite, fix or creatively substitute a candidate
 The private workflow sequence is:
 
 ```text
-ChatGPT 5/5 pre-commit PASS
+shared media readiness PASS
+  -> ChatGPT 5/5 pre-commit PASS
   -> exact validated pool bytes committed on main
   -> private promotion preflight
   -> validate five candidates locally in AI rank order
@@ -272,6 +306,8 @@ A concurrent `main` update after final validation causes push failure rather tha
 
 Once an immutable canonical Ad-hoc request exists, all retries/recovery reuse that exact content ID. Never create a replacement content ID merely because rendering/upload/verification failed.
 
+A historical request may continue to resolve an asset later marked `selection_enabled=false`; that flag blocks **new planning**, not immutable recovery.
+
 Preserve exact source SHA, compatibility fingerprint, dispatch/start evidence, upload intent, duplicate-upload protection, receipt verification and public/private state boundaries.
 
 Ad-hoc never consumes or modifies Daily's 24 scheduled publication slots.
@@ -282,6 +318,8 @@ Before committing an Ad-hoc pool confirm:
 
 - current repository rules/config/analytics/history were inspected;
 - `planning.planner_contract` was actually executed and its current output consumed;
+- shared `media.media_readiness` was actually executed and returned `PASS` on current `main`;
+- if replenishment was needed, it completed through an immutable readiness manifest and Background Management before pool authorship;
 - exactly 5 complete production-quality candidates exist;
 - ranks and IDs are unique;
 - `planning_mode` and `singapore_date` are correct;
@@ -290,6 +328,7 @@ Before committing an Ad-hoc pool confirm:
 - every candidate uses the current request schema and exact immediate-public contract;
 - exact configured score-component names were taken from the live contract, not memory;
 - ChatGPT owns all creative/editorial/background/treatment decisions;
+- all selected backgrounds are currently selectable and none has `selection_enabled=false`;
 - hard background/treatment expectations are satisfied;
 - no planner-execution bridge is used;
 - the complete temporary draft was actually validated with `planning.adhoc_precommit`;
