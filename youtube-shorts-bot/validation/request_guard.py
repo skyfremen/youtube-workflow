@@ -7,6 +7,7 @@ PROTECTED_PATHS = (
     "youtube-shorts-bot/content/results",
     "youtube-shorts-bot/content/recovery",
     "youtube-shorts-bot/content/planning",
+    "youtube-shorts-bot/content/planning-pools",
     "youtube-shorts-bot/content/background-sourcing",
     "youtube-shorts-bot/content/completions",
 )
@@ -44,7 +45,7 @@ def ensure_commit_available(sha):
 
 
 def check_immutable_changes(base, head):
-    """Reject edits or deletions to append-only production JSON."""
+    """Reject edits or deletions to append-only production/planning JSON."""
     for sha in (base, head):
         if re.fullmatch(r"[0-9a-fA-F]{40}", str(sha or "")):
             ensure_commit_available(sha)
@@ -63,6 +64,6 @@ def check_immutable_changes(base, head):
         status, path = line.split("\t", 1)
         if path.endswith(".json") and status != "A":
             raise ValueError(
-                "Immutable request/result/recovery/planning/background-sourcing "
+                "Immutable request/result/recovery/planning/pool/background-sourcing "
                 f"file changed: {path}"
             )
