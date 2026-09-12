@@ -1,6 +1,10 @@
 name: Ad-hoc Production
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'youtube-shorts-bot/content/requests/wd-*-adhoc-*.json'
   workflow_dispatch:
     inputs:
       content_id:
@@ -9,7 +13,7 @@ on:
         type: string
 
 concurrency:
-  group: private-adhoc-${{ inputs.content_id }}
+  group: private-adhoc-${{ inputs.content_id || github.sha }}
   cancel-in-progress: false
 
 permissions:
@@ -17,6 +21,7 @@ permissions:
 
 jobs:
   dispatch:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[adhoc production]') }}
     runs-on: ubuntu-latest
     steps:
       - name: Load private state
@@ -24,10 +29,54 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Resolve exactly one ad-hoc request
+        id: identity
+        env:
+          MANUAL_CONTENT_ID: ${{ inputs.content_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            mapfile -t paths < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/requests\/wd-[A-Za-z0-9-]*-adhoc-[A-Za-z0-9-]*\.json$/ {print $2}')
+            if [ "${#paths[@]}" -ne 1 ]; then
+              echo "::error::Ad-hoc production commit must add exactly one ad-hoc request"
+              exit 1
+            fi
+            path="${paths[0]}"
+            content_id="$(basename "${path}" .json)"
+          else
+            content_id="${MANUAL_CONTENT_ID:-}"
+            if [[ ! "${content_id}" =~ ^wd-[A-Za-z0-9-]+$ ]]; then
+              echo "::error::Invalid immutable content ID"
+              exit 1
+            fi
+            path="youtube-shorts-bot/content/requests/${content_id}.json"
+            if [ ! -f "${path}" ]; then
+              echo "::error::Request is not present in canonical state"
+              exit 1
+            fi
+          fi
+
+          python - "${path}" "${content_id}" <<'PY'
+          import json, sys
+          path, content_id = sys.argv[1:]
+          data = json.load(open(path, encoding='utf-8'))
+          if data.get('content_id') != content_id:
+              raise SystemExit('request filename/content_id mismatch')
+          publication = data.get('publication') or {}
+          if publication != {
+              'mode': 'immediate',
+              'timezone': 'Asia/Singapore',
+              'publish_at': None,
+          }:
+              raise SystemExit('ad-hoc request is not immediate-public')
+          PY
+          echo "content_id=${content_id}" >> "${GITHUB_OUTPUT}"
+
       - name: Create opaque execution
         id: batch
         env:
-          CONTENT_ID: ${{ inputs.content_id }}
+          CONTENT_ID: ${{ steps.identity.outputs.content_id }}
           EXECUTION_RUN_ID: ${{ github.run_id }}
           EXECUTION_ATTEMPT: ${{ github.run_attempt }}
         shell: bash
