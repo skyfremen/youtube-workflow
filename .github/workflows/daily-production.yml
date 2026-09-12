@@ -4,9 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/requests/*.json'
       - 'youtube-shorts-bot/content/planning/*.json'
-      - 'youtube-shorts-bot/content/background-sourcing/*.json'
   workflow_dispatch:
     inputs:
       content_ids:
