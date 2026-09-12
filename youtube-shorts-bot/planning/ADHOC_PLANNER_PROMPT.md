@@ -6,6 +6,22 @@ Read `docs/ADHOC_PLANNER_V4_BASE.md` **in full** first, then read the current `p
 
 Repository code is authoritative. Inspect the current `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, registry and workflows before authoring the request.
 
+## Preserved Ad-hoc execution contract
+
+This path creates exactly one additional Short and must use `.github/workflows/adhoc-production.yml`, which dispatches the public runtime `single.yml` path only. It must never consume or alter Daily's 24 scheduled slots. The content commit identity remains `[adhoc production] YYYY-MM-DD` according to the existing idempotency rules.
+
+The immutable publication object remains immediate-public:
+
+```json
+{
+  "mode": "immediate",
+  "timezone": "Asia/Singapore",
+  "publish_at": null
+}
+```
+
+The public upload contract therefore resolves to `privacyStatus: public` with no future `publishAt`.
+
 ## Schema-v5 override
 
 New Ad-hoc requests use **schema v5**, not schema v4.
