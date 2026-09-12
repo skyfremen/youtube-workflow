@@ -9,7 +9,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/core.py` | One-batch coordinator, bounded worker execution, generic public summary, and failure capture |
 | `runtime/transport.py` | Exact-revision private input fetch, allowlisted state transport, completion and diagnostic write-back |
 | `runtime/base/contract.py` | Shared immutable request identity and output contract |
-| `runtime/engine/batch.py` | Batch membership, ordering, uniqueness, and schedule-slot validation |
+| `runtime/engine/batch.py` | Batch membership, ordering, uniqueness, sourcing-manifest validation, and schedule-slot validation |
 | `runtime/engine/shard.py` | Deterministic 1–24 item partitioning into bounded single/paired execution units |
 | `runtime/engine/pipeline.py` | Bounded internal concurrency and per-item failure isolation |
 | `runtime/engine/aggregate.py` | Daily shard-summary validation, fail-closed aggregation, and partial-failure diagnostics |
@@ -18,17 +18,18 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/engine/evidence.py` | Test-only evidence export helper |
 | `runtime/guard/readiness.py` | Shared fail-first environment, runtime, filesystem, registry, and remote-channel readiness checks |
 | `runtime/guard/request.py` | Immutable state guard |
-| `runtime/guard/schema.py` | Canonical request schema and branding/publication validation |
+| `runtime/guard/schema.py` | Versioned canonical request schema, branding/publication validation, and schema-v5 background-treatment validation |
+| `runtime/guard/semantic.py` | Planner-authored punchline contract validation |
 | `runtime/resources/policy.py` | Background rendition suitability rules |
 | `runtime/resources/quality.py` | Subtitle-safe-region readability sampling and bounded background darkening selection |
-| `runtime/resources/select.py` | Registry shortlist and recency rules |
-| `runtime/resources/resolve.py` | Background retrieval, probing, fallback, and normalization |
+| `runtime/resources/resolve.py` | Background retrieval, probing, fallback, normalization, and frozen treatment execution |
 | `runtime/resources/registry.py` | Provider-backed registry ingestion |
 | `runtime/resources/validate.py` | Registry and selected-background validation |
 | `runtime/transform/synth.py` | Narration synthesis backends |
 | `runtime/transform/align.py` | Word-level narration alignment |
+| `runtime/transform/semantic.py` | Deterministic mapping of planner punchline/emphasis text onto aligned narration words |
 | `runtime/transform/compose.py` | 1080x1920 visual/audio composition |
-| `runtime/transform/process.py` | Synthesis, alignment, word-focus caption styling, and composition entry point |
+| `runtime/transform/process.py` | Synthesis, alignment, active-word focus, semantic punchline styling, and composition entry point |
 | `runtime/transform/verify.py` | Final media integrity verification |
 | `runtime/output/access.py` | OAuth refresh and pinned-channel read-only preflight |
 | `runtime/output/execute.py` | Recovery-first publication orchestration |
@@ -83,7 +84,7 @@ Public logs intentionally retain only stage, item ordinal, stable error code, an
 | `s02n` | Canonical `transform/verify.py` subprocess failed |
 | `s02x` | Unclassified render-smoke exception |
 | `s03` | Narration backend and approved-voice exercise |
-| `s04` | Word alignment plus rendered active-word caption exercise |
+| `s04` | Word alignment plus rendered active-word and semantic-punchline caption exercise |
 | `s05` | Dry Run exercise completed |
 
 ## Public environment aliases
@@ -105,21 +106,22 @@ A manual recovery batch ID hashes the immutable item identities together with `g
 
 - `resources/policy.py` / private `media/background_policy.py`: effective post-crop rendition gate; 1080×1920 target; maximum 1.05× enlargement.
 - `resources/quality.py`: samples 12 frames across the used segment's subtitle-safe region and chooses the bounded soft darkening strength.
+- `resources/resolve.py`: keeps the reusable normalized master treatment-agnostic, then applies the immutable schema-v5 segment/playback treatment to the job-local input.
 - `transform/compose.py`: 1080×1920/30, H.264 High CRF 19, yuv420p/BT.709, AAC-LC 48 kHz, scaled design and subtitle treatment.
-- `guard/schema.py`: schema-v4 frozen lead gender/tone/voice validation; schema-v3 remains accepted only for recovery.
+- `guard/schema.py`: schema v5 is current for newly authored requests; schema v4 remains executable for staged migration/operator recovery. Both retain frozen lead gender/tone/voice and planner-authored punchline validation through the shared legacy view.
 - `E_RESOURCE_001`: physical rendition/readability/preflight failure. Inspect the private diagnostic record for requested IDs, attempted rendition and underlying reason.
 
 Voice map: female natural/general `af_heart`; female expressive `af_bella`; male natural/general `am_echo`; male expressive `am_fenrir`.
 
-## Word-synchronised caption focus
+## Word-synchronised caption focus and semantic punchlines
 
 - `transform/align.py` remains the timing authority. It performs deterministic forced alignment against the generated narration and requires at least 0.90 coverage before aligned captions are accepted.
-- `transform/process.py` keeps each existing natural caption phrase fully visible while the currently spoken word is coloured gold (`#FFD628`). The base caption remains white with the existing dark outline/shadow and caption-safe background protection.
-- Highlighting changes colour only; it does not enlarge text, change line breaks, move the caption, or alter the phrase segmentation/layout selected by the existing caption renderer.
+- `transform/process.py` keeps each existing natural caption phrase fully visible while the currently spoken word receives active-word focus. The base caption remains white with the existing dark outline/shadow and caption-safe background protection.
 - Adjacent words shorter than 120 ms may be grouped into a single active unit when their gap is at most 40 ms. A rapid unit is capped at three words to reduce flicker without turning the caption into a large highlighted phrase.
-- `CAPTION_WORD_HIGHLIGHT_ENABLED` defaults to `true` and can disable the visual focus while retaining the existing word-aligned static-caption path.
-- If alignment is unavailable, malformed, incomplete, or below the existing coverage threshold, `process.py` preserves the existing estimated-caption fallback rather than rendering incorrect word focus or losing captions.
-- The render metadata records whether word focus was enabled/applied, how many highlight events were emitted, and how many rapid-word groups were formed.
-- Daily and Ad-hoc execution do not have separate caption implementations: both converge through `engine/pipeline.py` into `transform/process.py`, so the same alignment/highlighting/fallback behaviour applies to both paths.
-- The public Dry Run uses real Kokoro narration plus real alignment and now also renders a dedicated ASS highlight smoke clip, then checks a sampled frame for the active gold caption colour. The fixture includes a contraction, punctuation, repeated rapid words, and a punchline-like closing phrase.
-- No immutable-request or planner schema field was added for punchline emphasis. Stronger semantic punchline styling remains a separate optional enhancement if later evidence justifies changing the creative contract.
+- Planner-authored `story.punchline` metadata is validated before execution. `transform/semantic.py` maps the exact punchline and optional emphasis text onto real aligned narration words; the runtime does not infer a punchline from audio position or heuristics.
+- Semantic punchline styling is an additional aligned-caption layer. It is visually distinct from ordinary active-word focus while preserving the existing phrase geometry, safe margins, handle, subscribe treatment, and opening-card lifecycle.
+- `CAPTION_WORD_HIGHLIGHT_ENABLED` controls active-word focus and `CAPTION_SEMANTIC_EMPHASIS_ENABLED` controls semantic emphasis; both default to the production-enabled path.
+- If alignment is unavailable, malformed, incomplete, or below the existing coverage threshold, `process.py` preserves the existing estimated-caption fallback rather than inventing semantic timing or losing captions.
+- Render metadata records alignment coverage, active-word focus, semantic-emphasis application, punchline match status, punchline word count, and emphasis word count.
+- Daily and Ad-hoc execution do not have separate caption implementations: both converge through `engine/pipeline.py` into `transform/process.py`, so the same alignment/highlighting/semantic/fallback behaviour applies to both paths.
+- The public Dry Run uses real Kokoro narration plus real alignment and renders a production-equivalent visual preview. It verifies active-word focus, semantic-emphasis pixels, caption safe margins, opening-card disappearance, handle/subscribe visibility, narration presence, and canonical render verification without performing a production upload.
