@@ -28,7 +28,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/transform/synth.py` | Narration synthesis backends |
 | `runtime/transform/align.py` | Word-level narration alignment |
 | `runtime/transform/compose.py` | 1080x1920 visual/audio composition |
-| `runtime/transform/process.py` | Synthesis, alignment, and composition entry point |
+| `runtime/transform/process.py` | Synthesis, alignment, word-focus caption styling, and composition entry point |
 | `runtime/transform/verify.py` | Final media integrity verification |
 | `runtime/output/access.py` | OAuth refresh and pinned-channel read-only preflight |
 | `runtime/output/execute.py` | Recovery-first publication orchestration |
@@ -83,7 +83,7 @@ Public logs intentionally retain only stage, item ordinal, stable error code, an
 | `s02n` | Canonical `transform/verify.py` subprocess failed |
 | `s02x` | Unclassified render-smoke exception |
 | `s03` | Narration backend and approved-voice exercise |
-| `s04` | Word-alignment exercise |
+| `s04` | Word alignment plus rendered active-word caption exercise |
 | `s05` | Dry Run exercise completed |
 
 ## Public environment aliases
@@ -110,3 +110,16 @@ A manual recovery batch ID hashes the immutable item identities together with `g
 - `E_RESOURCE_001`: physical rendition/readability/preflight failure. Inspect the private diagnostic record for requested IDs, attempted rendition and underlying reason.
 
 Voice map: female natural/general `af_heart`; female expressive `af_bella`; male natural/general `am_echo`; male expressive `am_fenrir`.
+
+## Word-synchronised caption focus
+
+- `transform/align.py` remains the timing authority. It performs deterministic forced alignment against the generated narration and requires at least 0.90 coverage before aligned captions are accepted.
+- `transform/process.py` keeps each existing natural caption phrase fully visible while the currently spoken word is coloured gold (`#FFD628`). The base caption remains white with the existing dark outline/shadow and caption-safe background protection.
+- Highlighting changes colour only; it does not enlarge text, change line breaks, move the caption, or alter the phrase segmentation/layout selected by the existing caption renderer.
+- Adjacent words shorter than 120 ms may be grouped into a single active unit when their gap is at most 40 ms. A rapid unit is capped at three words to reduce flicker without turning the caption into a large highlighted phrase.
+- `CAPTION_WORD_HIGHLIGHT_ENABLED` defaults to `true` and can disable the visual focus while retaining the existing word-aligned static-caption path.
+- If alignment is unavailable, malformed, incomplete, or below the existing coverage threshold, `process.py` preserves the existing estimated-caption fallback rather than rendering incorrect word focus or losing captions.
+- The render metadata records whether word focus was enabled/applied, how many highlight events were emitted, and how many rapid-word groups were formed.
+- Daily and Ad-hoc execution do not have separate caption implementations: both converge through `engine/pipeline.py` into `transform/process.py`, so the same alignment/highlighting/fallback behaviour applies to both paths.
+- The public Dry Run uses real Kokoro narration plus real alignment and now also renders a dedicated ASS highlight smoke clip, then checks a sampled frame for the active gold caption colour. The fixture includes a contraction, punctuation, repeated rapid words, and a punchline-like closing phrase.
+- No immutable-request or planner schema field was added for punchline emphasis. Stronger semantic punchline styling remains a separate optional enhancement if later evidence justifies changing the creative contract.
