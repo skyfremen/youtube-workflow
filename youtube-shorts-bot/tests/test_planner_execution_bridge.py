@@ -6,6 +6,12 @@ BASE = Path(__file__).resolve().parents[1]
 ROOT = BASE.parent
 sys.path.insert(0, str(BASE))
 
+from media.background_selector import (
+    DEFAULT_BACKGROUND_BACKUP_ID,
+    DEFAULT_BACKGROUND_PRIMARY_ID,
+    audit_ai_selection,
+)
+from media.validate_media_library import load_registry
 from planning.execution_bridge import OPERATIONS, execute_envelope
 
 
@@ -40,6 +46,28 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
                 "payload": {},
             })
 
+    def test_background_audit_uses_fixed_default_pair_on_rejection(self):
+        registry = load_registry()
+        result = audit_ai_selection(
+            registry,
+            "missing-primary",
+            "missing-backup",
+            [],
+            {},
+        )
+        self.assertTrue(result["passed"])
+        self.assertTrue(result["fallback_used"])
+        self.assertEqual(result["resolved_primary_id"], DEFAULT_BACKGROUND_PRIMARY_ID)
+        self.assertEqual(result["resolved_backup_id"], DEFAULT_BACKGROUND_BACKUP_ID)
+        self.assertTrue(result["selection_errors"])
+        self.assertEqual(result["errors"], result["selection_errors"])
+        self.assertEqual(result["fallback_errors"], [])
+        self.assertTrue(result["primary"]["fallback_default"])
+        self.assertTrue(result["backup"]["fallback_default"])
+
+    def test_background_defaults_are_distinct(self):
+        self.assertNotEqual(DEFAULT_BACKGROUND_PRIMARY_ID, DEFAULT_BACKGROUND_BACKUP_ID)
+
     def test_unknown_operation_fails_closed(self):
         with self.assertRaises(ValueError):
             execute_envelope({
@@ -68,8 +96,10 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
         self.assertIn("exact primary/backup logical background selection", daily)
         self.assertIn("GitHub Actions must not execute", daily)
         self.assertIn("background.select", daily)
-        self.assertIn("chooses the exact primary and backup logical asset IDs itself", adhoc)
+        self.assertIn("configured default background pair", daily)
+        self.assertIn("chooses the requested primary and backup logical asset IDs itself", adhoc)
         self.assertIn("background.audit", adhoc)
+        self.assertIn("configured default background pair", adhoc)
         self.assertNotIn("- `background.select`", adhoc)
 
 
