@@ -36,7 +36,7 @@ def snapshot(**changes):
 
 class DecisionTests(unittest.TestCase):
     def setUp(self):
-        self.policy = recovery.Policy()
+        self.policy = recovery.Policy(active_grace_minutes=240)
 
     def test_authoritative_receipt_is_complete(self):
         result = recovery.decide(snapshot(receipt_state='valid'), NOW, self.policy)
@@ -53,6 +53,13 @@ class DecisionTests(unittest.TestCase):
             snapshot(latest_batch_started_at=NOW - timedelta(minutes=30)), NOW, self.policy
         )
         self.assertEqual(result.state, 'active')
+
+    def test_started_daily_run_at_full_public_budget_is_still_active(self):
+        result = recovery.decide(
+            snapshot(latest_started_at=NOW - timedelta(minutes=220)), NOW, self.policy
+        )
+        self.assertEqual(result.state, 'active')
+        self.assertEqual(result.reason, 'started_production_within_long_grace')
 
     def test_stale_silent_run_is_recoverable(self):
         result = recovery.decide(snapshot(), NOW, self.policy)
@@ -181,12 +188,30 @@ class DecisionTests(unittest.TestCase):
             snapshot(
                 automatic_attempts=1,
                 latest_batch_id='r_' + 'b' * 30,
-                latest_batch_started_at=NOW - timedelta(minutes=211),
+                latest_batch_started_at=NOW - timedelta(minutes=241),
             ),
             NOW,
             self.policy,
         )
         self.assertTrue(result.dispatch)
+
+    def test_accepted_dispatch_without_start_keeps_25_minute_grace(self):
+        still_waiting = recovery.decide(
+            snapshot(latest_dispatched_at=NOW - timedelta(minutes=24)),
+            NOW,
+            self.policy,
+        )
+        self.assertEqual(still_waiting.state, 'active')
+        self.assertEqual(still_waiting.reason, 'startup_grace_active')
+
+        recoverable = recovery.decide(
+            snapshot(latest_dispatched_at=NOW - timedelta(minutes=25)),
+            NOW,
+            self.policy,
+        )
+        self.assertTrue(recoverable.dispatch)
+        self.assertTrue(recoverable.reuse_batch)
+        self.assertEqual(recoverable.reason, 'startup_timeout_without_started_evidence')
 
     def test_upload_evidence_allows_reconciliation_after_publish_window(self):
         result = recovery.decide(
@@ -337,7 +362,7 @@ class ReconciliationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             repo = FakeRepo(tmp, snapshots)
             result = recovery.reconcile(
-                repo, now=NOW, policy=recovery.Policy(), write=True
+                repo, now=NOW, policy=recovery.Policy(active_grace_minutes=240), write=True
             )
         self.assertEqual(result['item_count'], 1)
         self.assertEqual(result['content_ids'], ['wd-item-23'])
@@ -353,7 +378,7 @@ class ReconciliationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             repo = FakeRepo(tmp, snapshots)
             result = recovery.reconcile(
-                repo, now=NOW, policy=recovery.Policy(), write=True
+                repo, now=NOW, policy=recovery.Policy(active_grace_minutes=240), write=True
             )
         self.assertFalse(result['dispatch'])
         self.assertEqual(result['item_count'], 0)

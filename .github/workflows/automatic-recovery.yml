@@ -2,7 +2,7 @@ name: Automatic Recovery
 
 env:
   PYTHONPATH: youtube-shorts-bot
-  RECOVERY_ACTIVE_GRACE_MINUTES: '210'
+  RECOVERY_ACTIVE_GRACE_MINUTES: '240'
   RECOVERY_STARTUP_GRACE_MINUTES: '25'
   RECOVERY_SCHEDULE_BUFFER_MINUTES: '10'
   RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'
@@ -18,7 +18,7 @@ on:
     types: [completed]
   schedule:
     # Previous cadence retained as an audit marker: cron: '17 */2 * * *'
-    # Lightweight reconciliation every 30 minutes; STARTED batches retain the 210-minute grace.
+    # Lightweight reconciliation every 30 minutes; STARTED batches retain the 240-minute grace.
     - cron: '17,47 * * * *'
   workflow_dispatch:
     inputs:
