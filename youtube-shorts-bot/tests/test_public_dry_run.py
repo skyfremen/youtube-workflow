@@ -30,17 +30,15 @@ class PublicDryRunTests(unittest.TestCase):
 
     def test_dispatch_uses_pre_resolved_sha_and_never_re_resolves_main(self):
         source = inspect.getsource(dispatch_and_verify)
-        self.assertIn("PUBLIC_EXPECTED_SHA", source)
-        self.assertNotIn("commits/main", source)
+        self.assertIn('PUBLIC_EXPECTED_SHA', source)
+        self.assertNotIn('commits/main', source)
 
     def test_workflow_resolves_one_sha_for_parity_and_dispatch(self):
         text = DRY_RUN.read_text(encoding='utf-8')
-        self.assertIn('id: public_runtime', text)
-        self.assertIn("refs/heads/main", text)
-        self.assertIn('PUBLIC_RUNTIME_SHA: ${{ steps.public_runtime.outputs.sha }}', text)
-        self.assertIn('PUBLIC_EXPECTED_SHA: ${{ steps.public_runtime.outputs.sha }}', text)
-        self.assertIn('git -C /tmp/production-runtime-contract fetch --quiet --depth 1 origin "${PUBLIC_RUNTIME_SHA}"', text)
-        self.assertIn('test "$(git -C /tmp/production-runtime-contract rev-parse HEAD)" = "${PUBLIC_RUNTIME_SHA}"', text)
+        self.assertIn('git ls-remote https://github.com/skyfremen/production-runtime.git refs/heads/main', text)
+        self.assertIn('echo "PUBLIC_EXPECTED_SHA=${public_sha}" >> "${GITHUB_ENV}"', text)
+        self.assertIn('git -C /tmp/production-runtime-contract fetch --quiet --depth 1 origin "${public_sha}"', text)
+        self.assertIn('test "$(git -C /tmp/production-runtime-contract rev-parse HEAD)" = "${public_sha}"', text)
         self.assertNotIn('git clone --quiet --depth 1 https://github.com/skyfremen/production-runtime.git', text)
 
     def test_selects_only_new_run_with_matching_job_correlation(self):
