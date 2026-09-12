@@ -124,14 +124,17 @@ class PlanningRunnerTests(unittest.TestCase):
             self.assertFalse(output_path.exists())
             self.assertIn("failed closed", proc.stderr + proc.stdout)
 
-    def test_prompts_make_chatgpt_editorial_owner(self):
+    def test_prompts_make_chatgpt_rank_and_author_complete_candidates(self):
         daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BASE / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         for prompt in (daily, adhoc):
-            self.assertIn("ChatGPT / Work owns the final editorial choice", prompt)
-            self.assertIn("candidate-evaluation", prompt)
-            self.assertIn("validate-selection", prompt)
-            self.assertIn("legacy", prompt.lower())
+            self.assertIn("ChatGPT", prompt)
+            self.assertIn("final rank", prompt.lower())
+            self.assertIn("chatgpt_ranked_pool", prompt)
+            self.assertIn("must not", prompt.lower())
+            self.assertIn("creatively", prompt.lower())
+            self.assertIn("background", prompt.lower())
+            self.assertIn("treatment", prompt.lower())
 
 
 if __name__ == "__main__":
