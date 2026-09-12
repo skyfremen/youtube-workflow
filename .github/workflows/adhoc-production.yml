@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/requests/wd-*-adhoc-*.json'
+      - 'youtube-shorts-bot/content/candidate-pools/adhoc/*.json'
   workflow_dispatch:
     inputs:
       content_id:
@@ -19,6 +19,9 @@ concurrency:
 permissions:
   contents: write
 
+env:
+  PYTHONPATH: youtube-shorts-bot
+
 jobs:
   dispatch:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[adhoc production]') }}
@@ -29,34 +32,96 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve exactly one ad-hoc request
+      - name: Fast-forward canonical state
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+
+      - name: Global compatibility preflight
+        id: contract
+        working-directory: youtube-shorts-bot
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_hash="$(python -m common.runtime_contract)"
+          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::Invalid compatibility fingerprint"
+            exit 1
+          fi
+          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
+
+      - name: Validate 5 ranked candidates and promote first valid one
+        if: ${{ github.event_name == 'push' }}
+        id: promote
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m planning.candidate_pool promote-adhoc \
+            --source-sha "${GITHUB_SHA}" \
+            --output /tmp/adhoc-promotion.json
+          python - <<'PY'
+          import json, os
+          payload = json.load(open('/tmp/adhoc-promotion.json', encoding='utf-8'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f"content_id={payload['content_id']}\n")
+              output.write(f"request_path={payload['request_path']}\n")
+              output.write(f"reused={'true' if payload['reused'] else 'false'}\n")
+              output.write(f"request_source_sha={payload.get('request_source_sha') or ''}\n")
+          PY
+
+      - name: Final strict request validation
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m validation.validate_content --request "${{ steps.promote.outputs.request_path }}"
+
+      - name: Persist promoted immutable Ad-hoc request
+        if: ${{ github.event_name == 'push' && steps.promote.outputs.reused != 'true' }}
+        id: persist-request
+        shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.promote.outputs.request_path }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "${REQUEST_PATH}"
+          if [ "$(git diff --cached --name-only | wc -l | tr -d ' ')" != "1" ]; then
+            echo "::error::Ad-hoc promotion must stage exactly one immutable request"
+            exit 1
+          fi
+          git commit -m "[skip upload] materialize ranked Ad-hoc request"
+          git pull --rebase origin main
+          python -m validation.validate_content --request "${REQUEST_PATH}"
+          git push origin HEAD:main
+          echo "source_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve exactly one final Ad-hoc request
         id: identity
         env:
           MANUAL_CONTENT_ID: ${{ inputs.content_id }}
+          PROMOTED_CONTENT_ID: ${{ steps.promote.outputs.content_id }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            mapfile -t paths < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/requests\/wd-[A-Za-z0-9-]*-adhoc-[A-Za-z0-9-]*\.json$/ {print $2}')
-            if [ "${#paths[@]}" -ne 1 ]; then
-              echo "::error::Ad-hoc production commit must add exactly one ad-hoc request"
-              exit 1
-            fi
-            path="${paths[0]}"
-            content_id="$(basename "${path}" .json)"
+            content_id="${PROMOTED_CONTENT_ID:-}"
           else
             content_id="${MANUAL_CONTENT_ID:-}"
-            if [[ ! "${content_id}" =~ ^wd-[A-Za-z0-9-]+$ ]]; then
-              echo "::error::Invalid immutable content ID"
-              exit 1
-            fi
-            path="youtube-shorts-bot/content/requests/${content_id}.json"
-            if [ ! -f "${path}" ]; then
-              echo "::error::Request is not present in canonical state"
-              exit 1
-            fi
           fi
-
+          if [[ ! "${content_id}" =~ ^wd-[A-Za-z0-9-]+$ ]]; then
+            echo "::error::Invalid immutable content ID"
+            exit 1
+          fi
+          path="youtube-shorts-bot/content/requests/${content_id}.json"
+          if [ ! -f "${path}" ]; then
+            echo "::error::Request is not present in canonical state"
+            exit 1
+          fi
+          python -m validation.validate_content --request "${path}"
           python - "${path}" "${content_id}" <<'PY'
           import json, sys
           path, content_id = sys.argv[1:]
@@ -133,19 +198,6 @@ jobs:
           fi
           echo "batch_id=$(cat /tmp/private-batch-id)" >> "${GITHUB_OUTPUT}"
           echo "source_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
-
-      - name: Resolve compatibility contract
-        id: contract
-        working-directory: youtube-shorts-bot
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_hash="$(python -m common.runtime_contract)"
-          if [[ ! "${contract_hash}" =~ ^[0-9a-f]{64}$ ]]; then
-            echo "::error::Invalid compatibility fingerprint"
-            exit 1
-          fi
-          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
 
       - name: Dispatch isolated execution
         env:
