@@ -2,7 +2,7 @@
 
 The bridge is intentionally narrow: callers commit an input envelope, GitHub Actions
 runs this module from a real checkout, and commits the deterministic result. It does
-not render, synthesize, upload, or replace planner semantics.
+not render, synthesize, upload, or make editorial winner choices for ChatGPT.
 """
 from __future__ import annotations
 
@@ -28,7 +28,9 @@ SCHEMA_VERSION = 1
 EXECUTION_ID_RE = re.compile(r"pe-[A-Za-z0-9-]{8,96}")
 OPERATIONS = {
     "planning.raw-filter",
-    "planning.final-select",
+    "planning.candidate-evaluation",
+    "planning.validate-selection",
+    "planning.final-select",  # legacy recovery compatibility only
     "background.select",
     "background.audit",
     "background.treatment",
@@ -71,10 +73,14 @@ def execute_envelope(envelope):
         raise ValueError("unsupported bridge operation")
     payload = _require_object(envelope.get("payload"), "payload")
 
-    if operation == "planning.raw-filter":
-        result = execute_planning("raw-filter", payload)
-    elif operation == "planning.final-select":
-        result = execute_planning("final-select", payload)
+    planning_stages = {
+        "planning.raw-filter": "raw-filter",
+        "planning.candidate-evaluation": "candidate-evaluation",
+        "planning.validate-selection": "validate-selection",
+        "planning.final-select": "final-select",
+    }
+    if operation in planning_stages:
+        result = execute_planning(planning_stages[operation], payload)
     elif operation in {"background.select", "background.audit", "background.treatment"}:
         registry = load_registry()
         receipts = load_successful_receipts(BASE / "content" / "results")
