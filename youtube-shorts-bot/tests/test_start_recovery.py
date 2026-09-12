@@ -94,9 +94,10 @@ class FastNoStartDecisionTests(unittest.TestCase):
         self.assertEqual(result.reason, "started_production_within_long_grace")
 
     def test_stale_start_from_old_attempt_does_not_satisfy_current_dispatch(self):
+        stale = self.policy.active_grace_minutes + 1
         result = recovery.decide(
             snapshot(
-                latest_started_at=NOW - timedelta(minutes=211),
+                latest_started_at=NOW - timedelta(minutes=stale),
                 latest_started_dispatch_id="d_" + "e" * 24,
                 current_dispatch_started_at=None,
             ),
@@ -108,11 +109,12 @@ class FastNoStartDecisionTests(unittest.TestCase):
         self.assertEqual(result.reason, "startup_timeout_without_started_evidence")
 
     def test_current_started_but_stale_uses_normal_recovery_not_fast_no_start(self):
+        stale = self.policy.active_grace_minutes + 1
         result = recovery.decide(
             snapshot(
-                latest_started_at=NOW - timedelta(minutes=211),
+                latest_started_at=NOW - timedelta(minutes=stale),
                 latest_started_dispatch_id=DISPATCH,
-                current_dispatch_started_at=NOW - timedelta(minutes=211),
+                current_dispatch_started_at=NOW - timedelta(minutes=stale),
             ),
             NOW,
             self.policy,
@@ -122,11 +124,12 @@ class FastNoStartDecisionTests(unittest.TestCase):
         self.assertEqual(result.reason, "stale_unresolved_request")
 
     def test_upload_evidence_outranks_no_start_redispatch(self):
+        stale = self.policy.active_grace_minutes + 1
         result = recovery.decide(
             snapshot(
                 has_intent=True,
-                latest_prepared_at=NOW - timedelta(minutes=220),
-                latest_dispatched_at=NOW - timedelta(minutes=220),
+                latest_prepared_at=NOW - timedelta(minutes=stale),
+                latest_dispatched_at=NOW - timedelta(minutes=stale),
             ),
             NOW,
             self.policy,
