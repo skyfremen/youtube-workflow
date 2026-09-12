@@ -8,7 +8,7 @@ Repository code is authoritative for the rules. Inspect the current `planning/pl
 
 ## Ad-hoc planning ownership — authoritative override
 
-**ChatGPT / Work performs the complete candidate-planning decision path and chooses the one Ad-hoc winner.**
+**ChatGPT / Work performs the complete candidate-planning decision path and chooses the one Ad-hoc winner.** ChatGPT / Work owns the final editorial choice.
 
 For a new Ad-hoc run, ChatGPT itself must:
 
@@ -20,7 +20,7 @@ For a new Ad-hoc run, ChatGPT itself must:
 6. choose exactly one eligible winner;
 7. write the complete story and metadata.
 
-Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, or `final-select` for a new Ad-hoc plan. `planning_engine.py` and related files are rule/specification sources for ChatGPT and may remain executable for tests, regression checks, or historical compatibility, but they do not plan on ChatGPT's behalf.
+Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, or `final-select` for a new Ad-hoc plan. `planning_engine.py` and related files are rule/specification sources for ChatGPT and may remain executable for tests, regression checks, or legacy historical compatibility, but they do not plan on ChatGPT's behalf.
 
 The canonical Ad-hoc flow is:
 
