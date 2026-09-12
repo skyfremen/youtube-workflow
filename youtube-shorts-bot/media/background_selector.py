@@ -74,14 +74,7 @@ def _fallback_asset_audit(registry, asset_id):
 
 
 def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=None):
-    """Audit ChatGPT's exact pair, falling back only to the fixed safe default pair.
-
-    The ordinary audit remains authoritative. If it rejects ChatGPT's pair, this
-    function may substitute only DEFAULT_BACKGROUND_PRIMARY_ID / BACKUP_ID. The
-    fallback intentionally bypasses topic-fit and recent-use rejection so production
-    can continue, but it still enforces registry, license, text/watermark, quality,
-    and production-rendition safety. If either default is unsafe, the audit fails.
-    """
+    """Audit ChatGPT's exact pair, falling back only to the fixed safe default pair."""
     requested = _base_audit_ai_selection(
         registry, primary_id, backup_id, receipts, requirements
     )
@@ -96,6 +89,7 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
             "selection_errors": [],
         }
 
+    selection_errors = list(requested.get("errors") or [])
     fallback_errors = []
     if DEFAULT_BACKGROUND_PRIMARY_ID == DEFAULT_BACKGROUND_BACKUP_ID:
         fallback_errors.append("default primary and backup background IDs must differ")
@@ -109,8 +103,9 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
     if fallback_errors:
         return {
             "passed": False,
-            "errors": fallback_errors,
-            "selection_errors": list(requested.get("errors") or []),
+            "errors": selection_errors + fallback_errors,
+            "selection_errors": selection_errors,
+            "fallback_errors": fallback_errors,
             "fallback_used": False,
             "requested_primary_id": primary_id,
             "requested_backup_id": backup_id,
@@ -122,8 +117,9 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
 
     return {
         "passed": True,
-        "errors": [],
-        "selection_errors": list(requested.get("errors") or []),
+        "errors": selection_errors,
+        "selection_errors": selection_errors,
+        "fallback_errors": [],
         "fallback_used": True,
         "fallback_reason": "ChatGPT-selected background pair failed audit",
         "requested_primary_id": primary_id,
