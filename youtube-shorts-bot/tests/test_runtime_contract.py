@@ -37,6 +37,16 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertFalse(payload["behavior"]["renditions"]["hd_landscape"]["suitable"])
         self.assertTrue(payload["behavior"]["renditions"]["uhd_landscape"]["suitable"])
 
+    def test_semantic_punchline_schema_is_fingerprinted(self):
+        schema = runtime_contract.contract_payload()["schema"]
+        self.assertEqual(schema["current_version"], 4)
+        self.assertEqual(schema["supported_versions"], [4])
+        self.assertEqual(schema["punchline_required_keys"], ["emphasis_text", "text"])
+        self.assertEqual(schema["punchline_optional_keys"], ["type"])
+        self.assertEqual(schema["punchline_max_emphasis_words"], 5)
+        self.assertIn("REVERSAL", schema["punchline_types"])
+        self.assertIn("punchline", schema["story_keys"])
+
 
 if __name__ == "__main__":
     unittest.main()
