@@ -51,27 +51,33 @@ class RawAnalyticsTests(unittest.TestCase):
         }
         self.assertTrue(analytics_collection.receipt_eligible({**base, "schema_version": 3}))
         self.assertTrue(analytics_collection.receipt_eligible({**base, "schema_version": 4}))
+        self.assertTrue(analytics_collection.receipt_eligible({**base, "schema_version": 5}))
         self.assertFalse(analytics_collection.receipt_eligible({**base, "schema_version": 2}))
 
-    def test_load_request_accepts_v4_and_rejects_schema_mismatch(self):
+    def test_load_request_accepts_v4_v5_and_rejects_schema_mismatch(self):
         with tempfile.TemporaryDirectory() as temp:
             repo_root = Path(temp)
             request_path = repo_root / "youtube-shorts-bot/content/requests/example.json"
             request_path.parent.mkdir(parents=True)
-            request_path.write_text(
-                json.dumps({"schema_version": 4, "story": {"category": "RELATIONSHIP"}}),
-                encoding="utf-8",
-            )
-            receipt = {
-                "schema_version": 4,
-                "request_path": "youtube-shorts-bot/content/requests/example.json",
-            }
+            receipt_path = "youtube-shorts-bot/content/requests/example.json"
             with patch.object(analytics_collection, "REPO_ROOT", repo_root):
-                loaded = analytics_collection.load_request(receipt)
-                mismatched = analytics_collection.load_request({**receipt, "schema_version": 3})
-        self.assertEqual(loaded["schema_version"], 4)
-        self.assertEqual(loaded["story"]["category"], "RELATIONSHIP")
-        self.assertEqual(mismatched, {})
+                for version in (4, 5):
+                    with self.subTest(version=version):
+                        request_path.write_text(
+                            json.dumps({"schema_version": version, "story": {"category": "RELATIONSHIP"}}),
+                            encoding="utf-8",
+                        )
+                        receipt = {
+                            "schema_version": version,
+                            "request_path": receipt_path,
+                        }
+                        loaded = analytics_collection.load_request(receipt)
+                        mismatched = analytics_collection.load_request(
+                            {**receipt, "schema_version": 3}
+                        )
+                        self.assertEqual(loaded["schema_version"], version)
+                        self.assertEqual(loaded["story"]["category"], "RELATIONSHIP")
+                        self.assertEqual(mismatched, {})
 
 
 if __name__ == "__main__":
