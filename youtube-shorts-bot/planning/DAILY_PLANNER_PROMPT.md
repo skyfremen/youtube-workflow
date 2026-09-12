@@ -2,7 +2,7 @@
 
 This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
 
-Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements.
+Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements **and the final winner-selection ownership described below**.
 
 Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `planning/planning_engine.py`, `planning/planning_runner.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
 
@@ -12,11 +12,51 @@ The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must 
 
 If `content/planning/YYYY-MM-DD.json` already exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Planning audits continue to record `planning_mode` as `normal_next_day` or `same_day_catch_up`, and catch-up audits record omitted elapsed/too-close slots.
 
-`planning/planning_engine.py` remains the deterministic planning policy implementation. Work must actually execute `planning/planning_runner.py` at the required raw-filter and final-selection checkpoints and consume its **actual returned result**. Do not substitute equivalent manual arithmetic. If either execution fails, fail closed.
+`planning/planning_engine.py` remains the deterministic planning policy/support implementation. Work must actually execute `planning/planning_runner.py` at the required deterministic checkpoints and consume its **actual returned result**. Do not substitute equivalent manual arithmetic. If a required execution fails, fail closed.
 
 Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
 
 The content handoff remains one content-only commit beginning `[daily production] YYYY-MM-DD`, consumed by `daily-production.yml`. The planning audit retains the core keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`. Any background-sourcing manifest retains exact `logical_id` and `required_by_content_ids` linkage to that day's immutable requests.
+
+## ChatGPT editorial winner ownership — authoritative override
+
+For **new Daily planning runs**, ChatGPT / Work owns the final editorial choice of the winners.
+
+`planning_engine.py` and `planning_runner.py` support ChatGPT with deterministic hard rejection, duplicate/near-duplicate checks, weighted scoring, title/hook scoring, analytics normalization/blending, eligibility checks, diversity constraints, selection-limit checks, ordering and publication-slot calculation. Those deterministic outputs are evidence and guardrails. They must **not replace ChatGPT's editorial judgment by choosing the authoritative winner set**.
+
+This section supersedes any older statement in `docs/DAILY_PLANNER_V4_BASE.md` that says `result.selected` from `final-select` is the authoritative winner set for a new plan.
+
+The legacy `final-select` stage remains available only for compatibility/recovery of historical planning artifacts created under the old deterministic-winner contract. Do not use it to choose winners for a new Daily plan.
+
+The canonical new Daily decision flow is:
+
+```text
+ChatGPT generates the raw candidate pool
+  -> planning.raw-filter
+  -> ChatGPT develops qualified semifinalists
+  -> planning.candidate-evaluation
+  -> deterministic scores/checks/ranking evidence
+  -> ChatGPT compares the eligible candidates semantically/editorially
+  -> ChatGPT chooses up to the current Daily limit
+  -> planning.validate-selection
+  -> deterministic validation of the exact ChatGPT-chosen IDs
+  -> deterministic schedule ordering/slot assignment
+  -> ChatGPT writes the full stories for those validated IDs
+```
+
+`planning.candidate-evaluation` must calculate canonical deterministic evidence without returning an authoritative winner set. ChatGPT may choose a lower-ranked eligible candidate over a higher-ranked eligible candidate when its editorial judgment supports the choice, provided the final chosen set passes every deterministic hard gate.
+
+`planning.validate-selection` must receive the exact candidate IDs chosen by ChatGPT. It may reject an invalid set, but it must **never silently substitute different winners**. If validation fails, ChatGPT must revise its editorial selection and rerun validation, or fail closed.
+
+For a new Daily planning audit, `planning_execution` records:
+
+- `raw_filter`: actual execution provenance from `raw-filter`;
+- `candidate_evaluation`: actual execution provenance from `candidate-evaluation`;
+- `selection_validation`: actual execution provenance from `validate-selection`;
+- `editorial_selection_owner`: exactly `chatgpt`;
+- `selected_candidate_ids`: the exact IDs chosen by ChatGPT before deterministic validation.
+
+The validated result must contain the same chosen IDs. Deterministic code may reorder the same validated IDs for publication scheduling, but may not replace them.
 
 ## Schema-v5 override
 
@@ -117,6 +157,7 @@ Do not weaken exact source-SHA validation, dispatch/start evidence, upload inten
 
 Before committing any Daily request, confirm:
 
+- the candidate ID was explicitly chosen by ChatGPT and accepted by `planning.validate-selection`;
 - schema version is 5;
 - primary and backup IDs are distinct registered logical assets;
 - both treatment objects came from the canonical allocator;
