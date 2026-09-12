@@ -28,7 +28,7 @@ class ManualOnly(RuntimeError):
 
 @dataclass(frozen=True)
 class Policy:
-    active_grace_minutes: int = 210
+    active_grace_minutes: int = 240
     schedule_buffer_minutes: int = 10
     max_automatic_attempts: int = 3
     retry_backoff_minutes: tuple[int, ...] = (0, 120, 240)
@@ -669,7 +669,7 @@ def reconcile(repo, *, now, policy, write, failed_source_sha=""):
 def policy_from_env():
     backoff = tuple(int(x) for x in os.getenv("RECOVERY_BACKOFF_MINUTES", "0,120,240").split(",") if x.strip())
     policy = Policy(
-        active_grace_minutes=int(os.getenv("RECOVERY_ACTIVE_GRACE_MINUTES", "210")),
+        active_grace_minutes=int(os.getenv("RECOVERY_ACTIVE_GRACE_MINUTES", "240")),
         schedule_buffer_minutes=int(os.getenv("RECOVERY_SCHEDULE_BUFFER_MINUTES", "10")),
         max_automatic_attempts=int(os.getenv("RECOVERY_MAX_AUTOMATIC_ATTEMPTS", "3")),
         retry_backoff_minutes=backoff,
