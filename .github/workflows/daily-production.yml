@@ -29,6 +29,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate canonical daily planning audit
+        if: ${{ github.event_name == 'push' }}
+        working-directory: youtube-shorts-bot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m validation.planning_audit --source-sha "${GITHUB_SHA}"
+
       - name: Resolve opaque dispatch
         id: batch
         shell: bash
