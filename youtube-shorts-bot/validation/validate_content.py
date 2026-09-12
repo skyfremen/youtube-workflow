@@ -157,10 +157,14 @@ def _production_rendition_exists(asset):
     )
 
 
-def _validate_registry_asset(asset, asset_id, label):
+def _validate_registry_asset(asset, asset_id, label, *, allow_retired=False):
     errors = []
     if not isinstance(asset, dict):
         return [f"{label} references unknown background asset {asset_id}"]
+    if asset.get("selection_enabled") is False and not allow_retired:
+        errors.append(
+            f"{label} background {asset_id} is retired from new production selection"
+        )
     if asset.get("status") != "active":
         errors.append(f"{label} background {asset_id} must be active")
     if asset.get("verified") is not True:
@@ -180,13 +184,14 @@ def _validate_registry_asset(asset, asset_id, label):
     return errors
 
 
-def validate_background_registry_contract(data, registry=None):
+def validate_background_registry_contract(data, registry=None, *, allow_retired=False):
     """Validate hard background/treatment invariants for a schema-v5 request.
 
     Creative relevance, recency preference and ranking remain ChatGPT-owned. This
     validator enforces only non-negotiable registry, licensing, production and
     treatment bounds so an AI-authored request cannot cross the dispatch boundary
-    with an invalid physical contract.
+    with an invalid physical contract. Recovery of an already-materialized immutable
+    request may still resolve a background retired from future selection.
     """
     if not isinstance(data, dict) or data.get("schema_version") != 5:
         return []
@@ -215,7 +220,11 @@ def validate_background_registry_contract(data, registry=None):
     for slot, asset_id in (("primary", primary_id), ("backup", backup_id)):
         label = f"visual.background_{slot}_id"
         asset = mapping.get(asset_id)
-        errors.extend(_validate_registry_asset(asset, asset_id, label))
+        errors.extend(
+            _validate_registry_asset(
+                asset, asset_id, label, allow_retired=allow_retired
+            )
+        )
         if not isinstance(asset, dict):
             continue
         treatment = visual.get(f"background_{slot}_treatment")
@@ -291,7 +300,16 @@ def validate_request_data(data, request_path=None, *, enforce_registry=False, re
         _legacy_view(data), request_path=request_path
     )
     if enforce_registry and not errors and not treatment_errors:
-        errors.extend(validate_background_registry_contract(data, registry=registry))
+        existing_immutable_request = bool(
+            request_path is not None and Path(request_path).is_file()
+        )
+        errors.extend(
+            validate_background_registry_contract(
+                data,
+                registry=registry,
+                allow_retired=existing_immutable_request,
+            )
+        )
     return errors + treatment_errors
 
 
