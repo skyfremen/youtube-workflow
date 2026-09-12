@@ -27,16 +27,18 @@ ChatGPT reads current repo rules/config/analytics/history/background registry
   -> ChatGPT writes the complete stories
   -> ChatGPT chooses exact primary + backup logical background IDs
   -> mechanical background audit of those exact IDs
-  -> mechanical treatment allocation for those exact IDs
+       -> pass: keep ChatGPT pair
+       -> reject: resolve only to the configured default background pair
+  -> mechanical treatment allocation for the resolved IDs
   -> final schema/request validation
   -> commit immutable requests + planning audit
   -> daily-production.yml
   -> public production runtime
 ```
 
-There is no repository-side planner-execution round trip between ChatGPT candidate generation and ChatGPT winner selection, and no repository-side `background.select` step that may replace ChatGPT's exact logical asset choices.
+There is no repository-side planner-execution round trip between ChatGPT candidate generation and ChatGPT winner selection, and no repository-side `background.select` step that may rank/select arbitrary replacement assets. The only permitted mechanical logical-background substitution is the explicit configured default pair returned by `background.audit` after ChatGPT's pair fails audit.
 
-A numeric score or rank is evidence, not authority. Likewise, a background selector score is evidence, not authority. ChatGPT may choose a lower-ranked eligible story or a different eligible background when semantic/editorial judgment supports it, but it must not violate hard gates, duplicate/near-duplicate restrictions, diversity constraints, selection limits, safety rules, publication-slot rules, copyright/license rules, production-suitability rules, recent-use hard avoids, or primary/backup distinctness.
+A numeric score or rank is evidence, not authority. Likewise, a background selector score is evidence, not authority. ChatGPT may choose a lower-ranked eligible story or a different eligible background when semantic/editorial judgment supports it, but it must not violate hard gates, duplicate/near-duplicate restrictions, diversity constraints, selection limits, safety rules, publication-slot rules, copyright/license rules, production-suitability rules, recent-use hard avoids, or primary/backup distinctness. The configured default fallback is an emergency resilience exception to topic-fit and recent-use rejection only; it remains subject to registry, licensing, watermark/text, quality, distinctness, and production-rendition safety.
 
 ## Planning audit for new plans
 
@@ -85,11 +87,12 @@ Each treatment contains exactly:
 For each final ChatGPT-selected winner:
 
 1. ChatGPT inspects the current logical background registry, current retention-first rules, copyright/license metadata, production suitability, private successful-receipt recency/history, and same-run planned asset/category usage.
-2. ChatGPT chooses the exact `background_primary_id` and `background_backup_id` itself. The two IDs must be distinct and must satisfy all hard eligibility rules.
-3. Run the mechanical background audit against those exact ChatGPT-chosen IDs. The audit may accept or reject; it must not substitute different IDs.
-4. If the audit rejects the pair, ChatGPT chooses a different eligible pair and reruns the audit, or fails closed.
-5. Only after the exact IDs pass audit, run the canonical treatment allocator for those same IDs. Treatment allocation may choose segment boundaries and playback rate, but it must not replace either logical asset.
-6. Freeze ChatGPT's exact audited logical IDs plus the allocator-returned treatment objects into the immutable request.
+2. ChatGPT chooses the exact `background_primary_id` and `background_backup_id` itself. The two IDs must be distinct and must satisfy all normal hard eligibility rules.
+3. Run the mechanical background audit against those exact ChatGPT-chosen IDs.
+4. If the audit passes normally, keep ChatGPT's exact pair. If it rejects the pair, `background.audit` may resolve only to the configured default background pair. It must not rank or select any other replacement assets.
+5. If the configured default pair itself fails its fallback safety checks, fail closed.
+6. Run the canonical treatment allocator for the audit-resolved IDs. Treatment allocation may choose segment boundaries and playback rate, but it must not replace either resolved logical asset.
+7. Freeze the resolved logical IDs plus allocator-returned treatment objects into the immutable request. When fallback was used, preserve the audit result/evidence showing the originally requested IDs, selection errors, and `fallback_used: true`.
 
 Persistent segment/playback history comes only from private immutable successful receipts. Do not add mutable usage fields to the logical registry or a public history ledger.
 
@@ -97,7 +100,7 @@ Persistent segment/playback history comes only from private immutable successful
 
 Do not move media probing, downloading, physical rendition selection, normalization, cropping, transcoding, FFmpeg treatment, rendering, TTS, alignment, upload, or verification into the private planner. `production-runtime` remains the heavy stateless executor.
 
-The public runtime receives the exact primary/backup logical IDs chosen by ChatGPT and the frozen mechanical treatment pair. It may resolve the smallest sufficient physical rendition and execute the treatment, but it must not creatively substitute a different logical background.
+The public runtime receives the audit-resolved primary/backup logical IDs and the frozen mechanical treatment pair. It may resolve the smallest sufficient physical rendition and execute the treatment, but it must not creatively substitute a different logical background.
 
 Do not weaken exact source-SHA validation, dispatch/start evidence, upload intent, duplicate-upload protection, recovery, idempotency, completion receipts, public/private state ownership, dry-run boundaries, or least-privilege behavior.
 
@@ -106,16 +109,17 @@ Do not weaken exact source-SHA validation, dispatch/start evidence, upload inten
 Before committing, confirm:
 
 - ChatGPT itself performed filtering/evaluation/editorial selection;
-- ChatGPT itself chose the exact primary and backup logical background IDs;
+- ChatGPT itself chose the requested primary and backup logical background IDs;
 - no GitHub planner-execution action chose or filtered candidates for ChatGPT;
-- no GitHub `background.select` operation chose or replaced ChatGPT's logical backgrounds;
-- the exact ChatGPT-chosen background pair passed the mechanical audit without substitution;
+- no GitHub `background.select` operation chose arbitrary logical backgrounds;
+- `background.audit` either preserved ChatGPT's exact pair or used only the configured default background pair;
+- if fallback was used, its evidence records the requested IDs and original audit errors;
 - `editorial_selection_owner` is `chatgpt` and `planning_method` is `chatgpt_direct`;
 - `rules_source_sha` identifies the exact repository revision whose rules were applied;
 - selected candidate IDs are unique and correspond to the final requests;
 - schema version is 5;
 - publication slots are valid and unique;
 - primary and backup IDs are distinct registered logical assets;
-- both backgrounds satisfy licensing, recency, production-suitability, and current policy constraints;
+- both resolved backgrounds satisfy licensing, production-suitability, and current fallback/normal policy constraints as applicable;
 - treatment objects came from the canonical allocator and satisfy current bounds;
 - all remaining rules from `docs/DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.
