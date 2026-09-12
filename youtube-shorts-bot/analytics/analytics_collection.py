@@ -78,167 +78,311 @@ def load_request(receipt):
     if schema_version not in SUPPORTED_RECEIPT_SCHEMA_VERSIONS:
         return {}
     path = REPO_ROOT / raw
-    if not path.exists():
-        return {}
     try:
         request = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
-    if request.get("schema_version") != schema_version:
-        return {}
-    return request
+    return request if request.get("schema_version") == schema_version else {}
 
 
-def load_raw_snapshot():
-    if not RAW_PATH.exists():
-        return None, None
+def content_dimensions(receipt):
+    request = load_request(receipt)
+    planning = receipt.get("planning") if isinstance(receipt.get("planning"), dict) else {}
+    attributes = planning.get("attributes") if isinstance(planning.get("attributes"), dict) else {}
+    story = request.get("story") if isinstance(request.get("story"), dict) else {}
+    duration = receipt.get("video_seconds") or planning.get("target_duration_seconds")
     try:
-        payload = json.loads(RAW_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None, None
-    captured = _instant(payload.get("captured_at"))
-    if captured is None:
-        return None, None
-    return payload, captured
-
-
-def raw_rows_by_video(payload):
-    rows = {}
-    for row in payload.get("recent", []):
-        video = str(row.get("video", "")).strip()
-        if video:
-            rows[video] = row
-    for row in payload.get("aggregate", []):
-        video = str(row.get("video", "")).strip()
-        if video:
-            rows[video] = row
-    return rows
-
-
-def _number(value):
-    if value is None or isinstance(value, bool):
-        return None
-    try:
-        return float(value)
+        duration = float(duration)
     except (TypeError, ValueError):
-        return None
-
-
-def _metric_row(raw):
-    views = _number(raw.get("views"))
-    engaged = _number(raw.get("engagedViews"))
-    subscribers_gained = _number(raw.get("subscribersGained"))
-    subscribers_lost = _number(raw.get("subscribersLost"))
+        duration = None
+    if duration is None:
+        bucket = None
+    elif duration < 120:
+        bucket = "<120"
+    elif duration < 135:
+        bucket = "120-134"
+    elif duration < 150:
+        bucket = "135-149"
+    elif duration < 165:
+        bucket = "150-164"
+    else:
+        bucket = "165-178"
     return {
-        "views": views,
-        "engagedViews": engaged,
-        "engaged_view_rate": (
-            engaged / views if views and engaged is not None else None
-        ),
-        "averageViewDuration": _number(raw.get("averageViewDuration")),
-        "averageViewPercentage": _number(raw.get("averageViewPercentage")),
-        "estimatedMinutesWatched": _number(raw.get("estimatedMinutesWatched")),
-        "subscribersGained": subscribers_gained,
-        "subscribersLost": subscribers_lost,
-        "net_subscribers": (
-            subscribers_gained - subscribers_lost
-            if subscribers_gained is not None and subscribers_lost is not None
-            else None
-        ),
-        "shares": _number(raw.get("shares")),
-        "likes": _number(raw.get("likes")),
-        "comments": _number(raw.get("comments")),
-        "data_source": raw.get("data_source"),
+        "category": story.get("category"),
+        "conflict": attributes.get("conflict"),
+        "primary_emotion": attributes.get("primary_emotion"),
+        "protagonist_role": attributes.get("protagonist_role"),
+        "antagonist_role": attributes.get("antagonist_role"),
+        "opening_style": attributes.get("opening_style"),
+        "title_style": attributes.get("title_style"),
+        "ending_style": attributes.get("ending_style"),
+        "duration_bucket": bucket,
     }
 
 
-def _milestone_label(age_hours):
-    candidates = []
-    for label, target_hours in MILESTONE_HOURS.items():
-        distance = abs(age_hours - target_hours)
-        if distance <= MILESTONE_CAPTURE_TOLERANCE_HOURS:
-            candidates.append((distance, label))
-    if not candidates:
+def public_age_hours(receipt, now_utc=None):
+    current = now_utc or datetime.now(timezone.utc)
+    start = _instant(receipt.get("publish_at"))
+    if start is None:
         return None
-    return min(candidates)[1]
+    return (current - start).total_seconds() / 3600.0
+
+
+def rate_per_1000(value, views):
+    if value is None:
+        return None
+    return round((float(value or 0) / views * 1000) if views else 0, 3)
+
+
+def enrich_row(row, receipt, now_utc=None):
+    row = dict(row)
+    views = float(row.get("views") or 0)
+    engaged = row.get("engagedViews")
+    duration = float(receipt.get("video_seconds") or 0)
+    average_duration = row.get("averageViewDuration")
+    gained = row.get("subscribersGained")
+    lost = row.get("subscribersLost")
+    net_subscribers = (
+        None
+        if gained is None and lost is None
+        else float(gained or 0) - float(lost or 0)
+    )
+
+    row["qualified_shorts_views"] = None if engaged is None else int(engaged or 0)
+    row["engaged_view_rate"] = (
+        None
+        if engaged is None
+        else round((float(engaged or 0) / views * 100) if views else 0, 3)
+    )
+    row["average_percentage_viewed"] = row.get("averageViewPercentage")
+    row["average_view_duration_relative"] = (
+        None
+        if average_duration is None or not duration
+        else round(float(average_duration) / duration * 100, 3)
+    )
+    row["subscribers_per_1000_views"] = rate_per_1000(gained, views)
+    row["net_subscribers_per_1000_views"] = rate_per_1000(net_subscribers, views)
+    row["likes_per_1000_views"] = rate_per_1000(row.get("likes"), views)
+    row["comments_per_1000_views"] = rate_per_1000(row.get("comments"), views)
+    row["shares_per_1000_views"] = rate_per_1000(row.get("shares"), views)
+    row["video_duration_seconds"] = receipt.get("video_seconds")
+    row["publish_at"] = receipt.get("publish_at")
+    row["public_age_hours"] = public_age_hours(receipt, now_utc=now_utc)
+    row["planning"] = receipt["planning"]
+    row["content_dimensions"] = content_dimensions(receipt)
+    row["cohort_eligible"] = bool(
+        row["public_age_hours"] is not None and row["public_age_hours"] >= 0
+    )
+    row["learning_eligible"] = bool(
+        row["cohort_eligible"]
+        and row["public_age_hours"] >= ANALYTICS_MATURITY_HOURS
+    )
+    return row
 
 
 def load_milestones():
-    if not MILESTONES_PATH.exists():
-        return {"schema_version": 1, "videos": {}}
     try:
         payload = json.loads(MILESTONES_PATH.read_text(encoding="utf-8"))
+        return payload if isinstance(payload, dict) else {"videos": {}}
     except (OSError, json.JSONDecodeError):
-        return {"schema_version": 1, "videos": {}}
-    if payload.get("schema_version") != 1 or not isinstance(payload.get("videos"), dict):
-        return {"schema_version": 1, "videos": {}}
+        return {"videos": {}}
+
+
+def capture_milestones(rows, captured_at):
+    """Capture only near target ages so 24h/72h/7d remain comparable."""
+    payload = load_milestones()
+    payload.setdefault("videos", {})
+    for row in rows:
+        if not row.get("cohort_eligible"):
+            continue
+        video_id = row["video"]
+        snapshots = payload["videos"].setdefault(video_id, {})
+        age = row.get("public_age_hours")
+        if age is None:
+            continue
+        for label, hours in MILESTONE_HOURS.items():
+            if label in snapshots:
+                continue
+            if not (hours <= age <= hours + MILESTONE_CAPTURE_TOLERANCE_HOURS):
+                continue
+            snapshots[label] = {
+                "captured_at": captured_at,
+                "target_age_hours": hours,
+                "age_hours": round(age, 2),
+                "metrics": {
+                    key: row.get(key)
+                    for key in (
+                        "views",
+                        "qualified_shorts_views",
+                        "engaged_view_rate",
+                        "averageViewDuration",
+                        "average_percentage_viewed",
+                        "net_subscribers_per_1000_views",
+                        "subscribers_per_1000_views",
+                        "shares_per_1000_views",
+                        "likes_per_1000_views",
+                        "comments_per_1000_views",
+                        "data_source",
+                    )
+                },
+            }
+    MILESTONES_PATH.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return payload
 
 
-def atomic_write(path, payload):
-    temp = path.with_suffix(path.suffix + ".tmp")
-    temp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    temp.replace(path)
+def evidence_count(rows, milestones):
+    """Return the evidence-equivalent count used by planning analytics weight."""
+    rows_by_video = {
+        str(row.get("video")): row for row in rows if row.get("cohort_eligible")
+    }
+    points = []
+    total_evidence_views = 0.0
+    for video_id, snapshots in milestones.get("videos", {}).items():
+        point = snapshots.get("24h")
+        if not point or video_id not in rows_by_video:
+            continue
+        points.append(point)
+        metrics = point.get("metrics", {})
+        comparable = metrics.get("qualified_shorts_views")
+        if comparable is None:
+            comparable = metrics.get("views")
+        try:
+            total_evidence_views += max(0.0, float(comparable or 0))
+        except (TypeError, ValueError):
+            pass
+    mature_count = len(points)
+    if mature_count < ANALYTICS_MIN_MATURE_VIDEOS:
+        return 0, mature_count, int(total_evidence_views)
+    view_units = int(total_evidence_views // ANALYTICS_VIEWS_PER_EVIDENCE_UNIT)
+    return min(mature_count, view_units), mature_count, int(total_evidence_views)
 
 
-def collect():
-    receipts = load_receipts()
-    raw, captured_at = load_raw_snapshot()
-    milestones = load_milestones()
-    if raw is None or captured_at is None:
-        atomic_write(
-            LATEST_PATH,
-            {
-                "schema_version": 1,
-                "enabled": False,
-                "reason": "no current raw analytics snapshot",
-                "analytics_evidence_count": 0,
-                "video_count": 0,
-                "mature_video_count": 0,
-                "published_video_count": len(receipts),
-            },
+def write_snapshot(payload, dated=False, now_utc=None):
+    text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    LATEST_PATH.write_text(text, encoding="utf-8")
+    MODEL_PATH.write_text(
+        json.dumps(payload["analytics_model"], ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    if dated:
+        (ANALYTICS / f"{singapore_date(now_utc).isoformat()}.json").write_text(
+            text, encoding="utf-8"
         )
+
+
+def load_raw_snapshot():
+    try:
+        payload = json.loads(RAW_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None
+    if payload.get("schema_version") != 1:
+        raise ValueError("unsupported raw analytics schema")
+    captured_at = _instant(payload.get("captured_at"))
+    if captured_at is None:
+        raise ValueError("invalid raw analytics captured_at")
+    if not isinstance(payload.get("aggregate"), list) or not isinstance(
+        payload.get("recent"), list
+    ):
+        raise ValueError("invalid raw analytics rows")
+    return payload, captured_at
+
+
+def raw_rows_by_video(raw):
+    aggregate = {}
+    for row in raw.get("aggregate", []):
+        video_id = str(row.get("video", "")).strip()
+        if video_id:
+            aggregate[video_id] = dict(row)
+    recent = {}
+    for row in raw.get("recent", []):
+        video_id = str(row.get("video", "")).strip()
+        if video_id:
+            recent[video_id] = dict(row)
+    merged = dict(recent)
+    merged.update(aggregate)
+    return merged
+
+
+def main():
+    loaded = load_raw_snapshot()
+    if loaded is None:
+        print("No raw observation snapshot yet; analytics unchanged.")
+        return
+    raw, now_utc = loaded
+    captured_at = now_utc.isoformat().replace("+00:00", "Z")
+    receipts = load_receipts()
+    video_ids = list(receipts)
+    if not video_ids:
+        payload = {
+            "captured_at": captured_at,
+            "window": raw.get("window", {}),
+            "result_receipt_video_count": 0,
+            "video_count": 0,
+            "published_video_count": 0,
+            "mature_video_count": 0,
+            "analytics_evidence_count": 0,
+            "analytics_evidence_views": 0,
+            "videos": [],
+        }
+        payload["analytics_model"] = build_model(payload, {"videos": {}})
+        write_snapshot(payload, now_utc=now_utc)
+        print("No production receipts yet; analytics remains at 0%.")
         return
 
-    rows = raw_rows_by_video(raw)
-    new_captures = 0
-    for video_id, receipt in receipts.items():
-        row = rows.get(video_id)
-        if not row:
-            continue
-        published_at = _instant(receipt.get("publish_at"))
-        if published_at is None:
-            continue
-        age_hours = (captured_at - published_at).total_seconds() / 3600.0
-        label = _milestone_label(age_hours)
-        if label is None:
-            continue
-        entry = milestones["videos"].setdefault(video_id, {})
-        if label in entry:
-            continue
-        request = load_request(receipt)
-        if not request:
-            continue
-        planning = request.get("planning") or receipt.get("planning") or {}
-        story = request.get("story") or {}
-        entry[label] = {
-            "captured_at": raw["captured_at"],
-            "published_at": receipt.get("publish_at"),
-            "age_hours": round(age_hours, 3),
-            "metrics": _metric_row(row),
-            "planning": planning,
-            "category": story.get("category"),
-        }
-        new_captures += 1
+    observations = raw_rows_by_video(raw)
+    rows = [
+        enrich_row(observations[video_id], receipts[video_id], now_utc=now_utc)
+        for video_id in video_ids
+        if video_id in observations
+    ]
+    milestones = capture_milestones(rows, captured_at)
+    evidence, mature_count, evidence_views = evidence_count(rows, milestones)
+    eligible_rows = [row for row in rows if row.get("cohort_eligible")]
 
-    atomic_write(MILESTONES_PATH, milestones)
-    model, latest = build_model(milestones)
-    latest["published_video_count"] = len(receipts)
-    latest["new_milestone_captures"] = new_captures
-    latest["raw_captured_at"] = raw.get("captured_at")
-    atomic_write(MODEL_PATH, model)
-    atomic_write(LATEST_PATH, latest)
+    payload = {
+        "captured_at": captured_at,
+        "window": raw.get("window", {}),
+        "result_receipt_video_count": len(video_ids),
+        "video_count": len(rows),
+        "published_video_count": len(eligible_rows),
+        "mature_video_count": mature_count,
+        "analytics_evidence_count": evidence,
+        "analytics_evidence_views": evidence_views,
+        "metrics_note": {
+            "analytics_evidence_count": (
+                "planner evidence-equivalent count: zero until >=10 24h snapshots, "
+                "then min(mature videos, comparable views/500)"
+            ),
+            "qualified_shorts_views": (
+                "engagedViews when available from the aggregate analytics source"
+            ),
+            "viewed_vs_swiped_away": (
+                "not exposed by this targeted API path; never fabricated"
+            ),
+            "engaged_view_rate": (
+                "engagedViews/views continuation proxy; not labeled as viewed-vs-swiped"
+            ),
+            "net_subscribers_per_1000_views": (
+                "(subscribersGained-subscribersLost)/views*1000"
+            ),
+            "source_precedence": (
+                "aggregate analytics rows take precedence; recent statistics are "
+                "used only when aggregate analytics has no row for a video"
+            ),
+        },
+        "videos": rows,
+    }
+    model = build_model(payload, milestones)
+    payload["analytics_model"] = model
+    write_snapshot(payload, dated=True, now_utc=now_utc)
+    print(
+        f"Processed analytics for {len(rows)}/{len(video_ids)} videos; "
+        f"published={len(eligible_rows)}; mature24h={mature_count}; "
+        f"evidence_count={evidence}; analytics_enabled={model['analytics_enabled']}."
+    )
 
 
 if __name__ == "__main__":
-    collect()
+    main()
