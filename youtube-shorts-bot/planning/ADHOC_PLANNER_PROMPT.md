@@ -14,6 +14,8 @@ Read at minimum:
 - `planning/STORY_RULES.md`
 - `planning/planning_config.py`
 - `planning/planning_engine.py`
+- `planning/planner_contract.py`
+- `planning/adhoc_precommit.py`
 - `analytics/analytics_learning.py`
 - current `analytics/latest.json` and `analytics/model.json` when present
 - `validation/validate_content.py`
@@ -32,9 +34,38 @@ Inspect `skyfremen/production-runtime` only when needed to verify the current si
 
 **ChatGPT / Work owns the complete creative planning path and freezes final rank #1 through #5.** This includes candidate generation/rejection, duplicate reasoning, scoring/analytics interpretation, editorial comparison, story/title/metadata writing, voice, punchline semantics, exact backgrounds, planning-time background audit reasoning, fallback decision and treatment values.
 
-GitHub does not creatively select or repair a winner. `adhoc-production.yml` validates candidates mechanically in the frozen AI order and promotes the first valid candidate.
+GitHub does not creatively select, generate, rewrite or repair a winner. Repository code supplies authoritative contract discovery and deterministic validation only. `adhoc-production.yml` validates candidates mechanically in the frozen AI order and promotes the first valid candidate.
 
 There is no `planner-execution.yml`, no `planning/execution_bridge.py`, and no repository-side winner-selection round trip for new Ad-hoc pools.
+
+## Mandatory live contract discovery
+
+Do not manually remember or reproduce schema details that the repository can expose mechanically.
+
+Before authoring the five final candidates, from `youtube-shorts-bot` execute:
+
+```bash
+python -m planning.planner_contract
+```
+
+Consume the actual returned JSON. Treat it as the live machine-readable planning contract for fields it exposes, including:
+
+- request schema version;
+- ranked-pool schema version and Ad-hoc pool size;
+- valid planning modes;
+- the canonical content-ID regular expression;
+- candidate-ID contract;
+- exact editorial/title/hook score-component names;
+- controlled planning values;
+- approved voices and tones;
+- narration constants;
+- exact immediate-public publication object.
+
+Do not substitute remembered constants, stale cached output, manual arithmetic, or a previous run's contract output.
+
+If the contract command cannot execute successfully, fail closed before creating an immutable pool.
+
+`planner_contract.py` is a discovery surface only. It must import authoritative configuration/validation constants rather than become a second independently maintained copy of those rules.
 
 ## Scheduled vs manual planning modes
 
@@ -53,6 +84,8 @@ For a scheduled run, all five candidate content IDs must use the namespace:
 
 where the date is `singapore_date`.
 
+The full content ID must also satisfy the exact live `content_id_pattern` returned by `planning.planner_contract`. Do not infer the random-suffix width or other details from examples.
+
 Before creating a scheduled pool, inspect existing immutable requests and ranked pools for that date. If a canonical scheduled request already exists, do not create another pool; report/recover that exact request instead.
 
 If a previous scheduled pool attempt exists but failed before any canonical request was promoted, a new immutable pool attempt with a different `pool_id` is allowed. Never edit/delete the failed pool.
@@ -67,9 +100,11 @@ Manual/on-demand pools may use a distinct stable Ad-hoc identity and may coexist
 
 Use the same business objective and quality bar as Daily. Generate/evaluate enough raw ideas to make five strong, genuinely different final candidates. Hard reject unsafe, misleading, incoherent, duplicate/near-duplicate, weak-payoff or visually dependent concepts.
 
-All five final candidates must be complete production-quality Shorts, not placeholders. Rank them editorially #1 through #5. The reserves exist only so candidate-specific validation failure does not collapse the Ad-hoc run.
+All five final candidates must be complete production-quality Shorts, not placeholders. Rank them editorially #1 through #5. The reserves exist only so candidate-specific production-time validation failure does not collapse the Ad-hoc run.
 
 Follow `STORY_RULES.md` and current Daily metadata/analytics rules. Each candidate must include complete story, title competition outcome, YouTube metadata, voice, semantic punchline, controlled planning fields, exact backgrounds and treatments.
+
+When authoring score dictionaries, use the exact component names returned by the current live contract. In particular, never rename, paraphrase or guess configured score keys.
 
 ## Background audit and treatment ownership
 
@@ -91,7 +126,7 @@ GitHub independently validates hard registry/licensing/rendition/treatment facts
 
 ## Ranked-pool contract
 
-ChatGPT commits exactly one new immutable file per Ad-hoc planning attempt:
+ChatGPT ultimately commits exactly one new immutable file per successful Ad-hoc planning attempt:
 
 `youtube-shorts-bot/content/planning-pools/adhoc/ap-<stable-id>.json`
 
@@ -133,21 +168,63 @@ Requirements:
 - ranks exactly `1..5`, contiguous and unique;
 - unique candidate IDs and request content IDs;
 - every content ID contains `-adhoc-`;
-- `scheduled_daily` content IDs must use the exact date-scoped 01:00 namespace;
-- every candidate uses schema v5;
+- every content ID satisfies the current canonical content-ID pattern returned by `planning.planner_contract`;
+- `scheduled_daily` content IDs use the exact date-scoped 01:00 namespace;
+- every candidate uses the current request schema version returned by the live contract;
 - `planning_execution.ranked_candidate_ids` exactly matches candidate order;
-- `rules_source_sha` equals the exact parent of the pool commit;
-- every publication object is exactly:
-
-```json
-{
-  "mode": "immediate",
-  "timezone": "Asia/Singapore",
-  "publish_at": null
-}
-```
+- `rules_source_sha` equals the exact parent of the eventual pool commit;
+- every publication object exactly matches the current immediate-public object returned by the live contract.
 
 The upload body must resolve to YouTube `privacyStatus: public` with no `publishAt` field.
+
+## Mandatory ChatGPT pre-commit validation and repair loop
+
+The immutable planning-pool path is **not a drafting area**.
+
+After ChatGPT has authored and frozen all five complete candidates, but **before creating any file under `content/planning-pools/adhoc/` and before any `[adhoc pool]` commit**:
+
+1. resolve and retain the exact current repository HEAD:
+   ```bash
+   git rev-parse HEAD
+   ```
+2. ensure `planning_execution.rules_source_sha` in the draft equals that exact SHA;
+3. write the complete pool to temporary working storage outside immutable repository state, for example `/tmp/wacky-adhoc-pool.json`;
+4. from `youtube-shorts-bot`, execute the canonical validator against that exact temporary file:
+   ```bash
+   python -m planning.adhoc_precommit \
+     --pool /tmp/wacky-adhoc-pool.json \
+     --rules-source-sha <exact-head-sha>
+   ```
+5. consume the actual JSON output;
+6. require all of the following:
+   - `status == "PASS"`;
+   - `commit_allowed == true`;
+   - `valid_candidates == 5`;
+   - `failed_candidates == 0`;
+   - no pool errors;
+   - every candidate result is `PASS`;
+7. if validation fails, ChatGPT must read the exact errors, repair its own draft, and execute the validator again;
+8. continue the repair/validation loop until the complete five-candidate draft passes;
+9. never override, bypass, weaken or edit the validator merely to make an authored candidate pass;
+10. never treat manual inspection or "this should pass" reasoning as a substitute for actual validator execution.
+
+The pre-commit validator must use the same live request/schema/background/upload-body validation surfaces used by production promotion and must additionally require **all five** candidates to pass. Production promotion may still retain first-valid-candidate semantics for resilience; pre-commit authorship is deliberately stricter.
+
+### Exact validated bytes
+
+The pre-commit report returns `draft_sha256`.
+
+After a 5/5 PASS:
+
+- use the exact validated temporary file bytes as the immutable pool file;
+- copy/move those bytes to the final `content/planning-pools/adhoc/<pool_id>.json` path;
+- verify the final file SHA-256 equals the reported `draft_sha256`;
+- do not reconstruct, reserialize, "clean up", or otherwise rewrite the pool after the successful validation;
+- if any byte changes after validation, validate the changed file again before committing.
+
+Immediately before committing, re-check that repository HEAD still equals `rules_source_sha`. If HEAD changed, fail closed, reload current repository rules, refresh the draft provenance as appropriate, and rerun the complete pre-commit validation. Do not commit a draft validated against a different parent.
+
+Only after these checks may ChatGPT create the immutable `[adhoc pool]` commit.
 
 ## Promotion semantics
 
@@ -165,7 +242,8 @@ It must not re-rank, re-score, rewrite, fix or creatively substitute a candidate
 The private workflow sequence is:
 
 ```text
-pool commit already on main
+ChatGPT 5/5 pre-commit PASS
+  -> exact validated pool bytes committed on main
   -> private promotion preflight
   -> validate five candidates locally in AI rank order
   -> materialize one request locally
@@ -193,14 +271,22 @@ Ad-hoc never consumes or modifies Daily's 24 scheduled publication slots.
 Before committing an Ad-hoc pool confirm:
 
 - current repository rules/config/analytics/history were inspected;
+- `planning.planner_contract` was actually executed and its current output consumed;
 - exactly 5 complete production-quality candidates exist;
 - ranks and IDs are unique;
 - `planning_mode` and `singapore_date` are correct;
 - scheduled mode has no existing canonical scheduled request for that Singapore date;
-- scheduled content IDs use the correct 01:00 namespace;
-- every candidate is schema v5 and immediate-public;
+- every content ID satisfies the live canonical regex and scheduled IDs use the correct 01:00 namespace;
+- every candidate uses the current request schema and exact immediate-public contract;
+- exact configured score-component names were taken from the live contract, not memory;
 - ChatGPT owns all creative/editorial/background/treatment decisions;
 - hard background/treatment expectations are satisfied;
 - no planner-execution bridge is used;
+- the complete temporary draft was actually validated with `planning.adhoc_precommit`;
+- the final pre-commit result is 5/5 PASS with `commit_allowed=true`;
+- the final immutable file bytes exactly match the validated `draft_sha256`;
+- repository HEAD still equals the draft's `rules_source_sha`;
 - exactly one new immutable pool file is added;
 - commit subject begins `[adhoc pool]`.
+
+If any checklist item cannot be proven from current repository state or actual command output, fail closed before commit.
