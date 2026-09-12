@@ -261,7 +261,8 @@ jobs:
           assert 'Cross-repository execution contract parity PASS' in dry
           assert 'content/diagnostics/**/*.json' in recovery
           assert "workflows: ['Daily Production', 'Ad-hoc Production']" in recovery
-          assert "cron: '17 */2 * * *'" in recovery
+          assert re.search(r"(?m)^\s*-\s+cron:\s+'17,47 \* \* \* \*'\s*$", recovery)
+          assert not re.search(r"(?m)^\s*-\s+cron:\s+'17 \*/2 \* \* \*'\s*$", recovery)
           assert 'recovery/controller.py' in recovery
           assert 'RECOVERY_MAX_AUTOMATIC_ATTEMPTS' in recovery
           assert 'actions/workflows/run.yml/dispatches' in recovery
