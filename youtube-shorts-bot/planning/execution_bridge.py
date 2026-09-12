@@ -1,8 +1,9 @@
-"""Repository-side execution bridge for ChatGPT/Work planning checkpoints.
+"""Repository-side execution bridge for mechanical private checks.
 
-The bridge is intentionally narrow: callers commit an input envelope, GitHub Actions
-runs this module from a real checkout, and commits the deterministic result. It does
-not render, synthesize, upload, or make editorial winner choices for ChatGPT.
+ChatGPT owns candidate filtering, evaluation, and editorial winner selection. This
+bridge exists only for deterministic repository operations that are intentionally
+kept outside creative planning, such as background allocation and final request
+validation. It does not expose planning stages.
 """
 from __future__ import annotations
 
@@ -20,17 +21,12 @@ from media.background_selector import (
 )
 from media.background_treatment import select_pair_treatments
 from media.validate_media_library import load_registry
-from planning.planning_runner import execute as execute_planning
 from publishing.upload import build_upload_body
 from validation.validate_content import validate_request_data
 
 SCHEMA_VERSION = 1
 EXECUTION_ID_RE = re.compile(r"pe-[A-Za-z0-9-]{8,96}")
 OPERATIONS = {
-    "planning.raw-filter",
-    "planning.candidate-evaluation",
-    "planning.validate-selection",
-    "planning.final-select",  # legacy recovery compatibility only
     "background.select",
     "background.audit",
     "background.treatment",
@@ -73,15 +69,7 @@ def execute_envelope(envelope):
         raise ValueError("unsupported bridge operation")
     payload = _require_object(envelope.get("payload"), "payload")
 
-    planning_stages = {
-        "planning.raw-filter": "raw-filter",
-        "planning.candidate-evaluation": "candidate-evaluation",
-        "planning.validate-selection": "validate-selection",
-        "planning.final-select": "final-select",
-    }
-    if operation in planning_stages:
-        result = execute_planning(planning_stages[operation], payload)
-    elif operation in {"background.select", "background.audit", "background.treatment"}:
+    if operation in {"background.select", "background.audit", "background.treatment"}:
         registry = load_registry()
         receipts = load_successful_receipts(BASE / "content" / "results")
         if operation == "background.select":

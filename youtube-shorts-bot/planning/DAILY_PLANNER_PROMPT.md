@@ -2,65 +2,70 @@
 
 This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
 
-Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements **and the final winner-selection ownership described below**.
+Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all business, creative, analytics, metadata, scheduling, safety, publication, recovery, and background-selection rules except where this overlay explicitly supersedes older deterministic-runner and winner-selection instructions.
 
-Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `planning/planning_engine.py`, `planning/planning_runner.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
+Repository code remains the source of truth for the rules. Before planning, inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and current workflows. Do not blindly trust stale prompt text when current code has moved forward.
+
+## Canonical ownership
+
+For new Daily planning runs, **ChatGPT / Work is the planner**. ChatGPT / Work owns the final editorial choice.
+
+ChatGPT must itself perform candidate filtering, scoring analysis, diversity reasoning, analytics interpretation, editorial comparison, and final winner selection by applying the current repository rules. GitHub Actions must not execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, or `final-select` on ChatGPT's behalf for a new plan.
+
+`planning_engine.py`, `planning_config.py`, and analytics code are the canonical rule/specification sources that ChatGPT reads and applies. They may remain executable for tests, regression checks, legacy recovery compatibility, or independent validation, but they do not own the new-plan decision path.
+
+The canonical Daily flow is:
+
+```text
+ChatGPT reads current repo rules/config/analytics/history
+  -> ChatGPT generates the raw candidate pool
+  -> ChatGPT applies hard rejection and duplicate/near-duplicate rules
+  -> ChatGPT develops qualified semifinalists
+  -> ChatGPT applies deterministic scoring formulas and analytics evidence
+  -> ChatGPT reasons about diversity, originality, payoff and viewer appeal
+  -> ChatGPT chooses the final eligible winner set
+  -> ChatGPT writes the complete stories
+  -> mechanical background selection/audit/treatment as required
+  -> final schema/request validation
+  -> commit immutable requests + planning audit
+  -> daily-production.yml
+  -> public production runtime
+```
+
+There is no repository-side planner-execution round trip between ChatGPT candidate generation and ChatGPT winner selection.
+
+A numeric score or rank is evidence, not authority. ChatGPT may choose a lower-scored eligible candidate when semantic/editorial judgment supports it, but it must not violate hard gates, duplicate/near-duplicate restrictions, diversity constraints, selection limits, safety rules, or publication-slot rules.
+
+## Planning audit for new plans
+
+For new ChatGPT-direct Daily plans, `planning_execution` records planning ownership and the chosen candidate identities without pretending that GitHub executed the planning stages:
+
+```json
+{
+  "editorial_selection_owner": "chatgpt",
+  "planning_method": "chatgpt_direct",
+  "rules_source_sha": "<exact repository parent SHA used for planning>",
+  "selected_candidate_ids": ["..."]
+}
+```
+
+The private validation path must fail closed if this ownership/provenance shape is invalid or if the final requests violate the canonical request/publication contracts. Historical runner-provenance shapes remain readable only for compatibility/recovery of already-existing plans.
 
 ## Preserved canonical operating rules
 
-The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering. When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering.
+
+When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
 If `content/planning/YYYY-MM-DD.json` already exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Planning audits continue to record `planning_mode` as `normal_next_day` or `same_day_catch_up`, and catch-up audits record omitted elapsed/too-close slots.
 
-`planning/planning_engine.py` remains the deterministic planning policy/support implementation. Work must actually execute `planning/planning_runner.py` at the required deterministic checkpoints and consume its **actual returned result**. Do not substitute equivalent manual arithmetic. If a required execution fails, fail closed.
-
 Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
 
-The content handoff remains one content-only commit beginning `[daily production] YYYY-MM-DD`, consumed by `daily-production.yml`. The planning audit retains the core keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`. Any background-sourcing manifest retains exact `logical_id` and `required_by_content_ids` linkage to that day's immutable requests.
+The content handoff remains one content-only commit beginning `[daily production] YYYY-MM-DD`, consumed by `daily-production.yml`. The planning audit retains `plan_date`, `planning_mode`, `final_selected`, and `content_ids`. Any background-sourcing manifest retains exact `logical_id` and `required_by_content_ids` linkage to that day's immutable requests.
 
-## ChatGPT editorial winner ownership — authoritative override
+## Schema-v5 and visual allocation
 
-For **new Daily planning runs**, ChatGPT / Work owns the final editorial choice of the winners.
-
-`planning_engine.py` and `planning_runner.py` support ChatGPT with deterministic hard rejection, duplicate/near-duplicate checks, weighted scoring, title/hook scoring, analytics normalization/blending, eligibility checks, diversity constraints, selection-limit checks, ordering and publication-slot calculation. Those deterministic outputs are evidence and guardrails. They must **not replace ChatGPT's editorial judgment by choosing the authoritative winner set**.
-
-This section supersedes any older statement in `docs/DAILY_PLANNER_V4_BASE.md` that says `result.selected` from `final-select` is the authoritative winner set for a new plan.
-
-The legacy `final-select` stage remains available only for compatibility/recovery of historical planning artifacts created under the old deterministic-winner contract. Do not use it to choose winners for a new Daily plan.
-
-The canonical new Daily decision flow is:
-
-```text
-ChatGPT generates the raw candidate pool
-  -> planning.raw-filter
-  -> ChatGPT develops qualified semifinalists
-  -> planning.candidate-evaluation
-  -> deterministic scores/checks/ranking evidence
-  -> ChatGPT compares the eligible candidates semantically/editorially
-  -> ChatGPT chooses up to the current Daily limit
-  -> planning.validate-selection
-  -> deterministic validation of the exact ChatGPT-chosen IDs
-  -> deterministic schedule ordering/slot assignment
-  -> ChatGPT writes the full stories for those validated IDs
-```
-
-`planning.candidate-evaluation` must calculate canonical deterministic evidence without returning an authoritative winner set. ChatGPT may choose a lower-ranked eligible candidate over a higher-ranked eligible candidate when its editorial judgment supports the choice, provided the final chosen set passes every deterministic hard gate.
-
-`planning.validate-selection` must receive the exact candidate IDs chosen by ChatGPT. It may reject an invalid set, but it must **never silently substitute different winners**. If validation fails, ChatGPT must revise its editorial selection and rerun validation, or fail closed.
-
-For a new Daily planning audit, `planning_execution` records:
-
-- `raw_filter`: actual execution provenance from `raw-filter`;
-- `candidate_evaluation`: actual execution provenance from `candidate-evaluation`;
-- `selection_validation`: actual execution provenance from `validate-selection`;
-- `editorial_selection_owner`: exactly `chatgpt`;
-- `selected_candidate_ids`: the exact IDs chosen by ChatGPT before deterministic validation.
-
-The validated result must contain the same chosen IDs. Deterministic code may reorder the same validated IDs for publication scheduling, but may not replace them.
-
-## Schema-v5 override
-
-New immutable production requests must use **schema v5**. Schema v4 remains readable only for migration/recovery of requests that already exist; do not author a new v4 request.
+New immutable production requests must use schema v5. Schema v4 remains readable only for migration/recovery of requests that already exist.
 
 The v5 `visual` object contains exactly:
 
@@ -72,100 +77,30 @@ The v5 `visual` object contains exactly:
 Each treatment contains exactly:
 
 - `segment_start_seconds`
-- `segment_duration_seconds` — number or `null` for full-source treatment
+- `segment_duration_seconds`
 - `playback_rate`
 
-The validator and compatibility fingerprint define the authoritative numeric bounds. At the time of this overlay, playback is bounded to 1.0×–2.0×. Never manually broaden those bounds.
+For each final ChatGPT-selected winner, use the current retention-first private background rules, mechanical background audit, and canonical treatment allocator where execution is required. Freeze the returned logical IDs and treatments into the immutable request. Background/treatment execution is mechanical media allocation, not editorial candidate selection.
 
-## Mandatory treatment allocation
-
-Logical asset selection and physical rendition resolution remain separate.
-
-For each final winner:
-
-1. Select the primary and backup logical asset using the retention-first private selector and its existing topic-aware fallback chain.
-2. Read private immutable successful receipts, including scheduled and immediate-public Ad-hoc successes.
-3. Run the canonical private treatment allocator for the selected pair. Do not manually approximate its choice:
-
-```bash
-PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/media/background_treatment.py \
-  --primary-id <PRIMARY_ID> \
-  --backup-id <BACKUP_ID> \
-  --planned-json /tmp/wacky-dramas-planned-background-treatments.json
-```
-
-`--planned-json` is optional for the first item. For later items in the same Daily plan, it must contain the treatments already reserved earlier in this planning run, represented with their associated logical asset IDs as accepted by the current allocator.
-
-4. Consume the allocator's **actual returned** `background_primary_treatment` and `background_backup_treatment` and freeze them into the immutable request.
-5. Append both reservations to the in-progress private `planned_treatments` scratch list before allocating the next winner.
-6. Validate the complete request through `validation/validate_content.py` and the existing exact upload-payload validation before commit.
-
-If the allocator cannot run successfully or returns an invalid treatment, fail closed. Do not invent segment boundaries or speed values to continue planning.
-
-## Segment reuse policy
-
-Persistent segment/playback history comes only from private immutable successful receipts. Do not add mutable usage fields to the logical registry. Do not create a public history ledger.
-
-For sufficiently long clips, prefer materially different temporal ranges and avoid recent/planned overlap according to `media/background_treatment.py`. Short clips and older assets without trustworthy duration metadata may use the allocator's backward-compatible full-source treatment.
-
-Playback speed is a treatment, not a uniqueness loophole. A different rate does not make an otherwise repeated segment meaningfully new. Segment diversity and logical-asset diversity remain primary.
-
-Use category/asset-aware speed bounds from the allocator. Do not universally accelerate every clip, and do not choose a faster rate merely for randomness.
-
-## Daily coordination
-
-Continue carrying the retention selector's ephemeral `planned_asset_ids` / `planned_categories` (or their current equivalents) across the day's winners.
-
-Additionally carry ephemeral `planned_treatments` across the same planning run. These are private planning scratch inputs only; they are not a persistent public state store.
-
-The intended private allocation sequence is therefore:
-
-```text
-winner
-  -> retention-first logical primary/backup selection
-  -> asset/category anti-repetition
-  -> canonical segment/playback allocation
-  -> append planned asset/category/treatment scratch state
-  -> immutable schema-v5 request
-```
+Persistent segment/playback history comes only from private immutable successful receipts. Do not add mutable usage fields to the logical registry or a public history ledger.
 
 ## Public runtime boundary
 
-Do not move media probing, downloading, physical rendition selection, normalization, cropping, transcoding, FFmpeg treatment, rendering, or upload work into the private planner.
-
-The public runtime receives the frozen logical IDs and treatment pair. It remains responsible for:
-
-```text
-logical asset validation
-  -> smallest post-crop-sufficient physical rendition
-  -> normalized-cache lookup
-  -> download only if required
-  -> normalize once to production size/FPS if required
-  -> apply the frozen segment/playback treatment to the normalized job-local input
-  -> render
-```
-
-The normalized physical cache remains treatment-agnostic. Different segment/speed treatments must not force repeated provider downloads or contaminate persistent creative history.
-
-## Staged compatibility
-
-The private/public compatibility hash fingerprints schema v5 treatment keys and bounds. Existing v4 requests may continue through the public runtime only through the explicitly tested staged compatibility path. New Daily requests use the current v5 hash.
+Do not move media probing, downloading, physical rendition selection, normalization, cropping, transcoding, FFmpeg treatment, rendering, TTS, alignment, upload, or verification into the private planner. `production-runtime` remains the heavy stateless executor.
 
 Do not weaken exact source-SHA validation, dispatch/start evidence, upload intent, duplicate-upload protection, recovery, idempotency, completion receipts, public/private state ownership, dry-run boundaries, or least-privilege behavior.
 
 ## Final Daily request check
 
-Before committing any Daily request, confirm:
+Before committing, confirm:
 
-- the candidate ID was explicitly chosen by ChatGPT and accepted by `planning.validate-selection`;
+- ChatGPT itself performed filtering/evaluation/editorial selection;
+- no GitHub planner-execution action chose or filtered candidates for ChatGPT;
+- `editorial_selection_owner` is `chatgpt` and `planning_method` is `chatgpt_direct`;
+- `rules_source_sha` identifies the exact repository revision whose rules were applied;
+- selected candidate IDs are unique and correspond to the final requests;
 - schema version is 5;
+- publication slots are valid and unique;
 - primary and backup IDs are distinct registered logical assets;
-- both treatment objects came from the canonical allocator;
-- long-source segments do not knowingly repeat recent/planned ranges when alternatives exist;
-- playback rates are within canonical asset/category/global bounds;
-- same-day scratch history was supplied for later winners;
-- no mutable usage/segment/playback ledger was added to `production-runtime`;
-- physical rendition selection is still smallest-sufficient **after crop**;
-- no provider original/UHD shortcut was introduced;
-- normalized-cache reuse remains possible across different treatments;
+- treatment objects satisfy current canonical bounds;
 - all remaining rules from `docs/DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.

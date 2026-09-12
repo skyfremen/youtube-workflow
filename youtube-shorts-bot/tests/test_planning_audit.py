@@ -11,23 +11,6 @@ class PlanningAuditTests(unittest.TestCase):
     parent_sha = "a" * 40
     implementation_sha = "b" * 64
 
-    def execution(self, stage, input_char):
-        entry_points = {
-            "raw-filter": ["planning.planning_engine.filter_candidates"],
-            "final-select": [
-                "analytics.analytics_learning.score_candidate",
-                "planning.planning_engine.evaluate",
-            ],
-        }
-        return {
-            "contract_version": 1,
-            "stage": stage,
-            "source_sha": self.parent_sha,
-            "implementation_sha256": self.implementation_sha,
-            "input_sha256": input_char * 64,
-            "entry_points": entry_points[stage],
-        }
-
     def plan(self, content_id="wd-20260912T200000-drama-cafe-a1b2c3"):
         return {
             "plan_date": "2026-09-13",
@@ -35,8 +18,9 @@ class PlanningAuditTests(unittest.TestCase):
             "final_selected": 1,
             "content_ids": [content_id],
             "planning_execution": {
-                "raw_filter": self.execution("raw-filter", "c"),
-                "final_selection": self.execution("final-select", "d"),
+                "editorial_selection_owner": "chatgpt",
+                "planning_method": "chatgpt_direct",
+                "rules_source_sha": self.parent_sha,
                 "selected_candidate_ids": ["candidate-001"],
             },
         }
@@ -52,10 +36,26 @@ class PlanningAuditTests(unittest.TestCase):
             self.implementation_sha,
         )
 
-    def test_valid_core_binds_audit_to_parent_and_runner_provenance(self):
+    def test_valid_core_accepts_chatgpt_direct_provenance(self):
         plan_date, content_ids = self.validate()
         self.assertEqual(plan_date, "2026-09-13")
         self.assertEqual(content_ids, self.plan()["content_ids"])
+
+    def test_rules_source_must_equal_content_commit_parent(self):
+        plan = self.plan()
+        plan["planning_execution"]["rules_source_sha"] = "e" * 40
+        with self.assertRaises(PlanningAuditError):
+            self.validate(plan)
+
+    def test_owner_and_method_are_fixed(self):
+        for key, value in (
+            ("editorial_selection_owner", "github"),
+            ("planning_method", "github_action"),
+        ):
+            plan = self.plan()
+            plan["planning_execution"][key] = value
+            with self.subTest(key=key), self.assertRaises(PlanningAuditError):
+                self.validate(plan)
 
     def test_acceptance_test_or_adhoc_identity_cannot_enter_canonical_daily_plan(self):
         for content_id in (
@@ -67,18 +67,6 @@ class PlanningAuditTests(unittest.TestCase):
         ):
             with self.subTest(content_id=content_id), self.assertRaises(PlanningAuditError):
                 self.validate(self.plan(content_id))
-
-    def test_provenance_source_must_equal_content_commit_parent(self):
-        plan = self.plan()
-        plan["planning_execution"]["final_selection"]["source_sha"] = "e" * 40
-        with self.assertRaises(PlanningAuditError):
-            self.validate(plan)
-
-    def test_provenance_implementation_hash_must_match_canonical_code(self):
-        plan = self.plan()
-        plan["planning_execution"]["raw_filter"]["implementation_sha256"] = "e" * 64
-        with self.assertRaises(PlanningAuditError):
-            self.validate(plan)
 
     def test_content_ids_must_exactly_match_same_commit_request_files(self):
         with self.assertRaises(PlanningAuditError):

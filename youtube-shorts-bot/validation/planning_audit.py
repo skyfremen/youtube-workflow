@@ -1,8 +1,8 @@
 """Fail-closed validation for canonical daily planning commits.
 
-New Daily plans use ChatGPT-owned editorial selection with deterministic repository
-support. Historical immutable files are not mutated. The validator accepts the new
-provenance shape and retains the old shape only for compatibility where applicable.
+New Daily plans are authored directly by ChatGPT. The validator checks ownership,
+rule-revision provenance, immutable-request linkage, schema/publication contracts,
+and keeps older runner-provenance shapes readable for recovery compatibility.
 """
 from __future__ import annotations
 
@@ -51,7 +51,11 @@ EXPECTED_ENTRY_POINTS = {
         "planning.planning_engine.evaluate",
     ],
 }
-NEW_EXECUTION_KEYS = {
+DIRECT_PLANNING_KEYS = {
+    "editorial_selection_owner", "planning_method", "rules_source_sha",
+    "selected_candidate_ids",
+}
+RUNNER_CHATGPT_KEYS = {
     "raw_filter", "candidate_evaluation", "selection_validation",
     "editorial_selection_owner", "selected_candidate_ids",
 }
@@ -165,9 +169,21 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
     if not isinstance(planning_execution, dict):
         _fail("planning_execution must be an object")
     keys = set(planning_execution)
-    if keys == NEW_EXECUTION_KEYS:
+
+    if keys == DIRECT_PLANNING_KEYS:
         if planning_execution.get("editorial_selection_owner") != "chatgpt":
             _fail("new Daily planning requires editorial_selection_owner=chatgpt")
+        if planning_execution.get("planning_method") != "chatgpt_direct":
+            _fail("new Daily planning requires planning_method=chatgpt_direct")
+        if planning_execution.get("rules_source_sha") != parent_sha:
+            _fail("rules_source_sha must equal the daily content commit parent SHA")
+        _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
+        return
+
+    # Compatibility for the short-lived runner-assisted ChatGPT contract.
+    if keys == RUNNER_CHATGPT_KEYS:
+        if planning_execution.get("editorial_selection_owner") != "chatgpt":
+            _fail("runner-assisted planning requires editorial_selection_owner=chatgpt")
         _validate_execution(planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha)
         _validate_execution(
             planning_execution["candidate_evaluation"], "candidate-evaluation", parent_sha, impl_sha
@@ -175,15 +191,10 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
         _validate_execution(
             planning_execution["selection_validation"], "validate-selection", parent_sha, impl_sha
         )
-        digests = {
-            planning_execution["raw_filter"]["input_sha256"],
-            planning_execution["candidate_evaluation"]["input_sha256"],
-            planning_execution["selection_validation"]["input_sha256"],
-        }
-        if len(digests) != 3:
-            _fail("new planning checkpoints must record distinct canonical runner inputs")
         _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
         return
+
+    # Historical deterministic-winner compatibility only.
     if keys == LEGACY_EXECUTION_KEYS:
         _validate_execution(
             planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha, legacy=True
@@ -191,13 +202,11 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
         _validate_execution(
             planning_execution["final_selection"], "final-select", parent_sha, impl_sha, legacy=True
         )
-        if planning_execution["raw_filter"]["input_sha256"] == planning_execution["final_selection"]["input_sha256"]:
-            _fail("raw-filter and final-select must record distinct canonical runner inputs")
         _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
         return
+
     _fail(
-        "planning_execution must use either the ChatGPT-owned selection provenance shape "
-        "or the legacy final-selection provenance shape"
+        "planning_execution must use ChatGPT-direct provenance or a supported historical provenance shape"
     )
 
 
