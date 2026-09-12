@@ -50,6 +50,8 @@ Supported canonical operations are:
 
 - `planning.raw-filter` — payload is the exact `planning_runner.py` raw-filter input.
 - `planning.final-select` — payload is the exact `planning_runner.py` final-select input.
+- `background.select` — payload contains `requirements` and optional `planned_asset_ids` / `planned_categories`; this executes the canonical retention-first private selector against the current registry and successful receipts.
+- `background.audit` — payload contains `primary_id`, `backup_id`, and optional `requirements`; this executes the canonical mechanical safety audit for the selected pair.
 - `background.treatment` — payload contains `primary_id`, `backup_id`, and optional `planned_treatments`.
 - `request.validate` — payload contains the complete proposed immutable `request`; this runs schema validation, canonical runtime-contract fingerprinting and exact `build_upload_body(..., require_future=False)` validation.
 
@@ -72,7 +74,7 @@ PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/media/background_treatme
   --backup-id <BACKUP_ID>
 ```
 
-Or, when local checkout execution is unavailable, use the repository-side `background.treatment` operation above and consume its actual committed result.
+When local checkout execution is unavailable, use the repository-side `background.select`, `background.audit`, and `background.treatment` operations above and consume their actual committed results.
 
 Consume the allocator's actual returned values and freeze these four visual fields:
 
@@ -115,6 +117,6 @@ If the environment can directly invoke the private `adhoc-production.yml`, that 
 
 ## Fail closed
 
-Do not create a new v4 request. If planner execution, treatment allocation, schema-v5 validation, contract compatibility, exact payload validation or any required deterministic step fails, fail closed rather than substituting guessed values.
+Do not create a new v4 request. If planner execution, background selection/audit, treatment allocation, schema-v5 validation, contract compatibility, exact payload validation or any required deterministic step fails, fail closed rather than substituting guessed values.
 
 All rules in `docs/ADHOC_PLANNER_V4_BASE.md` remain in force unless explicitly superseded by this overlay.
