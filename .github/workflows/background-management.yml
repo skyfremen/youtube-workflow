@@ -36,15 +36,22 @@ jobs:
       - name: Resolve maintenance action
         id: action
         shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
           action=refresh
           manifest=''
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            mapfile -t reset_files < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/media-library\/reset-selection-[0-9]{8}\.json$/ {print $2}')
-            mapfile -t readiness_files < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
+            if [[ ! "${BEFORE_SHA}" =~ ^[0-9a-f]{40}$ ]] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
+              echo '::error::Push-triggered background maintenance requires a concrete previous main SHA.'
+              exit 1
+            fi
+            changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
+            mapfile -t reset_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/media-library\/reset-selection-[0-9]{8}\.json$/ {print $2}')
+            mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
             if [ "${#reset_files[@]}" -gt 1 ] || [ "${#readiness_files[@]}" -gt 1 ]; then
-              echo '::error::One background maintenance commit may add at most one reset marker or readiness manifest.'
+              echo '::error::One push may add at most one reset marker or readiness manifest.'
               exit 1
             fi
             if [ "${#reset_files[@]}" -eq 1 ] && [ "${#readiness_files[@]}" -eq 1 ]; then
