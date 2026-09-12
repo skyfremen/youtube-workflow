@@ -70,17 +70,23 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn("10 million qualified public Shorts views", text)
         self.assertIn("business-purpose language only", overview)
 
-    def test_private_request_contract_is_v4_with_v3_recovery(self):
+    def test_private_request_contract_is_single_schema_v4(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(
             encoding="utf-8"
         )
+        semantic = (BOT_ROOT / "validation/semantic.py").read_text(encoding="utf-8")
         upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
             encoding="utf-8"
         )
 
         self.assertIn("SCHEMA_VERSION = 4", validator)
-        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
+        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4}", validator)
+        self.assertNotIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
+        self.assertIn('"punchline"', validator)
+        self.assertIn("validate_punchline", validator)
+        self.assertIn('"REVERSAL"', semantic)
+        self.assertIn("MAX_EMPHASIS_WORDS = 5", semantic)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
         self.assertNotIn("schema in {2, 3}", validator)
         self.assertIn('mode not in {"scheduled", "immediate"}', validator)
