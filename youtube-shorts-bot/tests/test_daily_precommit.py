@@ -4,6 +4,8 @@ import unittest
 from pathlib import Path
 
 from common.workflow_common import CONTENT_ID_RE
+from media.media_readiness import REQUIRED_CATEGORY_MINIMUMS
+from media.validate_media_library import load_registry
 from planning import daily_precommit, ranked_promotion
 from planning.planner_contract import DAILY_PUBLICATION, build_contract
 from planning.planning_config import TITLE_WEIGHTS
@@ -53,12 +55,45 @@ def valid_pool():
     }
 
 
+def ready_registry():
+    registry = copy.deepcopy(load_registry())
+    counter = 0
+    for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
+        for _ in range(minimum):
+            counter += 1
+            registry["assets"].append({
+                "id": f"test-ready-{counter:03d}",
+                "status": "active",
+                "verified": True,
+                "commercial_use": True,
+                "has_watermark": False,
+                "has_embedded_text": False,
+                "retention_category": category,
+                "orientation": "vertical",
+                "motion_type": "continuous-process",
+                "motion_intensity": "high",
+                "visual_satisfaction_score": 100,
+                "loopability_score": 100,
+                "caption_readability_score": 100,
+                "renditions": [{
+                    "id": f"test-r-{counter:03d}",
+                    "width": 1080,
+                    "height": 1920,
+                    "fps": 30.0,
+                    "file_type": "video/mp4",
+                    "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
+                }],
+            })
+    return registry
+
+
 def validate(pool):
     raw = (json.dumps(pool, indent=2, sort_keys=True) + "\n").encode("utf-8")
     return daily_precommit.validate_draft(
         pool,
         RULES_SHA,
         raw_bytes=raw,
+        registry=ready_registry(),
         check_checkout_head=False,
         check_uniqueness=False,
     )
@@ -72,6 +107,7 @@ class DailyPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["daily_pool_size"], ranked_promotion.DAILY_POOL_SIZE)
         self.assertEqual(contract["daily_normal_target"], ranked_promotion.NORMAL_DAILY_TARGET)
         self.assertEqual(contract["daily_publication_template"], DAILY_PUBLICATION)
+        self.assertTrue(contract["media_readiness"]["required_before_daily"])
 
     def test_known_good_pool_requires_thirty_six_of_thirty_six(self):
         result = validate(valid_pool())
@@ -121,6 +157,7 @@ class DailyPrecommitTests(unittest.TestCase):
         self.assertIn("36/36", prompt)
         self.assertIn("draft_sha256", prompt)
         self.assertIn("Do not substitute", prompt)
+        self.assertIn("media.media_readiness", prompt)
 
 
 if __name__ == "__main__":
