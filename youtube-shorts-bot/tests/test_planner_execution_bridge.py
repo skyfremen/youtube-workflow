@@ -97,7 +97,7 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
         self.assertIn("GitHub Actions must not execute", daily)
         self.assertIn("background.select", daily)
         self.assertIn("configured default background pair", daily)
-        self.assertIn("chooses the exact primary and backup logical asset IDs itself", adhoc)
+        self.assertIn("chooses the requested primary and backup logical asset IDs itself", adhoc)
         self.assertIn("background.audit", adhoc)
         self.assertIn("configured default background pair", adhoc)
         self.assertNotIn("- `background.select`", adhoc)
