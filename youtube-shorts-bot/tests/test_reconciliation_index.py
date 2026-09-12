@@ -126,13 +126,13 @@ class ReconciliationIndexTests(unittest.TestCase):
         self.assertEqual(report["upload_record_count"], 0)
         self.assertEqual(report["verified_receipt_count"], 1)
 
-    def test_repository_private_state_is_fully_indexed(self):
+    def test_repository_clean_cutover_has_no_stale_acceptance_mapping(self):
         report = bootstrap(BOT, write=False)
-        self.assertGreaterEqual(report["mapping_count"], 2)
+        self.assertEqual(report["mapping_count"], 0)
         self.assertEqual(report["conflicts"], 0)
         self.assertEqual(report["created"], 0)
-        self.assertEqual(report["reused"], report["mapping_count"])
-        self.assertTrue(report["bootstrap_present"])
+        self.assertEqual(report["reused"], 0)
+        self.assertFalse(report["bootstrap_present"])
         self.assertFalse(report["youtube_api_required"])
 
 

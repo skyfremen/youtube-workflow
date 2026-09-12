@@ -22,6 +22,33 @@ Good categories include relationship, dating, marriage, betrayal, family, inheri
 - A consequence, reversal, reveal, boundary, or satisfying backfire is preferred when it fits naturally.
 - The premise must have enough substance to sustain the target duration naturally; never pad a weak idea.
 
+## Semantic punchline contract
+
+The private planner is the semantic authority for every production story. While writing the final script, identify the actual reveal, reversal, comeback, consequence, contradiction, unexpected detail, or payoff that delivers the story's main emotional/comedic/dramatic reward. Do not defer this decision to the renderer or infer it later from audio, sentence position, punctuation, keywords, prosody, or “last sentence” rules.
+
+Every new schema-v4 `story` must contain a required `punchline` object:
+
+```json
+{
+  "text": "He had deleted the wrong folder.",
+  "emphasis_text": "wrong folder",
+  "type": "REVERSAL"
+}
+```
+
+Rules:
+
+- `text` is the complete semantic payoff span and must occur exactly once in `story.script` after safe punctuation/case/apostrophe normalization.
+- `emphasis_text` is the strongest payoff wording inside that already-resolved punchline, normally 1–5 words. It must occur exactly once inside `punchline.text`.
+- `type` is optional; when present it must be one of `REVEAL`, `REVERSAL`, `BACKFIRE`, `COMEBACK`, `CONSEQUENCE`, `CONTRADICTION`, or `ABSURDITY`.
+- Do not fabricate or paraphrase punchline metadata with words absent from the narration. Metadata points at the authored script; it does not create a second version of it.
+- The punchline is not automatically the final sentence, final clause, text after “but”, or most emotional sentence. Select it semantically while authoring the story.
+- The punchline must not be the entire story. If the story has no genuine payoff, improve/reject the story instead of filling the fields mechanically.
+- Repeated wording must remain unambiguous. If the same candidate punchline occurs twice, use enough exact script context to identify the intended payoff. If `emphasis_text` repeats inside the punchline, choose a slightly longer exact phrase that is unique while remaining concise.
+- Request validation is fail-closed. A winner with missing, fabricated, ambiguous, overlong, or internally inconsistent semantic metadata must not be committed as an immutable production request.
+
+The runtime uses Wav2Vec2 only to determine **when** these planner-selected words are spoken. The planner determines **which** words carry the payoff. The renderer determines **how** they are styled. Never move semantic interpretation into the public execution runtime.
+
 ## Opening card and narration sequence
 
 The rendered opening has four strict phases:

@@ -67,7 +67,7 @@ class ScheduledRequestSchemaTests(unittest.TestCase):
         body = build_upload_body(valid_request(), require_future=False)
         description = body["snippet"]["description"]
         self.assertEqual(description.count("#WackyDramas"), 1)
-        self.assertIn("Would you have confronted him?", description)
+        self.assertIn("Would you have confronted the person who denied it?", description)
 
     def test_upload_body_is_private_with_exact_publish_at(self):
         data = valid_request()
