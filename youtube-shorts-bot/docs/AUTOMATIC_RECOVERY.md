@@ -29,26 +29,32 @@ The controller never renders, uploads, or edits an immutable request. When recov
 
 ## Triggers
 
-`.github/workflows/automatic-recovery.yml` provides three control-loop paths:
+`.github/workflows/automatic-recovery.yml` provides four control-loop paths:
 
 1. **Retryable diagnostic push** — re-evaluates immediately when runtime diagnostics arrive in private state.
-2. **Daily Production workflow failure** — re-evaluates the failed source commit immediately, catching private dispatch failures before the normal stale grace period.
-3. **Two-hour reconciliation backstop** — catches lost dispatches, cancelled/disappeared runners, missing callbacks, and other failures that could not announce themselves.
-
-A manual `workflow_dispatch` remains available. Its default mode is `plan`, which only prints the reconciliation decision. `execute` writes/dispatches recovery work.
+2. **Daily/Ad-hoc workflow completion failure** — re-evaluates after an unsuccessful private production workflow completes, catching dispatch/control-plane failures quickly.
+3. **30-minute reconciliation backstop** — cron runs at minutes 17 and 47 each hour to catch lost dispatches, cancelled/disappeared runners, missing callbacks, stale executions, and other failures that could not announce themselves.
+4. **Manual workflow dispatch** — defaults to `plan`, which only prints the reconciliation decision; `execute` writes/dispatches recovery work.
 
 ## Default policy
 
 The defaults are intentionally conservative and configurable by workflow environment variables:
 
-- active/stale grace: **210 minutes**, slightly beyond the public runtime's 180-minute job timeout;
+- dispatch accepted/prepared but no matching public `START` evidence: **25-minute no-start grace**;
+- started/running execution liveness grace: **240 minutes**;
 - fresh-generation schedule buffer: **10 minutes**, matching the public scheduled-slot guard;
 - maximum automatic attempts: **3**;
 - retry backoff after retryable diagnostics: **0, 120, 240 minutes**.
 
-A first retryable diagnostic may recover immediately. Later automatic attempts back off. Silent dispatch/runner loss is reconsidered only after the active grace period.
+The two grace concepts are deliberately separate. A dispatch that never starts is eligible for same-batch redispatch after the short 25-minute grace. Once an exact `START` record exists, subsequent progress evidence refreshes liveness and the 240-minute started-execution grace prevents recovery from racing a legitimately slow public run. The 240-minute grace exceeds the current Daily public workflow's 20-minute prepare + 180-minute production + 20-minute aggregate job budgets.
 
-If retryability is missing/unknown, automatic recovery fails closed rather than guessing.
+A first retryable diagnostic may recover immediately. Later automatic attempts back off. If retryability is missing/unknown, automatic recovery fails closed rather than guessing.
+
+## Dispatch and progress evidence
+
+Private dispatch writes a create-only prepared intent before calling the public workflow. Public execution must validate that exact intent and write a matching `START` record containing the batch, dispatch, source, contract, runtime commit, workflow run and attempt identities.
+
+The public runtime also writes append-only progress records at meaningful execution stages. Recovery uses the most recent exact execution/progress timestamp when deciding whether a started run is still healthy. A successful GitHub dispatch API response by itself is therefore not treated as proof that public code actually ran.
 
 ## Deterministic recovery identity
 
@@ -57,6 +63,8 @@ Automatic recovery batch IDs are deterministic over the sorted tuple:
 `(content_id, original source_commit_sha, automatic_attempt)`
 
 Repeated watchdog executions therefore resolve to the same logical batch for the same attempt. GitHub workflow concurrency suppresses overlapping private controllers, while the durable upload intent remains the authoritative protection against duplicate YouTube insertion.
+
+No-start retry is a separate same-batch operation: it retains the exact original batch/source/contract identity and creates a new dispatch identity rather than manufacturing a replacement production request.
 
 ## Publish-window safety
 
