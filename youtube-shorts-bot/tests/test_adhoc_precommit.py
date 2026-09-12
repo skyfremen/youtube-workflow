@@ -4,6 +4,8 @@ import unittest
 from pathlib import Path
 
 from common.workflow_common import CONTENT_ID_RE
+from media.media_readiness import REQUIRED_CATEGORY_MINIMUMS
+from media.validate_media_library import load_registry
 from planning import adhoc_precommit
 from planning.planner_contract import build_contract
 from planning.planning_config import TITLE_WEIGHTS
@@ -26,12 +28,45 @@ def valid_pool():
     return pool
 
 
+def ready_registry():
+    registry = copy.deepcopy(load_registry())
+    counter = 0
+    for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
+        for _ in range(minimum):
+            counter += 1
+            registry["assets"].append({
+                "id": f"test-ready-{counter:03d}",
+                "status": "active",
+                "verified": True,
+                "commercial_use": True,
+                "has_watermark": False,
+                "has_embedded_text": False,
+                "retention_category": category,
+                "orientation": "vertical",
+                "motion_type": "continuous-process",
+                "motion_intensity": "high",
+                "visual_satisfaction_score": 100,
+                "loopability_score": 100,
+                "caption_readability_score": 100,
+                "renditions": [{
+                    "id": f"test-r-{counter:03d}",
+                    "width": 1080,
+                    "height": 1920,
+                    "fps": 30.0,
+                    "file_type": "video/mp4",
+                    "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
+                }],
+            })
+    return registry
+
+
 def validate(pool):
     raw = (json.dumps(pool, indent=2, sort_keys=True) + "\n").encode("utf-8")
     return adhoc_precommit.validate_draft(
         pool,
         RULES_SHA,
         raw_bytes=raw,
+        registry=ready_registry(),
         check_checkout_head=False,
         check_uniqueness=False,
     )
@@ -42,6 +77,7 @@ class AdhocPrecommitTests(unittest.TestCase):
         contract = build_contract()
         self.assertEqual(contract["title_score_components"], list(TITLE_WEIGHTS))
         self.assertEqual(contract["content_id_pattern"], CONTENT_ID_RE.pattern)
+        self.assertTrue(contract["media_readiness"]["required_before_adhoc"])
 
     def test_known_good_pool_requires_five_of_five(self):
         result = validate(valid_pool())
