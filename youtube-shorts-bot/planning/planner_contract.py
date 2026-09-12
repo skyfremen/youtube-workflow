@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 
 from common.workflow_common import CONTENT_ID_RE
+from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
 from planning import ranked_promotion
 from planning.planning_config import (
     ANTAGONIST_ROLES,
@@ -53,6 +54,15 @@ def build_contract():
         "publication": ADHOC_PUBLICATION,
         "adhoc_publication": ADHOC_PUBLICATION,
         "daily_publication_template": DAILY_PUBLICATION,
+        "media_readiness": {
+            "audit_command": "python -m media.media_readiness audit --allow-not-ready",
+            "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,
+            "required_category_minimums": REQUIRED_CATEGORY_MINIMUMS,
+            "readiness_manifest_prefix": "content/background-sourcing/readiness/",
+            "retired_asset_flag": "selection_enabled=false",
+            "required_before_daily": True,
+            "required_before_adhoc": True,
+        },
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
         "hook_score_components": list(HOOK_WEIGHTS),
