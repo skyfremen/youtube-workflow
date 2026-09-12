@@ -2,12 +2,14 @@
 
 The private planner owns logical background choice and persistent creative history.
 The public runtime only validates the frozen logical IDs and resolves physical
-renditions.  This module therefore ranks registered logical assets using immutable
+renditions. This module therefore ranks registered logical assets using immutable
 private receipts, with retention/motion/readability as the primary signal and
 story-topic relevance as a secondary boost.
 
 Older registry entries remain valid: retention categories are inferred lazily from
-existing title/tags/motion metadata unless an explicit category is present.
+existing title/tags/motion metadata unless an explicit category is present. The
+previous topic-aware eligibility rule remains as a fallback when the retention-first
+pool cannot safely provide two distinct assets.
 """
 
 import argparse
@@ -28,10 +30,11 @@ RECENCY_PENALTY_SHORTS = 30
 RECENT_CATEGORY_WINDOW = 24
 MIN_QUALITY_SCORE = 0.78
 MIN_RETENTION_SCORE = 0.72
+LEGACY_MIN_SEMANTIC_SCORE = 0.45
 MIN_FRESH_STRONG_CANDIDATES = 2
 NEVER_USED_BONUS = 8.0
 
-# Canonical logical categories.  Existing registry vocabulary is normalized into
+# Canonical logical categories. Existing registry vocabulary is normalized into
 # these values instead of requiring a destructive registry migration.
 HIGH_RETENTION_CATEGORIES = {
     "cooking",
@@ -164,7 +167,7 @@ def retention_category(asset):
     explicit = _normal(asset.get("retention_category")).replace("-", "_")
     if explicit in HIGH_RETENTION_CATEGORIES:
         return explicit
-    if explicit in {"generic", "topic_relevant", "topic-relevant"}:
+    if explicit in {"generic", "topic_relevant"}:
         return GENERIC_CATEGORY
 
     tokens = _asset_tokens(asset)
@@ -191,7 +194,7 @@ def _licensed_gameplay_is_eligible(asset, registry):
 
 
 def semantic_score(asset, requirements):
-    """Topic/metadata relevance boost.  It is deliberately not the primary score."""
+    """Topic/metadata relevance boost. It is deliberately not the primary score."""
     required_tags = {
         _normal(tag) for tag in requirements.get("visual_tags", []) if _normal(tag)
     }
@@ -286,7 +289,7 @@ def rank_assets(
 ):
     """Rank logical assets retention-first while keeping topic fit as a soft boost.
 
-    ``planned_*`` inputs are ephemeral private batch context.  They let the daily
+    ``planned_*`` inputs are ephemeral private batch context. They let the daily
     planner spread choices across a 24-item plan without writing mutable state to
     the public runtime or registry.
     """
@@ -339,8 +342,13 @@ def rank_assets(
             and quality >= MIN_QUALITY_SCORE
             and rendition_ready
         )
+        legacy_topic_match = bool(
+            semantic >= LEGACY_MIN_SEMANTIC_SCORE
+            and quality >= MIN_QUALITY_SCORE
+            and rendition_ready
+        )
 
-        # Retention dominates.  Topic relevance is capped at a 12-point boost;
+        # Retention dominates. Topic relevance is capped at a 12-point boost;
         # a genuinely engaging unrelated process clip can beat a weak literal clip.
         high_retention_bonus = 8.0 if category in HIGH_RETENTION_CATEGORIES else 0.0
         base = retention * 80.0 + semantic * 12.0 + high_retention_bonus
@@ -369,6 +377,7 @@ def rank_assets(
             "hard_avoided": hard_avoided,
             "rendition_ready": rendition_ready,
             "strong_match": strong_match,
+            "legacy_topic_match": legacy_topic_match,
         })
     return sorted(
         ranked,
@@ -391,32 +400,53 @@ def select_logical_backgrounds(
         planned_asset_ids=planned_asset_ids,
         planned_categories=planned_categories,
     )
-    fresh = [item for item in ranked if item["strong_match"] and not item["hard_avoided"]]
-    if len(fresh) < MIN_FRESH_STRONG_CANDIDATES:
+    retention_pool = [
+        item for item in ranked if item["strong_match"] and not item["hard_avoided"]
+    ]
+    pool = list(retention_pool)
+    already = {item["id"] for item in pool}
+    # Preserve the previous topic-aware selector as a fallback without duplicating
+    # orchestration. Legacy candidates are considered only after all eligible
+    # retention-first candidates, then licensed sourcing may be requested.
+    for item in ranked:
+        if item["id"] in already or item["hard_avoided"]:
+            continue
+        if item["legacy_topic_match"]:
+            pool.append(item)
+            already.add(item["id"])
+
+    if len(pool) < MIN_FRESH_STRONG_CANDIDATES:
         return {
             "primary": None,
             "backup": None,
             "expansion_required": True,
-            "reason": "fewer than two strong fresh retention-first backgrounds",
+            "used_legacy_topic_fallback": bool(pool) and len(retention_pool) < 2,
+            "reason": "fewer than two acceptable retention-first or legacy topic-aware backgrounds",
             "ranked_candidates": ranked,
         }
 
-    primary = fresh[0]
-    backup = fresh[1]
+    primary = pool[0]
+    backup = pool[1]
     # Prefer a different visual category for backup when it is genuinely competitive;
     # never force a poor clip just to satisfy rotation.
-    for candidate in fresh[1:]:
+    for candidate in pool[1:]:
         if (
             candidate["retention_category"] != primary["retention_category"]
             and candidate["score"] >= backup["score"] - 5.0
         ):
             backup = candidate
             break
+    used_legacy = not (primary["strong_match"] and backup["strong_match"])
     return {
         "primary": primary["id"],
         "backup": backup["id"],
         "expansion_required": False,
-        "reason": "retention-first cache supplied at least two strong fresh backgrounds",
+        "used_legacy_topic_fallback": used_legacy,
+        "reason": (
+            "retention-first cache supplied two acceptable backgrounds"
+            if not used_legacy
+            else "retention-first pool supplemented by existing topic-aware fallback"
+        ),
         "ranked_candidates": ranked,
     }
 
@@ -441,8 +471,13 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
             continue
         if audit["quality_score"] < MIN_QUALITY_SCORE:
             errors.append(f"{label} background {asset_id} is below the quality floor")
-        if audit["retention_score"] < MIN_RETENTION_SCORE:
-            errors.append(f"{label} background {asset_id} is below the motion/retention floor")
+        if (
+            audit["retention_score"] < MIN_RETENTION_SCORE
+            and not audit["legacy_topic_match"]
+        ):
+            errors.append(
+                f"{label} background {asset_id} is below the retention floor and does not qualify for topic fallback"
+            )
         if audit["hard_avoided"]:
             errors.append(f"{label} background {asset_id} was used within the last 10 Shorts")
         if not audit["rendition_ready"]:
@@ -463,6 +498,8 @@ def main():
     parser.add_argument("--backup-id")
     parser.add_argument("--registry", default=str(REGISTRY_PATH))
     parser.add_argument("--results-dir", default=str(RESULTS_DIR))
+    parser.add_argument("--planned-asset-id", action="append", default=[])
+    parser.add_argument("--planned-category", action="append", default=[])
     args = parser.parse_args()
     registry = load_registry(args.registry)
     receipts = load_successful_receipts(args.results_dir)
@@ -474,7 +511,13 @@ def main():
             raise SystemExit("Both --primary-id and --backup-id are required for AI-selection audit")
         result = audit_ai_selection(registry, args.primary_id, args.backup_id, receipts, requirements)
     else:
-        result = select_logical_backgrounds(registry, requirements, receipts)
+        result = select_logical_backgrounds(
+            registry,
+            requirements,
+            receipts,
+            planned_asset_ids=args.planned_asset_id,
+            planned_categories=args.planned_category,
+        )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if result.get("expansion_required") or result.get("passed") is False:
         raise SystemExit(2)
