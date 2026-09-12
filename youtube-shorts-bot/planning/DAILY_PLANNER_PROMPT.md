@@ -2,7 +2,7 @@
 
 This is the canonical Daily planner entry point.
 
-Read `planning/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements.
+Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements.
 
 Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
 
@@ -115,4 +115,4 @@ Before committing any Daily request, confirm:
 - physical rendition selection is still smallest-sufficient **after crop**;
 - no provider original/UHD shortcut was introduced;
 - normalized-cache reuse remains possible across different treatments;
-- all remaining rules from `DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.
+- all remaining rules from `docs/DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.
