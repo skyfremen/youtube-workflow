@@ -79,15 +79,16 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
 
     def test_workflow_bridge_preserves_private_production_boundary(self):
         planner = (ROOT / ".github/workflows/planner-execution.yml").read_text(encoding="utf-8")
-        auto = (ROOT / ".github/workflows/adhoc-request-dispatch.yml").read_text(encoding="utf-8")
         adhoc = (ROOT / ".github/workflows/adhoc-production.yml").read_text(encoding="utf-8")
         self.assertIn("planning/execution_bridge.py", planner)
         self.assertNotIn("production-runtime", planner)
-        self.assertIn("adhoc-production.yml/dispatches", auto)
-        self.assertNotIn("production-runtime", auto)
+        self.assertIn("push:", adhoc)
+        self.assertIn("workflow_dispatch:", adhoc)
+        self.assertIn("content/requests/wd-*-adhoc-*.json", adhoc)
         self.assertIn("production-runtime/actions/workflows/single.yml/dispatches", adhoc)
-        self.assertIn("publication", auto)
-        self.assertIn("publish_at", auto)
+        self.assertIn("publication", adhoc)
+        self.assertIn("publish_at", adhoc)
+        self.assertFalse((ROOT / ".github/workflows/adhoc-request-dispatch.yml").exists())
 
     def test_prompts_make_chatgpt_background_owner(self):
         daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
