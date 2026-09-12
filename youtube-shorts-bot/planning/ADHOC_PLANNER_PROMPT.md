@@ -2,7 +2,7 @@
 
 This is the canonical Ad-hoc single-Short planner entry point.
 
-Read `planning/ADHOC_PLANNER_V4_BASE.md` **in full** first, then read the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, exactly-one-Short, immediate-public publication, deterministic planning, metadata, recovery, idempotency, safety and architecture rules except where this overlay supersedes schema-v4/background-treatment statements.
+Read `docs/ADHOC_PLANNER_V4_BASE.md` **in full** first, then read the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, exactly-one-Short, immediate-public publication, deterministic planning, metadata, recovery, idempotency, safety and architecture rules except where this overlay supersedes schema-v4/background-treatment statements.
 
 Repository code is authoritative. Inspect the current `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, registry and workflows before authoring the request.
 
@@ -49,4 +49,4 @@ Immediate-public semantics remain unchanged: exactly one Short, `publication.mod
 
 Do not create a new v4 request. If treatment allocation, schema-v5 validation, contract compatibility, exact payload validation or any required deterministic planner step fails, fail closed rather than substituting guessed values.
 
-All rules in `ADHOC_PLANNER_V4_BASE.md` remain in force unless explicitly superseded by this overlay.
+All rules in `docs/ADHOC_PLANNER_V4_BASE.md` remain in force unless explicitly superseded by this overlay.
