@@ -7,56 +7,29 @@ ROOT = BASE.parent
 sys.path.insert(0, str(BASE))
 
 from planning.execution_bridge import OPERATIONS, execute_envelope
-from planning.planning_engine import build_acceptance_fixture
 
 
 class PlannerExecutionBridgeTests(unittest.TestCase):
-    def test_raw_filter_executes_canonical_runner_with_source_provenance(self):
-        raw, _ = build_acceptance_fixture("2026-09-12")
-        envelope = execute_envelope({
-            "schema_version": 1,
-            "execution_id": "pe-test-raw-20260912",
-            "operation": "planning.raw-filter",
-            "payload": {"raw_candidates": raw, "recent": []},
-        })
-        self.assertEqual(envelope["operation"], "planning.raw-filter")
-        self.assertRegex(envelope["source_sha"], r"^[0-9a-f]{40}$")
-        self.assertGreaterEqual(envelope["result"]["result"]["qualified"], 1)
+    def test_bridge_is_mechanical_only(self):
         self.assertEqual(
-            envelope["result"]["execution"]["source_sha"],
-            envelope["source_sha"],
-        )
-
-    def test_bridge_exposes_new_editorial_ownership_stages(self):
-        required = {
-            "planning.raw-filter",
-            "planning.candidate-evaluation",
-            "planning.validate-selection",
-            "background.select",
-            "background.audit",
-            "background.treatment",
-            "request.validate",
-        }
-        self.assertTrue(required.issubset(OPERATIONS))
-        self.assertIn("planning.final-select", OPERATIONS)  # legacy recovery only
-
-    def test_candidate_evaluation_does_not_return_authoritative_winner(self):
-        raw, semifinalists = build_acceptance_fixture("2026-09-12")
-        envelope = execute_envelope({
-            "schema_version": 1,
-            "execution_id": "pe-test-eval-20260912",
-            "operation": "planning.candidate-evaluation",
-            "payload": {
-                "raw_candidates": raw,
-                "semifinalists": semifinalists,
-                "plan_date": "2026-09-12",
-                "recent": [],
-                "analytics_evidence_count": 0,
+            OPERATIONS,
+            {
+                "background.select",
+                "background.audit",
+                "background.treatment",
+                "request.validate",
             },
-        })
-        result = envelope["result"]["result"]
-        self.assertIn("evaluated_candidates", result)
-        self.assertNotIn("selected", result)
+        )
+        self.assertFalse(any(operation.startswith("planning.") for operation in OPERATIONS))
+
+    def test_planning_operation_fails_closed(self):
+        with self.assertRaises(ValueError):
+            execute_envelope({
+                "schema_version": 1,
+                "execution_id": "pe-test-plan-20260912",
+                "operation": "planning.raw-filter",
+                "payload": {},
+            })
 
     def test_unknown_operation_fails_closed(self):
         with self.assertRaises(ValueError):
@@ -78,6 +51,14 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
         self.assertIn("production-runtime/actions/workflows/single.yml/dispatches", adhoc)
         self.assertIn("publication", auto)
         self.assertIn("publish_at", auto)
+
+    def test_prompts_forbid_bridge_for_candidate_planning(self):
+        daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        adhoc = (BASE / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("ChatGPT must itself perform candidate filtering", daily)
+        self.assertIn("GitHub Actions must not execute", daily)
+        self.assertIn("Do not call GitHub Actions", adhoc)
+        self.assertIn("mechanical non-editorial operations only", adhoc)
 
 
 if __name__ == "__main__":
