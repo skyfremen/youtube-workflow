@@ -81,12 +81,18 @@ class WorkflowBoundaryContracts(unittest.TestCase):
 
     def test_automatic_recovery_stays_in_private_control_plane(self):
         text = self.recovery()
+        active_lines = {
+            line.strip()
+            for line in text.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        }
         self.assertIn("recovery/controller.py", text)
         self.assertIn("content/diagnostics/**/*.json", text)
         self.assertIn("workflow_run:", text)
         self.assertIn("workflows: ['Daily Production', 'Ad-hoc Production']", text)
         self.assertIn("schedule:", text)
-        self.assertIn("cron: '17 */2 * * *'", text)
+        self.assertIn("- cron: '17,47 * * * *'", active_lines)
+        self.assertNotIn("- cron: '17 */2 * * *'", active_lines)
         self.assertIn("RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'", text)
         self.assertIn("RECOVERY_ACTIVE_GRACE_MINUTES: '240'", text)
         self.assertIn("actions/workflows/run.yml/dispatches", text)
