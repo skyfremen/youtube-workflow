@@ -1,10 +1,9 @@
 """Promote immutable ChatGPT-ranked planning pools into canonical production state.
 
-ChatGPT owns all creative/editorial decisions, including logical background choice,
-background audit reasoning and background treatment values. This module does not
-rank, repair or creatively substitute candidates. It performs a global fail-first
-pool check, validates candidates mechanically in the exact ChatGPT-declared order,
-and promotes the first required number that pass the canonical request validator.
+ChatGPT owns creative/editorial decisions, logical background choice, planning-time
+background audit reasoning, background treatment values and final rank. This module
+is a private fail-closed promotion gate: it validates facts, preserves the declared
+rank order, and materializes only the first required valid candidates.
 """
 from __future__ import annotations
 
@@ -13,8 +12,8 @@ import copy
 import json
 import re
 import subprocess
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path, PurePosixPath as PurePath
 from zoneinfo import ZoneInfo
 
 from media.validate_media_library import load_registry
@@ -24,7 +23,8 @@ from validation.validate_content import SCHEMA_VERSION, validate_request_data
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
 DAILY_POOL_RE = re.compile(
-    r"^youtube-shorts-bot/content/planning-pools/daily/(\d{4}-\d{2}-\d{2})\.json$"
+    r"^youtube-shorts-bot/content/planning-pools/daily/"
+    r"(\d{4}-\d{2}-\d{2})/(dp-[A-Za-z0-9-]{8,96})\.json$"
 )
 ADHOC_POOL_RE = re.compile(
     r"^youtube-shorts-bot/content/planning-pools/adhoc/(ap-[A-Za-z0-9-]{8,96})\.json$"
@@ -37,6 +37,8 @@ ADHOC_POOL_SIZE = 5
 NORMAL_DAILY_TARGET = 24
 POOL_SCHEMA_VERSION = 1
 PLANNING_MODES = {"normal_next_day", "same_day_catch_up"}
+ADHOC_PLANNING_MODES = {"scheduled_daily", "manual_on_demand"}
+CATCH_UP_MIN_LEAD_MINUTES = 30
 SGT = ZoneInfo("Asia/Singapore")
 
 
@@ -137,6 +139,13 @@ def _validate_execution(pool, candidate_ids, source_sha):
         _fail("planning_execution.ranked_candidate_ids must exactly match rank order")
 
 
+def _parse_date(raw, label):
+    try:
+        return date.fromisoformat(str(raw))
+    except ValueError:
+        _fail(f"{label} must be YYYY-MM-DD")
+
+
 def _parse_slot(raw, plan_date):
     try:
         parsed = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
@@ -160,14 +169,16 @@ def _canonical_normal_slots(plan_date):
     ]
 
 
-def _validate_daily_pool(pool, pool_path, source_sha):
+def _validate_daily_pool(pool, pool_path, source_sha, *, now_utc=None):
     match = DAILY_POOL_RE.fullmatch(pool_path)
     if not match:
-        _fail("daily pool path must be content/planning-pools/daily/YYYY-MM-DD.json")
-    plan_date = match.group(1)
+        _fail("daily pool path must be content/planning-pools/daily/YYYY-MM-DD/dp-<id>.json")
+    plan_date, pool_id = match.groups()
+    _parse_date(plan_date, "daily plan_date")
     expected_keys = {
         "schema_version",
         "pool_type",
+        "pool_id",
         "plan_date",
         "planning_mode",
         "target_count",
@@ -179,8 +190,10 @@ def _validate_daily_pool(pool, pool_path, source_sha):
         _fail("daily ranked pool contains missing or unexpected top-level fields")
     if pool.get("schema_version") != POOL_SCHEMA_VERSION or pool.get("pool_type") != "daily":
         _fail("daily ranked pool schema/type mismatch")
+    if pool.get("pool_id") != pool_id:
+        _fail("daily pool_id must match its filename")
     if pool.get("plan_date") != plan_date:
-        _fail("daily pool plan_date must match its filename")
+        _fail("daily pool plan_date must match its directory")
     mode = pool.get("planning_mode")
     if mode not in PLANNING_MODES:
         _fail("daily planning_mode must be normal_next_day or same_day_catch_up")
@@ -192,14 +205,26 @@ def _validate_daily_pool(pool, pool_path, source_sha):
     slots = pool.get("publication_slots")
     if not isinstance(slots, list) or len(slots) != target or len(slots) != len(set(slots)):
         _fail("publication_slots must contain exactly target_count unique slots")
-    for raw in slots:
-        _parse_slot(raw, plan_date)
+    parsed_slots = [_parse_slot(raw, plan_date) for raw in slots]
+    if parsed_slots != sorted(parsed_slots):
+        _fail("publication_slots must be chronological")
     if mode == "normal_next_day" and slots != _canonical_normal_slots(plan_date):
         _fail("normal_next_day publication_slots must be the canonical 24 hourly slots")
+    if mode == "same_day_catch_up":
+        now_utc = now_utc or datetime.now(timezone.utc)
+        if now_utc.tzinfo is None:
+            now_utc = now_utc.replace(tzinfo=timezone.utc)
+        now_utc = now_utc.astimezone(timezone.utc)
+        threshold = now_utc + timedelta(minutes=CATCH_UP_MIN_LEAD_MINUTES)
+        if any(slot < threshold for slot in parsed_slots):
+            _fail(
+                f"same_day_catch_up slots must remain at least {CATCH_UP_MIN_LEAD_MINUTES} "
+                "minutes in the future at promotion time"
+            )
     candidates, candidate_ids = _validate_ranked_candidates(pool, DAILY_POOL_SIZE)
     _validate_execution(pool, candidate_ids, source_sha)
     _validate_exact_pool_commit(source_sha, pool_path)
-    return plan_date, mode, target, slots, candidates, candidate_ids
+    return plan_date, pool_id, mode, target, slots, candidates, candidate_ids
 
 
 def _validate_adhoc_pool(pool, pool_path, source_sha):
@@ -211,6 +236,8 @@ def _validate_adhoc_pool(pool, pool_path, source_sha):
         "schema_version",
         "pool_type",
         "pool_id",
+        "planning_mode",
+        "singapore_date",
         "target_count",
         "planning_execution",
         "ranked_candidates",
@@ -221,12 +248,22 @@ def _validate_adhoc_pool(pool, pool_path, source_sha):
         _fail("Ad-hoc ranked pool schema/type mismatch")
     if pool.get("pool_id") != pool_id:
         _fail("Ad-hoc pool_id must match its filename")
+    planning_mode = pool.get("planning_mode")
+    if planning_mode not in ADHOC_PLANNING_MODES:
+        _fail("Ad-hoc planning_mode must be scheduled_daily or manual_on_demand")
+    singapore_date = str(pool.get("singapore_date", ""))
+    _parse_date(singapore_date, "Ad-hoc singapore_date")
     if pool.get("target_count") != 1:
         _fail("Ad-hoc ranked pool target_count must be exactly 1")
     candidates, candidate_ids = _validate_ranked_candidates(pool, ADHOC_POOL_SIZE)
+    if planning_mode == "scheduled_daily":
+        prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
+        for item in candidates:
+            if not item["request"]["content_id"].startswith(prefix):
+                _fail("scheduled_daily Ad-hoc content IDs must use the Singapore-date 01:00 namespace")
     _validate_execution(pool, candidate_ids, source_sha)
     _validate_exact_pool_commit(source_sha, pool_path)
-    return pool_id, candidates, candidate_ids
+    return pool_id, planning_mode, singapore_date, candidates, candidate_ids
 
 
 def _candidate_errors(request, *, registry, request_path):
@@ -252,47 +289,79 @@ def _ensure_targets_absent(paths):
         _fail("immutable production target already exists: " + ", ".join(existing))
 
 
-def promote_daily(pool_path, source_sha, summary_path):
+def _scheduled_adhoc_matches(singapore_date, *, exclude_content_id=None):
+    prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
+    request_dir = BOT_ROOT / "content" / "requests"
+    matches = []
+    if request_dir.is_dir():
+        for path in request_dir.glob(f"{prefix}*.json"):
+            if exclude_content_id and path.stem == exclude_content_id:
+                continue
+            matches.append(path)
+    return sorted(matches)
+
+
+def verify_scheduled_adhoc_uniqueness(singapore_date, content_id):
+    """Fail if another scheduled Ad-hoc request already exists for the SG date."""
+    _parse_date(singapore_date, "Ad-hoc singapore_date")
+    prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
+    if not content_id.startswith(prefix):
+        _fail("promoted scheduled Ad-hoc content ID does not match the Singapore-date namespace")
+    conflicts = _scheduled_adhoc_matches(
+        singapore_date, exclude_content_id=content_id
+    )
+    if conflicts:
+        _fail(
+            "scheduled Ad-hoc production already exists for this Singapore date: "
+            + ", ".join(path.stem for path in conflicts)
+        )
+
+
+def promote_daily(pool_path, source_sha, summary_path, *, now_utc=None):
     pool_path = str(PurePath(pool_path))
     pool = _load_json(REPO_ROOT / pool_path)
-    plan_date, mode, target, slots, candidates, candidate_ids = _validate_daily_pool(
-        pool, pool_path, source_sha
+    plan_date, pool_id, mode, target, slots, candidates, candidate_ids = _validate_daily_pool(
+        pool, pool_path, source_sha, now_utc=now_utc
     )
     try:
         registry = load_registry()
     except (OSError, TypeError, ValueError) as exc:
-        _fail(f"global preflight failed: background registry unavailable or invalid: {exc}")
+        _fail(f"private promotion preflight failed: background registry unavailable or invalid: {exc}")
 
     selected = []
     rejected = []
+    expected_template = {
+        "mode": "scheduled",
+        "timezone": "Asia/Singapore",
+        "publish_at": None,
+    }
     for item in candidates:
         if len(selected) >= target:
             break
         request = copy.deepcopy(item["request"])
         content_id = request["content_id"]
-        publication = request.get("publication")
-        if not isinstance(publication, dict):
-            rejected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "errors": ["publication must be an object"]})
+        if request.get("publication") != expected_template:
+            rejected.append({
+                "rank": item["rank"],
+                "candidate_id": item["candidate_id"],
+                "errors": ["Daily publication must be the exact scheduled template with publish_at=null"],
+            })
             continue
-        request["publication"] = {
-            "mode": "scheduled",
-            "timezone": "Asia/Singapore",
-            "publish_at": slots[len(selected)],
-        }
+        request["publication"]["publish_at"] = slots[len(selected)]
         planning = request.get("planning")
         if not isinstance(planning, dict) or planning.get("plan_date") != plan_date:
-            rejected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "errors": ["planning.plan_date must match ranked pool"]})
+            rejected.append({
+                "rank": item["rank"],
+                "candidate_id": item["candidate_id"],
+                "errors": ["planning.plan_date must match ranked pool"],
+            })
             continue
         request_path = BOT_ROOT / "content" / "requests" / f"{content_id}.json"
         errors = _candidate_errors(request, registry=registry, request_path=request_path)
         if errors:
             rejected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "errors": errors})
             continue
-        selected.append({
-            "rank": item["rank"],
-            "candidate_id": item["candidate_id"],
-            "request": request,
-        })
+        selected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "request": request})
 
     if len(selected) != target:
         _fail(f"ranked Daily pool produced only {len(selected)} valid candidates; {target} required")
@@ -312,6 +381,7 @@ def promote_daily(pool_path, source_sha, summary_path):
         "planning_mode": mode,
         "final_selected": target,
         "content_ids": selected_content_ids,
+        "candidate_pool_id": pool_id,
         "candidate_pool_source_sha": source_sha,
         "candidate_pool_size": DAILY_POOL_SIZE,
         "rejected_candidate_ids": [item["candidate_id"] for item in rejected],
@@ -333,6 +403,7 @@ def promote_daily(pool_path, source_sha, summary_path):
 
     summary = {
         "pool_type": "daily",
+        "pool_id": pool_id,
         "pool_source_sha": source_sha,
         "target_count": target,
         "selected_content_ids": selected_content_ids,
@@ -347,11 +418,15 @@ def promote_daily(pool_path, source_sha, summary_path):
 def promote_adhoc(pool_path, source_sha, summary_path):
     pool_path = str(PurePath(pool_path))
     pool = _load_json(REPO_ROOT / pool_path)
-    pool_id, candidates, candidate_ids = _validate_adhoc_pool(pool, pool_path, source_sha)
+    pool_id, planning_mode, singapore_date, candidates, candidate_ids = _validate_adhoc_pool(
+        pool, pool_path, source_sha
+    )
+    if planning_mode == "scheduled_daily" and _scheduled_adhoc_matches(singapore_date):
+        _fail("scheduled Ad-hoc production already exists for this Singapore date")
     try:
         registry = load_registry()
     except (OSError, TypeError, ValueError) as exc:
-        _fail(f"global preflight failed: background registry unavailable or invalid: {exc}")
+        _fail(f"private promotion preflight failed: background registry unavailable or invalid: {exc}")
 
     selected = None
     rejected = []
@@ -384,9 +459,14 @@ def promote_adhoc(pool_path, source_sha, summary_path):
     request_path.parent.mkdir(parents=True, exist_ok=True)
     request_path.write_text(json.dumps(selected["request"], indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
+    if planning_mode == "scheduled_daily":
+        verify_scheduled_adhoc_uniqueness(singapore_date, selected["request"]["content_id"])
+
     summary = {
         "pool_type": "adhoc",
         "pool_id": pool_id,
+        "planning_mode": planning_mode,
+        "singapore_date": singapore_date,
         "pool_source_sha": source_sha,
         "selected_content_id": selected["request"]["content_id"],
         "selected_candidate_id": selected["candidate_id"],
@@ -398,11 +478,6 @@ def promote_adhoc(pool_path, source_sha, summary_path):
     return summary
 
 
-# PurePath is used only to normalize repository-relative user/workflow input without
-# touching the filesystem before the path contract has been checked.
-from pathlib import PurePosixPath as PurePath
-
-
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -411,12 +486,18 @@ def main():
         sub.add_argument("--pool", required=True)
         sub.add_argument("--source-sha", required=True)
         sub.add_argument("--summary", required=True)
+    verify = subparsers.add_parser("verify-adhoc")
+    verify.add_argument("--singapore-date", required=True)
+    verify.add_argument("--content-id", required=True)
     args = parser.parse_args()
     try:
         if args.command == "daily":
             result = promote_daily(args.pool, args.source_sha, args.summary)
-        else:
+        elif args.command == "adhoc":
             result = promote_adhoc(args.pool, args.source_sha, args.summary)
+        else:
+            verify_scheduled_adhoc_uniqueness(args.singapore_date, args.content_id)
+            result = {"singapore_date": args.singapore_date, "content_id": args.content_id, "unique": True}
     except PromotionError as exc:
         raise SystemExit(f"ranked promotion failed closed: {exc}") from exc
     print(json.dumps(result, sort_keys=True))
