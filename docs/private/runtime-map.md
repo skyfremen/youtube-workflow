@@ -11,7 +11,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/base/contract.py` | Shared immutable request identity and output contract |
 | `runtime/engine/batch.py` | Batch membership, ordering, uniqueness, and schedule-slot validation |
 | `runtime/engine/pipeline.py` | Bounded internal concurrency and per-item failure isolation |
-| `runtime/engine/check.py` | Production-equivalent local test harness |
+| `runtime/engine/check.py` | Production-equivalent Dry Run test harness |
 | `runtime/engine/benchmark.py` | Internal concurrency benchmark harness |
 | `runtime/engine/evidence.py` | Test-only evidence export helper |
 | `runtime/guard/request.py` | Immutable state guard |
@@ -33,13 +33,14 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/output/verify.py` | Exact remote publication-state verification |
 | `runtime/output/receipt.py` | Immutable verified receipt finalization |
 | `runtime/profile/config.py` | Shared production policy constants |
-| `runtime/exercise.py` | Public Check production-equivalent exercise |
+| `runtime/exercise.py` | Public Dry Run production-equivalent exercise |
 | `runtime/errors.py` | Stable public error identifiers |
 
 ## Public error codes
 
 | Code | Meaning | First owner check |
 | --- | --- | --- |
+| `E_START_001` | Execution-start heartbeat validation or private start-evidence write failed | Dispatch intent, opaque inputs, private-state token/repository, and `content/recovery/starts/` write-back |
 | `E_PREPARE_001` | Runtime preparation failed | Container/source extraction and pinned image |
 | `E_LOAD_001` | Exact private input load failed | `batch_id`, `source_sha`, token scope, and allowlisted paths |
 | `E_EXEC_001` | One or more execution stages failed | Private diagnostic record, then immutable recovery state |
@@ -54,16 +55,30 @@ Execution failures write detailed traces to:
 
 Public logs intentionally retain only stage, item ordinal, stable error code, and aggregate counts. Canonical requests, schedules, content IDs, result receipts, analytics, and recovery records remain private.
 
-## Check stage aliases
+## Dry Run stage aliases
 
 | Public alias | Owner meaning |
 | --- | --- |
-| `s01` | Representative batch construction and failure isolation |
-| `s02` | Transformation smoke test |
-| `s02a`–`s02i`, `s02x` | Transformation asset, encoding, layout, metadata, or classified exception |
-| `s03` | Narration backend exercise |
+| `s01` | Representative 24-item batch construction, shared orchestration, and failure-isolation fixture |
+| `s02` | Production-render smoke exercise entered |
+| `s02a` | Identity/font/emoji resource failure during render smoke |
+| `s02b` | Generic FFmpeg/command failure during render smoke |
+| `s02c` | Caption/card/pill/frame layout or rendering failure |
+| `s02d` | Render metadata failure |
+| `s02e` | Render-smoke assertion failure |
+| `s02f` | Required render-smoke file missing |
+| `s02g` | Required render-smoke data key missing |
+| `s02h` | Render-smoke runtime error |
+| `s02i` | Render-smoke `SystemExit` |
+| `s02j` | Synthetic local background-generation subprocess failed |
+| `s02k` | Caption-contrast subprocess failed |
+| `s02l` | Other render subprocess failed |
+| `s02m` | Rendered-frame extraction subprocess failed |
+| `s02n` | Canonical `transform/verify.py` subprocess failed |
+| `s02x` | Unclassified render-smoke exception |
+| `s03` | Narration backend and approved-voice exercise |
 | `s04` | Word-alignment exercise |
-| `s05` | Check completed |
+| `s05` | Dry Run exercise completed |
 
 ## Public environment aliases
 
