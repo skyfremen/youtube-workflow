@@ -8,6 +8,7 @@ schema validation may leave registry enforcement disabled.
 
 import argparse
 import copy
+import math
 from pathlib import Path
 
 from common.workflow_common import load_json
@@ -63,6 +64,9 @@ def _number(value, label, errors, *, minimum=None, maximum=None, nullable=False)
     except (TypeError, ValueError):
         errors.append(f"{label} must be numeric" + (" or null" if nullable else ""))
         return None
+    if not math.isfinite(number):
+        errors.append(f"{label} must be finite")
+        return None
     if minimum is not None and number < minimum:
         errors.append(f"{label} must be >= {minimum:g}")
     if maximum is not None and number > maximum:
@@ -98,7 +102,7 @@ def validate_background_treatment(value, label="visual.background_treatment"):
         minimum=PLAYBACK_RATE_MIN,
         maximum=PLAYBACK_RATE_MAX,
     )
-    if duration is None and start not in (None, 0.0):
+    if value.get("segment_duration_seconds") is None and start not in (None, 0.0):
         errors.append(
             f"{label}.segment_start_seconds must be 0 when segment_duration_seconds is null"
         )
@@ -224,7 +228,17 @@ def validate_background_registry_contract(data, registry=None):
             asset_duration = float(asset.get("duration_seconds"))
         except (TypeError, ValueError):
             asset_duration = None
+        if asset_duration is not None and not math.isfinite(asset_duration):
+            asset_duration = None
         if asset_duration is None or asset_duration <= 0:
+            if not (
+                float(treatment.get("segment_start_seconds")) == 0.0
+                and treatment.get("segment_duration_seconds") is None
+            ):
+                errors.append(
+                    f"visual.background_{slot}_treatment must use full-source treatment "
+                    f"for background {asset_id} because source duration is unknown"
+                )
             continue
         duration = treatment.get("segment_duration_seconds")
         if duration is None:
