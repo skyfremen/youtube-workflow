@@ -1,138 +1,130 @@
-# Wacky Dramas — Daily Planner
+# Wacky Dramas — Daily Planner (schema v5 overlay)
 
-This is the single canonical daily planning instruction for the Wacky Dramas production system. Its objective is aggressive subscriber and qualified-view growth without weakening the immutable request/recovery architecture or restoring a retired queue/planner model.
+This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
 
-Business target: work aggressively toward **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**. Naming cleanup must never dilute this business objective; growth is business-purpose language here, not a technical component or architecture name.
+Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all of its business, creative, analytics, metadata, scheduling, safety, deterministic-runner, publication, provenance, recovery, and background-selection rules except where this overlay explicitly supersedes schema-v4/background-treatment statements.
 
-## Objective
-Plan **up to 24 strong Wacky Dramas Shorts** for the target `Asia/Singapore` calendar day, using exact top-of-hour YouTube publication slots. Optimize for strong opportunities, not quota filling. Planning never uploads, renders, synthesizes TTS, or downloads production media.
+Repository code remains the source of truth. Before planning, inspect the current checked-out implementations of `planning/planning_engine.py`, `planning/planning_runner.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and the current production/dry-run workflows. Do not blindly trust either prompt when executable code has moved forward.
 
-## Planning date and same-day catch-up mode
-The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore**. At or after 20:00, plan the **next Singapore calendar day**. All exact hourly slots from `00:00` through `23:00` are eligible before quality/diversity gates.
+## Preserved canonical operating rules
 
-When manually run before 20:00 Asia/Singapore, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, re-read Singapore time and keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering. When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
-Before catch-up, check `content/planning/YYYY-MM-DD.json`. If it exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Record `planning_mode` as `normal_next_day` or `same_day_catch_up`; catch-up audit also records reference time, eligible slots and omitted elapsed/too-close slots.
+If `content/planning/YYYY-MM-DD.json` already exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Planning audits continue to record `planning_mode` as `normal_next_day` or `same_day_catch_up`, and catch-up audits record omitted elapsed/too-close slots.
 
-## Canonical production contract
-Preserve Wacky Dramas / @WACKYDRAMAS; one immutable content_id; requests under `content/requests`; verified receipts under `content/results`; story-aware approved Kokoro voice at 1.75x; 1080×1920/30fps H.264 High, yuv420p, BT.709 + AAC-LC 48kHz; satisfying primary+backup backgrounds; existing opening card/subtitles/handle/SUBSCRIBE; durable upload intent, marker recovery and exact YouTube verification.
+`planning/planning_engine.py` remains the deterministic planning policy implementation. Work must actually execute `planning/planning_runner.py` at the required raw-filter and final-selection checkpoints and consume its **actual returned result**. Do not substitute equivalent manual arithmetic. If either execution fails, fail closed.
 
-Read before planning: `planning/STORY_RULES.md`, `planning/planning_config.py`, `planning/planning_engine.py`, `planning/planning_runner.py`, `analytics/analytics_learning.py`, valid/current `analytics/latest.json` and `analytics/model.json`, `media/background_policy.py`, `media/background_selector.py`, `media-library/backgrounds.json`, and recent immutable requests/results.
+Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
 
-`planning_config.py` and executable code are the source of truth for counts, thresholds, weights, diversity limits, analytics confidence and controlled values. If this prompt and current code ever disagree, stop and resolve the mismatch from the repository rather than reproducing stale prompt arithmetic.
+The content handoff remains one content-only commit beginning `[daily production] YYYY-MM-DD`, consumed by `daily-production.yml`. The planning audit retains the core keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`. Any background-sourcing manifest retains exact `logical_id` and `required_by_content_ids` linkage to that day's immutable requests.
 
-## Responsibility boundary
-ChatGPT / Work owns semantic and creative judgment: raw premise generation, semantic score components, originality/narrative assessment, semifinalist development, concrete endings/outlines/openings, truthful title candidates and their semantic components, final scripts, metadata, narrator perspective/tone, and semantic background choices.
+## Schema-v5 override
 
-Repository code owns deterministic policy. `planning_engine.py` owns hard rejection, duplicate/near-duplicate checks, weighted arithmetic, thresholds, semifinalist cap enforcement, analytics blending, exploit/explore and diversity selection, ranking, ordering and publication-slot calculation. `analytics_learning.py` owns normalized historical-attribute-fit arithmetic. Work must not manually substitute for those calculations when the canonical executable path is available.
+New immutable production requests must use **schema v5**. Schema v4 remains readable only for migration/recovery of requests that already exist; do not author a new v4 request.
 
-## Funnel
-Use progressive detail, not 120 full scripts:
-`>=120 raw premises → canonical raw filtering → qualified candidates → ~36 developed semifinalists → concrete ending/outline/opening + >=5 truthful titles → canonical analytics/scoring/final selection → <=24 authoritative winners → full 120–175s scripts → background selection → immutable schema-v4 requests`.
-Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial swap concepts.
+The v5 `visual` object contains exactly:
 
-The exact current counts come from `planning_config.py`; the numbers above describe the current architecture and are not permission to override newer code if configuration changes later.
+- `background_primary_id`
+- `background_backup_id`
+- `background_primary_treatment`
+- `background_backup_treatment`
 
-## Mandatory canonical deterministic execution
-Work must execute `planning/planning_runner.py` and consume its **actual returned result** at every deterministic checkpoint. Reading source code, reasoning through formulas, copying arithmetic into the prompt, or manually producing an equivalent result is not an acceptable substitute.
+Each treatment contains exactly:
 
-### Checkpoint 1 — raw filtering
-After ChatGPT has generated the configured raw-candidate pool and supplied the required semantic/editorial fields, serialize the real candidates plus the actual recent-history comparison set into a temporary JSON input and run:
+- `segment_start_seconds`
+- `segment_duration_seconds` — number or `null` for full-source treatment
+- `playback_rate`
 
-```bash
-PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/planning/planning_runner.py \
-  --stage raw-filter \
-  --input /tmp/wacky-dramas-raw-input.json \
-  --output /tmp/wacky-dramas-raw-result.json
-```
+The validator and compatibility fingerprint define the authoritative numeric bounds. At the time of this overlay, playback is bounded to 1.0×–2.0×. Never manually broaden those bounds.
 
-Consume `result.qualified_candidates` from that file. Do not develop a hard-rejected candidate, rename it merely to bypass duplicate policy, or manually add a candidate that the runner rejected. ChatGPT may choose which qualified candidates to develop semantically, subject to the current configured semifinalist policy; the final checkpoint re-validates that every submitted semifinalist came from the qualified raw pool.
+## Mandatory treatment allocation
 
-### Checkpoint 2 — final deterministic selection
-After ChatGPT has creatively developed the semifinalists with the fields required by current code, serialize the **same raw pool**, developed semifinalists, plan date, recent-history set, and current analytics model into a second temporary input and run:
+Logical asset selection and physical rendition resolution remain separate.
+
+For each final winner:
+
+1. Select the primary and backup logical asset using the retention-first private selector and its existing topic-aware fallback chain.
+2. Read private immutable successful receipts, including scheduled and immediate-public Ad-hoc successes.
+3. Run the canonical private treatment allocator for the selected pair. Do not manually approximate its choice:
 
 ```bash
-PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/planning/planning_runner.py \
-  --stage final-select \
-  --input /tmp/wacky-dramas-final-input.json \
-  --output /tmp/wacky-dramas-final-result.json
+PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/media/background_treatment.py \
+  --primary-id <PRIMARY_ID> \
+  --backup-id <BACKUP_ID> \
+  --planned-json /tmp/wacky-dramas-planned-background-treatments.json
 ```
 
-When analytics is enabled, pass the current canonical `analytics/model.json` object as `analytics_model`. The runner itself executes `analytics.analytics_learning.score_candidate` and supplies the model's `analytics_evidence_count` to `planning_engine.evaluate`. A positive evidence count without the model is an error; do not manually inject a historical-fit score. When analytics is disabled/evidence is zero, canonical editorial/diversity fallback remains in force.
+`--planned-json` is optional for the first item. For later items in the same Daily plan, it must contain the treatments already reserved earlier in this planning run, represented with their associated logical asset IDs as accepted by the current allocator.
 
-`result.selected` from the successful `final-select` execution is the authoritative winner set and order. Only those candidate IDs may proceed to full script/request creation. Do not insert an unselected candidate, resurrect a rejected candidate, bypass diversity, exceed the configured daily limit, or substitute a preferred story. If a selected story later becomes invalid during creative completion, correct the same selected candidate if the fix preserves its selected premise/attributes; otherwise update the deterministic input and rerun canonical final selection before creating immutable requests.
+4. Consume the allocator's **actual returned** `background_primary_treatment` and `background_backup_treatment` and freeze them into the immutable request.
+5. Append both reservations to the in-progress private `planned_treatments` scratch list before allocating the next winner.
+6. Validate the complete request through `validation/validate_content.py` and the existing exact upload-payload validation before commit.
 
-### Fail-closed rule
-If either required runner execution cannot complete successfully, its JSON input is invalid, canonical code throws, analytics provenance is inconsistent, or output cannot be produced/consumed, **fail closed**. Do not approximate the result manually, do not reuse stale output, and do not commit manually reconstructed winners or final requests. `planning_runner.py` removes an existing output file before execution and writes a result only after successful canonical execution.
+If the allocator cannot run successfully or returns an invalid treatment, fail closed. Do not invent segment boundaries or speed values to continue planning.
 
-## Editorial and title competition
-Use central `EDITORIAL_WEIGHTS` and the canonical execution path above. For semifinalists develop an actual ending and at least five materially different truthful title candidates across controlled title styles. A sensational but inaccurate title is ineligible. The first spoken story-body line must add contradiction, discovery, consequence, urgent conflict or evidence; it must not repeat the opening card.
+## Segment reuse policy
 
-## YouTube metadata — planner-owned hard contract
-For every winning story, ChatGPT must author the complete YouTube metadata **before** the immutable request is committed. Do not rely on the uploader to invent semantic metadata later.
+Persistent segment/playback history comes only from private immutable successful receipts. Do not add mutable usage fields to the logical registry. Do not create a public history ledger.
 
-Each schema-v4 `youtube` object must contain exactly:
-- `title`: truthful curiosity-driven selected title, <=100 characters total and containing `#Shorts`.
-- `description`: concise, story-specific copy. Prefer 1–3 short sentences: a curiosity/reveal-oriented summary that does not spoil the entire payoff, optionally followed by one natural engagement question. Do not use generic boilerplate like `An original Wacky Dramas story.` as normal production copy. Do not keyword-stuff or repeat the title verbatim.
-- `hashtags`: 3–8 visible hashtags. Normally include `#Shorts` and `#WackyDramas`, then 1–6 genuinely relevant topic/story hashtags such as `#RelationshipDrama`, `#WorkplaceDrama`, `#FamilyDrama`, `#Storytime`. Avoid irrelevant trending hashtags and repetitive padding.
-- `tags`: **4–12 explicit backend semantic tags without `#`**. These are planned per story and stored immutably. Include brand/topic/story-intent terms that genuinely describe the video, e.g. `wacky dramas`, `workplace drama`, `boss story`, `office conflict`, `evidence backfire`, `storytime`. Do not generate hundreds of SEO variants, misleading keywords, competitor/channel names, or cosmetic singular/plural duplicates.
-- `category_id` and `made_for_kids` per the canonical production contract.
+For sufficiently long clips, prefer materially different temporal ranges and avoid recent/planned overlap according to `media/background_treatment.py`. Short clips and older assets without trustworthy duration metadata may use the allocator's backward-compatible full-source treatment.
 
-The uploader constructs final `snippet.tags` in this order: deterministic hidden recovery marker, planned `youtube.tags`, then de-duplicated hashtag words with the leading `#` removed. The hidden marker is backend-owned and must never be authored by ChatGPT or placed in the description.
+Playback speed is a treatment, not a uniqueness loophole. A different rate does not make an otherwise repeated segment meaningfully new. Segment diversity and logical-asset diversity remain primary.
 
-Hard final-payload limits: title <=100 characters including `#Shorts`; final description <=5,000 UTF-8 bytes after missing request hashtags are appended; final `snippet.tags` <=500 YouTube combined-character cost including hidden marker + planned semantic tags + hashtag-derived tags; hashtags 3–8; semantic tags 4–12.
+Use category/asset-aware speed bounds from the allocator. Do not universally accelerate every clip, and do not choose a faster rate merely for randomness.
 
-Before committing **every** winner, validate the exact local production payload:
-```python
-from publishing.upload import build_upload_body
-build_upload_body(request_data, require_future=False)
+## Daily coordination
+
+Continue carrying the retention selector's ephemeral `planned_asset_ids` / `planned_categories` (or their current equivalents) across the day's winners.
+
+Additionally carry ephemeral `planned_treatments` across the same planning run. These are private planning scratch inputs only; they are not a persistent public state store.
+
+The intended private allocation sequence is therefore:
+
+```text
+winner
+  -> retention-first logical primary/backup selection
+  -> asset/category anti-repetition
+  -> canonical segment/playback allocation
+  -> append planned asset/category/treatment scratch state
+  -> immutable schema-v5 request
 ```
-This is authoritative for description assembly, tag de-duplication and final tag cost. If it fails, fix or reject the winner before commit. The backend repeats these checks before expensive generation and at upload time.
 
-## Analytics learning
-Use only valid/current analytics state. `analytics/latest.json` contains the latest observation snapshot and evidence count; `analytics/model.json` is the canonical learned model produced by `analytics/analytics_learning.py`. Never invent Studio-only metrics. Use age-matched 24h/72h/7d cohorts. `analytics_evidence_count` is the evidence-equivalent confidence input; it is not a raw count of newly published Shorts. When analytics is disabled or the evidence count is zero, use editorial/diversity fallback. When enabled, the final runner executes canonical historical-attribute-fit scoring and feeds only normalized 0–100 analytics metrics into planning scoring. Do not feed raw views/retention/subscriber/share rates directly into the normalized scorer. Preserve smoothing, evidence confidence and exploration.
+## Public runtime boundary
 
-Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
+Do not move media probing, downloading, physical rendition selection, normalization, cropping, transcoding, FFmpeg treatment, rendering, or upload work into the private planner.
 
-## Diversity
-Apply diversity after ranking through the canonical deterministic engine. Respect configured category/conflict/title-pattern/recent-similarity constraints. For a full 24-story day the current configuration yields roughly 19 exploit + 5 explore; exploration must still pass every hard quality/safety gate.
+The public runtime receives the frozen logical IDs and treatment pair. It remains responsible for:
 
-## AI-owned cache-first backgrounds
-For every winner read `media-library/backgrounds.json`, successful receipts and `media/background_selector.py` recency/quality helpers. Semantically select two genuinely suitable, verified, fresh cached assets whenever possible; primary and backup must differ. Use `audit_ai_selection()` for mechanical quality/freshness/rendition safety. If fewer than two suitable cached assets exist, source only the missing Pexels assets, visually verify them, and create exactly one immutable `content/background-sourcing/YYYY-MM-DD.json` manifest for the day. Never invent provider IDs/URLs. Production ingestion uses PEXELS_API_KEY and fails closed before TTS/render/upload if ingestion fails. Respect `media/background_policy.py`: prefer 720×1280, then 30fps/lowest decode cost; max 1920×1080 or 1080×1920 equivalent; reject UHD/4K production selection.
+```text
+logical asset validation
+  -> smallest post-crop-sufficient physical rendition
+  -> normalized-cache lookup
+  -> download only if required
+  -> normalize once to production size/FPS if required
+  -> apply the frozen segment/playback treatment to the normalized job-local input
+  -> render
+```
 
-If a sourcing manifest is required, its `plan_date` must exactly equal the daily planning audit `plan_date`. Every item in `candidates` must contain the exact `logical_id` being introduced and a non-empty `required_by_content_ids` list. Every listed content ID must be one of that day's new requests and must actually reference that `logical_id` as its primary or backup background.
+The normalized physical cache remains treatment-agnostic. Different segment/speed treatments must not force repeated provider downloads or contaminate persistent creative history.
 
-## Immutable schema-v4 request
-Only after authoritative winner selection/background planning write full scripts and requests. Add scheduled `publication` with timezone `Asia/Singapore` and exact UTC RFC3339 `publish_at`. Include the canonical compact `planning` object: plan_date, editorial components/score, analytics score/weight, final score, >=5 title candidates, selected title score, hook score, exploit/explore class, reason, similarity, controlled attributes and target duration. The request's planning scores/selected title/class/publication must be copied from or remain consistent with the actual selected candidate returned by `final-select`; never manually recompute deterministic fields. `visual.background_primary_id` and backup are the AI-selected cache IDs. `youtube.title`, `description`, `hashtags`, and `tags` are immutable planned metadata and must match the exact payload validated before commit.
+## Staged compatibility
 
-## Daily planning audit and execution provenance
-Create exactly one `content/planning/YYYY-MM-DD.json` for a new plan. It must contain the required core keys `plan_date`, `planning_mode`, `final_selected`, and `content_ids`, in addition to the existing funnel/diversity/analytics/background/metadata audit details.
+The private/public compatibility hash fingerprints schema v5 treatment keys and bounds. Existing v4 requests may continue through the public runtime only through the explicitly tested staged compatibility path. New Daily requests use the current v5 hash.
 
-Also record a `planning_execution` object containing:
-- `raw_filter`: the `execution` object copied verbatim from the successful raw-filter runner output;
-- `final_selection`: the `execution` object copied verbatim from the successful final-select runner output;
-- `selected_candidate_ids`: the candidate IDs from final `result.selected`, in returned order.
+Do not weaken exact source-SHA validation, dispatch/start evidence, upload intent, duplicate-upload protection, recovery, idempotency, completion receipts, public/private state ownership, dry-run boundaries, or least-privilege behavior.
 
-The runner provenance includes the checked-out source SHA when available, implementation SHA-256, input SHA-256, deterministic stage and concrete canonical entry points. Do not replace this with a hand-authored boolean such as `executed: true`.
+## Final Daily request check
 
-`content_ids` must exactly equal the stems of the new request filenames in the same commit, with no extra or missing IDs, and `final_selected` must equal the number of those requests. The number and order of full winner requests must derive from the authoritative selected candidate set. Record catch-up reference time, eligible slots, and omitted elapsed/too-close slots when applicable. If no candidate clears hard gates, commit no weak filler.
+Before committing any Daily request, confirm:
 
-## Canonical narrator decision
-For every final winner, determine whose experience drives the setup and payoff. Resolve `story.lead_gender` as `female` or `male`; do not count isolated relationship words or infer from a secondary character. Resolve ambiguous cases from the narrator whose perspective carries the setup and punchline. If that still cannot be established, explicitly choose the narrator perspective before creating the request.
-
-Freeze `story.story_tone` and `narration.voice` in schema-v4:
-
-- female + natural/general → `af_heart`
-- female + funny/dramatic/expressive → `af_bella`
-- male + natural/general → `am_echo`
-- male + funny/dramatic/expressive → `am_fenrir`
-
-Use one voice for the complete Short. Never randomly rotate voices or switch per sentence.
-
-## Canonical visual-quality decision
-White subtitles must remain readable throughout the used segment. Logical primary/backup selection must prioritize caption-safe-region readability above aesthetics, alongside motion, loopability and semantic fit. Reject bright-white, flashing or highly cluttered caption regions unless the approved outline, shadow and subtle darkening treatment can protect them.
-
-The frozen request still contains only logical primary and backup IDs. Runtime chooses the smallest physical rendition whose effective 9:16 crop can produce 1080×1920 without more than very minor enlargement. Prefer native vertical, then downscaling; use 4K landscape only when its post-crop resolution is necessary. Never substitute an unrelated third asset.
-
-## Commit and handoff
-The content commit may contain only the new planning audit, new immutable requests and optional same-day sourcing manifest. Temporary runner inputs/outputs are execution evidence sources and must not be committed as mutable production state. Use commit message `[daily production] YYYY-MM-DD`. ChatGPT planning ends after the content commit; `daily-production.yml` (**Daily Production**) owns production and YouTube scheduling. Never directly upload/render/TTS from the planner.
+- schema version is 5;
+- primary and backup IDs are distinct registered logical assets;
+- both treatment objects came from the canonical allocator;
+- long-source segments do not knowingly repeat recent/planned ranges when alternatives exist;
+- playback rates are within canonical asset/category/global bounds;
+- same-day scratch history was supplied for later winners;
+- no mutable usage/segment/playback ledger was added to `production-runtime`;
+- physical rendition selection is still smallest-sufficient **after crop**;
+- no provider original/UHD shortcut was introduced;
+- normalized-cache reuse remains possible across different treatments;
+- all remaining rules from `docs/DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.

@@ -70,8 +70,11 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn("10 million qualified public Shorts views", text)
         self.assertIn("business-purpose language only", overview)
 
-    def test_private_request_contract_is_single_schema_v4(self):
+    def test_private_request_contract_is_schema_v5_with_v4_compatibility(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(
+            encoding="utf-8"
+        )
+        legacy_validator = (BOT_ROOT / "validation/schema_v4.py").read_text(
             encoding="utf-8"
         )
         semantic = (BOT_ROOT / "validation/semantic.py").read_text(encoding="utf-8")
@@ -80,16 +83,20 @@ class ArchitectureContractTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("SCHEMA_VERSION = 4", validator)
-        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4}", validator)
-        self.assertNotIn("SUPPORTED_SCHEMA_VERSIONS = {3, 4}", validator)
-        self.assertIn('"punchline"', validator)
-        self.assertIn("validate_punchline", validator)
+        self.assertIn("SCHEMA_VERSION = 5", validator)
+        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4, 5}", validator)
+        self.assertIn('"background_primary_treatment"', validator)
+        self.assertIn('"background_backup_treatment"', validator)
+        self.assertIn('"segment_start_seconds"', validator)
+        self.assertIn('"segment_duration_seconds"', validator)
+        self.assertIn('"playback_rate"', validator)
+        self.assertIn('"punchline"', legacy_validator)
+        self.assertIn("validate_punchline", legacy_validator)
         self.assertIn('"REVERSAL"', semantic)
         self.assertIn("MAX_EMPHASIS_WORDS = 5", semantic)
         self.assertNotIn("YOUTUBE_KEYS_V2", validator)
         self.assertNotIn("schema in {2, 3}", validator)
-        self.assertIn('mode not in {"scheduled", "immediate"}', validator)
+        self.assertIn('mode not in {"scheduled", "immediate"}', legacy_validator)
         self.assertIn(
             '"privacyStatus": "public" if mode == "immediate" else "private"',
             upload,
@@ -98,7 +105,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("Publication contract is required", upload)
         self.assertIn("Immediate publication requires publish_at=null", upload)
         self.assertNotIn('\"mode\": \"public\"', upload)
-        self.assertIn("Schema v4 is the current production request format", overview)
+        self.assertIn("Schema v5 is the current production request format", overview)
+        self.assertIn("Schema v4 remains executable", overview)
 
         forbidden = [
             "schema " + "v2",
@@ -221,8 +229,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertNotIn("`build-image.yml`", readme)
         self.assertNotIn("`youtube-shorts-bot/Dockerfile`", readme)
         self.assertIn("public `production-runtime` repository owns", readme)
-        self.assertIn("Schema v4 is the current production request format", overview)
-        self.assertIn("schema-v4 daily path", recovery)
+        self.assertIn("Schema v5 is the current production request format", overview)
+        self.assertIn("schema-v5 daily path", recovery)
         for text in (readme, overview, recovery, runtime_map):
             self.assertNotIn("720×1280", text)
             self.assertNotIn("720x1280", text)
@@ -243,7 +251,7 @@ class ArchitectureContractTests(unittest.TestCase):
         for text in (prompt, collector, learning):
             self.assertIn("analytics_evidence_count", text)
         self.assertIn('\"model_version\": 1', model)
-        self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}", collector)
+        self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4, 5}", collector)
         self.assertIn('in {"scheduled", "immediate"}', collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)

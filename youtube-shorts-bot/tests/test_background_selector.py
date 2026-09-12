@@ -1,3 +1,4 @@
+import copy
 import sys
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -8,24 +9,40 @@ sys.path.insert(0, str(BASE))
 
 from media.background_selector import (
     audit_ai_selection,
+    derive_category_history,
     derive_usage_history,
     rank_assets,
+    retention_category,
     select_logical_backgrounds,
 )
 
 
-def asset(n, tags=("fluid", "calm"), quality=90):
-    return {
+def asset(
+    n,
+    tags=("fluid", "calm"),
+    quality=90,
+    *,
+    category=None,
+    intensity="medium",
+    motion_type="loop",
+    orientation="vertical",
+):
+    value = {
         "id": f"satisfying-{n:03}", "status": "active", "verified": True,
         "title": f"Fluid asset {n}", "visual_tags": list(tags),
-        "motion_type": "loop", "motion_intensity": "medium", "orientation": "vertical",
+        "motion_type": motion_type, "motion_intensity": intensity, "orientation": orientation,
         "loopability_score": quality, "visual_satisfaction_score": quality,
         "caption_readability_score": quality,
+        "source": "Pexels", "source_page": f"https://www.pexels.com/video/{1000+n}/",
+        "license": "Pexels License", "commercial_use": True,
         "renditions": [{
             "id": f"r{n}", "width": 1080, "height": 1920, "fps": 30,
             "file_type": "video/mp4", "direct_url": f"https://videos.pexels.com/{n}.mp4",
         }],
     }
+    if category:
+        value["retention_category"] = category
+    return value
 
 
 def receipt(n, asset_id, *, passed=True, scheduled=False, published=False):
@@ -50,9 +67,83 @@ REQ = {"visual_tags": ["fluid", "calm"], "motion_type": "loop", "motion_intensit
 
 
 class BackgroundSelectorTests(unittest.TestCase):
+    def test_high_retention_candidate_beats_literal_but_weaker_generic_candidate(self):
+        literal = asset(1, tags=("relationship", "argument"), quality=96, category="generic")
+        literal["title"] = "Relationship argument"
+        literal["motion_type"] = "ambient"
+        literal["motion_intensity"] = "low"
+        engaging = asset(
+            2,
+            tags=("baking", "cake", "decorating"),
+            quality=92,
+            category="baking",
+            intensity="high",
+            motion_type="continuous_process",
+        )
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        ranked = rank_assets({"assets": [literal, engaging]}, requirements, [])
+        self.assertEqual(ranked[0]["id"], engaging["id"])
+        self.assertGreater(ranked[0]["retention_score"], ranked[1]["retention_score"])
+        self.assertTrue(ranked[1]["legacy_topic_match"])
+
+    def test_topic_relevance_is_a_boost_not_an_eligibility_requirement(self):
+        unrelated = asset(
+            1,
+            tags=("baking", "dough"),
+            quality=94,
+            category="baking",
+            intensity="high",
+            motion_type="continuous_process",
+        )
+        second = asset(
+            2,
+            tags=("pottery", "crafting"),
+            quality=92,
+            category="crafting",
+            intensity="high",
+            motion_type="continuous_process",
+        )
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        decision = select_logical_backgrounds({"assets": [unrelated, second]}, requirements, [])
+        self.assertFalse(decision["expansion_required"])
+        first = next(x for x in decision["ranked_candidates"] if x["id"] == unrelated["id"])
+        self.assertLess(first["semantic_score"], 0.45)
+        self.assertTrue(first["strong_match"])
+        self.assertFalse(decision["used_legacy_topic_fallback"])
+
+    def test_high_retention_pool_empty_uses_existing_topic_fallback(self):
+        first = asset(
+            1,
+            tags=("relationship", "argument"),
+            quality=95,
+            category="generic",
+            intensity="low",
+            motion_type="ambient",
+        )
+        second = asset(
+            2,
+            tags=("relationship", "argument"),
+            quality=93,
+            category="generic",
+            intensity="low",
+            motion_type="ambient",
+        )
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        decision = select_logical_backgrounds({"assets": [first, second]}, requirements, [])
+        self.assertFalse(decision["expansion_required"])
+        self.assertTrue(decision["used_legacy_topic_fallback"])
+        selected = {
+            decision["primary"],
+            decision["backup"],
+        }
+        self.assertEqual(selected, {first["id"], second["id"]})
+        for item in decision["ranked_candidates"]:
+            self.assertFalse(item["strong_match"])
+            self.assertTrue(item["legacy_topic_match"])
+
     def test_recent_hard_avoid_beats_excellent_match(self):
-        recent = asset(1, quality=99)
-        fresh = asset(2, quality=90)
+        recent = asset(1, quality=99, category="baking", intensity="high")
+        fresh = asset(2, quality=90, category="crafting", intensity="high")
         ranked = rank_assets({"assets": [recent, fresh]}, REQ, [receipt(0, recent["id"])])
         self.assertEqual(ranked[0]["id"], fresh["id"])
         self.assertTrue(next(x for x in ranked if x["id"] == recent["id"])["hard_avoided"])
@@ -75,17 +166,54 @@ class BackgroundSelectorTests(unittest.TestCase):
         self.assertEqual(ranked[0]["id"], "satisfying-002")
         self.assertTrue(ranked[0]["never_used"])
 
-    def test_relevance_protects_against_unused_poor_match(self):
-        strong = asset(1)
-        poor = asset(2, tags=("traffic", "crowd"), quality=99)
-        poor["title"] = "Busy traffic crowd"
-        receipts = [receipt(i, "satisfying-999") for i in range(40)]
-        receipts[-1]["background_asset_id"] = strong["id"]
-        ranked = rank_assets({"assets": [poor, strong]}, REQ, receipts)
-        self.assertEqual(ranked[0]["id"], strong["id"])
-        self.assertFalse(next(x for x in ranked if x["id"] == poor["id"])["strong_match"])
+    def test_category_rotation_is_soft_and_uses_private_receipts(self):
+        baking_candidate = asset(1, tags=("baking",), quality=93, category="baking", intensity="high")
+        craft_candidate = asset(2, tags=("crafting",), quality=92, category="crafting", intensity="high")
+        historical_baking = asset(3, tags=("baking",), quality=90, category="baking", intensity="high")
+        registry = {"assets": [baking_candidate, craft_candidate, historical_baking]}
+        history = [
+            receipt(0, historical_baking["id"]),
+            receipt(1, historical_baking["id"]),
+            receipt(2, historical_baking["id"]),
+        ]
+        ranked = rank_assets(registry, {}, history)
+        candidates = [item for item in ranked if item["id"] in {baking_candidate["id"], craft_candidate["id"]}]
+        self.assertEqual(candidates[0]["id"], craft_candidate["id"])
+        baking_rank = next(item for item in candidates if item["id"] == baking_candidate["id"])
+        self.assertFalse(baking_rank["hard_avoided"])
+        self.assertGreater(baking_rank["category_penalty"], 0)
+        derived = derive_category_history(registry, history)
+        self.assertEqual(derived["counts"]["baking"], 3)
 
-    def test_expansion_when_fresh_strong_pool_is_too_small(self):
+    def test_category_rotation_does_not_force_bad_candidate(self):
+        first = asset(1, quality=94, category="baking", intensity="high")
+        second = asset(2, quality=92, category="baking", intensity="high")
+        weak_other = asset(3, quality=55, category="cleaning", intensity="low")
+        decision = select_logical_backgrounds({"assets": [first, second, weak_other]}, {}, [])
+        self.assertFalse(decision["expansion_required"])
+        self.assertEqual({decision["primary"], decision["backup"]}, {first["id"], second["id"]})
+
+    def test_planned_batch_use_penalizes_duplicate_without_persisting_state(self):
+        first = asset(1, quality=93, category="baking", intensity="high")
+        second = asset(2, quality=92, category="crafting", intensity="high")
+        registry = {"assets": [first, second]}
+        receipts = []
+        before_registry = copy.deepcopy(registry)
+        before_receipts = copy.deepcopy(receipts)
+        ranked = rank_assets(
+            registry,
+            {},
+            receipts,
+            planned_asset_ids=[first["id"]],
+            planned_categories=["baking"],
+        )
+        self.assertEqual(ranked[0]["id"], second["id"])
+        selected_first = next(x for x in ranked if x["id"] == first["id"])
+        self.assertGreater(selected_first["planned_asset_penalty"], 0)
+        self.assertEqual(registry, before_registry)
+        self.assertEqual(receipts, before_receipts)
+
+    def test_expansion_when_fresh_or_legacy_pool_is_too_small(self):
         registry = {"assets": [asset(1), asset(2)]}
         decision = select_logical_backgrounds(
             registry, REQ, [receipt(0, "satisfying-001"), receipt(1, "satisfying-002")]
@@ -117,16 +245,43 @@ class BackgroundSelectorTests(unittest.TestCase):
         generic_rank = next(x for x in decision["ranked_candidates"] if x["id"] == generic_only["id"])
         self.assertFalse(generic_rank["rendition_ready"])
         self.assertFalse(generic_rank["strong_match"])
+        self.assertFalse(generic_rank["legacy_topic_match"])
 
-    def test_ai_selection_is_semantic_owner_but_mechanical_safety_is_hard(self):
-        first, second = asset(1, tags=("traffic",), quality=92), asset(2, tags=("cooking",), quality=91)
-        first["title"] = "Night traffic time lapse"
-        second["title"] = "Cake decorating close up"
-        audit = audit_ai_selection({"assets": [first, second]}, first["id"], second["id"], [], REQ)
+    def test_ai_selection_allows_low_topic_fit_when_retention_is_strong(self):
+        first = asset(1, tags=("baking",), quality=92, category="baking", intensity="high")
+        second = asset(2, tags=("cooking",), quality=91, category="cooking", intensity="high")
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        audit = audit_ai_selection(
+            {"assets": [first, second]}, first["id"], second["id"], [], requirements
+        )
         self.assertTrue(audit["passed"])
-        # Sparse cache tags may score poorly; the AI's semantic judgment is still
-        # allowed if quality, cache identity, recency and rendition safety pass.
         self.assertLess(audit["primary"]["semantic_score"], 0.45)
+        self.assertGreaterEqual(audit["primary"]["retention_score"], 0.72)
+
+    def test_ai_selection_allows_existing_topic_fallback_when_retention_pool_is_thin(self):
+        first = asset(
+            1,
+            tags=("relationship", "argument"),
+            quality=95,
+            category="generic",
+            intensity="low",
+            motion_type="ambient",
+        )
+        second = asset(
+            2,
+            tags=("relationship", "argument"),
+            quality=93,
+            category="generic",
+            intensity="low",
+            motion_type="ambient",
+        )
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        audit = audit_ai_selection(
+            {"assets": [first, second]}, first["id"], second["id"], [], requirements
+        )
+        self.assertTrue(audit["passed"])
+        self.assertFalse(audit["primary"]["strong_match"])
+        self.assertTrue(audit["primary"]["legacy_topic_match"])
 
     def test_ai_selection_rejects_recent_or_oversized_only_asset(self):
         recent = asset(1)
@@ -142,6 +297,27 @@ class BackgroundSelectorTests(unittest.TestCase):
         self.assertFalse(audit["passed"])
         self.assertTrue(any("last 10 Shorts" in message for message in audit["errors"]))
         self.assertTrue(any("1080x1920" in message for message in audit["errors"]))
+
+    def test_older_entries_without_retention_metadata_are_inferred_lazily(self):
+        old = asset(1, tags=("cake", "decorating"), quality=90)
+        old.pop("retention_category", None)
+        self.assertEqual(retention_category(old), "baking")
+        ranked = rank_assets({"assets": [old]}, {}, [])
+        self.assertEqual(ranked[0]["retention_category"], "baking")
+
+    def test_unlicensed_social_gameplay_never_enters_eligible_pool(self):
+        gameplay = asset(1, quality=99, category="licensed_gameplay", intensity="high")
+        gameplay["source"] = "YouTube"
+        gameplay["source_page"] = "https://www.youtube.com/watch?v=creator-video"
+        registry = {"license_reference": "https://www.pexels.com/license/", "assets": [gameplay, asset(2)]}
+        ranked = rank_assets(registry, {}, [])
+        self.assertNotIn(gameplay["id"], {item["id"] for item in ranked})
+
+    def test_explicitly_licensed_gameplay_can_enter_pool(self):
+        gameplay = asset(1, quality=95, category="licensed_gameplay", intensity="high")
+        registry = {"license_reference": "https://www.pexels.com/license/", "assets": [gameplay]}
+        ranked = rank_assets(registry, {}, [])
+        self.assertEqual([gameplay["id"]], [item["id"] for item in ranked])
 
 
 if __name__ == "__main__":

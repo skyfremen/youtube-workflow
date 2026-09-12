@@ -21,19 +21,22 @@ Daily planner
   -> diversity + ~80/20 exploit/explore
   -> <=24 winners
   -> full scripts + verified background IDs
-  -> immutable schema-v4 requests
+  -> private segment/playback treatment allocation
+  -> immutable schema-v5 requests
   -> one lightweight private dispatch (batch_id + source_sha + contract_hash)
-  -> one public runtime workflow and one production job
+  -> one public runtime workflow and bounded production units
+  -> resolve/normalize physical background once
+  -> apply frozen job-local segment/playback treatment
   -> render selected stories only
-  -> upload each exactly once as private + publishAt
+  -> upload each exactly once according to immutable publication mode
   -> verify exact YouTube state
   -> immutable verified receipt using the request schema version
   -> age-matched 24h / 72h / 7d analytics learning
 ```
 
-Schema v4 is the current production request format. Schema v3 remains accepted only so immutable historical/recovery state remains operable.
+Schema v5 is the current production request format for newly authored Daily and Ad-hoc Shorts. Schema v4 remains executable only for staged migration/recovery of immutable requests that already exist. Older schema-v3 receipts remain historical/analytics compatibility only where the consuming component explicitly supports them.
 
-There is no mutable hourly queue and no hourly render cron. Publication cadence is delegated to YouTube's scheduled publication state after selected videos are prepared in advance.
+There is no mutable hourly queue and no hourly render cron. Scheduled publication cadence is delegated to YouTube after selected videos are prepared in advance; Ad-hoc publication remains immediate-public through its immutable request contract.
 
 ## Planning competition
 
@@ -41,9 +44,9 @@ Twenty-four final uploads should be winners of a real competition. A raw pool of
 
 Raw candidates are cheap structured premises. They do not trigger media download, TTS, rendering or upload. Expensive production begins only after final selection.
 
-Central strategy values live in `planning/planning_config.py`. `planning/planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change weighting.
+Central strategy values live in `planning/planning_config.py`. `planning/planning_engine.py` owns deterministic arithmetic so prompt wording cannot silently change weighting. `planning/planning_runner.py` is the required executable checkpoint for raw filtering and final deterministic selection; Work consumes its actual returned result rather than reproducing the arithmetic manually.
 
-With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until at least 10 comparable ~24-hour milestone snapshots exist and view evidence is sufficient. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap so editorial judgment and exploration always remain material.
+With no mature public performance evidence, selection is 100% editorial. Analytics stays disabled until enough comparable milestone evidence exists. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap so editorial judgment and exploration always remain material.
 
 Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics/analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters `planning/planning_engine.py` only as normalized `historical_attribute_fit`.
 
@@ -59,17 +62,34 @@ A full 24-story plan aims for roughly 19 exploit and 5 explore selections. Explo
 
 ## Immutable request contract
 
-**Schema v4 is the current production request format; schema v3 remains accepted only for immutable recovery.** Every current request contains the canonical story, narration, visual and YouTube fields plus:
+**Schema v5 is the current production request format. Schema v4 remains supported for existing immutable migration/recovery requests.** Every newly authored request contains the canonical story, narration, visual and YouTube fields plus:
 
-- immutable `publication` with `mode=scheduled`, `timezone=Asia/Singapore`, and exact UTC `publish_at`
+- immutable `publication`; Daily uses `mode=scheduled`, `timezone=Asia/Singapore`, and exact UTC `publish_at`, while Ad-hoc uses `mode=immediate` with `publish_at=null`
 - immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification
-- schema-v4 story metadata that freezes lead gender and story tone so the approved narration voice can be selected deterministically
+- story metadata that freezes lead gender and story tone so the approved narration voice can be selected deterministically
+- distinct logical `background_primary_id` and `background_backup_id`
+- immutable `background_primary_treatment` and `background_backup_treatment`, each freezing `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate`
 
-The schedule is bound to the same immutable request bytes and source commit as the story. Production requires a complete scheduled publication contract.
+Persistent asset/category/segment/playback history is owned by the private planner and derived from immutable successful receipts. Daily may additionally use same-run ephemeral planned state. The public runtime does not keep a cross-run creative-history ledger.
+
+The schedule/publication contract and visual treatment are bound to the same immutable request bytes and exact source commit as the story.
+
+## Background execution boundary
+
+The private planner chooses logical assets and their temporal/playback treatments. The public runtime owns physical execution:
+
+1. validate the frozen logical primary/backup IDs and treatment objects;
+2. select the smallest rendition that remains sufficient after the real 9:16 crop;
+3. reuse the normalized physical cache when available;
+4. download only when needed and normalize once to 1080×1920/30 H.264 when required;
+5. apply the frozen segment/playback treatment to a job-local normalized input;
+6. render captions, brand treatments and narration.
+
+The normalized cache is treatment-agnostic and is only a physical optimization. A different temporal treatment must not create persistent public creative state or force re-download of an already cached normalized master.
 
 ## Batch production and Actions cost
 
-`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow prepares once, deterministically partitions a normal 24-item batch into 12 two-item matrix units with internal concurrency two, then performs one authoritative aggregation/finalization. All canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private. Ad-hoc generation uses the separate one-job `single.yml` path at concurrency one.
+`daily-production.yml` performs one lightweight cross-repository dispatch. The public `production-runtime` workflow prepares once, deterministically partitions a normal 24-item batch into bounded units, then performs one authoritative aggregation/finalization. All canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private. Ad-hoc generation uses the separate one-job `single.yml` path at concurrency one.
 
 The public repository also owns the canonical runtime-image build through `base.yml`, `base/Dockerfile`, and `base/dependencies.txt`. The private repository does not contain a Dockerfile, runtime dependency manifest, or image-build workflow.
 
@@ -83,15 +103,15 @@ Before `videos.insert`, production creates an immutable durable intent containin
 
 - exact request identity/blob SHA/source commit
 - expected channel ID
-- exact private + scheduled `publishAt` upload body
+- exact immutable upload body
 - verified render metadata and background selection
 - workflow provenance
 
-Once an intent exists, absence of a visible video is **never** permission to insert again. Recovery searches the authenticated channel for the deterministic non-viewer-facing content marker and either imports the matching upload or fails closed for operator reconciliation.
+Once an intent exists, absence of a visible video is **never** permission to insert again. Recovery searches only through the bounded, evidence-driven paths defined by the recovery contract and either imports/verifies the matching upload or fails closed for operator reconciliation.
 
 If verification happens after a scheduled video has already transitioned public, recovery may accept that state only when durable evidence proves the exact intended schedule and YouTube is not observed public before that instant.
 
-A verified result receipt uses the same supported schema version as its immutable request and is created only after exact YouTube state and render evidence verify successfully. Existing receipts are immutable and reused unchanged.
+A verified result receipt uses the same supported schema version as its immutable request and is created only after exact YouTube state and render evidence verify successfully. For schema v5 it also binds the executed background treatment to the immutable request. Existing receipts are immutable and reused unchanged.
 
 ## Render verification
 
@@ -103,7 +123,7 @@ The verifier checks duration, **1080×1920** resolution, 30 fps, H.264 High vide
 
 Raw YouTube observations are collected by the public `production-runtime/.github/workflows/observe.yml` approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore** and written into private state. Public runtime validation is isolated in credential-free `dry-run.yml`. The private `analytics-collection.yml` processes/enriches the latest observations once per day at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
 
-Analytics accepts canonical scheduled schema-v3 or schema-v4 success receipts with planning metadata. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
+Analytics accepts canonical published success receipts for schemas v3, v4 and v5. Schema v3 is historical analytics compatibility; v4 covers immutable pre-v5 production; v5 is current production. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking a two-hour-old Short against a week-old Short by raw views.
 
 The performance model uses available signals including engaged-view continuation, average percentage viewed, qualified views, **net subscribers per 1,000 views**, shares, likes and comments. Metrics are normalized within the selected cohort before aggregation.
 
@@ -113,7 +133,7 @@ The planner prefers the most mature cohort with enough usable evidence: 7d, othe
 
 ## Daily content commit
 
-The external daily planner follows `planning/DAILY_PLANNER_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v4 request files in one content-only commit whose message begins:
+The external daily planner follows `planning/DAILY_PLANNER_PROMPT.md` and creates exactly one immutable planning audit plus 1–24 immutable schema-v5 request files in one content-only commit whose message begins:
 
 `[daily production] YYYY-MM-DD`
 
@@ -130,8 +150,9 @@ Before a production change is merged:
 1. private planning/state checks and public runtime static/unit checks must pass
 2. planning acceptance must generate at least 120 raw premises and valid selected requests
 3. selected requests must have unique Singapore hourly slots
-4. dry-run must prove no TTS, render, upload or false-receipt side effects
+4. dry-run must prove no TTS, render, upload or false-receipt side effects in the private control plane
 5. production must retain durable intent and duplicate-recovery invariants
 6. current secrets must remain referenced only through GitHub Actions secret expressions
 7. the public runtime must write canonical state only to this private repository
 8. the private/public semantic contract fingerprints must remain equal
+9. schema-v5 treatment execution must remain stateless publicly and receipt-derived privately

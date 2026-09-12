@@ -22,7 +22,7 @@ MILESTONES_PATH = ANALYTICS / "milestones.json"
 MODEL_PATH = ANALYTICS / "model.json"
 LATEST_PATH = ANALYTICS / "latest.json"
 SINGAPORE_TZ = ZoneInfo("Asia/Singapore")
-SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4}
+SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4, 5}
 
 
 def singapore_date(now_utc=None):
