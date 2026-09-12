@@ -22,6 +22,46 @@ The immutable publication object remains immediate-public:
 
 The public upload contract therefore resolves to `privacyStatus: public` with no future `publishAt`.
 
+## Repository-side execution bridge
+
+When ChatGPT / Work has a real local checkout of this private repository, execute the canonical Python entry points directly as documented below.
+
+When the connected environment can read/write GitHub state but cannot execute the checked-out private repository locally, **do not fail merely because local process execution is unavailable and do not reproduce deterministic arithmetic manually**. Use the private repository-side bridge instead.
+
+The bridge is `.github/workflows/planner-execution.yml` plus `planning/execution_bridge.py`. It executes from an actual checkout of current `main`, preserving the same fail-closed deterministic implementation and source-SHA provenance.
+
+For each required repository-side operation:
+
+1. Create exactly one new JSON envelope under:
+   `content/planner-execution/inputs/<execution_id>.json`
+2. `execution_id` must match `pe-[A-Za-z0-9-]{8,96}` and equal the filename stem.
+3. The envelope is:
+
+```json
+{
+  "schema_version": 1,
+  "execution_id": "pe-...",
+  "operation": "planning.raw-filter",
+  "payload": {}
+}
+```
+
+Supported canonical operations are:
+
+- `planning.raw-filter` — payload is the exact `planning_runner.py` raw-filter input.
+- `planning.final-select` — payload is the exact `planning_runner.py` final-select input.
+- `background.select` — payload contains `requirements` and optional `planned_asset_ids` / `planned_categories`; this executes the canonical retention-first private selector against the current registry and successful receipts.
+- `background.audit` — payload contains `primary_id`, `backup_id`, and optional `requirements`; this executes the canonical mechanical safety audit for the selected pair.
+- `background.treatment` — payload contains `primary_id`, `backup_id`, and optional `planned_treatments`.
+- `request.validate` — payload contains the complete proposed immutable `request`; this runs schema validation, canonical runtime-contract fingerprinting and exact `build_upload_body(..., require_future=False)` validation.
+
+The workflow writes the result to:
+`content/planner-execution/results/<execution_id>.json`.
+
+Consume the **actual committed result** before continuing. Never infer success from workflow start alone. Never hand-author a substitute result if the workflow fails or the result file is absent.
+
+Bridge input/result commits are execution evidence, not production requests, Daily plans, background-sourcing manifests or upload state. They must not use `[daily production]` or `[adhoc production]` commit markers.
+
 ## Schema-v5 override
 
 New Ad-hoc requests use **schema v5**, not schema v4.
@@ -33,6 +73,8 @@ PYTHONPATH=youtube-shorts-bot python youtube-shorts-bot/media/background_treatme
   --primary-id <PRIMARY_ID> \
   --backup-id <BACKUP_ID>
 ```
+
+When local checkout execution is unavailable, use the repository-side `background.select`, `background.audit`, and `background.treatment` operations above and consume their actual committed results.
 
 Consume the allocator's actual returned values and freeze these four visual fields:
 
@@ -61,8 +103,20 @@ The frozen treatment is applied only after the physical source has been normaliz
 
 Immediate-public semantics remain unchanged: exactly one Short, `publication.mode = "immediate"`, no future `publishAt`, and no interaction with Daily's 24 hourly slots.
 
+## Commit and automatic private dispatch
+
+After exact request validation succeeds, commit exactly one new immutable Ad-hoc request using:
+
+`[adhoc production] YYYY-MM-DD`
+
+The private `.github/workflows/adhoc-request-dispatch.yml` watches only newly added Ad-hoc request files, verifies the immediate-public request identity, and dispatches the existing private `.github/workflows/adhoc-production.yml` with that `content_id`.
+
+This helper exists only to bridge environments that can create the canonical request commit but cannot directly invoke GitHub `workflow_dispatch`. It does **not** bypass `adhoc-production.yml`, does not dispatch the public repository itself, and does not alter recovery/idempotency ownership.
+
+If the environment can directly invoke the private `adhoc-production.yml`, that remains valid for explicit recovery of an existing immutable Ad-hoc content ID.
+
 ## Fail closed
 
-Do not create a new v4 request. If treatment allocation, schema-v5 validation, contract compatibility, exact payload validation or any required deterministic planner step fails, fail closed rather than substituting guessed values.
+Do not create a new v4 request. If planner execution, background selection/audit, treatment allocation, schema-v5 validation, contract compatibility, exact payload validation or any required deterministic step fails, fail closed rather than substituting guessed values.
 
 All rules in `docs/ADHOC_PLANNER_V4_BASE.md` remain in force unless explicitly superseded by this overlay.
