@@ -1,9 +1,10 @@
 """Repository-side execution bridge for mechanical private checks.
 
-ChatGPT owns candidate filtering, evaluation, and editorial winner selection. This
-bridge exists only for deterministic repository operations that are intentionally
-kept outside creative planning, such as background allocation and final request
-validation. It does not expose planning stages.
+ChatGPT owns candidate planning, editorial winner selection, and exact logical
+background asset selection. This bridge exists only for deterministic repository
+operations intentionally kept outside creative planning: auditing ChatGPT's chosen
+backgrounds, allocating treatment parameters, and validating the final request.
+It does not expose planning or background-selection stages.
 """
 from __future__ import annotations
 
@@ -14,11 +15,7 @@ import subprocess
 from pathlib import Path
 
 from common.runtime_contract import contract_hash
-from media.background_selector import (
-    audit_ai_selection,
-    load_successful_receipts,
-    select_logical_backgrounds,
-)
+from media.background_selector import audit_ai_selection, load_successful_receipts
 from media.background_treatment import select_pair_treatments
 from media.validate_media_library import load_registry
 from publishing.upload import build_upload_body
@@ -27,7 +24,6 @@ from validation.validate_content import validate_request_data
 SCHEMA_VERSION = 1
 EXECUTION_ID_RE = re.compile(r"pe-[A-Za-z0-9-]{8,96}")
 OPERATIONS = {
-    "background.select",
     "background.audit",
     "background.treatment",
     "request.validate",
@@ -69,21 +65,10 @@ def execute_envelope(envelope):
         raise ValueError("unsupported bridge operation")
     payload = _require_object(envelope.get("payload"), "payload")
 
-    if operation in {"background.select", "background.audit", "background.treatment"}:
+    if operation in {"background.audit", "background.treatment"}:
         registry = load_registry()
         receipts = load_successful_receipts(BASE / "content" / "results")
-        if operation == "background.select":
-            requirements = _require_object(payload.get("requirements") or {}, "requirements")
-            planned_asset_ids = _require_list(payload.get("planned_asset_ids") or [], "planned_asset_ids")
-            planned_categories = _require_list(payload.get("planned_categories") or [], "planned_categories")
-            result = select_logical_backgrounds(
-                registry,
-                requirements,
-                receipts,
-                planned_asset_ids=planned_asset_ids,
-                planned_categories=planned_categories,
-            )
-        elif operation == "background.audit":
+        if operation == "background.audit":
             result = audit_ai_selection(
                 registry,
                 str(payload.get("primary_id") or ""),
