@@ -8,11 +8,11 @@ Repository code remains the source of truth for the rules. Before planning, insp
 
 ## Canonical ownership
 
-For new Daily planning runs, **ChatGPT / Work is the planner**.
+For new Daily planning runs, **ChatGPT / Work is the planner**. ChatGPT / Work owns the final editorial choice.
 
 ChatGPT must itself perform candidate filtering, scoring analysis, diversity reasoning, analytics interpretation, editorial comparison, and final winner selection by applying the current repository rules. GitHub Actions must not execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, or `final-select` on ChatGPT's behalf for a new plan.
 
-`planning_engine.py`, `planning_config.py`, and analytics code are the canonical rule/specification sources that ChatGPT reads and applies. They may remain executable for tests, regression checks, historical compatibility, or independent validation, but they do not own the new-plan decision path.
+`planning_engine.py`, `planning_config.py`, and analytics code are the canonical rule/specification sources that ChatGPT reads and applies. They may remain executable for tests, regression checks, legacy recovery compatibility, or independent validation, but they do not own the new-plan decision path.
 
 The canonical Daily flow is:
 
@@ -53,9 +53,11 @@ The private validation path must fail closed if this ownership/provenance shape 
 
 ## Preserved canonical operating rules
 
-The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and plans the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering. When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the current Singapore calendar day. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours.
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering.
 
-If `content/planning/YYYY-MM-DD.json` already exists, do not create a second plan or mutate immutable requests. Use existing content IDs through `daily-production.yml` manual recovery.
+When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
+
+If `content/planning/YYYY-MM-DD.json` already exists, do **not** create a second plan or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual `workflow_dispatch` recovery. Planning audits continue to record `planning_mode` as `normal_next_day` or `same_day_catch_up`, and catch-up audits record omitted elapsed/too-close slots.
 
 Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`.
 
