@@ -1,0 +1,14 @@
+{
+  "batch_id": "r_0d8492aa3c1cd421ec71a1842ffe91",
+  "detail": "Traceback (most recent call last):\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 246, in <module>\n    main()\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 194, in main\n    run(\n  File \"/__w/production-runtime/production-runtime/runtime/core.py\", line 176, in run\n    raise RunnerError(\"One or more items failed; recovery remains authoritative\")\nRunnerError: One or more items failed; recovery remains authoritative\n\nPrivate internal detail:\nRemote readiness preflight OK: credential refresh/API read succeeded; pinned identity=UCvrq2m9G4yrwPfL_X-QPzMA.\nBounded production pipeline: concurrency=1 logical_cpus=4 threads_per_worker=4\n::error title=Per-video prepare failure::Failed: /__w/production-runtime/production-runtime/runtime/content/requests/wd-20260913T010000-adhoc-a01c01.json \u2014 continuing remaining Shorts; durable intent/recovery rules remain authoritative\nPERF_METRIC production_started_at=1789230463.913 concurrency=1 logical_cpu_count=4 threads_per_worker=4 production_phase_seconds=1.382 peak_cpu_percent=0.000 peak_load_1m=0.000 peak_aggregate_rss_bytes=0 memory_total_bytes=16766414848 peak_memory_percent=0.000\n",
+  "error_code": "E_EXEC_001",
+  "execution_started": true,
+  "retryable": true,
+  "runtime_commit_sha": "31efe9e2ba34bb0258d72e408d7d11760b4a5a0d",
+  "schema_version": 1,
+  "source_sha": "1ef54fe12a28bea5c8de24071a3424bb7b344a95",
+  "stage": "execute",
+  "verification_completed": false,
+  "workflow_run_attempt": "1",
+  "workflow_run_id": "34705249694"
+}
