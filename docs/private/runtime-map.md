@@ -7,7 +7,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | Public path | Owner responsibility |
 | --- | --- |
 | `runtime/core.py` | One-batch coordinator, bounded worker execution, generic public summary, and failure capture |
-| `runtime/transport.py` | Exact-revision private input fetch, allowlisted state transport, completion and diagnostic write-back |
+| `runtime/transport.py` | Exact-revision private input fetch, allowlisted state transport, explicit START creation, completion and diagnostic write-back |
 | `runtime/base/contract.py` | Shared immutable request identity and output contract |
 | `runtime/engine/batch.py` | Batch membership, ordering, uniqueness, sourcing-manifest validation, and schedule-slot validation |
 | `runtime/engine/shard.py` | Deterministic 1–24 item partitioning into bounded single/paired execution units |
@@ -35,6 +35,7 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/output/execute.py` | Recovery-first publication orchestration |
 | `runtime/output/transfer.py` | Upload request construction and insertion fence |
 | `runtime/output/state.py` | Immutable intent/upload recovery state |
+| `runtime/output/progress.py` | Append-only liveness evidence and fail-closed current-attempt START reconstruction for GitHub partial reruns |
 | `runtime/output/verify.py` | Exact remote publication-state verification |
 | `runtime/output/receipt.py` | Immutable verified receipt finalization |
 | `runtime/profile/config.py` | Shared production policy constants |
@@ -100,7 +101,7 @@ These aliases change only the names repeated in public Actions logs. Secret valu
 
 ## Manual recovery identity
 
-A manual recovery batch ID hashes the immutable item identities together with `github.run_id`. A new manual trigger therefore gets a new immutable completion namespace, while reruns of the same workflow run retain the same batch ID. Durable per-item upload records remain the duplicate-publication authority.
+A manual recovery batch ID hashes the immutable item identities together with `github.run_id`. A new manual trigger therefore gets a new immutable completion namespace, while reruns of the same workflow run retain the same batch ID. GitHub partial reruns get a new run-attempt identity; when prepare is not rerun, `runtime/output/progress.py` may create the missing current-attempt START only from exactly one prior matching START plus the unchanged immutable dispatch intent. Durable per-item upload records remain the duplicate-publication authority.
 
 ## 1080p, readability and voice contract
 

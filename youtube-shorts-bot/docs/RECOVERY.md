@@ -88,6 +88,8 @@ Because mappings are one file per content ID rather than one shared JSON diction
 
 Manual Daily recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The private workflow writes an immutable recovery manifest and sends only its opaque batch ID, exact source SHA and compatibility fingerprint to the public runtime. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent, mapping, upload record, receipt, or frozen treatment rules.
 
+GitHub partial reruns increment `GITHUB_RUN_ATTEMPT` and may rerun a failed unit or aggregate job without rerunning the original prepare job. For attempts greater than 1, the runtime progress layer may reconstruct the missing current-attempt `START` record only when it finds exactly one prior START for the same workflow run/batch/source/runtime identity and the immutable prepared dispatch intent still matches the same contract. It then creates a normal append-only START for the current attempt before recording progress. Concurrent matrix workers may race to create that one identical START and must converge idempotently. Attempt 1 still requires the explicit workflow Start step; an old START is never accepted directly as current-attempt evidence.
+
 ## Scheduled-slot guard
 
 For fresh scheduled generation, the public runtime's publication pipeline skips new expensive work when the immutable slot is already past or is within the configured generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.

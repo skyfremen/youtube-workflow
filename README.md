@@ -9,7 +9,7 @@ Private modules under `youtube-shorts-bot/` are limited to planning, analytics, 
 The normal production path is ranked-pool driven and append-only:
 
 1. **ChatGPT / Work** reads current repository rules, analytics, history and the verified background registry, performs creative/editorial planning, chooses/audits logical backgrounds, authors frozen treatments, and freezes candidate rank order.
-2. Daily planning commits an immutable **36-candidate attempt pool**; Ad-hoc planning commits an immutable **5-candidate** pool. These are planning candidates, not production requests.
+2. Before any immutable pool commit, ChatGPT executes the live machine-readable planner contract and the matching pre-commit validator against temporary exact bytes at the inspected HEAD. Daily requires **36/36 PASS** from `planning.daily_precommit`; Ad-hoc requires **5/5 PASS** from `planning.adhoc_precommit`. Only those exact validated bytes may become the immutable pool. These remain planning candidates, not production requests.
 3. `daily-production.yml` / `adhoc-production.yml` perform a private promotion preflight and mechanically validate candidates in the frozen AI rank order. They do not re-rank, repair, creatively substitute, or choose backgrounds/treatments.
 4. Daily promotes the first required valid candidates (24 for normal next-day) and locally materializes one canonical planning audit plus immutable schema-v5 requests. Ad-hoc locally materializes the first valid immediate-public request.
 5. Promotion state is committed **locally**, rebased onto latest `main`, and fully revalidated before it is pushed. A concurrent change after validation makes the push fail non-fast-forward rather than publishing unvalidated immutable state.
@@ -47,7 +47,9 @@ For normal Daily:
 ```text
 ChatGPT: 36 complete ranked candidates
         ↓
-immutable Daily attempt pool
+temporary draft → daily_precommit 36/36 PASS
+        ↓
+exact validated bytes → immutable Daily attempt pool
         ↓
 daily-production.yml: first 24 valid
         ↓
@@ -63,7 +65,9 @@ For Ad-hoc:
 ```text
 ChatGPT: 5 complete ranked candidates
         ↓
-immutable Ad-hoc pool
+temporary draft → adhoc_precommit 5/5 PASS
+        ↓
+exact validated bytes → immutable Ad-hoc pool
         ↓
 adhoc-production.yml: first valid
         ↓
@@ -109,7 +113,7 @@ See `youtube-shorts-bot/docs/RECOVERY.md` for operator recovery and `youtube-sho
 
 ## Development and verification
 
-The private validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles private Python, runs planning/state/contract/ranked-pool tests, validates the media registry, exercises planning acceptance, verifies private/public contract parity, checks private execution boundaries, and dispatches/verifies the linked public runtime Dry Run.
+The private validation baseline is encoded in `.github/workflows/dry-run.yml`. It compiles private Python, runs planning/state/contract/ranked-pool/precommit tests, validates the media registry, exercises planning acceptance, verifies private/public contract parity, checks private execution boundaries, and dispatches/verifies the linked public runtime Dry Run.
 
 A production upload is **not** required for repository cleanup or ordinary code validation.
 

@@ -23,7 +23,9 @@ ChatGPT / Work
   -> freeze final AI rank order
 
 Daily:
-  -> commit one immutable 36-candidate attempt pool
+  -> write one temporary exact-byte 36-candidate draft
+  -> execute the live planner contract + daily_precommit (36/36 required)
+  -> commit those exact validated bytes as one immutable 36-candidate attempt pool
   -> daily-production.yml
        -> private promotion preflight
        -> mechanically validate candidates in frozen rank order
@@ -36,7 +38,9 @@ Daily:
        -> dispatch public run.yml
 
 Ad-hoc:
-  -> commit one immutable 5-candidate pool
+  -> write one temporary exact-byte 5-candidate draft
+  -> execute the live planner contract + adhoc_precommit (5/5 required)
+  -> commit those exact validated bytes as one immutable 5-candidate pool
   -> adhoc-production.yml
        -> private promotion preflight
        -> mechanically validate candidates in frozen rank order
@@ -81,9 +85,9 @@ The handoff has two distinct immutable layers:
 1. **ranked planning attempt** — larger than the production target and AI-authored;
 2. **canonical production state** — mechanically materialized from first valid ranked candidates after hard validation.
 
-For normal Daily the pool has 36 and target 24. Ad-hoc has 5 and target 1.
+For normal Daily the pool has 36 and target 24. Ad-hoc has 5 and target 1. Before either pool becomes immutable, ChatGPT must execute the corresponding precommit validator against the exact temporary bytes and current rules HEAD: newly authored Daily pools require 36/36 valid candidates and Ad-hoc pools require 5/5.
 
-A failed candidate is skipped, never repaired. Later candidates retain original rank. If fewer than the target pass, the attempt fails closed.
+Promotion still independently validates every committed candidate as defense in depth. If repository state or time-dependent facts change after precommit, a later-invalid candidate is skipped, never repaired, and later candidates retain original rank. If fewer than the target pass, the attempt fails closed.
 
 ## Daily attempt/retry contract
 
@@ -93,7 +97,7 @@ Daily attempts live at:
 
 Suggested stable sequential IDs are `dp-YYYYMMDD-a01`, `a02`, etc.
 
-A failed attempt remains immutable. While no canonical `content/planning/YYYY-MM-DD.json` exists, ChatGPT may author a new corrected/replenished attempt under a new ID. Once a canonical plan exists, no further pool attempt is permitted for that date; production problems use recovery of the promoted requests.
+A failed attempt remains immutable. Mechanical authoring/contract mistakes should be caught by the mandatory precommit gate before an attempt enters history; a committed attempt can still fail if repository state, timing or other independently validated facts change after precommit. While no canonical `content/planning/YYYY-MM-DD.json` exists, ChatGPT may author a new corrected/replenished attempt under a new ID. Once a canonical plan exists, no further pool attempt is permitted for that date; production problems use recovery of the promoted requests.
 
 Each normal attempt still contains exactly 36 complete production-quality candidates. Reserve candidates are not filler and do not bypass safety, originality, copyright, metadata, background or diversity rules.
 
@@ -236,7 +240,7 @@ Retired `planner-execution.yml`, `execution_bridge.py`, duplicate Ad-hoc router 
 Before merging a production/control-plane change:
 
 1. private compile/tests/state guards pass;
-2. ranked-pool tests prove Daily 36 / Ad-hoc 5 sizes and frozen-rank semantics;
+2. precommit/ranked-pool tests prove Daily 36/36 and Ad-hoc 5/5 authoring gates plus frozen-rank promotion semantics;
 3. Daily retry-attempt paths remain append-only and one canonical plan per date remains enforced;
 4. scheduled Ad-hoc uniqueness is repository-enforced;
 5. catch-up slots are rechecked at promotion time;

@@ -54,7 +54,7 @@ A first retryable diagnostic may recover immediately. Later automatic attempts b
 
 Private dispatch writes a create-only prepared intent before calling the public workflow. Public execution must validate that exact intent and write a matching `START` record containing the batch, dispatch, source, contract, runtime commit, workflow run and attempt identities.
 
-The public runtime also writes append-only progress records at meaningful execution stages. Recovery uses the most recent exact execution/progress timestamp when deciding whether a started run is still healthy. A successful GitHub dispatch API response by itself is therefore not treated as proof that public code actually ran.
+The public runtime also writes append-only progress records at meaningful execution stages. Recovery uses the most recent exact execution/progress timestamp when deciding whether a started run is still healthy. A successful GitHub dispatch API response by itself is therefore not treated as proof that public code actually ran. On a GitHub partial rerun (attempt > 1) where prepare was not rerun, the progress layer may create the missing current-attempt START only from exactly one prior matching START plus the still-matching immutable dispatch intent; attempt 1 cannot use this repair path.
 
 ## Deterministic recovery identity
 
