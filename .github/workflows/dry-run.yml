@@ -270,7 +270,8 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
-          assert 'group: private-adhoc-production-' in adhoc
+          expected_adhoc_group = 'group: private-adhoc-production-$' + '{{ github.ref }}'
+          assert expected_adhoc_group in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
           assert 'validation/public_dry_run.py' in dry
           assert 'PUBLIC_EXPECTED_SHA=' in dry
