@@ -2,7 +2,7 @@
 
 This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
 
-Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all business, creative, analytics, metadata, scheduling, safety, publication, recovery, and background-selection rules except where this overlay explicitly supersedes older deterministic-runner, winner-selection, and background-selection ownership instructions.
+Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all business, creative, analytics, metadata, scheduling, safety, publication, recovery, and background-selection rules except where this overlay explicitly supersedes older deterministic-runner, winner-selection, background-selection ownership, and Daily-count instructions.
 
 Repository code remains the source of truth for the rules. Before planning, inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, and current workflows. Do not blindly trust stale prompt text when current code has moved forward.
 
@@ -23,7 +23,8 @@ ChatGPT reads current repo rules/config/analytics/history/background registry
   -> ChatGPT develops qualified semifinalists
   -> ChatGPT applies deterministic scoring formulas and analytics evidence
   -> ChatGPT reasons about diversity, originality, payoff and viewer appeal
-  -> ChatGPT chooses the final eligible winner set
+  -> ChatGPT chooses the complete required winner set
+  -> ChatGPT replenishes candidates and repeats evaluation if the required set is not yet full
   -> ChatGPT writes the complete stories
   -> ChatGPT chooses exact primary + backup logical background IDs
   -> mechanical background audit of those exact IDs
@@ -55,9 +56,24 @@ For new ChatGPT-direct Daily plans, `planning_execution` records planning owners
 
 The private validation path must fail closed if this ownership/provenance shape is invalid or if the final requests violate the canonical request/publication/background contracts. Historical runner-provenance shapes remain readable only for compatibility/recovery of already-existing plans.
 
+## Exact Daily count contract
+
+The normal `normal_next_day` Daily plan is an **exact-24 contract**, not an "up to 24" target. ChatGPT must return exactly 24 valid winners and exactly 24 immutable requests, one for each hourly slot from `00:00` through `23:00` Asia/Singapore.
+
+If the initial candidate pool does not yield 24 fully valid winners after hard rejection, duplicate checks, quality thresholds, analytics reasoning, diversity constraints, story completion, background audit/treatment, and final request validation, ChatGPT must generate additional fresh non-duplicate candidates and repeat the same canonical evaluation rules. It must continue replenishing the candidate pool until the required 24 valid winners exist. It must **not** lower hard gates, weaken diversity/safety/copyright/publication rules, resurrect rejected candidates, or use weak filler merely to reach the quota.
+
+A normal next-day planning run has only two valid outcomes:
+
+1. exactly 24 valid immutable requests are committed; or
+2. planning fails closed and no partial Daily production commit is created.
+
+Returning or committing 1–23 requests for `normal_next_day` is invalid. The private planning audit independently enforces this invariant before Daily production can dispatch.
+
+`same_day_catch_up` is the only new-plan exception. Catch-up must return exactly the number of still-eligible hourly slots after the 30-minute future-slot rule is applied; it must never manufacture replacements for elapsed or too-close hours. Recovery is not replanning and may separately operate on only the unresolved subset of an already-valid immutable Daily plan.
+
 ## Preserved canonical operating rules
 
-The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering.
+The normal Daily Wacky Dramas Planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**, with exact hourly slots from `00:00` through `23:00` before quality/diversity filtering. Under the exact-count contract, all 24 of those slots must be filled by valid winners before a normal Daily commit is allowed.
 
 When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Immediately before slot assignment and again before commit, keep only exact top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
@@ -108,7 +124,10 @@ Do not weaken exact source-SHA validation, dispatch/start evidence, upload inten
 
 Before committing, confirm:
 
+- `normal_next_day` contains exactly 24 winners, 24 unique content IDs, 24 immutable requests, and 24 unique hourly publication slots;
+- `same_day_catch_up` contains exactly the currently eligible remaining hourly slots and no elapsed/too-close slots;
 - ChatGPT itself performed filtering/evaluation/editorial selection;
+- when the required winner count was initially short, ChatGPT replenished with fresh candidates rather than weakening gates or committing a partial plan;
 - ChatGPT itself chose the requested primary and backup logical background IDs;
 - no GitHub planner-execution action chose or filtered candidates for ChatGPT;
 - no GitHub `background.select` operation chose arbitrary logical backgrounds;
