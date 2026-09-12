@@ -30,7 +30,7 @@ class WorkflowTopologyTests(unittest.TestCase):
         self.assertIn("validation.planning_audit", daily)
         self.assertIn("actions/workflows/run.yml/dispatches", daily)
         self.assertIn("exactly 36", prompt)
-        self.assertIn("first 24 valid", prompt)
+        self.assertIn("first `target_count` candidates", prompt)
         self.assertIn("content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", prompt)
         self.assertIn("new immutable attempt", prompt)
 
