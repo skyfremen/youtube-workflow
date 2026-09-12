@@ -1,10 +1,12 @@
 """Dispatch and synchronously verify one exact public runtime dry run."""
 
+import base64
 import hashlib
 import json
 import os
 import re
 import time
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -48,6 +50,77 @@ def select_correlated_run(runs, before_ids, expected_sha, correlation, jobs_by_r
     if len(matches) > 1:
         raise PublicDryRunError('E_DRY_PUBLIC_AMBIGUOUS')
     return matches[0] if matches else None
+
+
+def _verified_text_file(payload, error_code):
+    if not isinstance(payload, dict):
+        raise PublicDryRunError(error_code)
+    try:
+        raw = base64.b64decode(
+            ''.join(str(payload.get('content', '')).split()), validate=True
+        )
+    except (ValueError, TypeError):
+        raise PublicDryRunError(error_code) from None
+    blob = hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()
+    if (
+        payload.get('type') != 'file'
+        or payload.get('encoding') != 'base64'
+        or payload.get('sha') != blob
+    ):
+        raise PublicDryRunError(error_code)
+    try:
+        return raw.decode('utf-8')
+    except UnicodeDecodeError:
+        raise PublicDryRunError(error_code) from None
+
+
+def daily_timeout_budget_minutes(workflow_text):
+    """Return the current sequential Daily job budget or fail on shape drift."""
+    values = [
+        int(value)
+        for value in re.findall(
+            r'^    timeout-minutes:\s*(\d+)\s*$', workflow_text, re.MULTILINE
+        )
+    ]
+    if len(values) != 3 or any(value <= 0 for value in values):
+        raise PublicDryRunError('E_DRY_RECOVERY_BUDGET_SHAPE')
+    return sum(values)
+
+
+def active_recovery_grace_minutes(path=None):
+    workflow = path or (
+        Path(__file__).resolve().parents[2]
+        / '.github'
+        / 'workflows'
+        / 'automatic-recovery.yml'
+    )
+    try:
+        text = Path(workflow).read_text(encoding='utf-8')
+    except OSError:
+        raise PublicDryRunError('E_DRY_RECOVERY_GRACE') from None
+    match = re.search(
+        r"RECOVERY_ACTIVE_GRACE_MINUTES:\s*['\"]?(\d+)['\"]?", text
+    )
+    if match is None:
+        raise PublicDryRunError('E_DRY_RECOVERY_GRACE')
+    value = int(match.group(1))
+    if value <= 0:
+        raise PublicDryRunError('E_DRY_RECOVERY_GRACE')
+    return value
+
+
+def validate_recovery_budget(workflow_text, grace_minutes=None):
+    budget = daily_timeout_budget_minutes(workflow_text)
+    grace = (
+        active_recovery_grace_minutes()
+        if grace_minutes is None
+        else int(grace_minutes)
+    )
+    if grace <= budget:
+        raise PublicDryRunError(
+            f'E_DRY_RECOVERY_BUDGET grace={grace} public_budget={budget}'
+        )
+    return budget, grace
 
 
 class GitHubApi:
@@ -101,6 +174,15 @@ def dispatch_and_verify():
     run_attempt = os.environ.get('GITHUB_RUN_ATTEMPT', '')
     resolved_sha = expected_sha(os.environ.get('PUBLIC_EXPECTED_SHA', ''))
     api = GitHubApi(repository, token)
+
+    run_workflow = api.call(
+        f'contents/.github/workflows/run.yml?ref={resolved_sha}'
+    )
+    public_run_text = _verified_text_file(
+        run_workflow, 'E_DRY_RECOVERY_BUDGET_SOURCE'
+    )
+    budget, grace = validate_recovery_budget(public_run_text)
+    print(f'Recovery budget PASS public={budget} grace={grace}')
 
     correlation = correlation_id(run_id, run_attempt, resolved_sha)
     before_ids = {int(item['id']) for item in _runs(api, workflow) if item.get('id')}

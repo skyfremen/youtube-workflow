@@ -10,13 +10,17 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/transport.py` | Exact-revision private input fetch, allowlisted state transport, completion and diagnostic write-back |
 | `runtime/base/contract.py` | Shared immutable request identity and output contract |
 | `runtime/engine/batch.py` | Batch membership, ordering, uniqueness, and schedule-slot validation |
+| `runtime/engine/shard.py` | Deterministic 1–24 item partitioning into bounded single/paired execution units |
 | `runtime/engine/pipeline.py` | Bounded internal concurrency and per-item failure isolation |
+| `runtime/engine/aggregate.py` | Daily shard-summary validation, fail-closed aggregation, and partial-failure diagnostics |
 | `runtime/engine/check.py` | Production-equivalent Dry Run test harness |
 | `runtime/engine/benchmark.py` | Internal concurrency benchmark harness |
 | `runtime/engine/evidence.py` | Test-only evidence export helper |
+| `runtime/guard/readiness.py` | Shared fail-first environment, runtime, filesystem, registry, and remote-channel readiness checks |
 | `runtime/guard/request.py` | Immutable state guard |
 | `runtime/guard/schema.py` | Canonical request schema and branding/publication validation |
 | `runtime/resources/policy.py` | Background rendition suitability rules |
+| `runtime/resources/quality.py` | Subtitle-safe-region readability sampling and bounded background darkening selection |
 | `runtime/resources/select.py` | Registry shortlist and recency rules |
 | `runtime/resources/resolve.py` | Background retrieval, probing, fallback, and normalization |
 | `runtime/resources/registry.py` | Provider-backed registry ingestion |
@@ -33,6 +37,8 @@ This owner-only map explains the generic public surface. It is a debugging aid, 
 | `runtime/output/verify.py` | Exact remote publication-state verification |
 | `runtime/output/receipt.py` | Immutable verified receipt finalization |
 | `runtime/profile/config.py` | Shared production policy constants |
+| `runtime/observe.py` | Stateless external-account observation and bounded analytics collection |
+| `runtime/state_sink.py` | Validated write-back of the latest observation snapshot to canonical private state |
 | `runtime/exercise.py` | Public Dry Run production-equivalent exercise |
 | `runtime/errors.py` | Stable public error identifiers |
 
