@@ -88,7 +88,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("schedule:", text)
         self.assertIn("cron: '17 */2 * * *'", text)
         self.assertIn("RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'", text)
-        self.assertIn("RECOVERY_ACTIVE_GRACE_MINUTES: '210'", text)
+        self.assertIn("RECOVERY_ACTIVE_GRACE_MINUTES: '240'", text)
         self.assertIn("actions/workflows/run.yml/dispatches", text)
         self.assertIn("python -m common.runtime_contract", text)
         self.assertIn("PUBLIC_PRODUCTION_TOKEN", text)
