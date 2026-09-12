@@ -1,8 +1,8 @@
 """Fail-closed validation for canonical daily planning commits.
 
-This module validates the private control-plane handoff before Daily Production
-creates any dispatch evidence. Historical immutable files are not mutated; only
-new canonical daily content commits are checked.
+New Daily plans use ChatGPT-owned editorial selection with deterministic repository
+support. Historical immutable files are not mutated. The validator accepts the new
+provenance shape and retains the old shape only for compatibility where applicable.
 """
 from __future__ import annotations
 
@@ -28,28 +28,34 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 CANDIDATE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 PLANNING_MODES = {"normal_next_day", "same_day_catch_up"}
 FORBIDDEN_PRODUCTION_ID_MARKERS = (
-    "-acceptance-",
-    "-test-",
-    "-smoke-",
-    "-dryrun-",
-    "-dry-run-",
-    "-adhoc-",
+    "-acceptance-", "-test-", "-smoke-", "-dryrun-", "-dry-run-", "-adhoc-",
 )
 EXECUTION_KEYS = {
-    "contract_version",
-    "stage",
-    "source_sha",
-    "implementation_sha256",
-    "input_sha256",
-    "entry_points",
+    "contract_version", "stage", "source_sha", "implementation_sha256",
+    "input_sha256", "entry_points",
 }
 EXPECTED_ENTRY_POINTS = {
     "raw-filter": ["planning.planning_engine.filter_candidates"],
+    "candidate-evaluation": [
+        "analytics.analytics_learning.score_candidate",
+        "planning.planning_engine.filter_candidates",
+        "planning.planning_engine.score_semifinalist",
+    ],
+    "validate-selection": [
+        "planning.planning_engine.similarity",
+        "planning.planning_engine.order_for_schedule",
+        "planning.planning_engine.hourly_slots",
+    ],
     "final-select": [
         "analytics.analytics_learning.score_candidate",
         "planning.planning_engine.evaluate",
     ],
 }
+NEW_EXECUTION_KEYS = {
+    "raw_filter", "candidate_evaluation", "selection_validation",
+    "editorial_selection_owner", "selected_candidate_ids",
+}
+LEGACY_EXECUTION_KEYS = {"raw_filter", "final_selection", "selected_candidate_ids"}
 
 
 class PlanningAuditError(RuntimeError):
@@ -103,11 +109,7 @@ def classify_daily_changes(changes):
         _fail("daily planning commit contains no changes")
     if any(status != "A" for status, _ in changes):
         _fail("daily planning commit may only add immutable planning/request/sourcing files")
-
-    plans = []
-    requests = []
-    sourcing = []
-    unexpected = []
+    plans, requests, sourcing, unexpected = [], [], [], []
     for _, path in changes:
         if PLAN_RE.fullmatch(path):
             plans.append(path)
@@ -117,7 +119,6 @@ def classify_daily_changes(changes):
             sourcing.append(path)
         else:
             unexpected.append(path)
-
     if unexpected:
         _fail("daily planning commit contains unexpected files: " + ", ".join(sorted(unexpected)))
     if len(plans) != 1:
@@ -129,17 +130,19 @@ def classify_daily_changes(changes):
     return plans[0], requests, sourcing[0] if sourcing else None
 
 
-def _validate_execution(execution, stage, parent_sha, impl_sha):
+def _validate_execution(execution, stage, parent_sha, impl_sha, *, legacy=False):
     if not isinstance(execution, dict) or set(execution) != EXECUTION_KEYS:
         _fail(f"planning_execution.{stage} must be the verbatim canonical runner execution object")
-    if execution.get("contract_version") != CONTRACT_VERSION:
+    version = execution.get("contract_version")
+    if legacy:
+        if version not in {1, CONTRACT_VERSION}:
+            _fail(f"planning_execution.{stage}.contract_version mismatch")
+    elif version != CONTRACT_VERSION:
         _fail(f"planning_execution.{stage}.contract_version mismatch")
     if execution.get("stage") != stage:
         _fail(f"planning_execution.{stage}.stage mismatch")
     if execution.get("source_sha") != parent_sha:
-        _fail(
-            f"planning_execution.{stage}.source_sha must equal the daily content commit parent SHA"
-        )
+        _fail(f"planning_execution.{stage}.source_sha must equal the daily content commit parent SHA")
     if execution.get("implementation_sha256") != impl_sha:
         _fail(f"planning_execution.{stage}.implementation_sha256 does not match current canonical code")
     input_sha = execution.get("input_sha256")
@@ -149,6 +152,55 @@ def _validate_execution(execution, stage, parent_sha, impl_sha):
         _fail(f"planning_execution.{stage}.entry_points mismatch")
 
 
+def _validate_candidate_ids(selected, content_ids):
+    if not isinstance(selected, list) or len(selected) != len(content_ids):
+        _fail("selected_candidate_ids must contain exactly one candidate identity per final request")
+    if len(selected) != len(set(selected)):
+        _fail("selected_candidate_ids must be unique")
+    if any(not isinstance(item, str) or not CANDIDATE_ID.fullmatch(item) for item in selected):
+        _fail("selected_candidate_ids contains an invalid candidate identity")
+
+
+def _validate_planning_execution(planning_execution, content_ids, parent_sha, impl_sha):
+    if not isinstance(planning_execution, dict):
+        _fail("planning_execution must be an object")
+    keys = set(planning_execution)
+    if keys == NEW_EXECUTION_KEYS:
+        if planning_execution.get("editorial_selection_owner") != "chatgpt":
+            _fail("new Daily planning requires editorial_selection_owner=chatgpt")
+        _validate_execution(planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha)
+        _validate_execution(
+            planning_execution["candidate_evaluation"], "candidate-evaluation", parent_sha, impl_sha
+        )
+        _validate_execution(
+            planning_execution["selection_validation"], "validate-selection", parent_sha, impl_sha
+        )
+        digests = {
+            planning_execution["raw_filter"]["input_sha256"],
+            planning_execution["candidate_evaluation"]["input_sha256"],
+            planning_execution["selection_validation"]["input_sha256"],
+        }
+        if len(digests) != 3:
+            _fail("new planning checkpoints must record distinct canonical runner inputs")
+        _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
+        return
+    if keys == LEGACY_EXECUTION_KEYS:
+        _validate_execution(
+            planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha, legacy=True
+        )
+        _validate_execution(
+            planning_execution["final_selection"], "final-select", parent_sha, impl_sha, legacy=True
+        )
+        if planning_execution["raw_filter"]["input_sha256"] == planning_execution["final_selection"]["input_sha256"]:
+            _fail("raw-filter and final-select must record distinct canonical runner inputs")
+        _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
+        return
+    _fail(
+        "planning_execution must use either the ChatGPT-owned selection provenance shape "
+        "or the legacy final-selection provenance shape"
+    )
+
+
 def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
     if not isinstance(plan, dict):
         _fail("planning audit root must be an object")
@@ -156,7 +208,6 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
     missing = required - set(plan)
     if missing:
         _fail("planning audit missing required fields: " + ", ".join(sorted(missing)))
-
     match = PLAN_RE.fullmatch(plan_path)
     if not match:
         _fail("planning audit path must be content/planning/YYYY-MM-DD.json")
@@ -169,7 +220,6 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
         _fail("planning audit plan_date must exactly match its canonical filename")
     if plan.get("planning_mode") not in PLANNING_MODES:
         _fail("planning_mode must be normal_next_day or same_day_catch_up")
-
     content_ids = plan.get("content_ids")
     if not isinstance(content_ids, list) or not content_ids:
         _fail("planning audit content_ids must be a non-empty array")
@@ -183,30 +233,13 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
         _fail("planning audit final_selected must equal the number of new immutable requests")
     if not 1 <= len(content_ids) <= 24:
         _fail("planning audit final_selected must be between 1 and 24")
-
     padded_ids = [f"-{content_id.lower()}-" for content_id in content_ids]
     for content_id, padded in zip(content_ids, padded_ids):
         if any(marker in padded for marker in FORBIDDEN_PRODUCTION_ID_MARKERS):
             _fail(f"canonical daily production rejects reserved acceptance/test/ad-hoc identity: {content_id}")
-
-    planning_execution = plan.get("planning_execution")
-    if not isinstance(planning_execution, dict) or set(planning_execution) != {
-        "raw_filter", "final_selection", "selected_candidate_ids"
-    }:
-        _fail("planning_execution must contain exactly raw_filter, final_selection, selected_candidate_ids")
-
-    _validate_execution(planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha)
-    _validate_execution(planning_execution["final_selection"], "final-select", parent_sha, impl_sha)
-    if planning_execution["raw_filter"]["input_sha256"] == planning_execution["final_selection"]["input_sha256"]:
-        _fail("raw-filter and final-select must record distinct canonical runner inputs")
-
-    selected = planning_execution.get("selected_candidate_ids")
-    if not isinstance(selected, list) or len(selected) != len(content_ids):
-        _fail("selected_candidate_ids must contain exactly one candidate identity per final request")
-    if len(selected) != len(set(selected)):
-        _fail("selected_candidate_ids must be unique")
-    if any(not isinstance(item, str) or not CANDIDATE_ID.fullmatch(item) for item in selected):
-        _fail("selected_candidate_ids contains an invalid candidate identity")
+    _validate_planning_execution(
+        plan.get("planning_execution"), content_ids, parent_sha, impl_sha
+    )
     return path_date, content_ids
 
 
@@ -251,7 +284,6 @@ def _validate_requests(plan_date, request_paths, expected_ids):
         except (KeyError, TypeError, ValueError) as exc:
             _fail(f"request {content_id} final publication payload is invalid: {exc}")
         requests[content_id] = data
-
     if set(requests) != set(expected_ids):
         _fail("loaded request identities do not match planning audit")
     return requests
@@ -281,10 +313,7 @@ def _validate_sourcing(plan_date, sourcing_path, content_ids, requests):
             _fail(f"background sourcing candidate {index} references content outside this daily plan")
         for content_id in required_by:
             visual = requests[content_id].get("visual") or {}
-            if logical_id not in {
-                visual.get("background_primary_id"),
-                visual.get("background_backup_id"),
-            }:
+            if logical_id not in {visual.get("background_primary_id"), visual.get("background_backup_id")}:
                 _fail(
                     f"background sourcing candidate {logical_id} is not referenced by required request {content_id}"
                 )
@@ -295,20 +324,15 @@ def validate_commit(source_sha):
         _fail("source_sha must be a lowercase full Git commit SHA")
     if _git("rev-parse", source_sha) != source_sha:
         _fail("source_sha cannot be resolved exactly")
-
     parent_sha = _single_parent(source_sha)
     plan_path, request_paths, sourcing_path = classify_daily_changes(_changed_paths(source_sha))
     plan = _load_json(REPO_ROOT / plan_path)
     request_ids = [REQUEST_RE.fullmatch(path).group(1) for path in request_paths]
     impl_sha = implementation_digest()
-    plan_date, content_ids = validate_plan_core(
-        plan, plan_path, request_ids, parent_sha, impl_sha
-    )
-
+    plan_date, content_ids = validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha)
     subject = _git("show", "-s", "--format=%s", source_sha)
     if subject != f"[daily production] {plan_date}":
         _fail("daily planning commit subject must exactly be [daily production] YYYY-MM-DD")
-
     requests = _validate_requests(plan_date, request_paths, content_ids)
     _validate_sourcing(plan_date, sourcing_path, content_ids, requests)
     return {
