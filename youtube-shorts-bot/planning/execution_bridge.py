@@ -13,7 +13,11 @@ import subprocess
 from pathlib import Path
 
 from common.runtime_contract import contract_hash
-from media.background_selector import load_successful_receipts
+from media.background_selector import (
+    audit_ai_selection,
+    load_successful_receipts,
+    select_logical_backgrounds,
+)
 from media.background_treatment import select_pair_treatments
 from media.validate_media_library import load_registry
 from planning.planning_runner import execute as execute_planning
@@ -25,6 +29,8 @@ EXECUTION_ID_RE = re.compile(r"pe-[A-Za-z0-9-]{8,96}")
 OPERATIONS = {
     "planning.raw-filter",
     "planning.final-select",
+    "background.select",
+    "background.audit",
     "background.treatment",
     "request.validate",
 }
@@ -47,6 +53,12 @@ def _require_object(value, label):
     return value
 
 
+def _require_list(value, label):
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be an array")
+    return value
+
+
 def execute_envelope(envelope):
     envelope = _require_object(envelope, "execution envelope")
     if envelope.get("schema_version") != SCHEMA_VERSION:
@@ -63,19 +75,37 @@ def execute_envelope(envelope):
         result = execute_planning("raw-filter", payload)
     elif operation == "planning.final-select":
         result = execute_planning("final-select", payload)
-    elif operation == "background.treatment":
-        primary_id = str(payload.get("primary_id") or "")
-        backup_id = str(payload.get("backup_id") or "")
-        planned = payload.get("planned_treatments") or []
-        if not isinstance(planned, list):
-            raise ValueError("planned_treatments must be an array")
-        result = select_pair_treatments(
-            load_registry(),
-            primary_id,
-            backup_id,
-            load_successful_receipts(BASE / "content" / "results"),
-            planned_treatments=planned,
-        )
+    elif operation in {"background.select", "background.audit", "background.treatment"}:
+        registry = load_registry()
+        receipts = load_successful_receipts(BASE / "content" / "results")
+        if operation == "background.select":
+            requirements = _require_object(payload.get("requirements") or {}, "requirements")
+            planned_asset_ids = _require_list(payload.get("planned_asset_ids") or [], "planned_asset_ids")
+            planned_categories = _require_list(payload.get("planned_categories") or [], "planned_categories")
+            result = select_logical_backgrounds(
+                registry,
+                requirements,
+                receipts,
+                planned_asset_ids=planned_asset_ids,
+                planned_categories=planned_categories,
+            )
+        elif operation == "background.audit":
+            result = audit_ai_selection(
+                registry,
+                str(payload.get("primary_id") or ""),
+                str(payload.get("backup_id") or ""),
+                receipts,
+                _require_object(payload.get("requirements") or {}, "requirements"),
+            )
+        else:
+            planned = _require_list(payload.get("planned_treatments") or [], "planned_treatments")
+            result = select_pair_treatments(
+                registry,
+                str(payload.get("primary_id") or ""),
+                str(payload.get("backup_id") or ""),
+                receipts,
+                planned_treatments=planned,
+            )
     else:
         request = _require_object(payload.get("request"), "payload.request")
         content_id = str(request.get("content_id") or "")
