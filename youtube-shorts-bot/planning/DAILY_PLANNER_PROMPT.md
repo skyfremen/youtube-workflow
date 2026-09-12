@@ -20,12 +20,15 @@ Read at minimum:
 - `validation/validate_content.py`
 - `publishing/upload.py`
 - `common/runtime_contract.py`
+- `media/media_readiness.py`
 - `media/background_selector.py`
 - `media/background_treatment.py` as a **policy/history reference**, not an authoritative allocator
 - `media/background_policy.py`
+- `media/pexels_registry.py`
 - `docs/background-media-strategy.md`
 - `media-library/backgrounds.json`
 - recent immutable `content/requests/*.json` and verified `content/results/*.json`
+- `.github/workflows/background-management.yml`
 - `.github/workflows/daily-production.yml`
 
 Do not blindly reproduce old prompt arithmetic if executable/configured rules have changed.
@@ -36,7 +39,7 @@ Before authoring the ranked pool, execute the current machine-readable planner c
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_contract
 ```
 
-Consume the actual output. In particular, discover the current request schema version, Daily pool size, Daily planning modes, target count, content-ID pattern, score-component keys, controlled values and Daily publication template from the repository rather than reproducing them from memory.
+Consume the actual output. In particular, discover the current request schema version, Daily pool size, Daily planning modes, target count, content-ID pattern, score-component keys, controlled values, Daily publication template, and shared media-readiness inventory/category minimums from the repository rather than reproducing them from memory.
 
 ## Canonical ownership
 
@@ -50,15 +53,44 @@ Consume the actual output. In particular, discover the current request schema ve
 - complete story/title/metadata authoring;
 - narrator perspective, lead gender, tone and voice choice;
 - semantic punchline/reveal/reversal identification;
+- readiness/replenishment candidate discovery and visual review when the shared media gate reports a deficit;
 - exact primary and backup logical background choice;
 - planning-time background audit reasoning against current registry/policy/history;
 - emergency-default decision when the normal pair is not safely eligible;
 - background segment and playback-rate treatment decisions using current policy/history;
 - final rank #1 through #36.
 
-Private GitHub code does **not** creatively rank, select, repair, rewrite, choose replacement backgrounds or calculate replacement treatments. It validates facts and mechanically promotes candidates in ChatGPT's frozen order.
+Private GitHub code does **not** creatively rank, select, repair, rewrite, choose replacement backgrounds or calculate replacement treatments. It validates facts, enriches reviewed Pexels candidates with official physical rendition metadata, persists the shared registry, and mechanically promotes candidates in ChatGPT's frozen order.
 
 There is no `planner-execution.yml`, no `content/planner-execution/*`, and no requirement to execute `planning_runner.py` as a winner-selection authority for new ranked pools. `planning_engine.py`, configuration and historical runner code remain useful rule/regression references, not a substitute for ChatGPT's editorial rank.
+
+## Shared media readiness and replenishment prerequisite
+
+**Daily and Ad-hoc use this same prerequisite.** Before fully authoring a ranked pool, execute from `youtube-shorts-bot`:
+
+```bash
+python -m media.media_readiness audit --allow-not-ready
+```
+
+Consume the actual JSON result.
+
+If `status` is `PASS`, continue planning using only selectable assets. Any registry asset with `selection_enabled=false` is recovery-only historical state and must never be selected for new production, including as an emergency default.
+
+If `status` is `REPLENISH`, do **not** author or commit a Daily ranked pool yet. Instead:
+
+1. Use the current `media_readiness` values returned by `planning.planner_contract` and the audit deficits as the authoritative inventory target.
+2. Search Pexels for production-appropriate continuous-motion footage, prioritizing the configured high-retention categories such as cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement and city/travel motion.
+3. Visually review every proposed source before setting `verified_preview=true`; reject watermarks, embedded text, unsafe material, static/weak footage and misleading metadata.
+4. Prefer portrait footage when quality is comparable, while allowing landscape/square only when current post-crop rendition policy can satisfy 1080x1920 output without prohibited upscaling.
+5. Use deterministic logical IDs `satisfying-px-<PexelsID>` and the exact sourcing-manifest schema implemented by `media/pexels_registry.py`.
+6. Create exactly one new immutable replenishment manifest under:
+   `content/background-sourcing/readiness/<stable-id>.json`
+   containing enough reviewed candidates to satisfy the returned total/category deficits. `required_by_content_ids` must contain stable upcoming Daily candidate content IDs that motivated the replenishment.
+7. Commit only that readiness manifest for the replenishment attempt. Background Management owns official Pexels API rendition enrichment, hard registry validation and persistence of the refreshed cache.
+8. Re-read current `main` after Background Management has persisted the registry, rerun `planning.planner_contract`, then rerun `python -m media.media_readiness audit --allow-not-ready`.
+9. Continue to ranked-pool authorship only when the new audit returns `status: PASS` and `ready: true`. If deficits remain, create a new immutable readiness-manifest attempt and repeat; never edit/delete an earlier manifest.
+
+Do not bypass readiness, keep using a retired old background because it remains resolvable for recovery, or create a ranked pool while the registry is `REPLENISH`. Repository validation independently rejects new production against a non-ready shared registry. Existing immutable requests remain recoverable against historical background IDs.
 
 ## Planning date and schedule
 
@@ -128,23 +160,24 @@ When evidence is weak/zero, rely mainly on editorial quality and diversity. When
 
 ## Background audit and treatment ownership
 
-ChatGPT must inspect the current registry, policy and private successful-receipt history and freeze final background decisions for **all 36** candidates.
+ChatGPT must inspect the **readiness-PASS selectable registry**, policy and private successful-receipt history and freeze final background decisions for **all 36** candidates.
 
 For each candidate:
 
 1. Choose distinct `background_primary_id` and `background_backup_id` values.
-2. Require registered, active, verified, commercial-use-allowed, watermark/text-free assets with sufficient quality and at least one production-suitable rendition.
-3. Apply retention/readability, recency, category variety and story-fit evidence as planning judgment. Visual retention/readability outranks literal reenactment.
-4. If the normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency default pair from `media/background_selector.py`; do not invent an automatic arbitrary fallback.
-5. If the emergency pair itself is unsafe, reject/fix the candidate before the pool is authored.
-6. Read current treatment policy/history and choose/freeze for primary and backup:
+2. Require selectable, registered, active, verified, commercial-use-allowed, watermark/text-free assets with sufficient quality and at least one production-suitable rendition.
+3. Reject any asset with `selection_enabled=false`; those entries exist only so historical immutable requests remain recoverable.
+4. Apply retention/readability, recency, category variety and story-fit evidence as planning judgment. Visual retention/readability outranks literal reenactment.
+5. If the normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency default pair from `media/background_selector.py` only if both defaults remain selectable and safe; retired defaults are not permitted.
+6. If the emergency pair itself is unsafe or retired, reject/fix the candidate before the pool is authored.
+7. Read current treatment policy/history and choose/freeze for primary and backup:
    - `segment_start_seconds`
    - `segment_duration_seconds`
    - `playback_rate`
-7. Avoid recently repeated segments/rates and coordinate same-pool variety. `media/background_treatment.py` may be consulted for current policy constants/history interpretation, but ChatGPT—not that module—is the decision owner.
-8. When source duration is unknown/untrusted, use the safe full-source treatment: `segment_start_seconds=0`, `segment_duration_seconds=null`, with a valid playback rate.
+8. Avoid recently repeated segments/rates and coordinate same-pool variety. `media/background_treatment.py` may be consulted for current policy constants/history interpretation, but ChatGPT—not that module—is the decision owner.
+9. When source duration is unknown/untrusted, use the safe full-source treatment: `segment_start_seconds=0`, `segment_duration_seconds=null`, with a valid playback rate.
 
-Private validation independently enforces hard registry/licensing/rendition/treatment facts. Validation is a **gate**, not a planner.
+Private validation independently enforces shared readiness plus hard registry/licensing/rendition/treatment facts. Validation is a **gate**, not a planner.
 
 ## Mandatory ChatGPT pre-commit validation and repair loop
 
@@ -179,10 +212,11 @@ Do not substitute manual arithmetic, remembered field names, visual inspection, 
 Immediately before creating the immutable pool file:
 
 1. re-read `git rev-parse HEAD` and require it to still equal the validated `rules_source_sha`;
-2. compute SHA-256 of the temporary file and require it to exactly equal the validator's `draft_sha256`;
-3. copy the **exact validated bytes** into the new immutable pool path—do not reconstruct, reserialize or rewrite the JSON after validation;
-4. verify the immutable destination did not already exist;
-5. commit only that one new pool JSON with the required `[daily pool] YYYY-MM-DD` subject.
+2. rerun shared media readiness and require `status: PASS` on that same HEAD;
+3. compute SHA-256 of the temporary file and require it to exactly equal the validator's `draft_sha256`;
+4. copy the **exact validated bytes** into the new immutable pool path—do not reconstruct, reserialize or rewrite the JSON after validation;
+5. verify the immutable destination did not already exist;
+6. commit only that one new pool JSON with the required `[daily pool] YYYY-MM-DD` subject.
 
 No PASS evidence means no immutable pool commit.
 
@@ -271,7 +305,8 @@ For normal Daily the successful canonical outcome remains exactly **24 immutable
 The private workflow sequence is:
 
 ```text
-pool commit already on main
+shared media readiness PASS
+  -> pool commit already on main
   -> private promotion preflight
   -> validate/rank-walk locally
   -> materialize candidate canonical state locally
@@ -286,7 +321,7 @@ A concurrent `main` update after final validation causes the push to fail non-fa
 
 ## Public runtime boundary
 
-Do not move media download, physical rendition resolution, FFmpeg work, rendering, TTS, Wav2Vec2 alignment, upload or YouTube verification into the private planner. `production-runtime` remains the heavy stateless executor.
+Do not move physical media download, physical rendition resolution, FFmpeg work, rendering, TTS, Wav2Vec2 alignment, upload or YouTube verification into the private planner. `production-runtime` remains the heavy stateless executor. Background Management may call the official Pexels metadata API to enrich ChatGPT-reviewed logical candidates before planning; it does not render/download production footage.
 
 Preserve exact source-SHA validation, compatibility fingerprints, dispatch/start evidence, immutable upload intent, duplicate-upload protection, recovery reconciliation, result receipts, public/private state ownership and least privilege.
 
@@ -296,6 +331,8 @@ Before committing a Daily pool confirm:
 
 - current repository files were inspected;
 - `planning.planner_contract` was actually executed and consumed;
+- shared `media.media_readiness` was actually executed and returned `PASS` on current `main`;
+- if replenishment was needed, it completed through an immutable readiness manifest and Background Management before pool authorship;
 - canonical plan for the date does not already exist;
 - the attempt path is new and immutable;
 - exactly 36 production-quality candidates exist;
@@ -303,6 +340,7 @@ Before committing a Daily pool confirm:
 - normal mode target is exactly 24 with all 24 hourly slots, or catch-up slots obey the 30-minute rule;
 - every candidate is schema v5 and uses the exact scheduled publication template;
 - ChatGPT performed all creative/editorial ranking, background audit reasoning and treatment choices;
+- every selected background is currently selectable and none has `selection_enabled=false`;
 - backgrounds/treatments satisfy current policy/history and hard safety expectations;
 - story/punchline/voice/title/metadata contracts are complete;
 - `planning.daily_precommit` was actually executed against the temporary draft;

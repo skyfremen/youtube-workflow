@@ -289,7 +289,11 @@ jobs:
               assert forbidden not in batch
               assert forbidden not in recovery
           assert 'branches: [main]' in maintenance
-          print('Dry-run isolation, linked public validation, ad-hoc routing, automatic recovery, and opaque public routing verified.')
+          assert 'media.media_readiness retire-current' in maintenance
+          assert 'media.media_readiness audit' in maintenance
+          assert 'PEXELS_API_KEY' in maintenance
+          assert 'content/background-sourcing/readiness/*.json' in maintenance
+          print('Dry-run isolation, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects

@@ -8,6 +8,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'youtube-shorts-bot/content/background-sourcing/readiness/*.json'
+      - 'youtube-shorts-bot/media-library/reset-selection-*.json'
+      - 'youtube-shorts-bot/media/media_readiness.py'
       - 'youtube-shorts-bot/media/pexels_registry.py'
       - 'youtube-shorts-bot/media/background_policy.py'
       - '.github/workflows/background-management.yml'
@@ -20,7 +23,7 @@ permissions:
   contents: write
 
 jobs:
-  enrich-existing:
+  maintain:
     runs-on: ubuntu-latest
     env:
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
@@ -30,37 +33,101 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Check planning-only Pexels API key
-        id: pexels-key
+      - name: Resolve maintenance action
+        id: action
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          action=refresh
+          manifest=''
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            if [[ ! "${BEFORE_SHA}" =~ ^[0-9a-f]{40}$ ]] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
+              echo '::error::Push-triggered background maintenance requires a concrete previous main SHA.'
+              exit 1
+            fi
+            changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
+            mapfile -t reset_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/media-library\/reset-selection-[0-9]{8}\.json$/ {print $2}')
+            mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
+            if [ "${#reset_files[@]}" -gt 1 ] || [ "${#readiness_files[@]}" -gt 1 ]; then
+              echo '::error::One push may add at most one reset marker or readiness manifest.'
+              exit 1
+            fi
+            if [ "${#reset_files[@]}" -eq 1 ] && [ "${#readiness_files[@]}" -eq 1 ]; then
+              echo '::error::Reset and replenishment must be separate immutable operations.'
+              exit 1
+            fi
+            if [ "${#reset_files[@]}" -eq 1 ]; then
+              action=reset
+            elif [ "${#readiness_files[@]}" -eq 1 ]; then
+              action=replenish
+              manifest="${readiness_files[0]}"
+            fi
+          fi
+          echo "action=${action}" >> "${GITHUB_OUTPUT}"
+          echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Retire current library from new selection
+        if: steps.action.outputs.action == 'reset'
+        run: python -m media.media_readiness retire-current
+
+      - name: Require planning-only Pexels API key
+        if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'refresh'
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "$PEXELS_API_KEY" ]; then
-            echo "::warning::PEXELS_API_KEY is absent; rendition metadata refresh was not attempted."
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
+          if [ -z "${PEXELS_API_KEY}" ]; then
+            echo '::error::PEXELS_API_KEY is required for background replenishment/refresh.'
+            exit 1
           fi
 
+      - name: Ingest reviewed readiness manifest
+        if: steps.action.outputs.action == 'replenish'
+        env:
+          MANIFEST: ${{ steps.action.outputs.manifest }}
+        run: python youtube-shorts-bot/media/pexels_registry.py ingest-manifest --manifest "${MANIFEST}"
+
       - name: Refresh exact rendition metadata
-        if: steps.pexels-key.outputs.available == 'true'
+        if: steps.action.outputs.action == 'refresh'
         run: python youtube-shorts-bot/media/pexels_registry.py enrich-existing --require-any
 
-      - name: Validate registry
-        if: steps.pexels-key.outputs.available == 'true'
+      - name: Validate registry structure
         run: python youtube-shorts-bot/media/validate_media_library.py
 
-      - name: Commit metadata refresh
-        if: steps.pexels-key.outputs.available == 'true'
+      - name: Enforce shared media readiness after replenishment
+        if: steps.action.outputs.action == 'replenish'
+        run: python -m media.media_readiness audit
+
+      - name: Confirm reset requires replenishment
+        if: steps.action.outputs.action == 'reset'
         shell: bash
+        run: |
+          set -euo pipefail
+          if python -m media.media_readiness audit; then
+            echo '::error::Reset unexpectedly left the old library ready for new production.'
+            exit 1
+          fi
+          python -m media.media_readiness audit --allow-not-ready
+
+      - name: Commit registry maintenance
+        shell: bash
+        env:
+          ACTION: ${{ steps.action.outputs.action }}
         run: |
           set -euo pipefail
           if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
-            echo "Registry rendition metadata is already current."
+            echo 'Registry is already current.'
             exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add youtube-shorts-bot/media-library/backgrounds.json
-          git commit -m "refresh Pexels background rendition metadata"
+          case "${ACTION}" in
+            reset) message='[media reset] retire old background library from new selection' ;;
+            replenish) message='[media readiness] replenish background registry' ;;
+            *) message='refresh Pexels background rendition metadata' ;;
+          esac
+          git commit -m "${message}"
+          git pull --rebase origin main
           git push origin HEAD:main
