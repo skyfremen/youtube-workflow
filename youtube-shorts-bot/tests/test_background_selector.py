@@ -200,7 +200,10 @@ class BackgroundSelectorTests(unittest.TestCase):
     def test_ai_selection_allows_low_topic_fit_when_retention_is_strong(self):
         first = asset(1, tags=("baking",), quality=92, category="baking", intensity="high")
         second = asset(2, tags=("cooking",), quality=91, category="cooking", intensity="high")
-        audit = audit_ai_selection({"assets": [first, second]}, first["id"], second["id"], [], REQ)
+        requirements = {"visual_tags": ["relationship", "argument"]}
+        audit = audit_ai_selection(
+            {"assets": [first, second]}, first["id"], second["id"], [], requirements
+        )
         self.assertTrue(audit["passed"])
         self.assertLess(audit["primary"]["semantic_score"], 0.45)
         self.assertGreaterEqual(audit["primary"]["retention_score"], 0.72)
