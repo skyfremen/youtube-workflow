@@ -4,15 +4,14 @@ import copy
 import hashlib
 import json
 
-from common import runtime_contract_base as base
-from common.runtime_contract_base import *  # re-export established contract helpers
+from common import runtime_contract_base as contract_impl
 from validation import validate_content as schema
 
-CONTRACT_PROTOCOL_VERSION = base.CONTRACT_PROTOCOL_VERSION
+CONTRACT_PROTOCOL_VERSION = contract_impl.CONTRACT_PROTOCOL_VERSION
 
 
 def contract_payload():
-    payload = copy.deepcopy(base.contract_payload())
+    payload = copy.deepcopy(contract_impl.contract_payload())
     payload["schema"].update({
         "treatment_keys": sorted(schema.TREATMENT_KEYS),
         "playback_rate_min": schema.PLAYBACK_RATE_MIN,
