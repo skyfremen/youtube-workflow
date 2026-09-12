@@ -1,8 +1,9 @@
-"""Fail-closed validation for canonical daily planning commits.
+"""Fail-closed validation for canonical Daily production commits.
 
-New Daily plans are authored directly by ChatGPT. The validator checks ownership,
-rule-revision provenance, immutable-request linkage, schema/publication contracts,
-and keeps older runner-provenance shapes readable for recovery compatibility.
+New Daily plans are promoted mechanically from a ChatGPT-ranked 36-candidate
+pool. The final production commit still contains exactly one planning audit and
+1-24 immutable requests so the public runtime contract remains unchanged.
+Historical provenance shapes remain readable for recovery compatibility.
 """
 from __future__ import annotations
 
@@ -14,6 +15,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from media.validate_media_library import load_registry
+from planning.planning_config import DAILY_RANKED_POOL_COUNT
 from planning.planning_runner import CONTRACT_VERSION, implementation_digest
 from publishing.upload import build_upload_body
 from validation.validate_content import SCHEMA_VERSION, validate_request_data
@@ -56,6 +59,10 @@ DIRECT_PLANNING_KEYS = {
     "editorial_selection_owner", "planning_method", "rules_source_sha",
     "selected_candidate_ids",
 }
+RANKED_POOL_PLANNING_KEYS = {
+    "editorial_selection_owner", "planning_method", "rules_source_sha",
+    "candidate_pool_source_sha", "ranked_candidate_ids", "selected_candidate_ids",
+}
 RUNNER_CHATGPT_KEYS = {
     "raw_filter", "candidate_evaluation", "selection_validation",
     "editorial_selection_owner", "selected_candidate_ids",
@@ -94,6 +101,20 @@ def _single_parent(source_sha):
     if len(parts) != 2 or parts[0] != source_sha:
         _fail("daily planning commit must have exactly one parent")
     return parts[1]
+
+
+def _is_ancestor(ancestor, descendant):
+    try:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=REPO_ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError as exc:
+        _fail(f"cannot verify candidate-pool ancestry: {exc}")
+    return result.returncode == 0
 
 
 def _changed_paths(source_sha):
@@ -166,10 +187,45 @@ def _validate_candidate_ids(selected, content_ids):
         _fail("selected_candidate_ids contains an invalid candidate identity")
 
 
+def _validate_ranked_ids(ranked, selected, content_ids):
+    if not isinstance(ranked, list) or len(ranked) != DAILY_RANKED_POOL_COUNT:
+        _fail(f"ranked_candidate_ids must contain exactly {DAILY_RANKED_POOL_COUNT} identities")
+    if len(ranked) != len(set(ranked)):
+        _fail("ranked_candidate_ids must be unique")
+    if any(not isinstance(item, str) or not CANDIDATE_ID.fullmatch(item) for item in ranked):
+        _fail("ranked_candidate_ids contains an invalid candidate identity")
+    _validate_candidate_ids(selected, content_ids)
+    positions = {candidate_id: index for index, candidate_id in enumerate(ranked)}
+    if any(candidate_id not in positions for candidate_id in selected):
+        _fail("selected_candidate_ids must be a subset of ranked_candidate_ids")
+    if [positions[item] for item in selected] != sorted(positions[item] for item in selected):
+        _fail("selected_candidate_ids must preserve frozen ChatGPT rank order")
+
+
 def _validate_planning_execution(planning_execution, content_ids, parent_sha, impl_sha):
     if not isinstance(planning_execution, dict):
         _fail("planning_execution must be an object")
     keys = set(planning_execution)
+
+    if keys == RANKED_POOL_PLANNING_KEYS:
+        if planning_execution.get("editorial_selection_owner") != "chatgpt":
+            _fail("ranked-pool Daily planning requires editorial_selection_owner=chatgpt")
+        if planning_execution.get("planning_method") != "chatgpt_ranked_pool":
+            _fail("ranked-pool Daily planning requires planning_method=chatgpt_ranked_pool")
+        pool_sha = str(planning_execution.get("candidate_pool_source_sha") or "")
+        rules_sha = str(planning_execution.get("rules_source_sha") or "")
+        if not HEX40.fullmatch(pool_sha) or not HEX40.fullmatch(rules_sha):
+            _fail("ranked-pool provenance SHAs must be lowercase full Git SHAs")
+        if _single_parent(pool_sha) != rules_sha:
+            _fail("rules_source_sha must equal the candidate-pool commit parent SHA")
+        if not _is_ancestor(pool_sha, parent_sha):
+            _fail("candidate-pool source must be an ancestor of the promoted production commit")
+        _validate_ranked_ids(
+            planning_execution.get("ranked_candidate_ids"),
+            planning_execution.get("selected_candidate_ids"),
+            content_ids,
+        )
+        return
 
     if keys == DIRECT_PLANNING_KEYS:
         if planning_execution.get("editorial_selection_owner") != "chatgpt":
@@ -181,7 +237,6 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
         _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
         return
 
-    # Compatibility for the short-lived runner-assisted ChatGPT contract.
     if keys == RUNNER_CHATGPT_KEYS:
         if planning_execution.get("editorial_selection_owner") != "chatgpt":
             _fail("runner-assisted planning requires editorial_selection_owner=chatgpt")
@@ -195,7 +250,6 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
         _validate_candidate_ids(planning_execution["selected_candidate_ids"], content_ids)
         return
 
-    # Historical deterministic-winner compatibility only.
     if keys == LEGACY_EXECUTION_KEYS:
         _validate_execution(
             planning_execution["raw_filter"], "raw-filter", parent_sha, impl_sha, legacy=True
@@ -207,7 +261,7 @@ def _validate_planning_execution(planning_execution, content_ids, parent_sha, im
         return
 
     _fail(
-        "planning_execution must use ChatGPT-direct provenance or a supported historical provenance shape"
+        "planning_execution must use ranked-pool/direct ChatGPT provenance or a supported historical shape"
     )
 
 
@@ -253,6 +307,17 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
     _validate_planning_execution(
         plan.get("planning_execution"), content_ids, parent_sha, impl_sha
     )
+    execution = plan.get("planning_execution") or {}
+    if execution.get("planning_method") == "chatgpt_ranked_pool":
+        pool_meta = plan.get("candidate_pool")
+        if not isinstance(pool_meta, dict):
+            _fail("ranked-pool Daily plan requires candidate_pool promotion metadata")
+        if pool_meta.get("source_sha") != execution.get("candidate_pool_source_sha"):
+            _fail("candidate_pool source_sha must match planning_execution provenance")
+        if pool_meta.get("candidate_count") != DAILY_RANKED_POOL_COUNT:
+            _fail("candidate_pool candidate_count mismatch")
+        if pool_meta.get("target_count") != len(content_ids):
+            _fail("candidate_pool target_count must equal final_selected")
     return path_date, content_ids
 
 
@@ -260,6 +325,7 @@ def _validate_requests(plan_date, request_paths, expected_ids):
     publish_times = set()
     requests = {}
     singapore = ZoneInfo("Asia/Singapore")
+    registry = load_registry()
     for request_path in request_paths:
         match = REQUEST_RE.fullmatch(request_path)
         if not match:
@@ -267,7 +333,7 @@ def _validate_requests(plan_date, request_paths, expected_ids):
         content_id = match.group(1)
         path = REPO_ROOT / request_path
         data = _load_json(path)
-        errors = validate_request_data(data, path)
+        errors = validate_request_data(data, path, registry_data=registry)
         if errors:
             _fail(f"request {content_id} failed canonical validation: {'; '.join(errors)}")
         if data.get("schema_version") != SCHEMA_VERSION:
@@ -358,7 +424,7 @@ def validate_commit(source_sha):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate one canonical daily planning content commit.")
+    parser = argparse.ArgumentParser(description="Validate one canonical daily production commit.")
     parser.add_argument("--source-sha", required=True)
     args = parser.parse_args()
     try:
