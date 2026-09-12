@@ -16,9 +16,10 @@ from planning.planning_config import (
     TITLE_WEIGHTS,
 )
 from common.workflow_common import ensure_request_path_matches, load_json
+from validation.semantic import validate_punchline
 
 SCHEMA_VERSION = 4
-SUPPORTED_SCHEMA_VERSIONS = {3, 4}
+SUPPORTED_SCHEMA_VERSIONS = {4}
 FORBIDDEN_KEYS = {
     "setup", "payoff", "cta", "comedy_mechanism", "series_role", "series_id",
     "series_title", "part_number", "part_total", "next_part_slot", "duration_seconds",
@@ -30,8 +31,10 @@ TOP_LEVEL_KEYS = {
     "schema_version", "content_id", "channel", "story", "narration", "visual",
     "youtube", "publication", "planning",
 }
-STORY_KEYS = {"category", "story_type", "hook", "script", "card_emojis"}
-STORY_V4_KEYS = STORY_KEYS | {"lead_gender", "story_tone"}
+STORY_KEYS = {
+    "category", "story_type", "hook", "script", "card_emojis", "lead_gender",
+    "story_tone", "punchline",
+}
 NARRATION_KEYS = {"engine", "voice", "speed"}
 VISUAL_KEYS = {"background_primary_id", "background_backup_id"}
 YOUTUBE_KEYS = {"title", "description", "hashtags", "tags", "category_id", "made_for_kids"}
@@ -215,7 +218,7 @@ def validate_request_data(data, request_path=None):
         return ["request root must be an object"]
     schema_version = data.get("schema_version")
     if schema_version not in SUPPORTED_SCHEMA_VERSIONS:
-        errors.append("schema_version must be 3 or 4")
+        errors.append("schema_version must be 4")
 
     missing_top, extra_top = TOP_LEVEL_KEYS - set(data), set(data) - TOP_LEVEL_KEYS
     if missing_top:
@@ -243,8 +246,7 @@ def validate_request_data(data, request_path=None):
     if not isinstance(story, dict):
         errors.append("story must be an object")
     else:
-        required_story_keys = STORY_V4_KEYS if schema_version == 4 else STORY_KEYS
-        missing, extra = required_story_keys - set(story), set(story) - required_story_keys
+        missing, extra = STORY_KEYS - set(story), set(story) - STORY_KEYS
         if missing:
             errors.append("story missing fields: " + ", ".join(sorted(missing)))
         if extra:
@@ -263,13 +265,13 @@ def validate_request_data(data, request_path=None):
             errors.append("story.card_emojis must contain 4-6 emojis")
         elif any(not _nonempty(x) for x in emojis):
             errors.append("story.card_emojis entries must be non-empty")
-        if any(term.lower() in str(story.get("script", "")).lower() for term in RETIRED_BRANDING):
+        if any(term.lower() in script.lower() for term in RETIRED_BRANDING):
             errors.append("story script contains obsolete channel branding")
-        if schema_version == 4:
-            if story.get("lead_gender") not in LEAD_GENDERS:
-                errors.append("story.lead_gender must be female or male")
-            if story.get("story_tone") not in STORY_TONES:
-                errors.append("story.story_tone is not an approved controlled tone")
+        if story.get("lead_gender") not in LEAD_GENDERS:
+            errors.append("story.lead_gender must be female or male")
+        if story.get("story_tone") not in STORY_TONES:
+            errors.append("story.story_tone is not an approved controlled tone")
+        errors.extend(validate_punchline(script, story.get("punchline")))
 
     narration = data.get("narration")
     if not isinstance(narration, dict):
@@ -282,9 +284,7 @@ def validate_request_data(data, request_path=None):
         voice = narration.get("voice")
         if voice not in APPROVED_VOICES:
             errors.append("narration.voice is not in the approved voice pool")
-        elif schema_version == 3 and voice != "af_heart":
-            errors.append("legacy schema-v3 narration.voice must be af_heart")
-        elif schema_version == 4 and isinstance(story, dict):
+        elif isinstance(story, dict):
             required_voice = expected_voice(story.get("lead_gender"), story.get("story_tone"))
             if required_voice and voice != required_voice:
                 errors.append(f"narration.voice must be {required_voice} for the frozen lead gender and tone")
