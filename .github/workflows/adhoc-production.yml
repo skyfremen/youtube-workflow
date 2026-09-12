@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/requests/wd-*-adhoc-*.json'
+      - 'youtube-shorts-bot/content/planning-pools/adhoc/*.json'
   workflow_dispatch:
     inputs:
       content_id:
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   dispatch:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[adhoc production]') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[adhoc pool]') }}
     runs-on: ubuntu-latest
     steps:
       - name: Load private state
@@ -29,34 +29,70 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve exactly one ad-hoc request
+      - name: Global preflight, validate ranked pool, and promote first valid candidate
+        if: ${{ github.event_name == 'push' }}
+        id: promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t pools < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/planning-pools\/adhoc\/ap-[A-Za-z0-9-]{8,96}\.json$/ {print $2}')
+          if [ "${#pools[@]}" -ne 1 ]; then
+            echo "::error::Ad-hoc pool commit must add exactly one immutable ranked pool"
+            exit 1
+          fi
+          pool="${pools[0]}"
+          PYTHONPATH=youtube-shorts-bot python -m planning.ranked_promotion adhoc \
+            --pool "${pool}" \
+            --source-sha "${GITHUB_SHA}" \
+            --summary /tmp/ranked-promotion.json
+
+          content_id="$(python - <<'PY'
+          import json
+          data = json.load(open('/tmp/ranked-promotion.json', encoding='utf-8'))
+          print(data['selected_content_id'])
+          PY
+          )"
+          request_path="youtube-shorts-bot/content/requests/${content_id}.json"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${request_path}"
+          if git diff --cached --quiet; then
+            echo "::error::Ranked Ad-hoc promotion produced no immutable request"
+            exit 1
+          fi
+          commit_date="$(date -u +%F)"
+          git commit -m "[adhoc production] ${commit_date}"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+          echo "content_id=${content_id}" >> "${GITHUB_OUTPUT}"
+          echo "request_source_sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve exactly one immutable Ad-hoc request
         id: identity
         env:
           MANUAL_CONTENT_ID: ${{ inputs.content_id }}
+          PROMOTED_CONTENT_ID: ${{ steps.promotion.outputs.content_id }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            mapfile -t paths < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/requests\/wd-[A-Za-z0-9-]*-adhoc-[A-Za-z0-9-]*\.json$/ {print $2}')
-            if [ "${#paths[@]}" -ne 1 ]; then
-              echo "::error::Ad-hoc production commit must add exactly one ad-hoc request"
-              exit 1
-            fi
-            path="${paths[0]}"
-            content_id="$(basename "${path}" .json)"
+            content_id="${PROMOTED_CONTENT_ID}"
           else
             content_id="${MANUAL_CONTENT_ID:-}"
-            if [[ ! "${content_id}" =~ ^wd-[A-Za-z0-9-]+$ ]]; then
-              echo "::error::Invalid immutable content ID"
-              exit 1
-            fi
-            path="youtube-shorts-bot/content/requests/${content_id}.json"
-            if [ ! -f "${path}" ]; then
-              echo "::error::Request is not present in canonical state"
-              exit 1
-            fi
+          fi
+          if [[ ! "${content_id}" =~ ^wd-[A-Za-z0-9-]+$ ]]; then
+            echo "::error::Invalid immutable content ID"
+            exit 1
+          fi
+          path="youtube-shorts-bot/content/requests/${content_id}.json"
+          if [ ! -f "${path}" ]; then
+            echo "::error::Request is not present in canonical state"
+            exit 1
           fi
 
+          PYTHONPATH=youtube-shorts-bot python -m validation.validate_content --request "${path}"
           python - "${path}" "${content_id}" <<'PY'
           import json, sys
           path, content_id = sys.argv[1:]

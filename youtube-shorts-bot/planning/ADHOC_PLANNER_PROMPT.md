@@ -1,69 +1,100 @@
-# Wacky Dramas — Ad-hoc Single Planner (schema v5 + ChatGPT-direct planning)
+# Wacky Dramas — Ad-hoc Planner (schema v5 ranked-pool overlay)
 
 This is the canonical Ad-hoc single-Short planner entry point.
 
-Read `docs/ADHOC_PLANNER_V4_BASE.md` in full first, then the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, exactly-one-Short, immediate-public publication, metadata, recovery, idempotency, safety and architecture rules except where this overlay explicitly supersedes older deterministic-runner, winner-selection, and background-selection ownership behavior.
+Read `docs/ADHOC_PLANNER_V4_BASE.md` in full first, then the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, immediate-public publication, metadata, recovery, idempotency, safety and architecture rules except where this overlay explicitly supersedes older one-request planning, deterministic-runner, bridge, background-audit/treatment and winner-selection behavior.
 
-Repository code is authoritative for the rules. Inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, registry and workflows before authoring the request.
+Repository code is authoritative. Inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `planning/ranked_promotion.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, current background registry/history and workflows before authoring the pool.
 
-## Ad-hoc planning ownership — authoritative override
+## Canonical ownership
 
-**ChatGPT / Work performs the complete candidate-planning decision path, chooses the one Ad-hoc winner, and chooses the requested primary/backup logical backgrounds.** ChatGPT / Work owns the final editorial choice and normal logical background asset choice.
+**ChatGPT / Work performs the complete creative planning path and freezes the rank order.** ChatGPT owns:
 
-For a new Ad-hoc run, ChatGPT itself must:
+- candidate generation and hard rejection;
+- duplicate/near-duplicate reasoning;
+- scoring/analytics/editorial comparison;
+- complete story/title/metadata writing;
+- narrator/voice choice;
+- semantic punchline/reveal/reversal identification;
+- exact primary/backup logical background choice;
+- background-audit reasoning against current registry/policy/history;
+- emergency-default decision when necessary;
+- background segment and playback-rate treatment values;
+- final rank #1 through #5.
 
-1. generate the candidate pool;
-2. apply hard rejection and duplicate/near-duplicate rules;
-3. develop the qualified candidates;
-4. apply the current scoring formulas and analytics evidence;
-5. compare candidates semantically/editorially;
-6. choose exactly one eligible winner;
-7. write the complete story and metadata;
-8. inspect the current background registry, policy, licensing/suitability metadata, recency/history and choose exact distinct `background_primary_id` / `background_backup_id` values.
+GitHub does not creatively select or repair a winner. `adhoc-production.yml` only validates the five candidates mechanically in the frozen AI rank order and promotes the first valid one.
 
-Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, `final-select`, or `background.select` for a new Ad-hoc plan. `planning_engine.py`, background selector/policy code, and related files are rule/specification/evidence sources for ChatGPT and may remain executable for tests, regression checks, or legacy historical compatibility, but they do not plan or normally choose logical backgrounds on ChatGPT's behalf.
+There is no `planner-execution.yml` bridge and no `planning/execution_bridge.py` planning round trip.
 
-The canonical Ad-hoc flow is:
+## Canonical Ad-hoc flow
 
 ```text
 ChatGPT reads current repo rules/config/analytics/history/background registry
-  -> ChatGPT generates candidates
-  -> ChatGPT performs hard filtering
-  -> ChatGPT develops qualified candidates
-  -> ChatGPT applies scoring/analytics/diversity rules
-  -> ChatGPT chooses exactly 1 winner
-  -> ChatGPT writes the complete story
-  -> ChatGPT chooses exact primary + backup logical background IDs
-  -> mechanical background audit
-       -> pass: keep ChatGPT pair
-       -> reject: resolve only to configured default background pair
-  -> mechanical treatment allocation for the resolved IDs
-  -> request.validate / final schema validation
-  -> commit exactly one immutable Ad-hoc request
-  -> .github/workflows/adhoc-production.yml
-  -> public single.yml
-  -> YouTube immediately Public
+  -> generates/evaluates candidates
+  -> hard filtering + duplicate checks
+  -> complete story development
+  -> scoring/analytics/editorial comparison
+  -> ChatGPT chooses/audits exact backgrounds itself
+  -> ChatGPT chooses treatment values itself
+  -> writes exactly 5 complete candidates
+  -> freezes rank #1 through #5
+  -> commits one immutable Ad-hoc ranked-pool JSON
+  -> adhoc-production.yml
+       -> global fail-first preflight
+       -> validate candidates mechanically in rank order
+       -> promote first valid candidate
+       -> materialize exactly one immutable request
+       -> final canonical request validation
+       -> public single.yml
+       -> YouTube immediately Public
 ```
 
-A score or ranking is evidence, not authority. Likewise, selector ranking is evidence, not authority. ChatGPT may choose a lower-ranked eligible candidate or different eligible background when its editorial judgment supports the choice, provided all normal hard rules are satisfied. The configured default fallback is an emergency exception to topic-fit and recent-use rejection only; it must still pass registry, licensing, watermark/text, quality, distinctness, and production-rendition safety.
+The four reserve candidates are fallback planning candidates only. They are not production requests and must not be uploaded unless every higher-ranked candidate before them failed mechanical validation.
 
-## Repository-side bridge boundary
+## Ranked-pool contract
 
-`.github/workflows/planner-execution.yml` plus `planning/execution_bridge.py` may still be used for **mechanical non-editorial operations only** when the connected environment cannot execute them locally:
+ChatGPT commits exactly one file:
 
-- `background.audit`
-- `background.treatment`
-- `request.validate`
+`youtube-shorts-bot/content/planning-pools/adhoc/ap-<stable-id>.json`
 
-The bridge must not expose or execute candidate filtering, candidate evaluation, selection validation, winner selection, or arbitrary logical background selection for new planning runs. `background.audit` has one narrowly defined substitution authority: on audit failure it may return the configured default background pair and no other pair.
+The commit subject must begin:
 
-Bridge input/result commits are mechanical execution evidence, not production requests, and must not use `[daily production]` or `[adhoc production]` markers.
+`[adhoc pool]`
 
-## Preserved Ad-hoc production contract
+Do **not** commit a new `content/requests/*.json` yourself. `adhoc-production.yml` owns request materialization after validation.
 
-This path creates exactly one additional Short and uses `.github/workflows/adhoc-production.yml` as the single private production entrypoint. It handles both the push-triggered new-request path and manual `workflow_dispatch(content_id)`, and dispatches public `single.yml` only. It must never consume or alter Daily's scheduled slots.
+The pool contains exactly:
 
-The immutable publication object remains:
+```json
+{
+  "schema_version": 1,
+  "pool_type": "adhoc",
+  "pool_id": "ap-<same filename stem>",
+  "target_count": 1,
+  "planning_execution": {
+    "editorial_selection_owner": "chatgpt",
+    "planning_method": "chatgpt_ranked_pool",
+    "rules_source_sha": "<exact parent SHA whose rules were used>",
+    "ranked_candidate_ids": ["<exact 5 IDs in rank order>"]
+  },
+  "ranked_candidates": [
+    {
+      "rank": 1,
+      "candidate_id": "...",
+      "request": {"...": "complete schema-v5 immediate-public request"}
+    }
+  ]
+}
+```
+
+Requirements:
+
+- exactly **5** candidates;
+- ranks exactly `1..5` with no ties;
+- unique candidate IDs and request content IDs;
+- every content ID contains `-adhoc-`;
+- every request is a complete schema-v5 production-quality candidate;
+- publication for every candidate is exactly:
 
 ```json
 {
@@ -73,42 +104,85 @@ The immutable publication object remains:
 }
 ```
 
-The upload body must resolve to `privacyStatus: public` with no future `publishAt`.
+- `planning_execution.ranked_candidate_ids` exactly matches the five candidate IDs in rank order;
+- `rules_source_sha` is the exact repository revision ChatGPT inspected; the pool commit parent must equal that SHA.
 
-## Schema-v5 and visual allocation
+For a scheduled once-per-day Ad-hoc run, use a stable deterministic pool identity for that Singapore calendar date and obey existing idempotency rules: if that scheduled pool/request already exists, do not create another copy. Manual/on-demand Ad-hoc creation may use a distinct stable purpose/id while still remaining immutable.
 
-New Ad-hoc requests use schema v5.
+## Promotion semantics
 
-For the selected story:
+`adhoc-production.yml` processes candidates only in frozen rank order:
 
-1. ChatGPT inspects the current registry and background-selection rules, including licensing, production suitability, retention/topic fit, private successful-receipt recency/history, and primary/backup distinctness.
-2. ChatGPT chooses the requested primary and backup logical asset IDs itself.
-3. Run `background.audit` against those exact ChatGPT-chosen IDs.
-4. If the audit passes, keep those exact IDs. If rejected, the audit may resolve only to the configured default background pair; it must not rank/select an arbitrary replacement.
-5. If either configured default fails fallback safety validation, fail closed.
-6. Run the canonical private treatment allocator for the audit-resolved IDs. Treatment allocation may choose the segment and playback rate only; it must not replace either logical asset.
-7. Freeze:
-   - `background_primary_id`
-   - `background_backup_id`
-   - `background_primary_treatment`
-   - `background_backup_treatment`
+```text
+#1 PASS -> promote #1 and stop
+#1 FAIL, #2 PASS -> promote #2 and stop
+...
+all 5 FAIL -> fail closed
+```
 
-When fallback is used, use `resolved_primary_id` / `resolved_backup_id` from the audit result for treatment and the immutable request, and preserve the audit evidence including the originally requested IDs, `selection_errors`, and `fallback_used: true`.
+It must not re-rank, re-score, rewrite, fix or creatively substitute a candidate. Validation failure simply moves to the next already-authored reserve.
 
-Do not hand-author different segment/speed values after the allocator returns. Existing private verified receipts remain the persistent anti-repetition history.
+Exactly one request is materialized and dispatched to public `single.yml`.
 
-## Request validation and commit
+## Background audit and treatment ownership
 
-After ChatGPT has written the final complete story, metadata, and selected requested logical backgrounds, validate the audit-resolved final request through the repository's request-validation path. GitHub may reject an invalid story/background/request handoff. Apart from the configured default background fallback, it must not choose or substitute another candidate or logical background.
+For all five candidates, ChatGPT itself must inspect the current registry, policy and private success history and author the final background pair/treatments.
 
-Then commit exactly one new immutable Ad-hoc request using:
+For each candidate:
 
-`[adhoc production] YYYY-MM-DD`
+1. choose distinct `background_primary_id` and `background_backup_id` values;
+2. apply current registered/active/verified/commercial-use/watermark/text/quality/rendition hard rules;
+3. apply current retention/topic fit/recency/diversity evidence as planning judgment;
+4. when a normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency default pair from `media/background_selector.py`; no automatic arbitrary replacement exists;
+5. if the emergency pair itself is not safe, do not present that candidate as production-quality;
+6. read current treatment rules/history and freeze `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate` for both backgrounds;
+7. respect asset duration, playback bounds, anti-repetition intent and candidate-pool treatment diversity.
 
-The private `.github/workflows/adhoc-production.yml` directly detects the new Ad-hoc request commit, validates exactly one immutable immediate-public request, creates the private execution/evidence state, and dispatches public `single.yml`. It also retains manual `workflow_dispatch(content_id)` support. There is no separate `adhoc-request-dispatch.yml` routing workflow.
+GitHub's strengthened request validator independently enforces hard registry/licensing/production/treatment invariants. This is a gate only; it does not choose the background or treatment.
+
+## Schema-v5 and immediate-public contract
+
+Every candidate request uses schema v5. The v5 `visual` object contains exactly:
+
+- `background_primary_id`
+- `background_backup_id`
+- `background_primary_treatment`
+- `background_backup_treatment`
+
+Each treatment contains exactly:
+
+- `segment_start_seconds`
+- `segment_duration_seconds`
+- `playback_rate`
+
+The upload body for the promoted request must resolve to `privacyStatus: public` with no future `publishAt`.
+
+Ad-hoc production never consumes or changes Daily's scheduled hourly slots.
 
 ## Fail closed
 
-Fail closed if ChatGPT cannot confidently apply the current planning or background-selection rules, or if the configured fallback itself, treatment allocation, request validation, contract compatibility, or exact payload validation fails.
+Fail closed when:
 
-Failing closed must never mean “let deterministic code choose a replacement winner or arbitrary replacement background.” ChatGPT remains the planner/editorial decision maker; `background.audit` may substitute only the fixed configured default pair as a production-resilience fallback.
+- ChatGPT cannot confidently apply the current rules;
+- fewer than five production-quality reserve candidates can be authored;
+- the pool schema/provenance is invalid;
+- all five mechanically fail validation;
+- runtime contract/dispatch/start/recovery requirements fail.
+
+Failing closed must never mean allowing deterministic code to invent a replacement story, background or treatment.
+
+## Final pre-commit checklist
+
+Before committing the Ad-hoc pool, confirm:
+
+- exactly 5 complete production-quality candidates exist;
+- ranks are exactly 1..5 and all IDs are unique;
+- ChatGPT itself performed all creative/editorial ranking;
+- ChatGPT itself chose/audited backgrounds and authored treatments;
+- every publication object is immediate-public;
+- `planning_method` is `chatgpt_ranked_pool`;
+- `rules_source_sha` is the exact current revision used for planning;
+- no planner-execution bridge is used;
+- exactly one immutable pool file is added;
+- the commit subject begins `[adhoc pool]`;
+- all remaining Ad-hoc/base rules continue to apply unless explicitly superseded here.

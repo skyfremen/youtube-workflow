@@ -24,7 +24,13 @@ class ArchitectureContractTests(unittest.TestCase):
             required <= actual, f"missing workflows: {sorted(required - actual)}"
         )
         self.assertFalse(
-            {"build-image.yml", "pipeline-validation.yml", "background-library.yml"}
+            {
+                "build-image.yml",
+                "pipeline-validation.yml",
+                "background-library.yml",
+                "planner-execution.yml",
+                "adhoc-request-dispatch.yml",
+            }
             & actual
         )
         self.assertEqual(
@@ -35,6 +41,8 @@ class ArchitectureContractTests(unittest.TestCase):
                 "STORY_RULES.md",
             },
         )
+        self.assertFalse((PLANNER / "execution_bridge.py").exists())
+        self.assertTrue((PLANNER / "ranked_promotion.py").is_file())
 
     def test_growth_is_business_language_not_technical_architecture(self):
         path_hits = []
@@ -90,6 +98,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn('"segment_start_seconds"', validator)
         self.assertIn('"segment_duration_seconds"', validator)
         self.assertIn('"playback_rate"', validator)
+        self.assertIn("validate_background_registry_contract", validator)
+        self.assertIn("production-suitable rendition", validator)
         self.assertIn('"punchline"', legacy_validator)
         self.assertIn("validate_punchline", legacy_validator)
         self.assertIn('"REVERSAL"', semantic)
@@ -137,15 +147,16 @@ class ArchitectureContractTests(unittest.TestCase):
             hits, "compatibility/reset terminology remains: " + "; ".join(hits)
         )
 
-    def test_ad_hoc_prompt_uses_immediate_public_single_path(self):
+    def test_ad_hoc_prompt_uses_ranked_pool_immediate_public_path(self):
         prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
         self.assertIn('"mode": "immediate"', prompt)
         self.assertIn('"publish_at": null', prompt)
         self.assertIn("privacyStatus: public", prompt)
-        self.assertIn("adhoc-production.yml", prompt)
-        self.assertIn("single.yml", prompt)
-        self.assertIn("[adhoc production] YYYY-MM-DD", prompt)
+        self.assertIn("exactly **5** candidates", prompt)
+        self.assertIn("[adhoc pool]", prompt)
+        self.assertIn("planning-pools/adhoc", adhoc)
+        self.assertIn("planning.ranked_promotion adhoc", adhoc)
         self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
 
     def test_heavy_execution_modules_are_public_only(self):
@@ -166,28 +177,31 @@ class ArchitectureContractTests(unittest.TestCase):
                 path.exists(), f"obsolete private runtime copy remains: {path}"
             )
 
-    def test_planner_handoff_matches_daily_production(self):
+    def test_planner_handoff_matches_daily_ranked_promotion(self):
         prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
+        promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
+
         for token in (
             "planning/planning_engine.py",
             "analytics_evidence_count",
             "daily-production.yml",
-            "[daily production]",
-            "`plan_date`",
-            "`planning_mode`",
-            "`final_selected`",
-            "`content_ids`",
-            "`logical_id`",
-            "`required_by_content_ids`",
+            "[daily pool] YYYY-MM-DD",
+            "content/planning-pools/daily/YYYY-MM-DD.json",
+            "exactly 36",
+            "first 24 valid",
+            "chatgpt_ranked_pool",
         ):
             self.assertIn(token, prompt)
         self.assertIn("name: Daily Production", batch)
-        self.assertIn(
-            "contains(github.event.head_commit.message, '[daily production]')", batch
-        )
+        self.assertIn("contains(github.event.head_commit.message, '[daily pool]')", batch)
+        self.assertIn("planning-pools/daily/*.json", batch)
+        self.assertIn("planning.ranked_promotion daily", batch)
+        self.assertIn("validation.planning_audit", batch)
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
         self.assertIn("python -m common.runtime_contract", batch)
+        self.assertIn("DAILY_POOL_SIZE = 36", promotion)
+        self.assertIn("NORMAL_DAILY_TARGET = 24", promotion)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", batch)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", batch)
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", batch)
