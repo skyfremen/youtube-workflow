@@ -14,7 +14,7 @@ The normal production path is ranked-pool driven and append-only:
 4. Daily promotes the first **24 valid** candidates and materializes one canonical planning audit plus exactly 24 immutable schema-v5 production requests. Ad-hoc promotes the **first valid** candidate and materializes exactly one immutable schema-v5 immediate-public request.
 5. The promoted request(s) are validated again before the private workflow sends one opaque `batch_id`, exact `source_sha`, compatibility fingerprint and dispatch correlation to the public runtime.
 6. The public runtime fetches only the allowed private files at that exact source revision and validates them before expensive work.
-7. Physical background rendition resolution, normalization, Kokoro narration, Wav2Vec2 alignment, captions, rendering, upload and publication verification execute publicly and statelessly.
+7. Physical background rendition resolution, normalization, Kokoro narration, Wav2Vec2 alignment, captions, rendering at **1080×1920 / 30 fps**, upload and publication verification execute publicly and statelessly.
 8. Upload recovery is checked before insertion. A durable upload intent is an irreversible retry fence.
 9. Scheduled Daily requests upload private with the immutable YouTube `publishAt`; Ad-hoc requests upload immediately Public with no future `publishAt`.
 10. The public runtime writes verified evidence/state back only to this private repository; private analytics processing consumes stored observations and receipts.
