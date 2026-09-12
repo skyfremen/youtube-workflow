@@ -69,16 +69,15 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("Existing immutable recovery manifest differs", text)
         self.assertIn("1-24 unique content IDs", text)
 
-    def test_dispatcher_preserves_original_triggers(self):
+    def test_dispatcher_triggers_only_on_daily_plan_or_manual_recovery(self):
         text = self.daily()
-        for path in (
-            "content/requests/*.json",
-            "content/planning/*.json",
-            "content/background-sourcing/*.json",
-        ):
-            self.assertIn(path, text)
-        self.assertIn("workflow_dispatch:", text)
-        self.assertIn("content_ids:", text)
+        trigger = text.split("concurrency:", 1)[0]
+        self.assertIn("branches: [main]", trigger)
+        self.assertIn("youtube-shorts-bot/content/planning/*.json", trigger)
+        self.assertNotIn("content/requests/*.json", trigger)
+        self.assertNotIn("content/background-sourcing/*.json", trigger)
+        self.assertIn("workflow_dispatch:", trigger)
+        self.assertIn("content_ids:", trigger)
 
     def test_automatic_recovery_stays_in_private_control_plane(self):
         text = self.recovery()
