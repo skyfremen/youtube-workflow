@@ -1,5 +1,6 @@
 name: Repository Hygiene Once
 
+# One-shot cleanup; this workflow deletes itself after successful validation.
 on:
   push:
     branches: [main]
