@@ -20,7 +20,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
     def analytics(self):
         return (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
 
-    def test_private_daily_workflow_is_dispatch_only(self):
+    def test_private_daily_workflow_keeps_heavy_execution_public(self):
         text = self.daily()
         for forbidden in (
             "container:",
@@ -34,10 +34,12 @@ class WorkflowBoundaryContracts(unittest.TestCase):
             "PEXELS_API_KEY",
         ):
             self.assertNotIn(forbidden, text)
+        self.assertIn("planning.candidate_pool promote-daily", text)
+        self.assertIn("validation.validate_content", text)
         self.assertIn("actions/workflows/run.yml/dispatches", text)
         self.assertEqual(text.count("-X POST"), 1)
 
-    def test_one_push_batch_produces_one_opaque_dispatch(self):
+    def test_one_promoted_batch_produces_one_opaque_dispatch(self):
         text = self.daily()
         self.assertIn(
             "contains(github.event.head_commit.message, '[daily production]')", text
@@ -69,15 +71,24 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("Existing immutable recovery manifest differs", text)
         self.assertIn("1-24 unique content IDs", text)
 
-    def test_dispatcher_triggers_only_on_daily_plan_or_manual_recovery(self):
+    def test_daily_dispatcher_triggers_on_ranked_pool_or_manual_recovery(self):
         text = self.daily()
         trigger = text.split("concurrency:", 1)[0]
         self.assertIn("branches: [main]", trigger)
-        self.assertIn("youtube-shorts-bot/content/planning/*.json", trigger)
+        self.assertIn("youtube-shorts-bot/content/candidate-pools/daily/*.json", trigger)
+        self.assertNotIn("content/planning/*.json", trigger)
         self.assertNotIn("content/requests/*.json", trigger)
         self.assertNotIn("content/background-sourcing/*.json", trigger)
         self.assertIn("workflow_dispatch:", trigger)
         self.assertIn("content_ids:", trigger)
+
+    def test_adhoc_dispatcher_triggers_on_ranked_pool_or_manual_request(self):
+        text = self.adhoc()
+        trigger = text.split("concurrency:", 1)[0]
+        self.assertIn("youtube-shorts-bot/content/candidate-pools/adhoc/*.json", trigger)
+        self.assertNotIn("content/requests/wd-*-adhoc-*.json", trigger)
+        self.assertIn("workflow_dispatch:", trigger)
+        self.assertIn("content_id:", trigger)
 
     def test_automatic_recovery_stays_in_private_control_plane(self):
         text = self.recovery()
