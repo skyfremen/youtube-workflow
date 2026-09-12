@@ -4,8 +4,7 @@ import unittest
 from pathlib import Path
 
 from common.workflow_common import CONTENT_ID_RE
-from media.media_readiness import REQUIRED_CATEGORY_MINIMUMS
-from media.validate_media_library import load_registry
+from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
 from planning import adhoc_precommit
 from planning.planner_contract import build_contract
 from planning.planning_config import TITLE_WEIGHTS
@@ -28,36 +27,49 @@ def valid_pool():
     return pool
 
 
+def _ready_asset(asset_id, category, counter):
+    return {
+        "id": asset_id,
+        "status": "active",
+        "verified": True,
+        "commercial_use": True,
+        "has_watermark": False,
+        "has_embedded_text": False,
+        "retention_category": category,
+        "orientation": "vertical",
+        "motion_type": "continuous-process",
+        "motion_intensity": "high",
+        "visual_satisfaction_score": 100,
+        "loopability_score": 100,
+        "caption_readability_score": 100,
+        "duration_seconds": 120.0,
+        "renditions": [{
+            "id": f"test-r-{counter:03d}",
+            "width": 1080,
+            "height": 1920,
+            "fps": 30.0,
+            "file_type": "video/mp4",
+            "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
+        }],
+    }
+
+
 def ready_registry():
-    registry = copy.deepcopy(load_registry())
+    assets = []
     counter = 0
     for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
         for _ in range(minimum):
             counter += 1
-            registry["assets"].append({
-                "id": f"test-ready-{counter:03d}",
-                "status": "active",
-                "verified": True,
-                "commercial_use": True,
-                "has_watermark": False,
-                "has_embedded_text": False,
-                "retention_category": category,
-                "orientation": "vertical",
-                "motion_type": "continuous-process",
-                "motion_intensity": "high",
-                "visual_satisfaction_score": 100,
-                "loopability_score": 100,
-                "caption_readability_score": 100,
-                "renditions": [{
-                    "id": f"test-r-{counter:03d}",
-                    "width": 1080,
-                    "height": 1920,
-                    "fps": 30.0,
-                    "file_type": "video/mp4",
-                    "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
-                }],
-            })
-    return registry
+            asset_id = (
+                "satisfying-001" if counter == 1
+                else "satisfying-002" if counter == 2
+                else f"test-ready-{counter:03d}"
+            )
+            assets.append(_ready_asset(asset_id, category, counter))
+    while len(assets) < MIN_SELECTABLE_ASSETS:
+        counter += 1
+        assets.append(_ready_asset(f"test-ready-{counter:03d}", "satisfying_process", counter))
+    return {"schema_version": 3, "assets": assets}
 
 
 def validate(pool):
