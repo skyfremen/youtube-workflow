@@ -8,11 +8,11 @@ Repository code on the current `main` branch is the source of truth. Before plan
 
 ## Ownership
 
-**ChatGPT / Work owns planning and creative choice.** It must itself perform candidate generation, hard filtering, duplicate/near-duplicate reasoning, scoring analysis, analytics interpretation, diversity reasoning, story development, editorial ranking, title/story writing, voice choice, semantic punchline identification, logical background choice, background-audit reasoning, fallback choice when required, and background treatment choice.
+**ChatGPT / Work owns the final editorial choice and the complete planning decision.** It must itself perform candidate generation, hard filtering, duplicate/near-duplicate reasoning, scoring analysis, analytics interpretation, diversity reasoning, story development, editorial ranking, title/story writing, voice choice, semantic punchline identification, logical background choice, background-audit reasoning, fallback choice when required, and background treatment choice.
 
 GitHub must not creatively re-rank or replace a story, logical background, or treatment. The private production workflow may only validate candidates mechanically and promote them in the rank order already frozen by ChatGPT.
 
-The current `planning_engine.py`, `background_selector.py`, `background_treatment.py` and related code are **rules/evidence sources for ChatGPT**, plus regression/reference implementations. There is no `planner-execution.yml` round trip and no repository-side creative background/treatment allocator in the new-plan path.
+The current `planning_engine.py`, `background_selector.py`, `background_treatment.py` and related code are rules/evidence sources for ChatGPT plus regression/reference implementations. Historical/legacy runner stages may remain executable for regression or already-existing recovery compatibility, but they do not own new planning. There is no `planner-execution.yml` round trip and no repository-side creative background/treatment allocator in the new-plan path.
 
 ## Canonical Daily flow
 
@@ -84,64 +84,35 @@ All other required request fields must already be complete, including story, nar
 
 The candidate pool is immutable planning state. It is **not** itself a public-runtime batch. `daily-production.yml` materializes the final immutable production requests only after validation.
 
-## Daily counts and scheduling
+## Daily scheduling and idempotency
 
-### Normal next-day
+The normal Daily planner runs at **20:00 Asia/Singapore** and must plan the **next Singapore calendar day**. `normal_next_day` requires exactly 36 ranked candidates, `target_count = 24`, and exactly 24 unique publication slots covering Singapore local `00:00` through `23:00`, converted to UTC. Production succeeds only if at least 24 of the 36 candidates pass strict validation. The private workflow promotes the first 24 valid candidates by ChatGPT rank and assigns those 24 slots in chronological order.
 
-At or after 20:00 Asia/Singapore, plan the next Singapore calendar day. `normal_next_day` requires:
+When manually run **before 20:00 Asia/Singapore**, use same-day catch-up for the **current Singapore calendar day**. Include only exact Singapore top-of-hour slots at least **30 minutes in the future**. Never recreate, backfill, or shift elapsed/too-close hours. At `01:35`, `02:00` is too close, so the first eligible slot is `03:00`.
 
-- exactly **36 ranked candidates** in the pool;
-- `target_count = 24`;
-- exactly 24 unique `publication_slots`, corresponding to Singapore local `00:00` through `23:00`, each converted to UTC;
-- production succeeds only if at least 24 of the 36 candidates pass strict validation.
+For `same_day_catch_up`, `target_count` must initially equal the listed eligible slots and the planning audit must preserve the omitted elapsed/too-close slots as explicit catch-up evidence where the canonical audit schema supports them. Immediately before promotion the private workflow rechecks the 30-minute safety window and mechanically drops any slot that has become too close; it never manufactures a replacement time. If no safe slot remains, fail closed rather than creating a partial/late production batch.
 
-The private workflow promotes the first 24 valid candidates by ChatGPT rank and assigns those 24 slots in chronological order. Final production remains exactly 24 immutable requests.
-
-### Same-day catch-up
-
-Before 20:00, preserve the current same-day catch-up rule. Include only exact Singapore top-of-hour slots at least 30 minutes in the future. `target_count` must equal the number of listed eligible slots. ChatGPT still supplies exactly 36 ranked candidates. Immediately before promotion the private workflow rechecks the 30-minute safety window and mechanically drops any slot that has become too close; it never manufactures a replacement time.
-
-If no safe slot remains, do not create a pool. If fewer valid candidates remain than the final safe target, production fails closed.
+If a canonical final `content/planning/YYYY-MM-DD.json` already exists for the target date, do **not** create a second plan or mutate the immutable requests. Use `daily-production.yml` manual `workflow_dispatch` with the existing content IDs for production recovery. Likewise, a retry of an already-promoted ranked pool must reconcile to the existing immutable promotion rather than invent a second Daily plan.
 
 ## Background choice and audit reasoning now belong to ChatGPT
 
 For every one of the 36 candidates, ChatGPT must inspect the current registry, hard eligibility policy, private successful-receipt history and same-pool planned usage before freezing backgrounds.
 
-ChatGPT chooses exact distinct:
+ChatGPT chooses exact distinct `background_primary_id` and `background_backup_id`. ChatGPT must apply the current background audit rules itself. At minimum, the final frozen assets must be registered, active, verified, commercial-use eligible, watermark-free, embedded-text-free, above the current hard quality floor, and have a production-suitable rendition. Apply current retention/semantic/recency/diversity reasoning as planning logic rather than delegating it to GitHub.
 
-- `background_primary_id`
-- `background_backup_id`
-
-ChatGPT must apply the current background audit rules itself. At minimum, the final frozen assets must be registered, active, verified, commercial-use eligible, watermark-free, embedded-text-free, above the current hard quality floor, and have a production-suitable rendition. Apply the current retention/semantic/recency/diversity reasoning as planning logic rather than delegating it to GitHub.
-
-If ChatGPT's preferred pair does not satisfy the current normal rules, apply the currently configured emergency fallback policy from repository code. At the time this contract was authored the configured pair is `satisfying-001` / `satisfying-002`, but **always inspect current code rather than trusting this sentence**. The fallback itself must satisfy all hard production-safety checks.
-
-GitHub's later strict validator may reject an invalid final pair, but it does not choose another pair.
+If ChatGPT's preferred pair does not satisfy the current normal rules, inspect and apply the currently configured emergency fallback policy from repository code. At the time this contract was authored the configured pair is `satisfying-001` / `satisfying-002`, but always inspect current code rather than trusting this sentence. The fallback itself must satisfy all hard production-safety checks. GitHub's later strict validator may reject an invalid final pair, but it does not choose another pair.
 
 ## Background treatment now belongs to ChatGPT
 
-For every candidate ChatGPT also freezes:
+For every candidate ChatGPT freezes `background_primary_treatment` and `background_backup_treatment`. Each contains exactly `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate`.
 
-- `background_primary_treatment`
-- `background_backup_treatment`
-
-Each contains exactly:
-
-- `segment_start_seconds`
-- `segment_duration_seconds`
-- `playback_rate`
-
-Read and apply the current `media/background_treatment.py` logic and private successful-treatment history as evidence. Avoid unnecessary recent segment/speed repetition across the ranked pool. Respect current playback-rate bounds and asset duration. The chosen segment must physically fit inside the selected logical asset.
-
-GitHub later checks those facts mechanically. It does not recalculate or substitute treatment values.
+Read and apply current `media/background_treatment.py` logic and private successful-treatment history as evidence. Avoid unnecessary recent segment/speed repetition across the ranked pool. Respect current playback-rate bounds and asset duration. The chosen segment must physically fit inside the selected logical asset. GitHub later checks those facts mechanically. It does not recalculate or substitute treatment values.
 
 ## Strict production validation
 
 `daily-production.yml` runs the canonical strict request validator. The validator is intentionally mechanical. It checks schema/publication/content invariants plus hard registered-background and treatment safety, including registry existence, active/verified/commercial-use status, license/source evidence, watermark/text flags, hard quality floor, production-suitable rendition, treatment numeric bounds, and treatment fit within asset duration.
 
-A candidate that fails is simply unavailable for promotion. The workflow takes the next valid candidate by frozen rank. If fewer than the final target pass, fail closed.
-
-After promotion, all selected requests are validated again before public dispatch.
+A candidate that fails is simply unavailable for promotion. The workflow takes the next valid candidate by frozen rank. If fewer than the final target pass, fail closed. After promotion, all selected requests are validated again before public dispatch.
 
 ## Planning and analytics rules
 
