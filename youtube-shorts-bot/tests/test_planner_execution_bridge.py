@@ -60,7 +60,8 @@ class PlannerExecutionBridgeTests(unittest.TestCase):
         self.assertEqual(result["resolved_primary_id"], DEFAULT_BACKGROUND_PRIMARY_ID)
         self.assertEqual(result["resolved_backup_id"], DEFAULT_BACKGROUND_BACKUP_ID)
         self.assertTrue(result["selection_errors"])
-        self.assertEqual(result["errors"], [])
+        self.assertEqual(result["errors"], result["selection_errors"])
+        self.assertEqual(result["fallback_errors"], [])
         self.assertTrue(result["primary"]["fallback_default"])
         self.assertTrue(result["backup"]["fallback_default"])
 
