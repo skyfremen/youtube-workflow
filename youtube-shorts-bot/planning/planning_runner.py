@@ -1,8 +1,9 @@
 """Fail-closed Work/ChatGPT adapter for canonical Wacky Dramas planning.
 
-This module does not duplicate planning policy. It serializes Work-produced semantic
-inputs into the existing deterministic planning functions and returns their actual
-outputs with lightweight execution provenance.
+ChatGPT / Work owns editorial winner selection. This module owns deterministic
+filtering, scoring, normalization, diversity validation, scheduling support and
+execution provenance. Legacy ``final-select`` remains available only for recovery
+compatibility with historical planning artifacts.
 """
 from __future__ import annotations
 
@@ -10,13 +11,30 @@ import argparse
 import hashlib
 import json
 import subprocess
+from collections import Counter
 from pathlib import Path
 
 from analytics.analytics_learning import score_candidate
-from planning.planning_config import RAW_CANDIDATE_COUNT
-from planning.planning_engine import PlanningError, evaluate, filter_candidates
+from planning.planning_config import (
+    DAILY_PUBLISH_COUNT,
+    DIVERSITY_LIMITS,
+    EXPLORATION_FRACTION,
+    RAW_CANDIDATE_COUNT,
+    SEMIFINALIST_TARGET,
+)
+from planning.planning_engine import (
+    PlanningError,
+    analytics_weight,
+    editorial_score,
+    evaluate,
+    filter_candidates,
+    hourly_slots,
+    order_for_schedule,
+    score_semifinalist,
+    similarity,
+)
 
-CONTRACT_VERSION = 1
+CONTRACT_VERSION = 2
 ROOT = Path(__file__).resolve().parents[2]
 IMPLEMENTATION_FILES = (
     Path(__file__).resolve(),
@@ -104,15 +122,22 @@ def _apply_analytics(semifinalists, model):
     return enriched, evidence_count
 
 
-def _final_select(payload):
+def _prepare_semifinalists(payload):
     raw_candidates = _require_list(payload, "raw_candidates")
     semifinalists = _require_list(payload, "semifinalists")
     recent = payload.get("recent", [])
     if not isinstance(recent, list):
         raise PlanningError("recent must be a JSON array")
-    plan_date = payload.get("plan_date")
-    if not isinstance(plan_date, str) or not plan_date.strip():
-        raise PlanningError("plan_date must be a non-empty ISO date string")
+    if len(raw_candidates) < RAW_CANDIDATE_COUNT:
+        raise PlanningError(
+            f"raw candidate count {len(raw_candidates)} is below required {RAW_CANDIDATE_COUNT}"
+        )
+
+    qualified, rejected = filter_candidates(raw_candidates, recent=recent)
+    qualified_ids = {item["candidate_id"] for item in qualified}
+    semifinalists = [item for item in semifinalists if item.get("candidate_id") in qualified_ids]
+    if len(semifinalists) > SEMIFINALIST_TARGET:
+        semifinalists = sorted(semifinalists, key=editorial_score, reverse=True)[:SEMIFINALIST_TARGET]
 
     model = payload.get("analytics_model")
     if model is not None:
@@ -132,6 +157,119 @@ def _final_select(payload):
         for candidate in semifinalists:
             candidate.pop("analytics_metrics", None)
 
+    return raw_candidates, semifinalists, recent, rejected, evidence_count
+
+
+def _candidate_evaluation(payload):
+    raw_candidates, semifinalists, _recent, rejected, evidence_count = _prepare_semifinalists(payload)
+    weight = analytics_weight(evidence_count)
+    evaluated, semifinal_rejected = [], []
+    for candidate in semifinalists:
+        try:
+            evaluated.append(score_semifinalist(candidate, weight))
+        except PlanningError as exc:
+            semifinal_rejected.append({
+                "candidate_id": candidate.get("candidate_id"),
+                "reason": str(exc),
+            })
+    evaluated.sort(key=lambda item: item["final_score"], reverse=True)
+    return {
+        "raw_premises_generated": len(raw_candidates),
+        "hard_rejected": len(rejected),
+        "semifinalists": len(semifinalists),
+        "semifinal_rejected": semifinal_rejected,
+        "analytics_weight": weight,
+        "evaluated_candidates": evaluated,
+    }
+
+
+def _validate_selection(payload):
+    evaluated = _require_list(payload, "evaluated_candidates")
+    selected_ids = _require_list(payload, "selected_candidate_ids")
+    plan_date = payload.get("plan_date")
+    if not isinstance(plan_date, str) or not plan_date.strip():
+        raise PlanningError("plan_date must be a non-empty ISO date string")
+    if not selected_ids:
+        raise PlanningError("ChatGPT must select at least one candidate")
+    if len(selected_ids) != len(set(selected_ids)):
+        raise PlanningError("selected_candidate_ids contains duplicates")
+
+    requested_limit = int(payload.get("selection_limit") or DAILY_PUBLISH_COUNT)
+    if requested_limit < 1 or requested_limit > DAILY_PUBLISH_COUNT:
+        raise PlanningError("selection_limit is outside canonical bounds")
+    if len(selected_ids) > requested_limit:
+        raise PlanningError("ChatGPT selected more candidates than the allowed limit")
+
+    by_id = {item.get("candidate_id"): item for item in evaluated if item.get("candidate_id")}
+    missing = [candidate_id for candidate_id in selected_ids if candidate_id not in by_id]
+    if missing:
+        raise PlanningError(
+            "ChatGPT selection contains candidates that did not pass deterministic evaluation: "
+            + ", ".join(missing)
+        )
+
+    selected = [dict(by_id[candidate_id]) for candidate_id in selected_ids]
+    counts = {key: Counter() for key in DIVERSITY_LIMITS}
+    for index, candidate in enumerate(selected):
+        values = {
+            "category": candidate.get("category"),
+            "conflict": candidate.get("conflict"),
+            "title_style": candidate.get("selected_title_style"),
+        }
+        for key, value in values.items():
+            if value and counts[key][value] >= DIVERSITY_LIMITS[key]:
+                raise PlanningError(
+                    f"ChatGPT selection violates {key} diversity limit for {value}"
+                )
+        for prior in selected[:index]:
+            sim = similarity(candidate, prior)
+            if sim >= payload.get("near_duplicate_threshold", 0.0) and payload.get("near_duplicate_threshold") is not None:
+                # Explicit threshold is supported only for tests/debugging; normal callers omit it.
+                raise PlanningError("ChatGPT selection contains a near-duplicate pair")
+        for key, value in values.items():
+            if value:
+                counts[key][value] += 1
+
+    # Use the canonical similarity threshold without duplicating its numeric value.
+    from planning.planning_config import NEAR_DUPLICATE_THRESHOLD
+    for index, candidate in enumerate(selected):
+        for prior in selected[:index]:
+            sim = similarity(candidate, prior)
+            if sim >= NEAR_DUPLICATE_THRESHOLD:
+                raise PlanningError(
+                    f"ChatGPT selection contains near-duplicates: {prior.get('candidate_id')} / {candidate.get('candidate_id')}"
+                )
+
+    if len(selected) == DAILY_PUBLISH_COUNT:
+        explore_target = round(DAILY_PUBLISH_COUNT * EXPLORATION_FRACTION)
+        explore_count = sum(item.get("selection_class") == "explore" for item in selected)
+        if explore_count < explore_target:
+            raise PlanningError(
+                f"full Daily selection requires at least {explore_target} explore candidates"
+            )
+
+    ordered = order_for_schedule(selected)
+    for candidate, slot in zip(ordered, hourly_slots(plan_date)):
+        candidate["publication"] = slot
+        candidate["selection_class"] = candidate.get("selection_class", "exploit")
+
+    return {
+        "plan_date": plan_date,
+        "selection_owner": "chatgpt",
+        "selected_candidate_ids": selected_ids,
+        "validated_selected": ordered,
+        "final_selected": len(ordered),
+        "exploit_selections": sum(item.get("selection_class") != "explore" for item in ordered),
+        "explore_selections": sum(item.get("selection_class") == "explore" for item in ordered),
+    }
+
+
+def _final_select(payload):
+    """Legacy deterministic winner selection for historical recovery compatibility only."""
+    raw_candidates, semifinalists, recent, _rejected, evidence_count = _prepare_semifinalists(payload)
+    plan_date = payload.get("plan_date")
+    if not isinstance(plan_date, str) or not plan_date.strip():
+        raise PlanningError("plan_date must be a non-empty ISO date string")
     return evaluate(
         raw_candidates,
         semifinalists,
@@ -147,6 +285,20 @@ def execute(stage, payload):
     if stage == "raw-filter":
         result = _raw_filter(payload)
         entry_points = ["planning.planning_engine.filter_candidates"]
+    elif stage == "candidate-evaluation":
+        result = _candidate_evaluation(payload)
+        entry_points = [
+            "analytics.analytics_learning.score_candidate",
+            "planning.planning_engine.filter_candidates",
+            "planning.planning_engine.score_semifinalist",
+        ]
+    elif stage == "validate-selection":
+        result = _validate_selection(payload)
+        entry_points = [
+            "planning.planning_engine.similarity",
+            "planning.planning_engine.order_for_schedule",
+            "planning.planning_engine.hourly_slots",
+        ]
     elif stage == "final-select":
         result = _final_select(payload)
         entry_points = [
@@ -187,9 +339,13 @@ def _write_atomic(path, data):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Execute canonical deterministic Wacky Dramas planning for Work/ChatGPT."
+        description="Execute deterministic Wacky Dramas planning support for ChatGPT/Work."
     )
-    parser.add_argument("--stage", choices=("raw-filter", "final-select"), required=True)
+    parser.add_argument(
+        "--stage",
+        choices=("raw-filter", "candidate-evaluation", "validate-selection", "final-select"),
+        required=True,
+    )
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
@@ -204,7 +360,7 @@ def main():
         raise SystemExit(f"planning runner failed closed: {exc}") from exc
 
     print(
-        f"Canonical planning executed: stage={args.stage}; "
+        f"Canonical planning support executed: stage={args.stage}; "
         f"source_sha={envelope['execution']['source_sha']}; "
         f"output={output}"
     )
