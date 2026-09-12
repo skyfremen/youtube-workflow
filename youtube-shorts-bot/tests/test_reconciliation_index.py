@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -126,14 +127,26 @@ class ReconciliationIndexTests(unittest.TestCase):
         self.assertEqual(report["upload_record_count"], 0)
         self.assertEqual(report["verified_receipt_count"], 1)
 
-    def test_repository_clean_cutover_has_no_stale_acceptance_mapping(self):
+    def test_repository_cutover_marker_is_complete_and_has_no_stale_mapping(self):
         report = bootstrap(BOT, write=False)
         self.assertEqual(report["mapping_count"], 0)
         self.assertEqual(report["conflicts"], 0)
         self.assertEqual(report["created"], 0)
         self.assertEqual(report["reused"], 0)
-        self.assertFalse(report["bootstrap_present"])
+        self.assertTrue(report["bootstrap_present"])
         self.assertFalse(report["youtube_api_required"])
+
+        marker_path = BOT / "content" / "recovery" / "index" / "bootstrap.json"
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        self.assertEqual(marker["schema_version"], 1)
+        self.assertEqual(marker["status"], "complete")
+        self.assertEqual(marker["conflicts"], 0)
+        self.assertEqual(marker["historical_mapping_count"], 0)
+        self.assertEqual(marker["upload_record_count"], 0)
+        self.assertEqual(marker["verified_receipt_count"], 0)
+        self.assertEqual(marker["source"], "trusted_private_evidence")
+        self.assertFalse(marker["youtube_api_required"])
+        self.assertRegex(marker["cutover_source_commit_sha"], re.compile(r"^[0-9a-f]{40}$"))
 
 
 if __name__ == "__main__":

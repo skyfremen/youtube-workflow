@@ -13,6 +13,8 @@ Read at minimum:
 - `planning/STORY_RULES.md`
 - `planning/planning_config.py`
 - `planning/planning_engine.py`
+- `planning/planner_contract.py`
+- `planning/daily_precommit.py`
 - `analytics/analytics_learning.py`
 - current `analytics/latest.json` and `analytics/model.json` when present
 - `validation/validate_content.py`
@@ -27,6 +29,14 @@ Read at minimum:
 - `.github/workflows/daily-production.yml`
 
 Do not blindly reproduce old prompt arithmetic if executable/configured rules have changed.
+
+Before authoring the ranked pool, execute the current machine-readable planner contract:
+
+```bash
+PYTHONPATH=youtube-shorts-bot python -m planning.planner_contract
+```
+
+Consume the actual output. In particular, discover the current request schema version, Daily pool size, Daily planning modes, target count, content-ID pattern, score-component keys, controlled values and Daily publication template from the repository rather than reproducing them from memory.
 
 ## Canonical ownership
 
@@ -135,6 +145,46 @@ For each candidate:
 8. When source duration is unknown/untrusted, use the safe full-source treatment: `segment_start_seconds=0`, `segment_duration_seconds=null`, with a valid playback rate.
 
 Private validation independently enforces hard registry/licensing/rendition/treatment facts. Validation is a **gate**, not a planner.
+
+## Mandatory ChatGPT pre-commit validation and repair loop
+
+The immutable Daily pool must **not** be ChatGPT's first serialization of its work.
+
+After ChatGPT has authored all 36 complete candidates and frozen rank order, it must first write the complete pool JSON to a **temporary working file outside `content/planning-pools/`**. That temporary file is not production state and must not be committed.
+
+Then execute the canonical repository validator against that exact temporary file and the exact current checkout HEAD:
+
+```bash
+rules_source_sha="$(git rev-parse HEAD)"
+PYTHONPATH=youtube-shorts-bot python -m planning.daily_precommit \
+  --pool /tmp/wacky-daily-pool.json \
+  --rules-source-sha "${rules_source_sha}"
+```
+
+ChatGPT must consume the actual returned JSON. The result must explicitly contain:
+
+- `status: PASS`;
+- `commit_allowed: true`;
+- `expected_candidates: 36`;
+- `valid_candidates: 36`;
+- `failed_candidates: 0`;
+- a non-empty `draft_sha256`.
+
+This is a **36/36 requirement**. Production promotion may still skip a later-invalid reserve candidate in rank order for resilience, but ChatGPT is not allowed to commit a malformed reserve candidate in the first place.
+
+If any candidate or pool-level check fails, ChatGPT must read the exact `pool_errors` / `candidate_results[*].errors`, repair its own temporary draft, and execute `planning.daily_precommit` again. Repeat until 36/36 pass or fail closed if the repository contract cannot be satisfied.
+
+Do not substitute manual arithmetic, remembered field names, visual inspection, stale cached validator output, or a statement that the pool "should pass" for actual execution of the validator. In particular, ChatGPT must not guess score-component keys or content-ID syntax; the live repository contract and validator are authoritative.
+
+Immediately before creating the immutable pool file:
+
+1. re-read `git rev-parse HEAD` and require it to still equal the validated `rules_source_sha`;
+2. compute SHA-256 of the temporary file and require it to exactly equal the validator's `draft_sha256`;
+3. copy the **exact validated bytes** into the new immutable pool path—do not reconstruct, reserialize or rewrite the JSON after validation;
+4. verify the immutable destination did not already exist;
+5. commit only that one new pool JSON with the required `[daily pool] YYYY-MM-DD` subject.
+
+No PASS evidence means no immutable pool commit.
 
 ## Retryable immutable Daily pool contract
 
@@ -245,6 +295,7 @@ Preserve exact source-SHA validation, compatibility fingerprints, dispatch/start
 Before committing a Daily pool confirm:
 
 - current repository files were inspected;
+- `planning.planner_contract` was actually executed and consumed;
 - canonical plan for the date does not already exist;
 - the attempt path is new and immutable;
 - exactly 36 production-quality candidates exist;
@@ -254,6 +305,11 @@ Before committing a Daily pool confirm:
 - ChatGPT performed all creative/editorial ranking, background audit reasoning and treatment choices;
 - backgrounds/treatments satisfy current policy/history and hard safety expectations;
 - story/punchline/voice/title/metadata contracts are complete;
+- `planning.daily_precommit` was actually executed against the temporary draft;
+- final pre-commit validation is `PASS`, `commit_allowed=true`, and **36/36** candidates pass;
+- current HEAD still equals the validated `rules_source_sha`;
+- the temporary file SHA-256 still equals `draft_sha256`;
+- the immutable pool receives the exact validated bytes without reserialization;
 - no planner-execution bridge is used;
 - only one new ranked-pool JSON is added in the ChatGPT commit;
 - the commit subject begins `[daily pool] YYYY-MM-DD`.

@@ -29,6 +29,11 @@ ADHOC_PUBLICATION = {
     "timezone": "Asia/Singapore",
     "publish_at": None,
 }
+DAILY_PUBLICATION = {
+    "mode": "scheduled",
+    "timezone": "Asia/Singapore",
+    "publish_at": None,
+}
 
 
 def build_contract():
@@ -38,9 +43,16 @@ def build_contract():
         "ranked_pool_schema_version": ranked_promotion.POOL_SCHEMA_VERSION,
         "adhoc_pool_size": ranked_promotion.ADHOC_POOL_SIZE,
         "adhoc_planning_modes": sorted(ranked_promotion.ADHOC_PLANNING_MODES),
+        "daily_pool_size": ranked_promotion.DAILY_POOL_SIZE,
+        "daily_planning_modes": sorted(ranked_promotion.PLANNING_MODES),
+        "daily_normal_target": ranked_promotion.NORMAL_DAILY_TARGET,
+        "daily_catch_up_min_lead_minutes": ranked_promotion.CATCH_UP_MIN_LEAD_MINUTES,
         "content_id_pattern": CONTENT_ID_RE.pattern,
         "candidate_id_pattern": ranked_promotion.CANDIDATE_ID_RE.pattern,
+        # Backward-compatible Ad-hoc discovery key used by the existing planner.
         "publication": ADHOC_PUBLICATION,
+        "adhoc_publication": ADHOC_PUBLICATION,
+        "daily_publication_template": DAILY_PUBLICATION,
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
         "hook_score_components": list(HOOK_WEIGHTS),
