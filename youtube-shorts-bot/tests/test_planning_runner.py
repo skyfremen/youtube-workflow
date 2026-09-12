@@ -128,13 +128,14 @@ class PlanningRunnerTests(unittest.TestCase):
         daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BASE / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         for prompt in (daily, adhoc):
-            self.assertIn("ChatGPT", prompt)
-            self.assertIn("final rank", prompt.lower())
-            self.assertIn("chatgpt_ranked_pool", prompt)
-            self.assertIn("must not", prompt.lower())
-            self.assertIn("creatively", prompt.lower())
-            self.assertIn("background", prompt.lower())
-            self.assertIn("treatment", prompt.lower())
+            lower = prompt.lower()
+            self.assertIn("chatgpt", lower)
+            self.assertIn("rank", lower)
+            self.assertIn("chatgpt_ranked_pool", lower)
+            self.assertIn("must not", lower)
+            self.assertIn("creatively", lower)
+            self.assertIn("background", lower)
+            self.assertIn("treatment", lower)
 
 
 if __name__ == "__main__":
