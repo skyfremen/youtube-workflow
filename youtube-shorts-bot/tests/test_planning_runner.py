@@ -124,14 +124,18 @@ class PlanningRunnerTests(unittest.TestCase):
             self.assertFalse(output_path.exists())
             self.assertIn("failed closed", proc.stderr + proc.stdout)
 
-    def test_prompts_make_chatgpt_editorial_owner(self):
+    def test_prompts_make_chatgpt_editorial_owner_without_execution_bridge(self):
         daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BASE / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("ChatGPT / Work owns the final editorial choice", daily)
+        self.assertIn("exactly 36 complete ranked candidates", daily)
+        self.assertIn("first 24 valid candidates", daily)
+        self.assertIn("exactly **5 complete ranked Ad-hoc candidates**", adhoc)
+        self.assertIn("first valid candidate", adhoc)
         for prompt in (daily, adhoc):
-            self.assertIn("ChatGPT / Work owns the final editorial choice", prompt)
-            self.assertIn("candidate-evaluation", prompt)
-            self.assertIn("validate-selection", prompt)
-            self.assertIn("legacy", prompt.lower())
+            self.assertIn("ChatGPT / Work", prompt)
+            self.assertIn("rank", prompt.lower())
+            self.assertIn("no `planner-execution.yml`", prompt)
 
 
 if __name__ == "__main__":
