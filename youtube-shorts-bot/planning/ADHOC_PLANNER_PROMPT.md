@@ -175,6 +175,16 @@ Requirements:
 - `rules_source_sha` equals the exact parent of the eventual pool commit;
 - every publication object exactly matches the current immediate-public object returned by the live contract.
 
+For clarity, the current immediate-public shape is expected to resolve to this exact object (the live contract remains authoritative if it changes):
+
+```json
+{
+  "mode": "immediate",
+  "timezone": "Asia/Singapore",
+  "publish_at": null
+}
+```
+
 The upload body must resolve to YouTube `privacyStatus: public` with no `publishAt` field.
 
 ## Mandatory ChatGPT pre-commit validation and repair loop
