@@ -13,12 +13,18 @@ class PublicDryRunError(RuntimeError):
     pass
 
 
-def correlation_id(run_id, run_attempt, expected_sha):
+def expected_sha(value):
+    value = str(value or '')
+    if not re.fullmatch(r'[0-9a-f]{40}', value):
+        raise PublicDryRunError('E_DRY_PUBLIC_SHA')
+    return value
+
+
+def correlation_id(run_id, run_attempt, expected_sha_value):
     if not str(run_id).isdigit() or not str(run_attempt).isdigit():
         raise PublicDryRunError('E_DRY_PRIVATE_ID')
-    if not re.fullmatch(r'[0-9a-f]{40}', str(expected_sha)):
-        raise PublicDryRunError('E_DRY_PUBLIC_SHA')
-    seed = f'{run_id}:{run_attempt}:{expected_sha}'.encode()
+    resolved_sha = expected_sha(expected_sha_value)
+    seed = f'{run_id}:{run_attempt}:{resolved_sha}'.encode()
     return 'dr_' + hashlib.sha256(seed).hexdigest()[:24]
 
 
@@ -93,14 +99,10 @@ def dispatch_and_verify():
     token = os.environ.get('PUBLIC_PRODUCTION_TOKEN', '')
     run_id = os.environ.get('GITHUB_RUN_ID', '')
     run_attempt = os.environ.get('GITHUB_RUN_ATTEMPT', '')
+    resolved_sha = expected_sha(os.environ.get('PUBLIC_EXPECTED_SHA', ''))
     api = GitHubApi(repository, token)
 
-    commit = api.call('commits/main')
-    expected_sha = str((commit or {}).get('sha', ''))
-    if not re.fullmatch(r'[0-9a-f]{40}', expected_sha):
-        raise PublicDryRunError('E_DRY_PUBLIC_SHA')
-
-    correlation = correlation_id(run_id, run_attempt, expected_sha)
+    correlation = correlation_id(run_id, run_attempt, resolved_sha)
     before_ids = {int(item['id']) for item in _runs(api, workflow) if item.get('id')}
     api.call(
         f'actions/workflows/{workflow}/dispatches',
@@ -109,11 +111,11 @@ def dispatch_and_verify():
             'ref': 'main',
             'inputs': {
                 'correlation_id': correlation,
-                'expected_sha': expected_sha,
+                'expected_sha': resolved_sha,
             },
         },
     )
-    print(f'Public dry run dispatched correlation={correlation} expected_sha={expected_sha}')
+    print(f'Public dry run dispatched correlation={correlation} expected_sha={resolved_sha}')
 
     discovery_deadline = time.monotonic() + 120
     linked = None
@@ -127,7 +129,7 @@ def dispatch_and_verify():
         linked = select_correlated_run(
             runs,
             before_ids=before_ids,
-            expected_sha=expected_sha,
+            expected_sha=resolved_sha,
             correlation=correlation,
             jobs_by_run=jobs_by_run,
         )
@@ -141,9 +143,9 @@ def dispatch_and_verify():
     completion_deadline = time.monotonic() + 600
     while time.monotonic() < completion_deadline:
         current = api.call(f'actions/runs/{linked_id}')
-        if current.get('head_sha') != expected_sha:
+        if current.get('head_sha') != resolved_sha:
             raise PublicDryRunError(
-                f'E_DRY_PUBLIC_SHA expected={expected_sha} actual={current.get("head_sha")}'
+                f'E_DRY_PUBLIC_SHA expected={resolved_sha} actual={current.get("head_sha")}'
             )
         if current.get('status') == 'completed':
             conclusion = current.get('conclusion')
@@ -153,7 +155,7 @@ def dispatch_and_verify():
                 )
             print(
                 f'Linked public dry run PASS run_id={linked_id} '
-                f'correlation={correlation} sha={expected_sha}'
+                f'correlation={correlation} sha={resolved_sha}'
             )
             return linked_id
         time.sleep(5)
