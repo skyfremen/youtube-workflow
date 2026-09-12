@@ -1,90 +1,63 @@
-# Wacky Dramas — Ad-hoc Single Planner (schema v5 + ChatGPT editorial selection overlay)
+# Wacky Dramas — Ad-hoc Single Planner (schema v5 + ChatGPT-direct planning)
 
 This is the canonical Ad-hoc single-Short planner entry point.
 
-Read `docs/ADHOC_PLANNER_V4_BASE.md` in full first, then the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, exactly-one-Short, immediate-public publication, metadata, recovery, idempotency, safety and architecture rules except where this overlay explicitly supersedes winner-selection and schema-v4/background-treatment behavior.
+Read `docs/ADHOC_PLANNER_V4_BASE.md` in full first, then the current `planning/DAILY_PLANNER_PROMPT.md`. Preserve all existing Ad-hoc identity, exactly-one-Short, immediate-public publication, metadata, recovery, idempotency, safety and architecture rules except where this overlay explicitly supersedes older deterministic-runner/winner-selection behavior.
 
-Repository code is authoritative for deterministic calculations and validation. Inspect the current `planning/planning_runner.py`, `planning/planning_engine.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, registry and workflows before authoring the request.
+Repository code is authoritative for the rules. Inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, registry and workflows before authoring the request.
 
-## Ad-hoc editorial ownership — authoritative override
+## Ad-hoc planning ownership — authoritative override
 
-**ChatGPT / Work owns the final editorial choice of the one Ad-hoc winner.**
+**ChatGPT / Work performs the complete candidate-planning decision path and chooses the one Ad-hoc winner.**
 
-`planning_engine.py` and `planning_runner.py` support ChatGPT with deterministic hard rejection, scoring, analytics normalization, duplicate/near-duplicate checks, eligibility, diversity-policy validation and request validation. They do **not** choose the authoritative Ad-hoc winner for new planning runs.
+For a new Ad-hoc run, ChatGPT itself must:
 
-The statement in the older base prompt that the first item from `result.selected` is the authoritative winner is superseded by this overlay.
+1. generate the candidate pool;
+2. apply hard rejection and duplicate/near-duplicate rules;
+3. develop the qualified candidates;
+4. apply the current scoring formulas and analytics evidence;
+5. compare candidates semantically/editorially;
+6. choose exactly one eligible winner;
+7. write the complete story and metadata.
 
-The legacy `planning.final-select` / `final-select` operation remains available only for historical recovery compatibility. Do not use it to pick a new Ad-hoc winner.
+Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, or `final-select` for a new Ad-hoc plan. `planning_engine.py` and related files are rule/specification sources for ChatGPT and may remain executable for tests, regression checks, or historical compatibility, but they do not plan on ChatGPT's behalf.
 
-The canonical new Ad-hoc flow is:
+The canonical Ad-hoc flow is:
 
 ```text
-ChatGPT generates candidates
-  -> planning.raw-filter
-  -> ChatGPT develops qualified semifinalists
-  -> planning.candidate-evaluation
-  -> deterministic scores/checks/ranking evidence returned
-  -> ChatGPT chooses exactly 1 eligible winner
-  -> planning.validate-selection with selection_limit=1
-  -> deterministic validation of ChatGPT's chosen ID
+ChatGPT reads current repo rules/config/analytics/history
+  -> ChatGPT generates candidates
+  -> ChatGPT performs hard filtering
+  -> ChatGPT develops qualified candidates
+  -> ChatGPT applies scoring/analytics/diversity rules
+  -> ChatGPT chooses exactly 1 winner
   -> ChatGPT writes the complete story
-  -> background selection/audit/treatment
-  -> request.validate
+  -> mechanical background selection/audit/treatment
+  -> request.validate / final schema validation
   -> commit exactly one immutable Ad-hoc request
   -> private Ad-hoc dispatcher
   -> public single runtime
   -> YouTube immediately Public
 ```
 
-ChatGPT may choose a lower-ranked eligible candidate over a higher-ranked one when its semantic/editorial judgment supports that choice. A deterministic score or rank is evidence, not authority. ChatGPT may never choose a candidate that failed hard filtering or candidate evaluation.
+A score or ranking is evidence, not authority. ChatGPT may choose a lower-scored eligible candidate when its editorial judgment supports the choice, provided all hard rules are satisfied.
 
-If `planning.validate-selection` rejects the chosen ID, ChatGPT must choose again or stop. The deterministic validator must never silently substitute another winner.
+## Repository-side bridge boundary
 
-## Repository-side execution bridge
-
-When ChatGPT / Work has a real local checkout, execute the canonical Python entry points directly.
-
-When the connected environment can read/write GitHub state but cannot execute the private checkout locally, use `.github/workflows/planner-execution.yml` plus `planning/execution_bridge.py`. Do not reproduce deterministic arithmetic manually.
-
-Create a JSON envelope under:
-
-`content/planner-execution/inputs/<execution_id>.json`
-
-with schema version 1 and a supported operation.
-
-For new Ad-hoc planning, the planning operations are:
-
-- `planning.raw-filter`
-- `planning.candidate-evaluation`
-- `planning.validate-selection`
-
-`planning.final-select` is legacy recovery compatibility only.
-
-Other supported deterministic operations remain:
+`.github/workflows/planner-execution.yml` plus `planning/execution_bridge.py` may still be used for **mechanical non-editorial operations only** when the connected environment cannot execute them locally:
 
 - `background.select`
 - `background.audit`
 - `background.treatment`
 - `request.validate`
 
-Consume the actual committed result under `content/planner-execution/results/<execution_id>.json` before continuing. Never infer success from workflow start alone and never hand-author substitute results.
+The bridge must not expose or execute candidate filtering, candidate evaluation, selection validation, or winner selection for new planning runs.
 
-Bridge input/result commits are execution evidence, not production requests and must not use `[daily production]` or `[adhoc production]` markers.
-
-## Selection validation contract
-
-For the final Ad-hoc editorial decision, call `planning.validate-selection` with:
-
-- `evaluated_candidates`: the exact candidate objects returned by `planning.candidate-evaluation`;
-- `selected_candidate_ids`: an array containing exactly the one ID chosen by ChatGPT;
-- `selection_limit`: `1`;
-- `plan_date`: the current Singapore Ad-hoc run date.
-
-Only if validation succeeds may the chosen candidate proceed.
+Bridge input/result commits are mechanical execution evidence, not production requests, and must not use `[daily production]` or `[adhoc production]` markers.
 
 ## Preserved Ad-hoc production contract
 
-This path creates exactly one additional Short and uses `.github/workflows/adhoc-production.yml`, which dispatches public `single.yml` only. It must never consume or alter Daily's 24 scheduled slots.
+This path creates exactly one additional Short and uses `.github/workflows/adhoc-production.yml`, which dispatches public `single.yml` only. It must never consume or alter Daily's scheduled slots.
 
 The immutable publication object remains:
 
@@ -100,9 +73,7 @@ The upload body must resolve to `privacyStatus: public` with no future `publishA
 
 ## Schema-v5 and visual allocation
 
-New Ad-hoc requests use schema v5. Select distinct primary/backup logical backgrounds through the canonical retention-first selector, run the mechanical audit, then run the canonical private treatment allocator.
-
-Freeze:
+New Ad-hoc requests use schema v5. Select distinct primary/backup logical backgrounds through the current retention-first rules, run the mechanical audit, then run the canonical private treatment allocator. Freeze:
 
 - `background_primary_id`
 - `background_backup_id`
@@ -113,7 +84,7 @@ Do not hand-author different segment/speed values after the allocator returns. E
 
 ## Request validation and commit
 
-After ChatGPT has written the final complete story and metadata for its chosen winner, run `request.validate` through the bridge or the direct repository implementation. Validate schema, content identity, deterministic planning evidence, backgrounds/treatments, runtime contract and exact immediate-public upload body.
+After ChatGPT has written the final complete story and metadata for its chosen winner, validate the final request through the repository's request-validation path. GitHub may reject an invalid final handoff, but it must not choose or substitute another candidate.
 
 Then commit exactly one new immutable Ad-hoc request using:
 
@@ -123,6 +94,6 @@ The private `.github/workflows/adhoc-request-dispatch.yml` may automatically dis
 
 ## Fail closed
 
-Fail closed if raw filtering, candidate evaluation, ChatGPT selection validation, background selection/audit/treatment, request validation, contract compatibility or exact payload validation fails.
+Fail closed if ChatGPT cannot confidently apply the current planning rules, or if background allocation, request validation, contract compatibility, or exact payload validation fails.
 
-Failing closed must never mean “let deterministic code choose a replacement winner.” ChatGPT must revise its selection or stop.
+Failing closed must never mean “let deterministic code choose a replacement winner.” ChatGPT remains the planner and editorial decision maker.
