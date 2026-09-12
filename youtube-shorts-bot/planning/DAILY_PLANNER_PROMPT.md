@@ -180,7 +180,7 @@ All non-publication request fields must already be final in the pool. Promotion 
 
 ## Analytics and creative rules
 
-Analytics remains evidence-gated through `analytics_evidence_count`; do not substitute `video_count`, `published_video_count`, or `mature_video_count`. Preserve all current candidate-funnel, scoring, diversity, title, duration, narration, safety, originality and metadata rules from the base prompt/current code unless explicitly superseded here.
+Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`. Preserve all current candidate-funnel, scoring, diversity, title, duration, narration, safety, originality and metadata rules from the base prompt/current code unless explicitly superseded here.
 
 A score is evidence, not authority. ChatGPT may rank a lower-scoring eligible story above another when semantic/editorial judgment supports it, provided all hard rules remain satisfied.
 
