@@ -1,16 +1,19 @@
-"""Planning-time background cache safety, recency and shortlist helpers.
+"""Private planning-time background ranking and anti-repetition helpers.
 
-The canonical daily planner (ChatGPT) owns semantic story-to-background judgment.
-It must inspect the checked-in cache first and only source externally when the
-cache cannot supply two genuinely suitable fresh assets. This module provides
-mechanical quality/recency/rendition checks and a deterministic shortlist; it is
-not a replacement for the AI's semantic review.
+The private planner owns logical background choice and persistent creative history.
+The public runtime only validates the frozen logical IDs and resolves physical
+renditions.  This module therefore ranks registered logical assets using immutable
+private receipts, with retention/motion/readability as the primary signal and
+story-topic relevance as a secondary boost.
+
+Older registry entries remain valid: retention categories are inferred lazily from
+existing title/tags/motion metadata unless an explicit category is present.
 """
 
 import argparse
 import json
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,10 +25,40 @@ RESULTS_DIR = BASE / "content" / "results"
 
 HARD_AVOID_SHORTS = 10
 RECENCY_PENALTY_SHORTS = 30
-MIN_SEMANTIC_SCORE = 0.45
+RECENT_CATEGORY_WINDOW = 24
 MIN_QUALITY_SCORE = 0.78
+MIN_RETENTION_SCORE = 0.72
 MIN_FRESH_STRONG_CANDIDATES = 2
 NEVER_USED_BONUS = 8.0
+
+# Canonical logical categories.  Existing registry vocabulary is normalized into
+# these values instead of requiring a destructive registry migration.
+HIGH_RETENTION_CATEGORIES = {
+    "cooking",
+    "baking",
+    "food_prep",
+    "satisfying_process",
+    "crafting",
+    "cleaning",
+    "assembly",
+    "pov_movement",
+    "city_motion",
+    "licensed_gameplay",
+}
+GENERIC_CATEGORY = "generic"
+SOCIAL_CREATOR_SOURCES = {"youtube", "tiktok", "instagram", "twitch"}
+
+_CATEGORY_TERMS = (
+    ("baking", {"baking", "bake", "bakery", "cake", "decorating", "cookie", "cookies", "dough", "pastry", "icing"}),
+    ("cooking", {"cooking", "cook", "kitchen", "frying", "grilling", "saute", "stir-fry", "stirfry"}),
+    ("food_prep", {"food", "food-prep", "preparation", "chopping", "slicing", "cutting", "ingredients", "meal-prep"}),
+    ("cleaning", {"cleaning", "clean", "washing", "wash", "scrubbing", "scrub", "pressure-washing", "pressure-wash"}),
+    ("crafting", {"craft", "crafting", "pottery", "woodworking", "knitting", "sewing", "carving", "painting"}),
+    ("assembly", {"assembly", "assembling", "manufacturing", "factory", "packaging", "building", "construction"}),
+    ("pov_movement", {"pov", "walking", "walk", "driving", "drive", "cycling", "ride", "riding", "train-ride", "travel-motion"}),
+    ("city_motion", {"city", "urban", "traffic", "street", "streets", "timelapse", "time-lapse", "transit", "metro"}),
+    ("satisfying_process", {"satisfying", "process", "kinetic", "fluid", "loop", "seamless-loop", "pouring", "mixing", "sorting"}),
+)
 
 
 def _normal(value):
@@ -84,13 +117,17 @@ def load_successful_receipts(results_dir=RESULTS_DIR):
     )
 
 
-def derive_usage_history(receipts):
-    """Return immutable-receipt-derived recency; index zero is the latest Short."""
-    ordered = sorted(
+def _ordered_successes(receipts):
+    return sorted(
         (record for record in receipts if is_successful_receipt(record)),
         key=lambda item: (_timestamp(item), item.get("content_id", "")),
         reverse=True,
     )
+
+
+def derive_usage_history(receipts):
+    """Return immutable-receipt-derived recency; index zero is the latest Short."""
+    ordered = _ordered_successes(receipts)
     history = {}
     counts = defaultdict(int)
     for shorts_ago, record in enumerate(ordered):
@@ -107,8 +144,54 @@ def derive_usage_history(receipts):
     return history
 
 
+def _asset_tokens(asset):
+    tokens = set()
+    for value in asset.get("visual_tags", []):
+        normal = _normal(value)
+        if normal:
+            tokens.add(normal)
+            tokens.update(part for part in normal.split("-") if part)
+    for field in ("title", "motion_type"):
+        normal = _normal(asset.get(field, ""))
+        if normal:
+            tokens.add(normal)
+            tokens.update(part for part in normal.split("-") if part)
+    return tokens
+
+
+def retention_category(asset):
+    """Return a backward-compatible canonical category for one logical asset."""
+    explicit = _normal(asset.get("retention_category")).replace("-", "_")
+    if explicit in HIGH_RETENTION_CATEGORIES:
+        return explicit
+    if explicit in {"generic", "topic_relevant", "topic-relevant"}:
+        return GENERIC_CATEGORY
+
+    tokens = _asset_tokens(asset)
+    for category, terms in _CATEGORY_TERMS:
+        if tokens & terms:
+            return category
+    return GENERIC_CATEGORY
+
+
+def _licensed_gameplay_is_eligible(asset, registry):
+    if retention_category(asset) != "licensed_gameplay":
+        return True
+    source = _normal(asset.get("source"))
+    if source in SOCIAL_CREATOR_SOURCES:
+        return False
+    license_reference = asset.get("license_reference") or registry.get("license_reference")
+    return bool(
+        asset.get("verified") is True
+        and asset.get("commercial_use") is True
+        and str(asset.get("license") or "").strip()
+        and str(asset.get("source_page") or "").strip()
+        and str(license_reference or "").strip()
+    )
+
+
 def semantic_score(asset, requirements):
-    """Cheap metadata score used for cache shortlist ordering, not AI truth."""
+    """Topic/metadata relevance boost.  It is deliberately not the primary score."""
     required_tags = {
         _normal(tag) for tag in requirements.get("visual_tags", []) if _normal(tag)
     }
@@ -151,22 +234,86 @@ def quality_score(asset):
     return round((values[0] * 0.40 + values[1] * 0.25 + values[2] * 0.35) / 100.0, 4)
 
 
+def retention_score(asset):
+    """Score continuous visual interest independently of story-topic matching."""
+    quality = quality_score(asset)
+    intensity = _normal(asset.get("motion_intensity"))
+    motion = {"high": 1.0, "medium": 0.82, "low": 0.45}.get(intensity, 0.62)
+    motion_type = _normal(asset.get("motion_type"))
+    if any(term in motion_type for term in ("static", "still")):
+        motion = min(motion, 0.20)
+    elif any(term in motion_type for term in ("continuous", "process", "pov", "time-lapse", "timelapse", "loop")):
+        motion = min(1.0, motion + 0.08)
+
+    category = retention_category(asset)
+    category_value = 1.0 if category in HIGH_RETENTION_CATEGORIES else 0.35
+    orientation = _normal(asset.get("orientation"))
+    orientation_value = {"vertical": 1.0, "square": 0.86, "horizontal": 0.72}.get(orientation, 0.78)
+    return round(
+        0.42 * quality
+        + 0.28 * motion
+        + 0.18 * category_value
+        + 0.12 * orientation_value,
+        4,
+    )
+
+
 def _has_production_rendition(asset):
     return any(rendition_is_production_suitable(r) for r in asset.get("renditions", []))
 
 
-def rank_assets(registry, requirements, receipts):
+def derive_category_history(registry, receipts, window=RECENT_CATEGORY_WINDOW):
+    """Derive private cross-run category history from immutable successful receipts."""
+    mapping = asset_map(registry)
+    ordered = _ordered_successes(receipts)[: max(0, int(window))]
+    categories = []
+    for record in ordered:
+        asset = mapping.get(record.get("background_asset_id"))
+        if asset:
+            categories.append(retention_category(asset))
+    return {
+        "recent_categories": categories,
+        "counts": dict(Counter(categories)),
+    }
+
+
+def rank_assets(
+    registry,
+    requirements,
+    receipts,
+    planned_asset_ids=(),
+    planned_categories=(),
+):
+    """Rank logical assets retention-first while keeping topic fit as a soft boost.
+
+    ``planned_*`` inputs are ephemeral private batch context.  They let the daily
+    planner spread choices across a 24-item plan without writing mutable state to
+    the public runtime or registry.
+    """
     usage = derive_usage_history(receipts)
+    category_history = derive_category_history(registry, receipts)
+    recent_categories = category_history["recent_categories"]
+    category_counts = category_history["counts"]
+    planned_asset_counts = Counter(planned_asset_ids or ())
+    planned_category_counts = Counter(planned_categories or ())
     ranked = []
+
     for asset in registry.get("assets", []):
         if asset.get("status") != "active" or asset.get("verified") is not True:
             continue
+        if not _licensed_gameplay_is_eligible(asset, registry):
+            continue
+
         semantic = semantic_score(asset, requirements)
         quality = quality_score(asset)
+        retention = retention_score(asset)
+        category = retention_category(asset)
         recent = usage.get(asset["id"])
         shorts_ago = recent.get("shorts_ago") if recent else None
+        use_count = int(recent.get("successful_use_count") or 0) if recent else 0
         never_used = recent is None
         hard_avoided = shorts_ago is not None and shorts_ago < HARD_AVOID_SHORTS
+
         if hard_avoided:
             recency_penalty = 1000.0
         elif shorts_ago is None:
@@ -177,51 +324,105 @@ def rank_assets(registry, requirements, receipts):
             recency_penalty = 24.0 - (shorts_ago - 20) * 2.0
         else:
             recency_penalty = 0.0
+
+        # Category rotation is intentionally soft: quality/retention can still win.
+        recent_category_penalty = min(10.0, float(category_counts.get(category, 0)) * 1.25)
+        if category in recent_categories[:3]:
+            recent_category_penalty += 3.0
+        planned_category_penalty = min(9.0, float(planned_category_counts.get(category, 0)) * 2.0)
+        planned_asset_penalty = min(24.0, float(planned_asset_counts.get(asset["id"], 0)) * 12.0)
+        usage_penalty = min(8.0, use_count * 0.5)
+
         rendition_ready = _has_production_rendition(asset)
         strong_match = bool(
-            semantic >= MIN_SEMANTIC_SCORE
+            retention >= MIN_RETENTION_SCORE
             and quality >= MIN_QUALITY_SCORE
             and rendition_ready
         )
-        base = semantic * 62.0 + quality * 38.0
+
+        # Retention dominates.  Topic relevance is capped at a 12-point boost;
+        # a genuinely engaging unrelated process clip can beat a weak literal clip.
+        high_retention_bonus = 8.0 if category in HIGH_RETENTION_CATEGORIES else 0.0
+        base = retention * 80.0 + semantic * 12.0 + high_retention_bonus
+        total_penalty = (
+            recency_penalty
+            + recent_category_penalty
+            + planned_category_penalty
+            + planned_asset_penalty
+            + usage_penalty
+        )
         ranked.append({
             **asset,
+            "retention_category": category,
             "semantic_score": semantic,
             "quality_score": quality,
+            "retention_score": retention,
             "base_score": round(base, 3),
             "recency_penalty": round(recency_penalty, 3),
-            "score": round(base - recency_penalty, 3),
+            "category_penalty": round(recent_category_penalty + planned_category_penalty, 3),
+            "planned_asset_penalty": round(planned_asset_penalty, 3),
+            "usage_penalty": round(usage_penalty, 3),
+            "score": round(base - total_penalty, 3),
             "shorts_ago": shorts_ago,
+            "successful_use_count": use_count,
             "never_used": never_used,
             "hard_avoided": hard_avoided,
             "rendition_ready": rendition_ready,
             "strong_match": strong_match,
         })
-    return sorted(ranked, key=lambda item: (item["score"], item["quality_score"]), reverse=True)
+    return sorted(
+        ranked,
+        key=lambda item: (item["score"], item["retention_score"], item["quality_score"]),
+        reverse=True,
+    )
 
 
-def select_logical_backgrounds(registry, requirements, receipts):
-    ranked = rank_assets(registry, requirements, receipts)
+def select_logical_backgrounds(
+    registry,
+    requirements,
+    receipts,
+    planned_asset_ids=(),
+    planned_categories=(),
+):
+    ranked = rank_assets(
+        registry,
+        requirements,
+        receipts,
+        planned_asset_ids=planned_asset_ids,
+        planned_categories=planned_categories,
+    )
     fresh = [item for item in ranked if item["strong_match"] and not item["hard_avoided"]]
     if len(fresh) < MIN_FRESH_STRONG_CANDIDATES:
         return {
             "primary": None,
             "backup": None,
             "expansion_required": True,
-            "reason": "fewer than two strong fresh cache backgrounds",
+            "reason": "fewer than two strong fresh retention-first backgrounds",
             "ranked_candidates": ranked,
         }
+
+    primary = fresh[0]
+    backup = fresh[1]
+    # Prefer a different visual category for backup when it is genuinely competitive;
+    # never force a poor clip just to satisfy rotation.
+    for candidate in fresh[1:]:
+        if (
+            candidate["retention_category"] != primary["retention_category"]
+            and candidate["score"] >= backup["score"] - 5.0
+        ):
+            backup = candidate
+            break
     return {
-        "primary": fresh[0]["id"],
-        "backup": fresh[1]["id"],
+        "primary": primary["id"],
+        "backup": backup["id"],
         "expansion_required": False,
-        "reason": "cache supplied at least two strong fresh backgrounds",
+        "reason": "retention-first cache supplied at least two strong fresh backgrounds",
         "ranked_candidates": ranked,
     }
 
 
 def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=None):
-    """Mechanical gate for IDs chosen semantically by the AI planner."""
+    """Mechanical safety gate for logical IDs chosen by the private planner."""
     requirements = requirements or {}
     assets = asset_map(registry)
     errors = []
@@ -236,10 +437,12 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
             continue
         audit = ranked.get(asset_id)
         if not audit:
-            errors.append(f"{label} background {asset_id} is not active and verified")
+            errors.append(f"{label} background {asset_id} is not eligible, active and verified")
             continue
         if audit["quality_score"] < MIN_QUALITY_SCORE:
             errors.append(f"{label} background {asset_id} is below the quality floor")
+        if audit["retention_score"] < MIN_RETENTION_SCORE:
+            errors.append(f"{label} background {asset_id} is below the motion/retention floor")
         if audit["hard_avoided"]:
             errors.append(f"{label} background {asset_id} was used within the last 10 Shorts")
         if not audit["rendition_ready"]:
