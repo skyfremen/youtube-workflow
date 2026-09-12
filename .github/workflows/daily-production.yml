@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'youtube-shorts-bot/content/planning-pools/daily/*.json'
+      - 'youtube-shorts-bot/content/planning-pools/daily/**/*.json'
   workflow_dispatch:
     inputs:
       content_ids:
@@ -29,15 +29,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Global preflight, validate ranked pool, and promote first valid candidates
+      - name: Private promotion preflight and promote first valid candidates
         if: ${{ github.event_name == 'push' }}
         id: promotion
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t pools < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/planning-pools\/daily\/[0-9]{4}-[0-9]{2}-[0-9]{2}\.json$/ {print $2}')
+          mapfile -t pools < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/planning-pools\/daily\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/dp-[A-Za-z0-9-]{8,96}\.json$/ {print $2}')
           if [ "${#pools[@]}" -ne 1 ]; then
-            echo "::error::Daily pool commit must add exactly one immutable ranked pool"
+            echo "::error::Daily pool commit must add exactly one immutable ranked-pool attempt"
             exit 1
           fi
           pool="${pools[0]}"
@@ -67,9 +67,9 @@ jobs:
             exit 1
           fi
           git commit -m "[daily production] ${plan_date}"
-          git pull --rebase origin main
-          git push origin HEAD:main
 
+          # Rebase before final validation. If main changed incompatibly, stop here.
+          git pull --rebase origin main
           source_sha="$(git rev-parse HEAD)"
           batch_id="b_$(printf '%s' "${source_sha}" | sha256sum | cut -c1-30)"
           echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
@@ -77,7 +77,7 @@ jobs:
           echo "plan_date=${plan_date}" >> "${GITHUB_OUTPUT}"
           echo "selected_count=${selected_count}" >> "${GITHUB_OUTPUT}"
 
-      - name: Validate promoted canonical Daily production commit
+      - name: Validate rebased canonical Daily production commit
         if: ${{ github.event_name == 'push' }}
         working-directory: youtube-shorts-bot
         env:
@@ -86,6 +86,15 @@ jobs:
         run: |
           set -euo pipefail
           python -m validation.planning_audit --source-sha "${PROMOTED_SOURCE_SHA}"
+
+      - name: Publish validated Daily production state
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A concurrent main update after validation makes this non-fast-forward and
+          # therefore fails closed rather than publishing unvalidated rebased state.
+          git push origin HEAD:main
 
       - name: Resolve opaque dispatch
         id: batch

@@ -2,11 +2,11 @@
 
 ## Purpose
 
-The canonical Shorts system uses a competitive planning funnel: generate broadly, reject cheaply, fully develop a ranked reserve pool, mechanically validate the frozen AI-authored candidates, publish only the highest-ranked valid winners, then feed comparable public performance back into future planning.
+The canonical Shorts system uses a competitive planning funnel: generate broadly, reject weak/duplicate ideas cheaply, fully author a ranked reserve pool, mechanically validate the frozen AI-authored candidates, promote only the highest-ranked valid winners, then feed comparable public performance back into future planning.
 
-The business objective remains aggressive subscriber and qualified-view growth, including the current target of **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**. In this repository, growth is business-purpose language only; technical architecture uses functional names such as planning, validation, production, publication, verification, analytics, and learning.
+The business objective remains aggressive subscriber and qualified-view growth, including **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**.
 
-A normal Daily plan publishes exactly **24 Shorts**, one per hour in **Asia/Singapore**. ChatGPT authors a larger immutable ranked planning pool of **36 complete candidates** so candidate-specific validation failures can be absorbed without weakening the 24-Short production contract. Ad-hoc planning similarly authors **5 complete ranked candidates** and promotes the first mechanically valid one.
+A normal Daily plan publishes exactly **24 Shorts**, one per hour in **Asia/Singapore**. ChatGPT authors **36** complete ranked candidates so candidate-specific validation failures can be absorbed without weakening the exact-24 production contract. Ad-hoc planning authors **5** complete ranked candidates and promotes the first mechanically valid one.
 
 ## Architecture
 
@@ -18,32 +18,39 @@ ChatGPT / Work
   -> editorial scoring + analytics evidence + diversity reasoning
   -> fully author complete production candidates
   -> choose exact primary/backup logical backgrounds
-  -> perform background-audit reasoning
+  -> perform planning-time background audit reasoning
   -> choose frozen segment/playback treatments
   -> freeze final AI rank order
 
 Daily:
-  -> commit exactly one immutable 36-candidate ranked pool
+  -> commit one immutable 36-candidate attempt pool
   -> daily-production.yml
-       -> global fail-first preflight
+       -> private promotion preflight
        -> mechanically validate candidates in frozen rank order
-       -> promote the first 24 valid candidates
-       -> materialize one canonical planning audit + exactly 24 immutable requests
-       -> validate canonical production commit again
+       -> promote first target_count valid candidates
+       -> materialize canonical plan + requests locally
+       -> create local [daily production] commit
+       -> rebase latest main
+       -> recheck catch-up timing + final canonical validation
+       -> push only validated immutable production state
        -> dispatch public run.yml
 
 Ad-hoc:
-  -> commit exactly one immutable 5-candidate ranked pool
+  -> commit one immutable 5-candidate pool
   -> adhoc-production.yml
-       -> global fail-first preflight
+       -> private promotion preflight
        -> mechanically validate candidates in frozen rank order
-       -> promote the first valid candidate
-       -> materialize exactly one immutable request
-       -> validate it again
+       -> promote first valid candidate locally
+       -> create local [adhoc production] request commit
+       -> rebase latest main
+       -> final schema/registry/immediate-public validation
+       -> scheduled-date uniqueness recheck when planning_mode=scheduled_daily
+       -> push only validated immutable request
        -> dispatch public single.yml
 
 Public runtime:
   -> fetch exact promoted private state by opaque batch/source contract
+  -> public execution-readiness preflight
   -> resolve/normalize physical background
   -> execute frozen segment/playback treatment
   -> TTS + alignment + captions + render
@@ -53,153 +60,188 @@ Public runtime:
   -> public observations feed private analytics learning
 ```
 
-Schema v5 is the current production request format for newly promoted Daily and Ad-hoc Shorts. Schema v4 remains executable for recovery of immutable requests that already exist. Older schema-v3 receipts remain historical/analytics compatibility only where a consuming component explicitly supports them.
+There is no `planner-execution.yml` bridge. ChatGPT owns planning/background/treatment decisions directly. Private code is an independent validator/promotion gate; public runtime is the heavy stateless executor.
 
-There is no mutable hourly queue and no hourly render cron. Scheduled publication cadence is delegated to YouTube after selected videos are prepared in advance; Ad-hoc publication remains immediate-public through its immutable request contract.
+## Schema and compatibility
 
-There is also no `planner-execution.yml` bridge. ChatGPT owns planning/background/treatment decisions directly; private code is an independent fail-closed validation gate, not a creative decision maker.
+Schema v5 is current for newly promoted Daily and Ad-hoc requests. It freezes story/narration/publication plus logical primary/backup backgrounds and one immutable treatment for each slot.
 
-## Planning competition and ranked reserve pools
+Schema v4 remains executable only for historical immutable recovery. Older schema-v3 receipts remain analytics/history compatibility where explicitly supported.
 
-A raw pool of at least 120 premises creates room to reject duplicates, weak hooks, thin conflicts, poor payoffs and overrepresented categories without filling the day with low-quality material. Raw candidates are cheap structured premises and do not trigger media download, TTS, rendering or upload.
+The private/public compatibility fingerprint covers current request/treatment contract semantics. Public execution still validates exact source revision and compatibility before expensive work.
 
-Central strategy values live in `planning/planning_config.py`. `planning/planning_engine.py`, `planning/planning_runner.py`, analytics code and media policy code remain executable rule/specification/regression sources. For new ranked-pool planning, **ChatGPT / Work owns the editorial decision path and final rank order**; deterministic code must not replace ChatGPT's winner ranking.
+## Planning competition and reserve pools
 
-The production handoff is intentionally two-stage:
+The planner begins with a broad premise pool (normally at least 120 ideas), then applies semantic hard rejection, duplicate reasoning, analytics/editorial evidence, truthful title competition and diversity judgment before fully authoring the final reserve set.
 
-1. **planning pool** — immutable, AI-authored, larger than the production target;
-2. **canonical production state** — mechanically materialized from the first candidates that pass the hard validator.
+For new ranked pools, **ChatGPT / Work owns the final editorial decision and rank**. `planning_config.py`, `planning_engine.py`, analytics code, media policy and validators remain rule/specification/regression sources, but deterministic code must not silently replace ChatGPT's final winner order.
 
-For normal Daily, the planning pool contains exactly **36** complete candidates and the production target is exactly **24**. For Ad-hoc, the pool contains exactly **5** complete candidates and the production target is exactly **1**.
+The handoff has two distinct immutable layers:
 
-A failed candidate is skipped, not repaired. Later candidates retain their original ChatGPT rank. If fewer than the required target pass, the private workflow fails closed rather than weakening validation or making an editorial substitution.
+1. **ranked planning attempt** — larger than the production target and AI-authored;
+2. **canonical production state** — mechanically materialized from first valid ranked candidates after hard validation.
 
-With no mature public performance evidence, selection/ranking is editorial. Analytics stays disabled until enough comparable milestone evidence exists. The planner uses `analytics_evidence_count`, an evidence-equivalent count based on both mature videos and comparable views, then increases analytics influence gradually with a hard cap so editorial judgment and exploration always remain material.
+For normal Daily the pool has 36 and target 24. Ad-hoc has 5 and target 1.
 
-Raw YouTube metrics are never treated directly as 0–100 candidate scores. `analytics/analytics_learning.py` normalizes comparable cohort performance and builds a smoothed historical attribute model. Candidate analytics enters planning only as normalized evidence such as `historical_attribute_fit`.
+A failed candidate is skipped, never repaired. Later candidates retain original rank. If fewer than the target pass, the attempt fails closed.
 
-Missing metrics are renormalized away. They are never replaced with invented zeros or proxy values. The exact Studio viewed-vs-swiped control is not available through the targeted API used here; `engaged_view_rate` is an `engagedViews / views` continuation proxy and must never be mislabeled as that Studio metric.
+## Daily attempt/retry contract
 
-## Similarity and diversity
+Daily attempts live at:
 
-Duplicate filtering uses premise/conflict/context/payoff/ending/opening text plus controlled structural attributes. Strong near duplicates are hard rejected; softer overlap can reduce originality during planning.
+`content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json`
 
-ChatGPT applies the current category, conflict, title-pattern, ending and explore/exploit constraints while building and ranking the pool. Reserve candidates remain production-quality; they are not filler permitted to bypass diversity, safety, truthfulness, copyright, or quality rules.
+Suggested stable sequential IDs are `dp-YYYYMMDD-a01`, `a02`, etc.
 
-A normal 24-story production set still aims for the current exploit/explore balance after promotion. The rank order should be designed so mechanically skipping an invalid candidate does not intentionally undermine those constraints.
+A failed attempt remains immutable. While no canonical `content/planning/YYYY-MM-DD.json` exists, ChatGPT may author a new corrected/replenished attempt under a new ID. Once a canonical plan exists, no further pool attempt is permitted for that date; production problems use recovery of the promoted requests.
 
-## Immutable ranked-pool contract
+Each normal attempt still contains exactly 36 complete production-quality candidates. Reserve candidates are not filler and do not bypass safety, originality, copyright, metadata, background or diversity rules.
 
-Daily ChatGPT commits exactly one pool file:
+## Ad-hoc scheduled/manual contract
 
-`content/planning-pools/daily/YYYY-MM-DD.json`
+Every Ad-hoc pool records:
 
-with subject:
+- `planning_mode`: `scheduled_daily` or `manual_on_demand`;
+- `singapore_date`: `YYYY-MM-DD`.
 
-`[daily pool] YYYY-MM-DD`
+For `scheduled_daily`, all five candidate content IDs use the date-scoped `wd-YYYYMMDDT010000-adhoc-...` namespace. Private promotion is serialized and checks repository state before promotion and again after rebasing. At most one canonical scheduled Ad-hoc request may exist for a Singapore date.
 
-A normal pool contains exactly 36 complete candidates, rank `1..36`, target count 24 and the 24 canonical hourly Singapore publication slots. ChatGPT does **not** commit the canonical `content/planning/YYYY-MM-DD.json` or production request files directly for a new plan.
+If a scheduled pool fails before promotion, a new immutable pool attempt may be authored because no canonical request exists. Once a canonical scheduled request exists, retries always reuse that content ID through the manual workflow/recovery path.
 
-Ad-hoc ChatGPT commits exactly one pool file under:
+`manual_on_demand` is explicitly separate and may coexist with the scheduled request while preserving the same immutable/publication rules.
 
-`content/planning-pools/adhoc/ap-<stable-id>.json`
+## Timing and publication
 
-with a commit subject beginning `[adhoc pool]`. It contains exactly 5 complete immediate-public candidates ranked `1..5`.
+Normal Daily planning at/after 20:00 Asia/Singapore targets the next Singapore calendar day with 24 exact top-of-hour slots from 00:00 through 23:00.
 
-Planning pools are protected append-only private state. Their provenance records `editorial_selection_owner=chatgpt`, `planning_method=chatgpt_ranked_pool`, the exact `rules_source_sha`, and the complete ranked candidate identity order.
+Same-day catch-up keeps only exact top-of-hour slots at least 30 minutes in the future. ChatGPT checks this before committing the pool, and private promotion rechecks it mechanically. A delayed stale catch-up pool fails closed instead of creating immutable too-close requests.
 
-## Immutable production request contract
+Daily pool candidates carry the exact publication template:
 
-**Schema v5 is the current production request format. Schema v4 remains supported for existing immutable recovery requests.** Each promoted request contains the canonical story, narration, visual and YouTube fields plus:
+```json
+{
+  "mode": "scheduled",
+  "timezone": "Asia/Singapore",
+  "publish_at": null
+}
+```
 
-- immutable `publication`; Daily uses `mode=scheduled`, `timezone=Asia/Singapore`, and an exact UTC `publish_at`, while Ad-hoc uses `mode=immediate` with `publish_at=null`;
-- immutable `planning` metadata with scores, title competition, selected title/hook scores, analytics weight, controlled story attributes, similarity result and exploit/explore classification;
-- story metadata that freezes lead gender and story tone;
-- distinct logical `background_primary_id` and `background_backup_id`;
-- immutable `background_primary_treatment` and `background_backup_treatment`, each freezing `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate`.
+Promotion validates that template and may set only `publish_at` to the selected pool slot. It does not repair publication mode/timezone or creative fields.
 
-For Daily pool candidates, publication is authored as a scheduled template with `publish_at=null`; the promotion gate may assign only the next frozen pool publication slot to a selected candidate. It must not rewrite creative fields.
+Ad-hoc candidates carry immediate-public publication with `publish_at=null`; final upload resolves to `privacyStatus: public` and no future `publishAt`.
 
-Persistent asset/category/segment/playback history is private and derived from immutable successful receipts. ChatGPT reads and reasons over that history when authoring the pool. The public runtime does not keep a cross-run creative-history ledger.
+## Validation-before-push transaction boundary
+
+Promotion must not publish invalid immutable production state merely because local materialization succeeded.
+
+Both production workflows therefore use this order:
+
+```text
+materialize locally
+  -> local production commit
+  -> rebase latest main
+  -> final validation on rebased state
+  -> push validated state
+  -> dispatch public runtime
+```
+
+If `main` moves after validation, the push fails non-fast-forward. The workflow does not rebase again after validation and does not publish a differently based commit without rerunning validation.
+
+This is intentionally stronger than validating only after a push: validation failure cannot leave a bad immutable production request/plan already committed to `main`.
 
 ## Background ownership and hard validation
 
-ChatGPT chooses the logical backgrounds, performs the planning-time audit reasoning, decides whether the configured emergency default pair is necessary, and authors the treatment values. The private validator independently enforces non-negotiable facts before dispatch, including:
+ChatGPT chooses logical backgrounds, performs planning-time audit reasoning, decides whether the configured emergency pair is necessary, and authors both treatment values.
 
-- registered logical IDs;
-- primary/backup distinctness;
-- active + verified state;
+Private validation independently enforces hard facts including:
+
+- registered IDs and primary/backup distinctness;
+- active + verified status;
 - commercial-use permission;
 - watermark/text absence;
 - quality floor;
-- a production-suitable rendition;
-- treatment field shape and playback bounds;
-- segment bounds against known source duration.
+- production-suitable rendition availability;
+- exact treatment shape;
+- **finite** numeric values;
+- playback-rate and segment-start/duration bounds;
+- segment end within known source duration;
+- when duration is unknown/untrusted, full-source treatment only (`start=0`, `duration=null`).
 
-The validator is a **gate**. It does not rank, repair, select an alternative story, choose a new background, or generate a replacement treatment.
+The validator is a gate. It never re-ranks, repairs a story, selects another logical asset or calculates another treatment.
+
+`media/background_treatment.py` remains a private policy/history reference and optional planning aid. Its deterministic helpers do not own final treatment selection for new ranked pools.
+
+## Physical rendition execution
 
 The public runtime owns physical execution:
 
-1. validate/fetch the promoted immutable request;
-2. select the smallest rendition sufficient after the real 9:16 crop;
-3. reuse the normalized physical cache where applicable;
+1. validate/fetch promoted immutable request;
+2. select the smallest rendition sufficient after real 9:16 crop;
+3. reuse normalized physical cache where applicable;
 4. download/normalize when needed;
-5. apply the frozen segment/playback treatment to a job-local input;
+5. apply exact frozen segment/playback treatment to job-local input;
 6. perform narration/alignment/caption/render/upload/verification.
 
-## Batch production and Actions cost
+Production target is 1080×1920/30fps H.264 High, yuv420p/BT.709 with AAC-LC 48 kHz narration.
 
-`daily-production.yml` is both the ranked-pool promotion gate and the lightweight cross-repository Daily dispatcher. After successfully promoting the first required valid candidates, it creates the canonical `[daily production] YYYY-MM-DD` commit and validates that commit before one opaque public dispatch.
+The public runtime never keeps a cross-run creative-history ledger and never substitutes an unrelated third logical asset.
 
-The public `production-runtime/run.yml` prepares once, deterministically partitions a normal 24-item batch into bounded units, then performs one authoritative aggregation/finalization. All canonical requests, intents, upload evidence, receipts, completion state, diagnostics and analytics remain private.
+## Analytics learning
 
-`adhoc-production.yml` performs the equivalent 5-to-1 promotion and dispatches the public one-job `single.yml` path at concurrency one. Both private production workflows retain manual dispatch inputs for existing immutable request recovery/execution.
+Raw YouTube observations are collected publicly by `production-runtime/.github/workflows/observe.yml` approximately **01:30, 07:30, 13:30 and 19:30 Asia/Singapore** and written into private state.
 
-The public repository also owns the canonical runtime-image build through `base.yml`, `base/Dockerfile`, and `base/dependencies.txt`. The private repository does not contain a Dockerfile, runtime dependency manifest, or image-build workflow.
+Private `analytics-collection.yml` processes/enriches the latest observation snapshot at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
 
-The public Daily batch continues after individual runtime failures so one bad execution does not prevent already-good stories from completing. The job ultimately fails if any item failed, making partial state visible. A rerun does not blindly upload again: each content ID first resolves its immutable receipt, upload intent and upload evidence.
+Analytics uses comparable age windows (approximately 24h/72h/7d), normalized cohort performance and controlled creative attributes. `analytics_evidence_count` is the confidence input; raw video/published/mature counts are not substitutes.
+
+Missing metrics are renormalized away rather than invented as zero. The targeted API's engaged-view continuation proxy must not be mislabeled as Studio's viewed-vs-swiped control.
+
+Historical learning remains evidence, not an authority that replaces editorial judgment or exploration.
 
 ## Upload idempotency and recovery
 
-Before `videos.insert`, production creates immutable durable intent/evidence binding the exact request/source identity, expected channel/body, render evidence and workflow provenance.
+Before `videos.insert`, production creates durable private upload intent/evidence. Once intent exists, absence of a visible video is never permission for another insert.
 
-Once an intent exists, absence of a visible video is **never** permission to insert again. Recovery searches only through the bounded, evidence-driven paths defined by the recovery contract and either imports/verifies the matching upload or fails closed for operator reconciliation.
+Recovery operates only on already-promoted immutable requests. It may redispatch unresolved subsets, reconcile no-start/failed/stale executions, and reuse durable upload/receipt evidence. It never revisits unused 36/5 reserve candidates after production begins.
 
-Automatic recovery remains a private control-plane responsibility and may redispatch unresolved subsets of an already-promoted canonical production plan. Recovery does not revisit the 36/5 planning pool or re-rank reserve candidates after production has begun.
+For schema v5, recovery always reuses the exact background treatments from the immutable request.
 
-A verified result receipt uses the same supported schema version as its immutable request and is created only after exact YouTube state and render evidence verify successfully. For schema v5 it also binds the executed background treatment to the immutable request.
+## Workflows
 
-## Render verification
+Private workflows:
 
-The public runtime's transformation/verification pipeline fails closed when required render evidence is missing or invalid.
+- `daily-production.yml` — Daily pool promotion + dispatch + manual recovery;
+- `adhoc-production.yml` — Ad-hoc pool promotion + single dispatch/manual existing-request execution;
+- `automatic-recovery.yml` — promoted production reconciliation/recovery;
+- `analytics-collection.yml` — private analytics processing;
+- `background-management.yml` — registry maintenance;
+- `dry-run.yml` — private CI/architecture/contract gate plus linked public Dry Run.
 
-The verifier checks duration, **1080×1920** resolution, 30 fps, H.264 High video, yuv420p/BT.709, exactly one AAC-LC narration stream at 48 kHz, representative frame decoding, render metadata identity and the final video SHA.
+Public runtime workflows:
 
-## Analytics
+- `run.yml` — Daily batch execution;
+- `single.yml` — one Ad-hoc execution;
+- `observe.yml` — public analytics observation;
+- `dry-run.yml` — runtime/render regression validation;
+- `base.yml` — runtime base image build.
 
-Raw YouTube observations are collected by public `production-runtime/.github/workflows/observe.yml` approximately **01:30, 07:30, 13:30, and 19:30 Asia/Singapore** and written into private state. Public runtime validation is isolated in credential-free `dry-run.yml`. Private `analytics-collection.yml` processes/enriches the latest observations once per day at approximately **19:45 Asia/Singapore**, before the normal 20:00 planner.
+## Repository hygiene
 
-Analytics accepts canonical published success receipts for schemas v3, v4 and v5. Milestones are captured only in bounded windows around approximately 24 hours, 72 hours and 7 days so the model compares like-aged performance rather than ranking videos by raw age-dependent totals.
+Transient caches/local render outputs are ignored. Ranked pools, promoted requests, planning audits, recovery evidence, verified receipts, analytics state and media registry are durable private state.
 
-The performance model uses available signals including engaged-view continuation, average percentage viewed, qualified views, **net subscribers per 1,000 views**, shares, likes and comments. Metrics are normalized within the selected cohort before aggregation.
-
-Historical learning is attributed to controlled creative dimensions including category, conflict, primary emotion, protagonist/antagonist roles, opening style, title style, ending style and duration bucket. Small samples are smoothed toward the cohort mean so one viral outlier cannot dominate future planning.
-
-## Repository state hygiene
-
-Transient Python caches, local environment files, render outputs and preview outputs are ignored by the root `.gitignore`. Durable ranked pools, promoted requests, recovery evidence, result receipts, canonical planning audits, analytics state and the verified media registry are intentionally tracked and append-only where specified.
+Retired `planner-execution.yml`, `execution_bridge.py`, duplicate Ad-hoc router workflows, legacy Wacky Insights architecture and V4 planner base prompts must not be reintroduced.
 
 ## Acceptance
 
-Before a production change is merged:
+Before merging a production/control-plane change:
 
-1. private planning/state checks and public runtime static/unit checks must pass;
-2. ranked-pool contract tests must prove Daily 36 / Ad-hoc 5 sizes and frozen rank semantics;
-3. hard request validation must reject invalid background registry/treatment contracts without mutating the AI-authored request;
-4. normal Daily canonical production must still contain exactly 24 unique Singapore hourly slots;
-5. dry-run must prove no TTS, render, upload or false-receipt side effects in the private control plane;
-6. production must retain durable intent and duplicate-recovery invariants;
-7. current secrets must remain referenced only through GitHub Actions secret expressions;
-8. the public runtime must write canonical state only to this private repository;
-9. the private/public semantic contract fingerprints must remain equal;
-10. schema-v5 treatment execution must remain stateless publicly and receipt-derived history must remain private.
+1. private compile/tests/state guards pass;
+2. ranked-pool tests prove Daily 36 / Ad-hoc 5 sizes and frozen-rank semantics;
+3. Daily retry-attempt paths remain append-only and one canonical plan per date remains enforced;
+4. scheduled Ad-hoc uniqueness is repository-enforced;
+5. catch-up slots are rechecked at promotion time;
+6. hard request validation rejects invalid registry/treatment/non-finite/unknown-duration contracts without mutating AI-authored requests;
+7. promoted immutable state is validated after rebase and before push;
+8. normal Daily production still contains exactly 24 unique Singapore hourly slots;
+9. private/public compatibility fingerprints remain equal;
+10. private Dry Run and its correlated public runtime Dry Run both succeed.

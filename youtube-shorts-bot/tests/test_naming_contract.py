@@ -43,6 +43,8 @@ class ArchitectureContractTests(unittest.TestCase):
         )
         self.assertFalse((PLANNER / "execution_bridge.py").exists())
         self.assertTrue((PLANNER / "ranked_promotion.py").is_file())
+        self.assertFalse((BOT_ROOT / "docs/DAILY_PLANNER_V4_BASE.md").exists())
+        self.assertFalse((BOT_ROOT / "docs/ADHOC_PLANNER_V4_BASE.md").exists())
 
     def test_growth_is_business_language_not_technical_architecture(self):
         path_hits = []
@@ -76,7 +78,7 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertIn("subscriber and qualified-view " + ARCH_TERM, text)
             self.assertIn("1,000 subscribers", text)
             self.assertIn("10 million qualified public Shorts views", text)
-        self.assertIn("business-purpose language only", overview)
+        self.assertIn("business objective", overview.lower())
 
     def test_private_request_contract_is_schema_v5_with_v4_compatibility(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(
@@ -98,6 +100,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn('"segment_start_seconds"', validator)
         self.assertIn('"segment_duration_seconds"', validator)
         self.assertIn('"playback_rate"', validator)
+        self.assertIn("math.isfinite", validator)
+        self.assertIn("source duration is unknown", validator)
         self.assertIn("validate_background_registry_contract", validator)
         self.assertIn("production-suitable rendition", validator)
         self.assertIn('"punchline"', legacy_validator)
@@ -115,7 +119,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("Publication contract is required", upload)
         self.assertIn("Immediate publication requires publish_at=null", upload)
         self.assertNotIn('\"mode\": \"public\"', upload)
-        self.assertIn("Schema v5 is the current production request format", overview)
+        self.assertIn("Schema v5", overview)
+        self.assertIn("current", overview.lower())
         self.assertIn("Schema v4 remains executable", overview)
 
         forbidden = [
@@ -150,13 +155,19 @@ class ArchitectureContractTests(unittest.TestCase):
     def test_ad_hoc_prompt_uses_ranked_pool_immediate_public_path(self):
         prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
+        promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
         self.assertIn('"mode": "immediate"', prompt)
         self.assertIn('"publish_at": null', prompt)
         self.assertIn("privacyStatus: public", prompt)
-        self.assertIn("exactly **5** candidates", prompt)
+        self.assertIn("exactly **5**", prompt)
+        self.assertIn("scheduled_daily", prompt)
+        self.assertIn("manual_on_demand", prompt)
         self.assertIn("[adhoc pool]", prompt)
         self.assertIn("planning-pools/adhoc", adhoc)
         self.assertIn("planning.ranked_promotion adhoc", adhoc)
+        self.assertIn("planning.ranked_promotion verify-adhoc", adhoc)
+        self.assertIn("private-adhoc-production-${{ github.ref }}", adhoc)
+        self.assertIn("verify_scheduled_adhoc_uniqueness", promotion)
         self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
 
     def test_heavy_execution_modules_are_public_only(self):
@@ -187,21 +198,28 @@ class ArchitectureContractTests(unittest.TestCase):
             "analytics_evidence_count",
             "daily-production.yml",
             "[daily pool] YYYY-MM-DD",
-            "content/planning-pools/daily/YYYY-MM-DD.json",
+            "content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json",
             "exactly 36",
-            "first 24 valid",
+            "first `target_count` candidates",
+            "new immutable attempt",
             "chatgpt_ranked_pool",
         ):
             self.assertIn(token, prompt)
         self.assertIn("name: Daily Production", batch)
         self.assertIn("contains(github.event.head_commit.message, '[daily pool]')", batch)
-        self.assertIn("planning-pools/daily/*.json", batch)
+        self.assertIn("planning-pools/daily/**/*.json", batch)
         self.assertIn("planning.ranked_promotion daily", batch)
-        self.assertIn("validation.planning_audit", batch)
+        self.assertIn("Validate rebased canonical Daily production commit", batch)
+        self.assertIn("Publish validated Daily production state", batch)
+        self.assertLess(
+            batch.index("python -m validation.planning_audit"),
+            batch.index("Publish validated Daily production state"),
+        )
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
         self.assertIn("python -m common.runtime_contract", batch)
         self.assertIn("DAILY_POOL_SIZE = 36", promotion)
         self.assertIn("NORMAL_DAILY_TARGET = 24", promotion)
+        self.assertIn("CATCH_UP_MIN_LEAD_MINUTES = 30", promotion)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", batch)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", batch)
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", batch)
@@ -243,7 +261,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertNotIn("`build-image.yml`", readme)
         self.assertNotIn("`youtube-shorts-bot/Dockerfile`", readme)
         self.assertIn("public `production-runtime` repository owns", readme)
-        self.assertIn("Schema v5 is the current production request format", overview)
+        self.assertIn("Schema v5", overview)
+        self.assertIn("current", overview.lower())
         self.assertIn("schema-v5 daily path", recovery)
         for text in (readme, overview, recovery, runtime_map):
             self.assertNotIn("720×1280", text)
@@ -269,10 +288,10 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn('in {"scheduled", "immediate"}', collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)
-        self.assertIn(
-            "Do not substitute `video_count`, `published_video_count`, or `mature_video_count`",
-            prompt,
-        )
+        lower_prompt = prompt.lower()
+        self.assertIn("do not substitute", lower_prompt)
+        for token in ("video_count", "published_video_count", "mature_video_count"):
+            self.assertIn(token, prompt)
 
 
 if __name__ == "__main__":

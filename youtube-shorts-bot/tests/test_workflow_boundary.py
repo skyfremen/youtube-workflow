@@ -52,6 +52,26 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn("b_$(printf", text)
         self.assertEqual(text.count("actions/workflows/run.yml/dispatches"), 1)
 
+    def test_promoted_state_is_validated_before_first_push(self):
+        daily = self.daily()
+        daily_validate = daily.index("python -m validation.planning_audit")
+        daily_publish = daily.index("Publish validated Daily production state")
+        self.assertLess(daily_validate, daily_publish)
+        self.assertLess(daily_publish, daily.index("Dispatch public execution"))
+
+        adhoc = self.adhoc()
+        adhoc_validate = adhoc.index("python -m validation.validate_content --request")
+        adhoc_unique = adhoc.index("planning.ranked_promotion verify-adhoc")
+        adhoc_publish = adhoc.index("Publish validated Ad-hoc production state")
+        self.assertLess(adhoc_validate, adhoc_publish)
+        self.assertLess(adhoc_unique, adhoc_publish)
+        self.assertLess(adhoc_publish, adhoc.index("Create opaque execution"))
+
+    def test_adhoc_promotions_are_serialized_for_repository_idempotency(self):
+        text = self.adhoc()
+        self.assertIn("group: private-adhoc-production-${{ github.ref }}", text)
+        self.assertNotIn("inputs.content_id || github.sha", text)
+
     def test_opaque_routing_targets_are_stable(self):
         daily = self.daily()
         adhoc = self.adhoc()
@@ -76,7 +96,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         text = self.daily()
         trigger = text.split("concurrency:", 1)[0]
         self.assertIn("branches: [main]", trigger)
-        self.assertIn("youtube-shorts-bot/content/planning-pools/daily/*.json", trigger)
+        self.assertIn("youtube-shorts-bot/content/planning-pools/daily/**/*.json", trigger)
         self.assertNotIn("content/planning/*.json", trigger)
         self.assertNotIn("content/requests/*.json", trigger)
         self.assertNotIn("content/background-sourcing/*.json", trigger)

@@ -1,77 +1,166 @@
-# Wacky Dramas — Daily Planner (schema v5 ranked-pool overlay)
+# Wacky Dramas — Daily Planner (schema v5 ranked-pool contract)
 
-This is the canonical Daily planner entry point. Its business objective remains aggressive **subscriber and qualified-view growth**, including **1,000 subscribers** and **10 million qualified public Shorts views** within the rolling target window.
+This is the single canonical Daily planning instruction for Wacky Dramas. Do not use a legacy V4 base prompt or a retired repository-side planner bridge.
 
-Read `docs/DAILY_PLANNER_V4_BASE.md` **in full** first and preserve all business, creative, analytics, metadata, scheduling, safety, publication, recovery, and content-quality rules except where this overlay explicitly supersedes older deterministic-runner, request-commit, background-audit/treatment ownership, and Daily-count instructions.
+The business objective is aggressive subscriber and qualified-view growth, including the current target of **1,000 subscribers** and **10 million qualified public Shorts views within a rolling 90-day window**, without weakening safety, originality, copyright, immutable-state, recovery or publication guarantees.
 
-Repository code remains the source of truth. Before planning, inspect the current `planning/planning_engine.py`, `planning/planning_config.py`, `planning/ranked_promotion.py`, `analytics/analytics_learning.py`, `validation/validate_content.py`, `common/runtime_contract.py`, `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `media-library/backgrounds.json`, current private success history, and current workflows. Do not blindly trust stale prompt text when current code has moved forward.
+## Repository-first rule
+
+Before planning, inspect the current `main` branch of `skyfremen/youtube-workflow`. Repository code/configuration is authoritative when implementation details change.
+
+Read at minimum:
+
+- `planning/STORY_RULES.md`
+- `planning/planning_config.py`
+- `planning/planning_engine.py`
+- `analytics/analytics_learning.py`
+- current `analytics/latest.json` and `analytics/model.json` when present
+- `validation/validate_content.py`
+- `publishing/upload.py`
+- `common/runtime_contract.py`
+- `media/background_selector.py`
+- `media/background_treatment.py` as a **policy/history reference**, not an authoritative allocator
+- `media/background_policy.py`
+- `docs/background-media-strategy.md`
+- `media-library/backgrounds.json`
+- recent immutable `content/requests/*.json` and verified `content/results/*.json`
+- `.github/workflows/daily-production.yml`
+
+Do not blindly reproduce old prompt arithmetic if executable/configured rules have changed.
 
 ## Canonical ownership
 
-For new Daily planning runs, **ChatGPT / Work is the planner**. ChatGPT owns:
+**ChatGPT / Work is the planner.** ChatGPT owns:
 
-- candidate generation and hard rejection;
-- duplicate/near-duplicate reasoning;
-- scoring/analytics interpretation;
-- diversity/editorial comparison;
-- complete story/title/metadata writing;
-- narrator/voice decisions;
+- raw premise generation and hard semantic rejection;
+- duplicate/near-duplicate reasoning against recent history and the current pool;
+- semantic/editorial scoring and analytics interpretation;
+- exploit/explore and diversity judgment;
+- semifinalist development, endings, hooks and truthful title competition;
+- complete story/title/metadata authoring;
+- narrator perspective, lead gender, tone and voice choice;
 - semantic punchline/reveal/reversal identification;
 - exact primary and backup logical background choice;
-- background-audit reasoning against the current private registry/policy/history;
+- planning-time background audit reasoning against current registry/policy/history;
 - emergency-default decision when the normal pair is not safely eligible;
-- background segment and playback-rate treatment decisions using the current treatment rules/history;
-- the final **rank order** of the complete candidates.
+- background segment and playback-rate treatment decisions using current policy/history;
+- final rank #1 through #36.
 
-GitHub does **not** creatively rank, select, repair, rewrite, choose a background, or calculate a replacement treatment. GitHub only validates the frozen AI-authored candidates in rank order and mechanically promotes the first candidates that pass.
+Private GitHub code does **not** creatively rank, select, repair, rewrite, choose replacement backgrounds or calculate replacement treatments. It validates facts and mechanically promotes candidates in ChatGPT's frozen order.
 
-There is no `planner-execution.yml` bridge. Do not create `content/planner-execution/inputs/*` or wait for repository-side background-audit/treatment results.
+There is no `planner-execution.yml`, no `content/planner-execution/*`, and no requirement to execute `planning_runner.py` as a winner-selection authority for new ranked pools. `planning_engine.py`, configuration and historical runner code remain useful rule/regression references, not a substitute for ChatGPT's editorial rank.
 
-## Canonical Daily flow
+## Planning date and schedule
 
-```text
-ChatGPT reads current repo rules/config/analytics/history/background registry
-  -> generates and evaluates the creative pool
-  -> applies hard rejection and duplicate/near-duplicate rules
-  -> develops strong complete candidates
-  -> applies scoring/analytics/diversity/editorial reasoning
-  -> chooses exact backgrounds itself
-  -> performs background-audit reasoning itself
-  -> chooses segment/playback treatment values itself
-  -> writes exactly 36 complete candidates
-  -> freezes rank #1 through #36
-  -> commits one immutable Daily ranked-pool JSON
-  -> daily-production.yml
-       -> global fail-first preflight
-       -> validate candidates mechanically in frozen rank order
-       -> promote first target_count valid candidates
-       -> normal_next_day: first 24 valid
-       -> materialize canonical planning JSON + exactly 24 immutable requests
-       -> validate canonical production commit again
-       -> public run.yml
-       -> YouTube
-```
+The normal Daily planner runs at **20:00 Asia/Singapore**.
 
-The reserve candidates exist only to absorb candidate-specific validation failures. They are **not** additional production requests. For normal Daily, 36 planning candidates become exactly 24 immutable production requests.
+For `normal_next_day`:
 
-## Ranked-pool contract
+- at/after 20:00 Asia/Singapore, plan the **next Singapore calendar day**;
+- `target_count` is exactly **24**;
+- `publication_slots` contains exactly the 24 top-of-hour slots from `00:00` through `23:00` Asia/Singapore, stored as UTC RFC3339 timestamps in chronological order;
+- ChatGPT still returns exactly **36 ranked candidates**.
 
-ChatGPT must commit exactly one file:
+For `same_day_catch_up`:
 
-`youtube-shorts-bot/content/planning-pools/daily/YYYY-MM-DD.json`
+- use the **current Singapore calendar day** when the canonical timing rules require catch-up;
+- keep only exact top-of-hour slots at least **30 minutes in the future**;
+- `target_count` equals the number of eligible remaining slots, from 1 through 24;
+- `publication_slots` contains exactly those eligible slots in chronological order;
+- ChatGPT still returns exactly **36 ranked candidates**;
+- immediately before committing the pool, re-read Singapore time and remove any slot that is no longer at least 30 minutes away;
+- `daily-production.yml` independently rechecks the 30-minute lead at promotion time, so a delayed pool fails closed rather than materializing stale requests.
 
-The commit subject must be:
+If no eligible catch-up slot remains, fail closed.
+
+If canonical `content/planning/YYYY-MM-DD.json` already exists, do **not** create another pool or mutate requests. Use existing content IDs through `daily-production.yml` manual recovery.
+
+## Creative funnel and quality
+
+Generate broadly before fully scripting. The current target shape remains:
+
+`>=120 raw premises → hard semantic filtering → qualified pool → roughly 36 strong developed contenders → >=5 materially different truthful title options for serious contenders → final editorial/diversity/analytics comparison → exactly 36 fully authored ranked candidates`.
+
+Hard rejection overrides scores. Reject unsafe, misleading, incoherent, weak-payoff, exposition-dependent, visually dependent, duplicate/near-duplicate or superficial role-swap concepts.
+
+Use current weights, controlled attributes, diversity limits and analytics-confidence rules from `planning_config.py`/current code. A score is evidence, not authority. ChatGPT may rank a lower numeric scorer above another eligible candidate when semantic/editorial judgment supports it.
+
+All 36 candidates must be genuine production-quality material. The 12 reserves are resilience capacity, not permission for filler.
+
+## Story, title and metadata contract
+
+Follow `STORY_RULES.md`. Each candidate must contain a complete original first-person story with a real setup, escalation and payoff, plus planner-authored semantic punchline metadata.
+
+Use the current approved Kokoro mapping and one narrator per Short. Under the current contract:
+
+- female natural/general → `af_heart`
+- female expressive/funny/dramatic/sarcastic → `af_bella`
+- male natural/general → `am_echo`
+- male expressive/funny/dramatic/sarcastic → `am_fenrir`
+- narration speed remains `1.75` unless current code/config changes it.
+
+For every candidate author complete YouTube metadata before the pool is committed:
+
+- title truthful, curiosity-driven, <=100 characters total and containing `#Shorts`;
+- concise story-specific description, normally 1–3 short sentences;
+- 3–8 visible relevant hashtags, normally including `#Shorts` and `#WackyDramas`;
+- 4–12 explicit backend semantic tags without `#`;
+- canonical category/made-for-kids values from current schema;
+- no misleading SEO padding, competitor/channel impersonation or fabricated claims.
+
+Use `publishing.upload.build_upload_body(..., require_future=False)` semantics as the final local payload contract. Metadata must fit YouTube payload limits after the hidden recovery marker and hashtag-derived tags are added.
+
+## Analytics learning
+
+Use only valid/current analytics state. Never invent Studio-only metrics. `analytics_evidence_count` is the canonical confidence input; do not substitute `video_count`, `published_video_count` or `mature_video_count`.
+
+When evidence is weak/zero, rely mainly on editorial quality and diversity. When enabled, use normalized historical attribute evidence from `analytics_learning.py`; raw views, retention, subscriber/share/like/comment rates are not direct 0–100 story scores.
+
+## Background audit and treatment ownership
+
+ChatGPT must inspect the current registry, policy and private successful-receipt history and freeze final background decisions for **all 36** candidates.
+
+For each candidate:
+
+1. Choose distinct `background_primary_id` and `background_backup_id` values.
+2. Require registered, active, verified, commercial-use-allowed, watermark/text-free assets with sufficient quality and at least one production-suitable rendition.
+3. Apply retention/readability, recency, category variety and story-fit evidence as planning judgment. Visual retention/readability outranks literal reenactment.
+4. If the normal pair cannot safely satisfy the rules, ChatGPT may use the current configured emergency default pair from `media/background_selector.py`; do not invent an automatic arbitrary fallback.
+5. If the emergency pair itself is unsafe, reject/fix the candidate before the pool is authored.
+6. Read current treatment policy/history and choose/freeze for primary and backup:
+   - `segment_start_seconds`
+   - `segment_duration_seconds`
+   - `playback_rate`
+7. Avoid recently repeated segments/rates and coordinate same-pool variety. `media/background_treatment.py` may be consulted for current policy constants/history interpretation, but ChatGPT—not that module—is the decision owner.
+8. When source duration is unknown/untrusted, use the safe full-source treatment: `segment_start_seconds=0`, `segment_duration_seconds=null`, with a valid playback rate.
+
+Private validation independently enforces hard registry/licensing/rendition/treatment facts. Validation is a **gate**, not a planner.
+
+## Retryable immutable Daily pool contract
+
+ChatGPT commits exactly one new immutable attempt file per planning attempt:
+
+`youtube-shorts-bot/content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json`
+
+Use a stable sequential attempt identity such as:
+
+- first attempt: `dp-YYYYMMDD-a01`
+- second attempt after a failed promotion: `dp-YYYYMMDD-a02`
+- and so on.
+
+A failed pool is never edited or deleted. If there is no canonical Daily plan and a prior pool attempt failed, create a **new immutable attempt** with corrected/replenished candidates. Do not reuse the old path. Once canonical `content/planning/YYYY-MM-DD.json` exists, no further planning attempt is allowed for that date; use recovery instead.
+
+Commit subject must begin:
 
 `[daily pool] YYYY-MM-DD`
 
-Do **not** commit `content/planning/YYYY-MM-DD.json` or `content/requests/*.json` yourself for a new plan. `daily-production.yml` owns materialization of canonical production state after validation.
-
-The ranked-pool JSON contains exactly these top-level fields:
+The pool shape is:
 
 ```json
 {
   "schema_version": 1,
   "pool_type": "daily",
+  "pool_id": "dp-YYYYMMDD-a01",
   "plan_date": "YYYY-MM-DD",
   "planning_mode": "normal_next_day",
   "target_count": 24,
@@ -79,7 +168,7 @@ The ranked-pool JSON contains exactly these top-level fields:
   "planning_execution": {
     "editorial_selection_owner": "chatgpt",
     "planning_method": "chatgpt_ranked_pool",
-    "rules_source_sha": "<exact parent SHA whose rules were used>",
+    "rules_source_sha": "<exact parent SHA inspected before this pool commit>",
     "ranked_candidate_ids": ["<exact 36 IDs in rank order>"]
   },
   "ranked_candidates": [
@@ -94,119 +183,77 @@ The ranked-pool JSON contains exactly these top-level fields:
 
 Requirements:
 
-- `ranked_candidates` contains **exactly 36** entries.
-- `rank` is exactly `1..36`, contiguous, with no ties.
-- candidate IDs are unique.
-- request `content_id` values are unique.
-- every request is fully authored for content, metadata, narration, punchline semantics, backgrounds, and treatments.
-- Daily candidate request publication is a template only; use `mode=scheduled`, `timezone=Asia/Singapore`, and `publish_at=null`. The private promotion gate assigns the exact frozen `publication_slots` in rank-selection order before canonical validation.
-- all 36 must be genuine production-quality candidates. Do not deliberately include weak filler merely because 12 are reserves.
+- exactly 36 candidates;
+- ranks exactly `1..36`, contiguous, no ties;
+- unique candidate IDs and content IDs;
+- `planning_execution.ranked_candidate_ids` exactly equals candidate order;
+- `rules_source_sha` equals the exact parent of the pool commit;
+- every candidate uses schema v5;
+- every non-publication request field is final;
+- Daily candidate publication must be **exactly**:
 
-`planning_execution.ranked_candidate_ids` must exactly equal the candidate IDs in `ranked_candidates` order. `rules_source_sha` must be the exact repository revision ChatGPT inspected before committing the pool; the pool commit's parent must equal that SHA.
+```json
+{
+  "mode": "scheduled",
+  "timezone": "Asia/Singapore",
+  "publish_at": null
+}
+```
 
-## Daily target and publication-slot contract
+The promoter validates that exact template and changes **only `publish_at`** to the selected frozen slot. It must not silently repair mode/timezone/creative fields.
 
-For `normal_next_day`:
+## Promotion semantics
 
-- plan the next Singapore calendar day when running at/after 20:00 Asia/Singapore;
-- `target_count` is exactly **24**;
-- `publication_slots` contains exactly the 24 canonical hourly slots from `00:00` through `23:00` Asia/Singapore, represented as UTC timestamps in chronological order;
-- ChatGPT still returns exactly **36 ranked candidates**.
-
-For `same_day_catch_up`:
-
-- use the current Singapore calendar day when the canonical timing rules require catch-up;
-- keep only exact top-of-hour slots at least 30 minutes in the future;
-- `target_count` equals the number of eligible remaining slots, from 1 through 24;
-- `publication_slots` contains exactly those eligible slots in chronological order;
-- ChatGPT still returns exactly **36 ranked candidates** so candidate-specific validation failure does not unnecessarily collapse the catch-up run.
-
-If no eligible catch-up slot remains, fail closed and do not create a pool.
-
-If the canonical `content/planning/YYYY-MM-DD.json` already exists, do not create a second Daily pool or mutate immutable requests. Use the existing content IDs through `daily-production.yml` manual recovery.
-
-## Promotion semantics — rank is authority
-
-`daily-production.yml` must never make an editorial choice. It processes the 36 candidates in ChatGPT's frozen rank order:
+`daily-production.yml` processes candidates only in ChatGPT's frozen rank order:
 
 ```text
 #1 PASS  -> select
 #2 PASS  -> select
-#3 FAIL  -> reject mechanically
+#3 FAIL  -> skip mechanically
 #4 PASS  -> select
 ...
-#25 PASS -> used only if an earlier candidate failed
 ```
 
-The first `target_count` candidates that pass are promoted. Failed candidates are skipped; later candidates keep their original AI rank. If fewer than `target_count` candidates pass, fail closed. Never weaken validation, change rank order, repair a failed candidate, or ask deterministic code to choose a creative replacement.
+The first `target_count` candidates that pass are promoted. Failed candidates are not repaired or re-ranked. If fewer than `target_count` pass, the attempt fails closed and no canonical production state is pushed; a later new immutable pool attempt may be authored.
 
-For normal Daily, the only successful production outcome remains **exactly 24 immutable requests**.
+For normal Daily the successful canonical outcome remains exactly **24 immutable requests** plus one canonical planning audit.
 
-## Background audit and treatment ownership
+The private workflow sequence is:
 
-ChatGPT itself must inspect current registry/policy/history and decide the final background pair and treatment values for every one of the 36 candidates.
+```text
+pool commit already on main
+  -> private promotion preflight
+  -> validate/rank-walk locally
+  -> materialize candidate canonical state locally
+  -> create local [daily production] commit
+  -> rebase onto latest main
+  -> final planning/request validation on the rebased local commit
+  -> only then push canonical immutable production state
+  -> opaque dispatch to public run.yml
+```
 
-For each candidate:
-
-1. Choose distinct `background_primary_id` / `background_backup_id` values.
-2. Apply current hard eligibility rules: registered, active, verified, commercial-use allowed, watermark/text free, sufficient quality, production-suitable rendition, and any current normal anti-repetition/safety constraints.
-3. Apply current retention/topic/diversity evidence as planning judgment.
-4. If the normal pair cannot safely satisfy the rules, ChatGPT may choose the current configured emergency default pair from `media/background_selector.py`; do not invent a different automatic fallback.
-5. If even the configured emergency pair is not safe, that candidate must not be presented as valid production-quality reserve material.
-6. Read the current treatment policy/history and choose/freeze:
-   - `segment_start_seconds`
-   - `segment_duration_seconds`
-   - `playback_rate`
-7. Respect current asset duration, playback bounds, anti-repetition intent, and same-run treatment diversity.
-
-GitHub's strengthened request validator independently checks hard registry/licensing/production/treatment invariants. That validation is a **gate**, not a planner.
-
-## Schema-v5 request contract
-
-New candidates use schema v5. The `visual` object contains exactly:
-
-- `background_primary_id`
-- `background_backup_id`
-- `background_primary_treatment`
-- `background_backup_treatment`
-
-Each treatment contains exactly:
-
-- `segment_start_seconds`
-- `segment_duration_seconds`
-- `playback_rate`
-
-All non-publication request fields must already be final in the pool. Promotion may assign only the scheduled `publish_at` slot and persist the already-authored request; it must not rewrite creative fields.
-
-## Analytics and creative rules
-
-Analytics remains evidence-gated through `analytics_evidence_count`. Do not substitute `video_count`, `published_video_count`, or `mature_video_count` for `analytics_evidence_count`. Preserve all current candidate-funnel, scoring, diversity, title, duration, narration, safety, originality and metadata rules from the base prompt/current code unless explicitly superseded here.
-
-A score is evidence, not authority. ChatGPT may rank a lower-scoring eligible story above another when semantic/editorial judgment supports it, provided all hard rules remain satisfied.
+A concurrent `main` update after final validation causes the push to fail non-fast-forward; it is never permission to publish unvalidated rebased state.
 
 ## Public runtime boundary
 
-Do not move media downloading, physical rendition selection, probing, normalization, cropping, transcoding, FFmpeg execution, rendering, TTS, alignment, upload, or verification into the private planner. `production-runtime` remains the heavy stateless executor.
+Do not move media download, physical rendition resolution, FFmpeg work, rendering, TTS, Wav2Vec2 alignment, upload or YouTube verification into the private planner. `production-runtime` remains the heavy stateless executor.
 
-The public runtime receives only the already-promoted immutable requests. It executes frozen background IDs/treatments and must not creatively substitute another logical asset.
-
-Do not weaken exact source-SHA validation, dispatch/start evidence, upload intent, duplicate-upload protection, recovery, idempotency, completion receipts, public/private state ownership, dry-run boundaries, or least-privilege behavior.
+Preserve exact source-SHA validation, compatibility fingerprints, dispatch/start evidence, immutable upload intent, duplicate-upload protection, recovery reconciliation, result receipts, public/private state ownership and least privilege.
 
 ## Final pre-commit checklist
 
-Before committing the ranked pool, confirm:
+Before committing a Daily pool confirm:
 
-- exactly 36 complete ranked candidates exist;
-- ranks are exactly 1..36 and candidate/content IDs are unique;
-- every candidate is production-quality, not filler;
-- ChatGPT itself performed creative/editorial selection and ordering;
-- ChatGPT itself chose/audited backgrounds and authored treatment values;
+- current repository files were inspected;
+- canonical plan for the date does not already exist;
+- the attempt path is new and immutable;
+- exactly 36 production-quality candidates exist;
+- ranks and all IDs are unique;
+- normal mode target is exactly 24 with all 24 hourly slots, or catch-up slots obey the 30-minute rule;
+- every candidate is schema v5 and uses the exact scheduled publication template;
+- ChatGPT performed all creative/editorial ranking, background audit reasoning and treatment choices;
+- backgrounds/treatments satisfy current policy/history and hard safety expectations;
+- story/punchline/voice/title/metadata contracts are complete;
 - no planner-execution bridge is used;
-- `planning_method` is `chatgpt_ranked_pool`;
-- `rules_source_sha` is the exact current repository revision used for planning;
-- normal next-day target is 24 with all 24 canonical hourly slots;
-- catch-up target/slots obey the 30-minute future rule;
-- every candidate uses schema v5 and current metadata/narration/punchline/background contracts;
-- the only new file in the ChatGPT commit is the immutable ranked-pool JSON;
-- commit subject is exactly `[daily pool] YYYY-MM-DD`;
-- all remaining rules from `docs/DAILY_PLANNER_V4_BASE.md` continue to apply unless explicitly superseded above.
+- only one new ranked-pool JSON is added in the ChatGPT commit;
+- the commit subject begins `[daily pool] YYYY-MM-DD`.
