@@ -23,6 +23,7 @@ Read and follow the current repository as the source of truth. At minimum read:
 - current `analytics/latest.json` and `analytics/model.json` when present
 - `media/background_policy.py`
 - `media/background_selector.py`
+- `docs/background-media-strategy.md`
 - `media-library/backgrounds.json`
 - `publishing/upload.py`
 - `validation/validate_content.py`
@@ -94,9 +95,15 @@ Generate a content ID in the scheduled ad-hoc namespace and ensure the request f
 
 ## Background policy
 
-Use **cache-first, cache-only** background selection for this scheduled single-Short path. Select two genuinely suitable, distinct, caption-safe verified cached assets using the same semantic, freshness and quality rules as daily planning.
+Use **cache-first, cache-only** background selection for this scheduled single-Short path. Read `media/background_selector.py` and `docs/background-media-strategy.md`, then choose two distinct, caption-safe verified registered logical assets using the same retention-first policy as daily planning.
 
-Do not create or mutate `content/background-sourcing/YYYY-MM-DD.json` from this ad-hoc run. If two suitable cached backgrounds cannot be selected safely, fail closed and create no request.
+Prefer strong continuous visual motion such as cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, or city/travel motion. The clip does not have to literally depict the story. Topic relevance is a secondary boost; it must not override a materially stronger retention/readability candidate. Apply private receipt-derived recency/use/category history so the ad-hoc Short also avoids recently overused footage.
+
+Do not create or mutate `content/background-sourcing/YYYY-MM-DD.json` from this ad-hoc run. If two suitable cached logical backgrounds cannot be selected safely, fail closed and create no request. Do not source random gameplay or creator footage from social platforms; `licensed_gameplay` is eligible only with explicit recorded commercial-use provenance.
+
+The public runtime remains responsible for physical rendition resolution, cache lookup, download, probing, post-crop quality validation, one-time normalization and rendering. Preserve the 1080×1920/30fps **smallest-sufficient-after-crop** rule. Do not request the largest/provider-original rendition. A 1920×1080 landscape source may be insufficient after the portrait crop, while UHD landscape is permitted only when crop geometry genuinely requires it.
+
+The current request schema freezes only logical primary/backup IDs. Do not invent persistent segment, category-history, or playback-treatment fields and do not make the public runtime stateful to compensate.
 
 ## Validation before commit
 
