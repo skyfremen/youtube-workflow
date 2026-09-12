@@ -40,8 +40,8 @@ ChatGPT reads current repo rules/config/analytics/history/background registry
   -> mechanical treatment allocation for the resolved IDs
   -> request.validate / final schema validation
   -> commit exactly one immutable Ad-hoc request
-  -> private Ad-hoc dispatcher
-  -> public single runtime
+  -> .github/workflows/adhoc-production.yml
+  -> public single.yml
   -> YouTube immediately Public
 ```
 
@@ -61,7 +61,7 @@ Bridge input/result commits are mechanical execution evidence, not production re
 
 ## Preserved Ad-hoc production contract
 
-This path creates exactly one additional Short and uses `.github/workflows/adhoc-production.yml`, which dispatches public `single.yml` only. It must never consume or alter Daily's scheduled slots.
+This path creates exactly one additional Short and uses `.github/workflows/adhoc-production.yml` as the single private production entrypoint. It handles both the push-triggered new-request path and manual `workflow_dispatch(content_id)`, and dispatches public `single.yml` only. It must never consume or alter Daily's scheduled slots.
 
 The immutable publication object remains:
 
@@ -105,7 +105,7 @@ Then commit exactly one new immutable Ad-hoc request using:
 
 `[adhoc production] YYYY-MM-DD`
 
-The private `.github/workflows/adhoc-request-dispatch.yml` may automatically dispatch the existing private `.github/workflows/adhoc-production.yml`. It does not bypass the private production/recovery authority and does not dispatch the public repo directly.
+The private `.github/workflows/adhoc-production.yml` directly detects the new Ad-hoc request commit, validates exactly one immutable immediate-public request, creates the private execution/evidence state, and dispatches public `single.yml`. It also retains manual `workflow_dispatch(content_id)` support. There is no separate `adhoc-request-dispatch.yml` routing workflow.
 
 ## Fail closed
 
