@@ -27,6 +27,7 @@ HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 CANDIDATE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 PLANNING_MODES = {"normal_next_day", "same_day_catch_up"}
+NORMAL_DAILY_REQUEST_COUNT = 24
 FORBIDDEN_PRODUCTION_ID_MARKERS = (
     "-acceptance-", "-test-", "-smoke-", "-dryrun-", "-dry-run-", "-adhoc-",
 )
@@ -127,7 +128,7 @@ def classify_daily_changes(changes):
         _fail("daily planning commit contains unexpected files: " + ", ".join(sorted(unexpected)))
     if len(plans) != 1:
         _fail("daily planning commit must add exactly one canonical YYYY-MM-DD planning audit")
-    if not 1 <= len(requests) <= 24:
+    if not 1 <= len(requests) <= NORMAL_DAILY_REQUEST_COUNT:
         _fail("daily planning commit must add 1-24 immutable requests")
     if len(sourcing) > 1:
         _fail("daily planning commit may add at most one same-day sourcing manifest")
@@ -227,7 +228,8 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
         _fail("planning audit filename date is invalid")
     if plan.get("plan_date") != path_date:
         _fail("planning audit plan_date must exactly match its canonical filename")
-    if plan.get("planning_mode") not in PLANNING_MODES:
+    planning_mode = plan.get("planning_mode")
+    if planning_mode not in PLANNING_MODES:
         _fail("planning_mode must be normal_next_day or same_day_catch_up")
     content_ids = plan.get("content_ids")
     if not isinstance(content_ids, list) or not content_ids:
@@ -240,8 +242,10 @@ def validate_plan_core(plan, plan_path, request_ids, parent_sha, impl_sha):
         _fail("planning audit content_ids must exactly match request filenames added by the same commit")
     if plan.get("final_selected") != len(content_ids):
         _fail("planning audit final_selected must equal the number of new immutable requests")
-    if not 1 <= len(content_ids) <= 24:
+    if not 1 <= len(content_ids) <= NORMAL_DAILY_REQUEST_COUNT:
         _fail("planning audit final_selected must be between 1 and 24")
+    if planning_mode == "normal_next_day" and len(content_ids) != NORMAL_DAILY_REQUEST_COUNT:
+        _fail("normal_next_day planning must contain exactly 24 immutable requests")
     padded_ids = [f"-{content_id.lower()}-" for content_id in content_ids]
     for content_id, padded in zip(content_ids, padded_ids):
         if any(marker in padded for marker in FORBIDDEN_PRODUCTION_ID_MARKERS):
