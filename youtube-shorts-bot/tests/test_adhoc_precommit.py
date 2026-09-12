@@ -42,7 +42,7 @@ def _ready_asset(asset_id, category, counter):
         "visual_satisfaction_score": 100,
         "loopability_score": 100,
         "caption_readability_score": 100,
-        "duration_seconds": 120.0,
+        "duration_seconds": 16.0,
         "renditions": [{
             "id": f"test-r-{counter:03d}",
             "width": 1080,
@@ -57,12 +57,13 @@ def _ready_asset(asset_id, category, counter):
 def ready_registry():
     assets = []
     counter = 0
+    fixture_ids = [f"satisfying-{index:03d}" for index in range(1, 7)]
     for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
         for _ in range(minimum):
             counter += 1
             asset_id = (
-                "satisfying-001" if counter == 1
-                else "satisfying-002" if counter == 2
+                fixture_ids[counter - 1]
+                if counter <= len(fixture_ids)
                 else f"test-ready-{counter:03d}"
             )
             assets.append(_ready_asset(asset_id, category, counter))
