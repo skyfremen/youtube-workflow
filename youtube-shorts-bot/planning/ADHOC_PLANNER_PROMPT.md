@@ -8,7 +8,7 @@ Repository code is authoritative for the rules. Inspect the current `planning/pl
 
 ## Ad-hoc planning ownership — authoritative override
 
-**ChatGPT / Work performs the complete candidate-planning decision path, chooses the one Ad-hoc winner, and chooses the exact primary/backup logical backgrounds.** ChatGPT / Work owns the final editorial choice and logical background asset choice.
+**ChatGPT / Work performs the complete candidate-planning decision path, chooses the one Ad-hoc winner, and chooses the requested primary/backup logical backgrounds.** ChatGPT / Work owns the final editorial choice and normal logical background asset choice.
 
 For a new Ad-hoc run, ChatGPT itself must:
 
@@ -21,7 +21,7 @@ For a new Ad-hoc run, ChatGPT itself must:
 7. write the complete story and metadata;
 8. inspect the current background registry, policy, licensing/suitability metadata, recency/history and choose exact distinct `background_primary_id` / `background_backup_id` values.
 
-Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, `final-select`, or `background.select` for a new Ad-hoc plan. `planning_engine.py`, background selector/policy code, and related files are rule/specification/evidence sources for ChatGPT and may remain executable for tests, regression checks, or legacy historical compatibility, but they do not plan or choose logical backgrounds on ChatGPT's behalf.
+Do not call GitHub Actions to execute `planning.raw-filter`, `planning.candidate-evaluation`, `planning.validate-selection`, `final-select`, or `background.select` for a new Ad-hoc plan. `planning_engine.py`, background selector/policy code, and related files are rule/specification/evidence sources for ChatGPT and may remain executable for tests, regression checks, or legacy historical compatibility, but they do not plan or normally choose logical backgrounds on ChatGPT's behalf.
 
 The canonical Ad-hoc flow is:
 
@@ -34,8 +34,10 @@ ChatGPT reads current repo rules/config/analytics/history/background registry
   -> ChatGPT chooses exactly 1 winner
   -> ChatGPT writes the complete story
   -> ChatGPT chooses exact primary + backup logical background IDs
-  -> mechanical background audit of those exact IDs
-  -> mechanical treatment allocation for those exact IDs
+  -> mechanical background audit
+       -> pass: keep ChatGPT pair
+       -> reject: resolve only to configured default background pair
+  -> mechanical treatment allocation for the resolved IDs
   -> request.validate / final schema validation
   -> commit exactly one immutable Ad-hoc request
   -> private Ad-hoc dispatcher
@@ -43,7 +45,7 @@ ChatGPT reads current repo rules/config/analytics/history/background registry
   -> YouTube immediately Public
 ```
 
-A score or ranking is evidence, not authority. Likewise, selector ranking is evidence, not authority. ChatGPT may choose a lower-ranked eligible candidate or different eligible background when its editorial judgment supports the choice, provided all hard rules are satisfied.
+A score or ranking is evidence, not authority. Likewise, selector ranking is evidence, not authority. ChatGPT may choose a lower-ranked eligible candidate or different eligible background when its editorial judgment supports the choice, provided all normal hard rules are satisfied. The configured default fallback is an emergency exception to topic-fit and recent-use rejection only; it must still pass registry, licensing, watermark/text, quality, distinctness, and production-rendition safety.
 
 ## Repository-side bridge boundary
 
@@ -53,7 +55,7 @@ A score or ranking is evidence, not authority. Likewise, selector ranking is evi
 - `background.treatment`
 - `request.validate`
 
-The bridge must not expose or execute candidate filtering, candidate evaluation, selection validation, winner selection, or logical background selection for new planning runs.
+The bridge must not expose or execute candidate filtering, candidate evaluation, selection validation, winner selection, or arbitrary logical background selection for new planning runs. `background.audit` has one narrowly defined substitution authority: on audit failure it may return the configured default background pair and no other pair.
 
 Bridge input/result commits are mechanical execution evidence, not production requests, and must not use `[daily production]` or `[adhoc production]` markers.
 
@@ -80,21 +82,24 @@ New Ad-hoc requests use schema v5.
 For the selected story:
 
 1. ChatGPT inspects the current registry and background-selection rules, including licensing, production suitability, retention/topic fit, private successful-receipt recency/history, and primary/backup distinctness.
-2. ChatGPT chooses the exact primary and backup logical asset IDs itself.
-3. Run `background.audit` against those exact ChatGPT-chosen IDs. The audit may reject them but must never substitute other IDs.
-4. If rejected, ChatGPT chooses a different eligible pair and reruns the audit, or fails closed.
-5. After audit success, run the canonical private treatment allocator for the same IDs. Treatment allocation may choose the segment and playback rate only; it must not replace either logical asset.
-6. Freeze:
+2. ChatGPT chooses the requested primary and backup logical asset IDs itself.
+3. Run `background.audit` against those exact ChatGPT-chosen IDs.
+4. If the audit passes, keep those exact IDs. If rejected, the audit may resolve only to the configured default background pair; it must not rank/select an arbitrary replacement.
+5. If either configured default fails fallback safety validation, fail closed.
+6. Run the canonical private treatment allocator for the audit-resolved IDs. Treatment allocation may choose the segment and playback rate only; it must not replace either logical asset.
+7. Freeze:
    - `background_primary_id`
    - `background_backup_id`
    - `background_primary_treatment`
    - `background_backup_treatment`
 
+When fallback is used, use `resolved_primary_id` / `resolved_backup_id` from the audit result for treatment and the immutable request, and preserve the audit evidence including the originally requested IDs, `selection_errors`, and `fallback_used: true`.
+
 Do not hand-author different segment/speed values after the allocator returns. Existing private verified receipts remain the persistent anti-repetition history.
 
 ## Request validation and commit
 
-After ChatGPT has written the final complete story, metadata, and selected exact logical backgrounds, validate the final request through the repository's request-validation path. GitHub may reject an invalid story/background/request handoff, but it must not choose or substitute another candidate or logical background.
+After ChatGPT has written the final complete story, metadata, and selected requested logical backgrounds, validate the audit-resolved final request through the repository's request-validation path. GitHub may reject an invalid story/background/request handoff. Apart from the configured default background fallback, it must not choose or substitute another candidate or logical background.
 
 Then commit exactly one new immutable Ad-hoc request using:
 
@@ -104,6 +109,6 @@ The private `.github/workflows/adhoc-request-dispatch.yml` may automatically dis
 
 ## Fail closed
 
-Fail closed if ChatGPT cannot confidently apply the current planning or background-selection rules, or if background audit, treatment allocation, request validation, contract compatibility, or exact payload validation fails.
+Fail closed if ChatGPT cannot confidently apply the current planning or background-selection rules, or if the configured fallback itself, treatment allocation, request validation, contract compatibility, or exact payload validation fails.
 
-Failing closed must never mean “let deterministic code choose a replacement winner/background.” ChatGPT remains the planner, editorial decision maker, and logical background chooser.
+Failing closed must never mean “let deterministic code choose a replacement winner or arbitrary replacement background.” ChatGPT remains the planner/editorial decision maker; `background.audit` may substitute only the fixed configured default pair as a production-resilience fallback.
