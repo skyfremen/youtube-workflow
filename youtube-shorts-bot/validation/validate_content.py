@@ -1,8 +1,9 @@
 """Versioned private request validator with immutable background treatments.
 
-Schema v4 remains readable during rollout. New planner output uses schema v5,
-which freezes one temporal/playback treatment for both the primary and backup
-logical background before public execution begins.
+Schema v4 remains readable for historical recovery. New planner output uses schema
+v5. Production promotion validates schema-v5 requests against the current private
+background registry before any public dispatch, while callers that only need pure
+schema validation may leave registry enforcement disabled.
 """
 
 import argparse
@@ -10,6 +11,9 @@ import copy
 from pathlib import Path
 
 from common.workflow_common import load_json
+from media.background_policy import rendition_is_production_suitable
+from media.background_selector_base import MIN_QUALITY_SCORE, quality_score
+from media.validate_media_library import asset_map, load_registry
 from validation import schema_v4 as legacy
 
 SCHEMA_VERSION = 5
@@ -45,6 +49,7 @@ PLAYBACK_RATE_MIN = 1.0
 PLAYBACK_RATE_MAX = 2.0
 MAX_SEGMENT_START_SECONDS = 24 * 60 * 60
 MIN_SEGMENT_DURATION_SECONDS = 1.0
+TREATMENT_DURATION_EPSILON_SECONDS = 0.05
 
 
 def _number(value, label, errors, *, minimum=None, maximum=None, nullable=False):
@@ -138,14 +143,112 @@ def _legacy_view(data):
     return candidate
 
 
-def validate_request_data(data, request_path=None):
+def _production_rendition_exists(asset):
+    renditions = asset.get("renditions")
+    if not isinstance(renditions, list):
+        return False
+    return any(
+        isinstance(item, dict) and rendition_is_production_suitable(item)
+        for item in renditions
+    )
+
+
+def _validate_registry_asset(asset, asset_id, label):
+    errors = []
+    if not isinstance(asset, dict):
+        return [f"{label} references unknown background asset {asset_id}"]
+    if asset.get("status") != "active":
+        errors.append(f"{label} background {asset_id} must be active")
+    if asset.get("verified") is not True:
+        errors.append(f"{label} background {asset_id} must be verified")
+    if asset.get("commercial_use") is not True:
+        errors.append(f"{label} background {asset_id} must allow commercial use")
+    if asset.get("has_watermark") is not False:
+        errors.append(f"{label} background {asset_id} must be watermark free")
+    if asset.get("has_embedded_text") is not False:
+        errors.append(f"{label} background {asset_id} must not contain embedded text")
+    if quality_score(asset) < MIN_QUALITY_SCORE:
+        errors.append(f"{label} background {asset_id} is below the quality floor")
+    if not _production_rendition_exists(asset):
+        errors.append(
+            f"{label} background {asset_id} has no production-suitable rendition"
+        )
+    return errors
+
+
+def validate_background_registry_contract(data, registry=None):
+    """Validate hard background/treatment invariants for a schema-v5 request.
+
+    Creative relevance, recency preference and ranking remain ChatGPT-owned. This
+    validator enforces only non-negotiable registry, licensing, production and
+    treatment bounds so an AI-authored request cannot cross the dispatch boundary
+    with an invalid physical contract.
+    """
+    if not isinstance(data, dict) or data.get("schema_version") != 5:
+        return []
+    visual = data.get("visual")
+    if not isinstance(visual, dict):
+        return ["visual must be an object before background registry validation"]
+
+    primary_id = visual.get("background_primary_id")
+    backup_id = visual.get("background_backup_id")
+    errors = []
+    if not isinstance(primary_id, str) or not primary_id.strip():
+        errors.append("visual.background_primary_id must be a non-empty string")
+    if not isinstance(backup_id, str) or not backup_id.strip():
+        errors.append("visual.background_backup_id must be a non-empty string")
+    if errors:
+        return errors
+    if primary_id == backup_id:
+        errors.append("primary and backup background IDs must differ")
+
+    try:
+        registry = registry if registry is not None else load_registry()
+        mapping = asset_map(registry)
+    except (OSError, TypeError, ValueError) as exc:
+        return [f"background registry is unavailable or invalid: {exc}"]
+
+    for slot, asset_id in (("primary", primary_id), ("backup", backup_id)):
+        label = f"visual.background_{slot}_id"
+        asset = mapping.get(asset_id)
+        errors.extend(_validate_registry_asset(asset, asset_id, label))
+        if not isinstance(asset, dict):
+            continue
+        treatment = visual.get(f"background_{slot}_treatment")
+        treatment_errors = validate_background_treatment(
+            treatment, f"visual.background_{slot}_treatment"
+        )
+        if treatment_errors or not isinstance(treatment, dict):
+            continue
+        try:
+            asset_duration = float(asset.get("duration_seconds"))
+        except (TypeError, ValueError):
+            asset_duration = None
+        if asset_duration is None or asset_duration <= 0:
+            continue
+        duration = treatment.get("segment_duration_seconds")
+        if duration is None:
+            continue
+        try:
+            start = float(treatment.get("segment_start_seconds"))
+            segment_duration = float(duration)
+        except (TypeError, ValueError):
+            continue
+        if start + segment_duration > asset_duration + TREATMENT_DURATION_EPSILON_SECONDS:
+            errors.append(
+                f"visual.background_{slot}_treatment exceeds background {asset_id} duration"
+            )
+    return errors
+
+
+def validate_request_data(data, request_path=None, *, enforce_registry=False, registry=None):
     if not isinstance(data, dict):
         return ["request root must be an object"]
     version = data.get("schema_version")
     if version == 4:
         return legacy.validate_request_data(data, request_path=request_path)
     if version != 5:
-        return ["schema_version must be 4"]
+        return ["schema_version must be 4 or 5"]
 
     visual = data.get("visual")
     treatment_errors = []
@@ -173,13 +276,19 @@ def validate_request_data(data, request_path=None):
     errors = legacy.validate_request_data(
         _legacy_view(data), request_path=request_path
     )
+    if enforce_registry and not errors and not treatment_errors:
+        errors.extend(validate_background_registry_contract(data, registry=registry))
     return errors + treatment_errors
 
 
-def validate_request(path):
+def validate_request(path, *, enforce_registry=True):
     path = Path(path)
     data = load_json(path)
-    errors = validate_request_data(data, request_path=path)
+    errors = validate_request_data(
+        data,
+        request_path=path,
+        enforce_registry=enforce_registry,
+    )
     if errors:
         raise SystemExit("Request validation failed:\n- " + "\n- ".join(errors))
     print(f"Request valid: {path.name}; schema={data['schema_version']}")
@@ -189,8 +298,13 @@ def validate_request(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--request", required=True)
+    parser.add_argument(
+        "--schema-only",
+        action="store_true",
+        help="Skip private registry enforcement; intended for isolated schema tests only",
+    )
     args = parser.parse_args()
-    validate_request(args.request)
+    validate_request(args.request, enforce_registry=not args.schema_only)
 
 
 if __name__ == "__main__":
