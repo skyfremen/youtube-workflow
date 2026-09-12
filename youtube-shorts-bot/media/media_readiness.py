@@ -1,18 +1,15 @@
 """Shared planning-time media readiness gate for Daily and Ad-hoc.
 
-The checked-in registry is the cache. Existing assets may remain present for
-historical recovery while ``selection_enabled=false`` removes them from all new
-planning. Both planners must obtain a PASS from this module before authoring an
-immutable ranked pool.
+The checked-in registry is the shared background cache. Both planners must
+obtain a PASS from this module before authoring an immutable ranked pool. An
+empty or insufficient registry is a normal REPLENISH state.
 """
 from __future__ import annotations
 
 import argparse
 import json
 from collections import Counter
-from pathlib import Path
 
-from common.workflow_common import atomic_write_json
 from media.background_selector_base import (
     HIGH_RETENTION_CATEGORIES,
     MIN_QUALITY_SCORE,
@@ -88,39 +85,22 @@ def audit_registry(registry):
     }
 
 
-def retire_current_library(path=REGISTRY_PATH):
-    registry = load_registry(path)
-    changed = 0
-    for asset in registry.get("assets", []):
-        if asset.get("selection_enabled") is not False:
-            asset["selection_enabled"] = False
-            changed += 1
-    atomic_write_json(path, registry)
-    report = audit_registry(registry)
-    report["retired_now"] = changed
-    return report
-
-
 def main():
     parser = argparse.ArgumentParser(description="Shared Wacky Dramas media readiness gate")
     parser.add_argument("--registry", default=str(REGISTRY_PATH))
     sub = parser.add_subparsers(dest="command", required=True)
     audit = sub.add_parser("audit")
     audit.add_argument("--allow-not-ready", action="store_true")
-    sub.add_parser("retire-current")
     args = parser.parse_args()
 
     try:
-        if args.command == "retire-current":
-            report = retire_current_library(args.registry)
-        else:
-            report = audit_registry(load_registry(args.registry))
+        report = audit_registry(load_registry(args.registry))
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         print(json.dumps({"status": "ERROR", "ready": False, "error": str(exc)}, sort_keys=True))
         raise SystemExit(3)
 
     print(json.dumps(report, indent=2, sort_keys=True))
-    if args.command == "audit" and not report["ready"] and not args.allow_not_ready:
+    if not report["ready"] and not args.allow_not_ready:
         raise SystemExit(2)
 
 
