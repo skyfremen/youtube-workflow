@@ -9,6 +9,7 @@ from media.validate_media_library import load_registry
 from planning import ranked_promotion
 from test_request_schema import valid_request
 from validation.validate_content import (
+    validate_background_registry_contract,
     validate_background_treatment,
     validate_request_data,
 )
@@ -116,8 +117,12 @@ class RankedPoolContractTests(unittest.TestCase):
                 )
 
     def test_v5_hard_registry_validation_accepts_current_safe_defaults(self):
-        errors = validate_request_data(v5_request(), enforce_registry=True)
+        errors = validate_background_registry_contract(v5_request(), registry=load_registry())
         self.assertEqual(errors, [])
+
+    def test_new_production_requires_shared_media_readiness(self):
+        errors = validate_request_data(v5_request(), enforce_registry=True)
+        self.assertTrue(any("media readiness requires replenishment" in error for error in errors))
 
     def test_v5_hard_registry_validation_rejects_unknown_asset(self):
         data = v5_request()
