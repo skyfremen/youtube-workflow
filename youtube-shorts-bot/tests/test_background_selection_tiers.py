@@ -59,7 +59,7 @@ class BackgroundSelectionTierTests(unittest.TestCase):
             3,
             category="generic",
             tags=("relationship", "argument"),
-            quality=99,
+            quality=95,
             intensity="low",
             motion_type="ambient",
         )
