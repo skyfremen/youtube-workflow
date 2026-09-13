@@ -6,10 +6,10 @@ from media.media_readiness import (
     audit_registry,
     is_selectable,
 )
-from validation.validate_content import _validate_registry_asset
+from media.validate_media_library import validate_registry_data
 
 
-def asset(asset_id, category, *, selection_enabled=True):
+def asset(asset_id, category, *, duration=300.0):
     return {
         "id": asset_id,
         "status": "active",
@@ -17,7 +17,6 @@ def asset(asset_id, category, *, selection_enabled=True):
         "commercial_use": True,
         "has_watermark": False,
         "has_embedded_text": False,
-        "selection_enabled": selection_enabled,
         "retention_category": category,
         "orientation": "vertical",
         "motion_intensity": "high",
@@ -25,6 +24,7 @@ def asset(asset_id, category, *, selection_enabled=True):
         "visual_satisfaction_score": 100,
         "loopability_score": 100,
         "caption_readability_score": 100,
+        "duration_seconds": duration,
         "renditions": [
             {
                 "id": f"r-{asset_id}",
@@ -39,28 +39,28 @@ def asset(asset_id, category, *, selection_enabled=True):
 
 
 class MediaReadinessTests(unittest.TestCase):
-    def test_retired_asset_is_not_selectable(self):
-        self.assertFalse(is_selectable(asset("old", "cooking", selection_enabled=False)))
-
-    def test_new_production_rejects_retired_but_recovery_can_resolve_it(self):
-        retired = asset("old", "cooking", selection_enabled=False)
-        new_errors = _validate_registry_asset(
-            retired, "old", "visual.background_primary_id", allow_retired=False
-        )
-        recovery_errors = _validate_registry_asset(
-            retired, "old", "visual.background_primary_id", allow_retired=True
-        )
-        self.assertTrue(any("retired from new production" in item for item in new_errors))
-        self.assertEqual(recovery_errors, [])
-
-    def test_empty_selectable_pool_requires_replenishment(self):
-        report = audit_registry({"assets": [asset("old", "cooking", selection_enabled=False)]})
+    def test_empty_active_registry_is_valid_replenish_state(self):
+        registry = {"schema_version": 3, "assets": []}
+        self.assertEqual(validate_registry_data(registry), [])
+        report = audit_registry(registry)
         self.assertEqual(report["status"], "REPLENISH")
         self.assertEqual(report["selectable_assets"], 0)
-        self.assertEqual(report["retired_from_selection"], 1)
         self.assertGreaterEqual(report["required_new_assets_at_least"], MIN_SELECTABLE_ASSETS)
+        self.assertTrue(report["automatic_continuation_required"])
 
-    def test_diverse_pool_passes(self):
+    def test_obsolete_soft_retirement_state_is_not_valid_active_registry(self):
+        old = asset("old", "cooking")
+        old["selection_enabled"] = False
+        errors = validate_registry_data({"schema_version": 3, "assets": [old]})
+        self.assertTrue(any("selection_enabled" in item for item in errors))
+
+    def test_short_asset_is_not_selectable(self):
+        self.assertFalse(is_selectable(asset("short", "cooking", duration=30.0)))
+        report = audit_registry({"schema_version": 3, "assets": [asset("short", "cooking", duration=30.0)]})
+        self.assertEqual(report["status"], "REPLENISH")
+        self.assertEqual(report["duration_ineligible_assets"], 1)
+
+    def test_diverse_long_form_pool_passes(self):
         assets = []
         counter = 0
         for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
@@ -70,7 +70,7 @@ class MediaReadinessTests(unittest.TestCase):
         while len(assets) < MIN_SELECTABLE_ASSETS:
             counter += 1
             assets.append(asset(f"a-{counter}", "satisfying_process"))
-        report = audit_registry({"assets": assets})
+        report = audit_registry({"schema_version": 3, "assets": assets})
         self.assertEqual(report["status"], "PASS")
         self.assertTrue(report["ready"])
         self.assertEqual(report["selectable_assets"], len(assets))
