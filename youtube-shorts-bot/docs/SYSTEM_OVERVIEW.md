@@ -52,6 +52,10 @@ Public runtime:
 
 Private code remains the source-of-truth planner/validator/control plane. Public runtime remains a stateless heavy executor. GitHub Actions does not perform creative planning.
 
+## Production output contract
+
+The canonical rendered Short is **1080×1920** at 30 fps. The public runtime owns the exact video/audio encoding and verifies the final output before publication; private planning owns content and immutable production intent rather than rendering implementation.
+
 ## Schema and compatibility
 
 **Schema v6 is current** for newly promoted Daily and Ad-hoc requests. It freezes story, narration, publication, logical primary/backup backgrounds and one continuous temporal range for each slot. Exact background playback rate is intentionally absent from the immutable request because it depends on actual post-TTS production timing.
