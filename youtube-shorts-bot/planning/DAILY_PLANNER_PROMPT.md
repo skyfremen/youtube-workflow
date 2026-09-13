@@ -10,7 +10,7 @@ Read and follow, in order:
 
 Repository code/configuration at current `main` remains the source of truth. If older Daily rule text repeats Git/bootstrap/materialization instructions, `docs/private/PLANNER_PROMPT.md` supersedes only those duplicated execution-environment instructions; the Daily business/creative rules remain mandatory.
 
-A Git checkout, Git executable, `.git` directory, authenticated clone, repository archive, synthetic HEAD or GitHub Actions planner execution is not required for normal ChatGPT/Work planning. Do not use `--verify-git-head` for the canonical planner path.
+Resolve the exact `rules_source_sha` through the GitHub API/connector and follow `planning/PLANNER_MATERIALIZATION.json`. Materialize its selected source into a plain temporary directory. A Git checkout, Git executable, `.git` directory, authenticated clone, repository archive, synthetic HEAD or GitHub Actions planner execution is **not** a planner prerequisite. Do not use `--verify-git-head` for the canonical planner path; normal planner execution must not need `.git` or a Git executable.
 
 ## Profile
 
@@ -42,7 +42,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --rules-source-sha <rules_source_sha>
 ```
 
-All **36 candidates must PASS** the actual validator before immutable pool commit. `planning.daily_precommit` remains only a backward-compatible wrapper and is not required for canonical materialization.
+The gate requires **all 36 candidates PASS** before immutable pool commit. `planning.daily_precommit` remains only a backward-compatible wrapper and is not required for canonical materialization.
 
 **FAIL CLOSED if the exact pre-commit module cannot be executed** after exact materialization. Manual checks, downstream pool admission, ranked promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
 
