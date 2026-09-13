@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 
 from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
+from validation.validate_content import SCHEMA_VERSION
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
@@ -27,8 +28,6 @@ RULES_SHA = "1" * 40
 def _run(root, *args):
     env = os.environ.copy()
     env["PYTHONPATH"] = str(root / "youtube-shorts-bot")
-    # The canonical path must not need Git. Keeping the normal PATH lets Python
-    # find its runtime but no command in these calls may invoke git.
     return subprocess.run(
         [sys.executable, *args],
         cwd=root,
@@ -39,24 +38,28 @@ def _run(root, *args):
     )
 
 
-def _upgrade_request_to_v6(request):
+def _upgrade_request_to_v7(request):
     request = copy.deepcopy(request)
-    request["schema_version"] = 6
-    visual = request["visual"]
-    for slot in ("primary", "backup"):
-        visual[f"background_{slot}_treatment"] = {
-            "mode": "fit_to_short",
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": 240.0,
-        }
+    request["schema_version"] = SCHEMA_VERSION
+    request["visual"] = {
+        "background_mode": "concatenated_fit_to_short",
+        "background_primary_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (1, 2, 3)
+        ],
+        "background_backup_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (4, 5, 6)
+        ],
+    }
     return request
 
 
-def _upgrade_adhoc_pool_to_v6(pool):
+def _upgrade_adhoc_pool_to_v7(pool):
     pool = copy.deepcopy(pool)
     pool["planning_execution"]["rules_source_sha"] = RULES_SHA
     for item in pool["ranked_candidates"]:
-        item["request"] = _upgrade_request_to_v6(item["request"])
+        item["request"] = _upgrade_request_to_v7(item["request"])
     return pool
 
 
@@ -64,7 +67,7 @@ def _ready_asset(asset_id, category, counter):
     return {
         "id": asset_id,
         "type": "video",
-        "title": f"Gitless long-form test asset {counter}",
+        "title": f"Gitless atomic test asset {counter}",
         "source": "Pexels",
         "source_page": f"https://www.pexels.com/video/gitless-{100000 + counter}/",
         "direct_url": f"https://videos.pexels.com/gitless-{counter:03d}.mp4",
@@ -104,9 +107,10 @@ def _ready_registry_for_pool(pool):
     for item in pool["ranked_candidates"]:
         visual = item["request"]["visual"]
         for slot in ("primary", "backup"):
-            asset_id = visual[f"background_{slot}_id"]
-            if asset_id not in requested_ids:
-                requested_ids.append(asset_id)
+            for segment in visual[f"background_{slot}_sequence"]:
+                asset_id = segment["background_id"]
+                if asset_id not in requested_ids:
+                    requested_ids.append(asset_id)
 
     category_plan = []
     for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
@@ -205,6 +209,7 @@ class GitlessSharedPlannerTests(unittest.TestCase):
                 contract_json["profiles"]["daily"]["shared_contract_fingerprint"],
                 contract_json["profiles"]["adhoc"]["shared_contract_fingerprint"],
             )
+            self.assertEqual(contract_json["request_schema_version"], SCHEMA_VERSION)
 
             readiness = _run(
                 root,
@@ -216,7 +221,7 @@ class GitlessSharedPlannerTests(unittest.TestCase):
             self.assertEqual(readiness.returncode, 0, readiness.stderr or readiness.stdout)
             self.assertEqual(json.loads(readiness.stdout)["status"], "REPLENISH")
 
-            adhoc_pool = _upgrade_adhoc_pool_to_v6(
+            adhoc_pool = _upgrade_adhoc_pool_to_v7(
                 json.loads(SOURCE_ADHOC_POOL.read_text(encoding="utf-8"))
             )
             registry_path = root / "youtube-shorts-bot" / "media-library" / "backgrounds.json"
