@@ -55,54 +55,47 @@ def build_contract():
         "adhoc_publication": ADHOC_PUBLICATION,
         "daily_publication_template": DAILY_PUBLICATION,
         "execution_environment": {
-            "checkout_mode": {
-                "description": "Use the repository checkout directly when .git is available.",
-                "head_command": "git rev-parse HEAD",
-                "adhoc_precommit_command": (
-                    "python -m planning.adhoc_precommit --pool <pool> "
-                    "--rules-source-sha <sha>"
-                ),
-                "daily_precommit_command": (
-                    "python -m planning.daily_precommit --pool <pool> "
-                    "--rules-source-sha <sha>"
-                ),
-            },
-            "chatgpt_snapshot_mode": {
+            "canonical_mode": "explicit_rules_source_sha",
+            "authenticated_checkout_required": False,
+            "git_metadata_required": False,
+            "repository_identity_source": "explicit_rules_source_sha",
+            "description": (
+                "Run planner Python normally in the available Python environment. "
+                "The exact immutable GitHub source commit inspected by ChatGPT is passed "
+                "explicitly as --rules-source-sha. A .git directory, authenticated clone, "
+                "snapshot manifest and synthetic Git HEAD are not required."
+            ),
+            "adhoc_precommit_command": (
+                "python -m planning.adhoc_precommit --pool <pool> "
+                "--rules-source-sha <sha>"
+            ),
+            "daily_precommit_command": (
+                "python -m planning.daily_precommit --pool <pool> "
+                "--rules-source-sha <sha>"
+            ),
+            "optional_checkout_verification": {
                 "description": (
-                    "For isolated ChatGPT/Work Python environments without an authenticated "
-                    "clone. Materialize all planner inputs from one immutable GitHub commit, "
-                    "record repository-relative paths plus Git blob SHAs in a snapshot manifest, "
-                    "verify/bootstrap temporary Git HEAD metadata, then run the normal canonical "
-                    "precommit validator unchanged."
+                    "For developer/CI execution inside a real checkout only. This is optional "
+                    "hardening and must not be required by ChatGPT/Work planner execution."
                 ),
-                "snapshot_manifest_schema_version": 1,
-                "snapshot_manifest_fields": {
-                    "schema_version": 1,
-                    "source_sha": "<exact immutable GitHub commit SHA>",
-                    "files": [
-                        {"path": "<repository-relative path>", "blob_sha": "<Git blob SHA>"}
-                    ],
-                },
-                "bootstrap_command": (
-                    "python -m planning.snapshot_checkout --rules-source-sha <sha> "
-                    "--snapshot-manifest <manifest>"
+                "flag": "--verify-git-head",
+                "head_command": "git rev-parse HEAD",
+            },
+            "rules": [
+                "Resolve one exact immutable GitHub source SHA before live contract discovery and planning.",
+                "Pass that SHA explicitly as --rules-source-sha to Daily and Ad-hoc precommit validators.",
+                "planning_execution.rules_source_sha must exactly equal the supplied rules_source_sha.",
+                "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
+                "Do not require .git, an authenticated checkout, snapshot bootstrap or synthetic Git metadata for normal ChatGPT/Work execution.",
+                "If repository main changes before the immutable pool commit, refresh rules_source_sha and rerun all required live validation against the new source state.",
+            ],
+            "legacy_snapshot_mode": {
+                "supported": False,
+                "deprecated": True,
+                "reason": (
+                    "Snapshot/bootstrap logic is no longer part of the canonical planner path; "
+                    "repository identity is explicit data rather than inferred from local Git metadata."
                 ),
-                "head_command_after_bootstrap": "git rev-parse HEAD",
-                "adhoc_precommit_command": (
-                    "python -m planning.adhoc_precommit --pool <pool> "
-                    "--rules-source-sha <sha>"
-                ),
-                "daily_precommit_command": (
-                    "python -m planning.daily_precommit --pool <pool> "
-                    "--rules-source-sha <sha>"
-                ),
-                "rules": [
-                    "Do not mix files from different source SHAs.",
-                    "Every materialized repository file used for planning or validation must be listed in the manifest with its Git blob SHA.",
-                    "Bootstrap must PASS before treating git rev-parse HEAD as authoritative in a snapshot.",
-                    "The exact source SHA must remain the planning_execution.rules_source_sha.",
-                    "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
-                ],
             },
         },
         "media_readiness": {

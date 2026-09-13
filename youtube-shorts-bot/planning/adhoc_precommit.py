@@ -3,6 +3,10 @@
 The planner remains ChatGPT-owned. This module makes ChatGPT execute the live
 repository contract against its temporary draft before immutable history is
 created. It never generates, ranks, repairs or substitutes creative content.
+
+Repository identity is supplied explicitly through ``rules_source_sha``. A Git
+checkout is not required for normal planner execution. Real checkouts may opt
+into an additional HEAD cross-check for CI/developer hardening.
 """
 from __future__ import annotations
 
@@ -138,8 +142,8 @@ def _pool_structure(pool, rules_source_sha):
             errors.append("ranked planning requires planning_method=chatgpt_ranked_pool")
         if execution.get("rules_source_sha") != rules_source_sha:
             errors.append(
-                "planning_execution.rules_source_sha must equal the exact pre-commit "
-                "repository HEAD supplied to the validator"
+                "planning_execution.rules_source_sha must equal the exact "
+                "rules_source_sha supplied to the validator"
             )
         if execution.get("ranked_candidate_ids") != candidate_ids:
             errors.append(
@@ -168,10 +172,15 @@ def validate_draft(
     *,
     raw_bytes=b"",
     registry=None,
-    check_checkout_head=True,
+    check_checkout_head=False,
     check_uniqueness=True,
 ):
-    """Validate all five AI-authored candidates without mutating the draft."""
+    """Validate all five AI-authored candidates without mutating the draft.
+
+    ``rules_source_sha`` is the authoritative repository identity for normal
+    execution. ``check_checkout_head`` is optional and intended only for a real
+    checkout where an additional Git HEAD cross-check is useful.
+    """
     original = copy.deepcopy(pool)
     pool_id, planning_mode, singapore_date, candidates, pool_errors = _pool_structure(
         pool, rules_source_sha
@@ -235,7 +244,6 @@ def validate_draft(
                 )
             )
 
-            # Keep diagnostics useful while avoiding duplicate lines from layered validators.
             deduped = list(dict.fromkeys(errors))
             candidate_results.append(
                 {
@@ -281,6 +289,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pool", required=True, help="Temporary ChatGPT-authored pool JSON")
     parser.add_argument("--rules-source-sha", required=True)
+    parser.add_argument(
+        "--verify-git-head",
+        action="store_true",
+        help="Optional CI/developer check that rules_source_sha equals git rev-parse HEAD",
+    )
     args = parser.parse_args()
 
     path = Path(args.pool)
@@ -297,7 +310,12 @@ def main():
         print(json.dumps(result, indent=2, sort_keys=True))
         raise SystemExit(2)
 
-    result = validate_draft(pool, args.rules_source_sha, raw_bytes=raw)
+    result = validate_draft(
+        pool,
+        args.rules_source_sha,
+        raw_bytes=raw,
+        check_checkout_head=args.verify_git_head,
+    )
     print(json.dumps(result, indent=2, sort_keys=True))
     if result["status"] != "PASS":
         raise SystemExit(2)
