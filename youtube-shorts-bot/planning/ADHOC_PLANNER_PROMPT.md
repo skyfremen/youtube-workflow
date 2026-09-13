@@ -54,7 +54,7 @@ New candidates must use the current schema and `concatenated_fit_to_short` backg
 - Old pre-reset backgrounds were deleted; do not reference, recreate or assume hidden legacy IDs.
 - Avoid repeated assets, exact sequences, categories and substantially overlapping temporal ranges using verified private receipt history.
 
-After authoring the complete five-candidate ranked pool, run the canonical ChatGPT/Work connector-mode precommit:
+After authoring the complete five-candidate ranked pool, run the canonical ChatGPT/Work connector-mode precommit exactly as inherited from the shared contract:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
@@ -63,7 +63,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --rules-source-sha <rules_source_sha>
 ```
 
-Do not add `--verify-git-head` in ChatGPT/Work. The shared connector materialization evidence and `planning.materialization_verify PASS` are the source-integrity proof. Real Git checkout verification is documented only in the shared contract for developer/CI contexts. The gate requires all five candidates PASS. The compatibility wrapper `planning.adhoc_precommit` remains available for existing callers but contains no independent validation logic.
+The command above is the canonical ChatGPT/Work precommit. Its source-integrity proof is the shared connector materialization evidence plus `planning.materialization_verify PASS`; any separate real-Git checkout verification mode is documented only in the shared contract. The gate requires all five candidates PASS. The compatibility wrapper `planning.adhoc_precommit` remains available for existing callers but contains no independent validation logic.
 
 The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion or GitHub Actions are not substitutes for planner-time pre-commit.
 
