@@ -5,6 +5,11 @@ env:
 
 on:
   workflow_dispatch:
+    inputs:
+      discovery_result:
+        description: 'Optional existing immutable discovery result path to materialize exact-source review evidence'
+        required: false
+        type: string
   push:
     branches: [main]
     paths:
@@ -17,6 +22,7 @@ on:
       - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
       - 'youtube-shorts-bot/media/background_policy.py'
       - 'youtube-shorts-bot/media/continuous_background.py'
+      - 'youtube-shorts-bot/media/preview_review_materializer.py'
       - '.github/workflows/background-management.yml'
 
 concurrency:
@@ -42,13 +48,32 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          REVIEW_DISCOVERY_RESULT: ${{ inputs.discovery_result }}
         run: |
           set -euo pipefail
           action=audit
           manifest=''
           discovery_request=''
           discovery_output=''
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          review_artifact=''
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ -n "${REVIEW_DISCOVERY_RESULT:-}" ]; then
+            case "${REVIEW_DISCOVERY_RESULT}" in
+              youtube-shorts-bot/content/background-sourcing/discovery-results/*.json) ;;
+              *)
+                echo '::error::discovery_result must be an immutable discovery-results/*.json repository path.'
+                exit 1
+                ;;
+            esac
+            test -f "${REVIEW_DISCOVERY_RESULT}" || {
+              echo '::error::Requested discovery result does not exist.'
+              exit 1
+            }
+            action=review
+            discovery_output="${REVIEW_DISCOVERY_RESULT}"
+            base="$(basename "${discovery_output}")"
+            review_artifact="background-review-evidence-${base%.json}"
+          elif [ "${GITHUB_EVENT_NAME}" = "push" ]; then
             changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
             mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
             mapfile -t discovery_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/discovery-requests\/[A-Za-z0-9._-]+\.json$/ {print $2}')
@@ -68,12 +93,14 @@ jobs:
               discovery_request="${discovery_files[0]}"
               base="$(basename "${discovery_request}")"
               discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${base}"
+              review_artifact="background-review-evidence-${base%.json}"
             fi
           fi
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
           echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
           echo "discovery_output=${discovery_output}" >> "${GITHUB_OUTPUT}"
+          echo "review_artifact=${review_artifact}" >> "${GITHUB_OUTPUT}"
 
       - name: Require Pexels API key
         if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'discover'
@@ -88,6 +115,29 @@ jobs:
           REQUEST: ${{ steps.action.outputs.discovery_request }}
           OUTPUT: ${{ steps.action.outputs.discovery_output }}
         run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
+
+      - name: Materialize exact preview evidence for ChatGPT review
+        id: review_evidence
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        continue-on-error: true
+        shell: bash
+        env:
+          OUTPUT: ${{ steps.action.outputs.discovery_output }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/background-review-evidence
+          python -m media.preview_review_materializer \
+            --discovery-result "${OUTPUT}" \
+            --output-dir /tmp/background-review-evidence
+
+      - name: Upload exact preview evidence artifact
+        if: always() && (steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.action.outputs.review_artifact }}
+          path: /tmp/background-review-evidence
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
