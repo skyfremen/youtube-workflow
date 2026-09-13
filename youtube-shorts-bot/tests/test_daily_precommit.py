@@ -22,6 +22,16 @@ RULES_SHA = "1" * 40
 PLAN_DATE = "2099-01-01"
 
 
+def _upgrade_request_v6(request):
+    request["schema_version"] = 6
+    for slot in ("primary", "backup"):
+        request["visual"][f"background_{slot}_treatment"] = {
+            "mode": "fit_to_short",
+            "segment_start_seconds": 0.0,
+            "segment_duration_seconds": 300.0,
+        }
+
+
 def valid_pool():
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     template = fixture["ranked_candidates"][0]["request"]
@@ -31,6 +41,7 @@ def valid_pool():
         request["content_id"] = f"wd-20990101T000000-daily-c{index:05d}"
         request["publication"] = copy.deepcopy(DAILY_PUBLICATION)
         request["planning"]["plan_date"] = PLAN_DATE
+        _upgrade_request_v6(request)
         ranked.append({
             "rank": index,
             "candidate_id": f"daily-c{index:02d}",
@@ -69,7 +80,7 @@ def _ready_asset(asset_id, category, counter):
         "visual_satisfaction_score": 100,
         "loopability_score": 100,
         "caption_readability_score": 100,
-        "duration_seconds": 120.0,
+        "duration_seconds": 300.0,
         "renditions": [{
             "id": f"test-r-{counter:03d}",
             "width": 1080,
@@ -120,6 +131,7 @@ class DailyPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["daily_normal_target"], ranked_promotion.NORMAL_DAILY_TARGET)
         self.assertEqual(contract["daily_publication_template"], DAILY_PUBLICATION)
         self.assertTrue(contract["media_readiness"]["required_before_daily"])
+        self.assertEqual(contract["request_schema_version"], 6)
 
     def test_known_good_pool_requires_thirty_six_of_thirty_six(self):
         result = validate(valid_pool())
