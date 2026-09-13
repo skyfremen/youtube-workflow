@@ -34,7 +34,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.adhoc_precommit \
 
 8. `planning_execution.rules_source_sha` in the draft must exactly equal the explicit `rules_source_sha` supplied to the validator.
 9. The normal validator must not require or infer any Git state. Do not use `--verify-git-head`, create synthetic Git metadata, clone the repository, or substitute Git commands for the explicit SHA contract.
-10. **Fail closed if the exact pre-commit module cannot be executed.** Manual schema checks, hand-written arithmetic, partial reimplementation, downstream promotion, or later GitHub Actions validation are not substitutes for planner-time pre-commit. Do not commit a pool unless all five candidates PASS the actual validator.
+10. **FAIL CLOSED if the exact pre-commit module cannot be executed.** Manual schema checks, hand-written arithmetic, partial reimplementation, downstream promotion, or later GitHub Actions validation are not substitutes for planner-time pre-commit. Do not commit a pool unless all five candidates PASS the actual validator.
 11. Private Ad-hoc Production independently reruns the same pre-commit validation as a committed-pool admission gate before ranked promotion. This is defense in depth only; it does not waive step 10.
 12. Before the immutable pool commit, re-read current GitHub `main`. If its SHA differs from `rules_source_sha`—including because background replenishment committed a registry update—do not commit the stale draft. Refresh `rules_source_sha`, rerun live contract discovery, media readiness and complete pre-commit validation against the new canonical state.
 13. The final immutable pool bytes must exactly match the successful validator `draft_sha256`.
