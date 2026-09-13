@@ -26,6 +26,18 @@ An empty or insufficient active background registry is a normal `REPLENISH` stat
 
 Once a matching immutable discovery result exists, continue through visual review and readiness-manifest creation in the **same planner invocation** whenever an exact-source visual channel is available. At that point `DEFERRED_REPLENISHMENT` is not a valid visual-review status. Follow the shared tool-adaptive evidence ladder with ChatGPT/Work-local exact-source review as the canonical path: use the exact immutable preview URLs directly, prefer native exact-source visual inspection when possible, and otherwise download the exact discovered media into local working storage and inspect representative frames/motion with available tooling. `media.preview_review_materializer` is the canonical repository helper when local Python outbound HTTP/media tooling works; local Python outbound HTTP is not itself a prerequisite because another exact download surface may feed the same local review. Any public review-evidence workflow is optional fallback only and must never block planning.
 
+### Hard visual-evidence recovery gate
+
+Do **not** report `EVIDENCE_ACCESS_BLOCKED` merely because the repository helper, local Python networking, a browser/provider page, or one preview URL fails. Before that status is legal, process the discovery set candidate-by-candidate and exhaust the exact-source transports actually available in the execution environment:
+
+1. Try native inspection of the exact Pexels source/preview when it proves the same provider asset ID.
+2. Try downloading the exact immutable `preview_image_url` through any available download/file-transfer primitive and inspect the resulting local pixels.
+3. When a still is insufficient or unavailable, try the exact immutable `preview_video_url`; place the exact bytes in local working storage when possible and use FFmpeg or equivalent local media tooling to extract representative frames/contact-sheet and/or a short motion sample for inspection.
+4. If one candidate remains inaccessible, reject that candidate only and continue through the remaining discovery candidates/reserves. Do not terminate the whole replenishment attempt because one transport or one asset fails.
+5. If too few candidates survive visual review, continue the canonical next immutable discovery attempt under the same readiness deficits instead of weakening `verified_preview`.
+
+`EVIDENCE_ACCESS_BLOCKED` is permitted only after **no candidate in the applicable discovery set can be visually inspected through any trustworthy exact-source channel available to the run** (or all remaining candidates needed for readiness are inaccessible after reserve sourcing). The report must list the attempted channel classes and representative failures. A statement such as “no usable inspection surface” without those attempted transports is not sufficient. Successful download/extraction is transport evidence only; ChatGPT/Work must still inspect the actual pixels/motion before approval.
+
 Do not bypass discovery results by guessing provider metadata. Do not move creative/editorial review into GitHub Actions. No separate manual seed/populate step is required.
 
 ## Sequence background contract
