@@ -11,6 +11,7 @@ on:
       - 'youtube-shorts-bot/content/background-sourcing/readiness/*.json'
       - 'youtube-shorts-bot/media/media_readiness.py'
       - 'youtube-shorts-bot/media/pexels_registry.py'
+      - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
       - 'youtube-shorts-bot/media/background_policy.py'
       - '.github/workflows/background-management.yml'
 
@@ -70,11 +71,11 @@ jobs:
             exit 1
           fi
 
-      - name: Ingest reviewed readiness manifest
+      - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
         env:
           MANIFEST: ${{ steps.action.outputs.manifest }}
-        run: python youtube-shorts-bot/media/pexels_registry.py ingest-manifest --manifest "${MANIFEST}"
+        run: python -m media.pexels_resilient_ingest --manifest "${MANIFEST}"
 
       - name: Refresh exact rendition metadata
         if: steps.action.outputs.action == 'refresh'
