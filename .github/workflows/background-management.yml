@@ -27,7 +27,7 @@ on:
       - '.github/workflows/background-management.yml'
 
 concurrency:
-  group: wacky-dramas-background-registry-maintenance-v2
+  group: wacky-dramas-background-registry-maintenance-v3
   cancel-in-progress: false
 
 permissions:
