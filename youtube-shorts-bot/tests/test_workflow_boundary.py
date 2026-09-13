@@ -65,8 +65,17 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         text = self.background_management()
         self.assertIn("pexels_resilient_ingest", text)
         self.assertIn("git pull --rebase", text)
-        self.assertNotIn("render", text.lower())
-        self.assertNotIn("youtube", text.lower().split("name:", 1)[-1])
+        self.assertNotIn("ffmpeg", text.lower())
+        self.assertNotIn("kokoro", text.lower())
+        self.assertNotIn("wav2vec", text.lower())
+        self.assertNotIn("render_aligned.py", text)
+        self.assertNotIn("videos().insert", text)
+        for secret in (
+            "YOUTUBE_CLIENT_ID",
+            "YOUTUBE_CLIENT_SECRET",
+            "YOUTUBE_REFRESH_TOKEN",
+        ):
+            self.assertNotIn(secret, text)
 
     def test_manual_recovery_is_private_manifest_state(self):
         text = self.recovery()
