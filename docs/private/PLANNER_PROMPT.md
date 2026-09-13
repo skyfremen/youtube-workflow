@@ -20,7 +20,7 @@ Execute planner Python only from that exact clean snapshot. Reuse a clone/object
 
 Git authentication or Git availability is **not** a hard architectural dependency. If current `main` cannot be fetched and verified through Git, use the exact-SHA connector/API materialization described by `planning/PLANNER_MATERIALIZATION.json`. Pin one exact `rules_source_sha`, fetch every required path from that SHA, verify reconstructed/chunked bytes with Git blob-SHA semantics, and never mix commits. Connector mode runs in an ordinary temporary directory and does not require `.git` or a Git executable.
 
-If neither an exact Git snapshot nor exact-SHA connector materialization can be obtained, fail closed. Never use stale local source and never manufacture synthetic Git metadata.
+If neither an exact Git snapshot nor exact-SHA connector materialization can be obtained, fail closed. Never use stale local source and never manufacture synthetic Git metadata. Never manufacture a synthetic HEAD or fake repository identity.
 
 GitHub Actions planner execution remains prohibited. GitHub Actions is deterministic downstream/credentialed infrastructure only.
 
