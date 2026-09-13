@@ -4,6 +4,7 @@ import hashlib
 import json
 
 from common import runtime_contract_base as contract_impl
+from media.continuous_background import PREFERRED_SEQUENCE_SOURCE_SECONDS
 from validation import validate_content as schema
 
 CONTRACT_PROTOCOL_VERSION = contract_impl.CONTRACT_PROTOCOL_VERSION
@@ -23,7 +24,7 @@ def contract_payload():
             "min_sequence_clips": schema.MIN_SEQUENCE_CLIPS,
             "max_sequence_clips": schema.MAX_SEQUENCE_CLIPS,
             "min_sequence_source_seconds": schema.MIN_SEQUENCE_SOURCE_SECONDS,
-            "preferred_sequence_source_seconds": schema.PREFERRED_SEQUENCE_SOURCE_SECONDS,
+            "preferred_sequence_source_seconds": PREFERRED_SEQUENCE_SOURCE_SECONDS,
             "max_sequence_source_seconds": schema.MAX_SEQUENCE_SOURCE_SECONDS,
             "runtime_derived_playback_rate": True,
             "normal_loop_count": 0,
