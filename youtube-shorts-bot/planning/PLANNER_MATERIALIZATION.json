@@ -58,7 +58,7 @@
       "selected_backgrounds"
     ],
     "drift_rule": "Immediately before checkpoint/commit, re-query current main through the authorized connector. drift.status may be PASS only when current_main_sha equals rules_source_sha after any required drift refresh.",
-    "media_readiness_rule": "Populate status=PASS only from current repository-owned readiness/background evidence. REPLENISH is recoverable and must run the shared background continuation procedure before candidate finalization.",
+    "media_readiness_rule": "Populate status=PASS only from current repository-owned readiness/background evidence. Resolve current media readiness before interpreting replenishment history. REPLENISH is recoverable and must run the shared background continuation procedure before candidate finalization.",
     "uniqueness_rule": "Populate status=PASS only after connector inspection of the profile's current immutable identity namespace. manual_on_demand does not collide merely because same-date scheduled_daily state exists.",
     "selected_backgrounds_rule": "Include only background IDs referenced by the authored pool. For each ID record connector-backed eligible=true, trusted duration_seconds, and the source blob identity/path evidence used to establish eligibility. The full registry is never copied locally merely to run planner-time validation."
   },
@@ -83,6 +83,26 @@
     "rejected_candidates_are_excluded_from_retry": true,
     "terminal_exhausted_code": "E_MEDIA_REPLENISH_EXHAUSTED",
     "deferred_code": "DEFERRED_REPLENISHMENT",
+    "readiness_first_gate": {
+      "enabled": true,
+      "audit_current_registry_before_history": true,
+      "on_current_pass": "CONTINUE_PLANNING",
+      "historical_or_legacy_state_can_block_current_pass": false,
+      "on_replenish_with_compatible_session": "RESUME_COMPATIBLE_SESSION",
+      "on_replenish_without_compatible_session": "CREATE_SCHEMA_V3_ATTEMPT_1",
+      "legacy_only_state_is_terminal": false,
+      "no_compatible_session_is_terminal": false,
+      "reaudit_before_terminal_result": true,
+      "invalid_terminal_reasons": [
+        "legacy replenishment state exists",
+        "legacy replenishment state is incompatible",
+        "no compatible current-format replenishment session exists"
+      ],
+      "allowed_replenishment_terminal_results": [
+        "DEFERRED_REPLENISHMENT only for a genuine bounded infrastructure wait",
+        "E_MEDIA_REPLENISH_EXHAUSTED only after current-format attempt 5"
+      ]
+    },
     "new_request_required_fields": [
       "schema_version",
       "plan_date",
@@ -101,6 +121,9 @@
       "rule": "Discovery must automatically exclude every provider asset already present in immutable review-decision state for the same replenishment_session_id, in addition to request-side exclusions."
     },
     "rules": [
+      "Audit current repository media readiness before interpreting any historical replenishment state.",
+      "If current readiness is PASS, continue planning; legacy, incompatible, unfinished, or exhausted replenishment history cannot block or restart the planner.",
+      "If current readiness is REPLENISH and no compatible current-format session exists, create a fresh stable schema-v3 attempt 1 for the same planner invocation instead of stopping.",
       "Keep one stable replenishment_session_id across all replenishment attempts for the original planner invocation.",
       "A rejected visual candidate is not a final planner result.",
       "Persist one immutable evidence-bound review-decision document for each visually reviewed attempt before continuing.",
@@ -137,7 +160,9 @@
       "github.com shell Git DNS resolution fails",
       "no Git checkout exists",
       "repository files have not been reconstructed locally",
-      "the full backgrounds registry has not been copied locally"
+      "the full backgrounds registry has not been copied locally",
+      "legacy replenishment state exists or is incompatible",
+      "no compatible current-format replenishment session exists"
     ]
   },
   "developer_ci_git_mode": {
