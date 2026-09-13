@@ -9,13 +9,13 @@ Read and follow, in order:
 3. `planning/STORY_RULES.md`.
 4. `docs/background-media-strategy.md` — canonical shared background policy.
 
-Repository code/configuration at current `main` is authoritative. Prefer the shared Git-first exact detached snapshot. If Git cannot obtain the exact current-main snapshot, use the canonical connector/API fallback; Git metadata is not required to execute deterministic planner Python. Use `profile=daily` from the live `planning.planner_contract` output.
+Repository code/configuration at current `main` is authoritative. For ChatGPT/Work, use the canonical shared connector-first bootstrap in `docs/private/PLANNER_PROMPT.md`: resolve current `main` through the authorized GitHub connector/API, freeze the exact `rules_source_sha`, materialize and verify the exact-SHA manifest/files, then execute planner Python. Do not attempt shell Git before connector/API acquisition and do not require `.git`. Use `profile=daily` from the live `planning.planner_contract` output.
 
 For any background-specific or replenishment-continuation conflict with older profile-rule wording, the live planner contract, `docs/private/PLANNER_PROMPT.md` and `docs/background-media-strategy.md` supersede legacy wording; non-background Daily rules remain mandatory.
 
-### Connector materialization completion gate
+### Shared materialization completion gate
 
-If connector/API fallback is selected, follow the shared **Connector materialization completion gate** in `docs/private/PLANNER_PROMPT.md` before any planner checkpoint. Materialize the exact-SHA `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` and every manifest-required file, write the connector-returned per-file source/blob evidence, and run `planning.materialization_verify --profile daily`. Do not return merely because materialization work has not yet been performed. `MATERIALIZATION_BLOCKED` is valid only for a named exact-SHA fetch/reconstruction/write failure or verifier `FAIL`, with the exact path/operation and error reported.
+Do not duplicate or replace bootstrap logic in this profile. Execute the shared **canonical ChatGPT/Work materialization completion gate** in `docs/private/PLANNER_PROMPT.md` before any planner checkpoint. `MATERIALIZATION_BLOCKED` is valid only under the shared named connector/API failure or verifier-`FAIL` conditions; Git/DNS/checkout failures are not valid ChatGPT/Work blockers.
 
 ## Mandatory checkpoints
 
@@ -55,17 +55,16 @@ New candidates must use the current schema and `concatenated_fit_to_short` backg
 - Old pre-reset backgrounds were deleted; do not reference, recreate or assume hidden legacy IDs.
 - Avoid repeated assets, exact sequences, categories and substantially overlapping temporal ranges using verified private receipt history.
 
-After authoring/final-ranking the complete Daily pool, run:
+After authoring/final-ranking the complete Daily pool, run the canonical ChatGPT/Work connector-mode precommit exactly as inherited from the shared contract:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --profile daily \
   --pool /tmp/wacky-daily-pool.json \
-  --rules-source-sha <rules_source_sha> \
-  --verify-git-head
+  --rules-source-sha <rules_source_sha>
 ```
 
-In connector/API fallback omit `--verify-git-head`. The gate requires **all 36 candidates PASS** before immutable commit. The compatibility wrapper `planning.daily_precommit` remains available for existing callers but contains no independent validation logic.
+The command above is the canonical ChatGPT/Work precommit. Its source-integrity proof is the shared connector materialization evidence plus `planning.materialization_verify PASS`; any separate real-Git checkout verification mode is documented only in the shared contract. The gate requires **all 36 candidates PASS** before immutable commit. The compatibility wrapper `planning.daily_precommit` remains available for existing callers but contains no independent validation logic.
 
 The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion or GitHub Actions are not substitutes for planner-time pre-commit.
 

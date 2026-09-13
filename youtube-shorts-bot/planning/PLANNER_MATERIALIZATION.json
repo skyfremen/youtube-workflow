@@ -1,19 +1,22 @@
 {
   "schema_version": 7,
-  "contract": "git_first_shared_planner_materialization",
+  "contract": "connector_first_shared_planner_materialization",
   "materialization_mode": "shared_plus_selected_profile",
   "planner_bootstrap": {
-    "preferred": "git",
-    "fallback": "connector_materialization",
+    "preferred": "connector_materialization",
+    "fallback": "none",
+    "chatgpt_work_source": "authorized_github_connector_api",
     "github_actions_planning": false,
     "exact_sha_required": true,
-    "reuse_existing_clone_when_available": true,
+    "shell_git_attempted_in_chatgpt_work": false,
     "persistence_is_correctness_dependency": false,
-    "fallback_if_git_unavailable": true
+    "fallback_if_connector_unavailable": false
   },
   "git_checkout": {
     "allowed": true,
-    "preferred": true,
+    "preferred": false,
+    "chatgpt_work_allowed": false,
+    "scope": "developer_ci_or_other_real_checkout_contexts_only",
     "repository": "skyfremen/youtube-workflow",
     "main_ref": "origin/main",
     "fetch_command": "git fetch origin main --prune",
@@ -22,10 +25,10 @@
     "worktree_command": "git worktree add --detach <temporary-planner-path> <rules_source_sha>",
     "verify_sha_command": "git rev-parse HEAD",
     "dirty_guard_command": "git status --porcelain",
-    "reuse_rule": "Reuse an existing authorized local repository when available; otherwise obtain a fresh Git repository. Always fetch current main before resolving rules_source_sha.",
-    "cleanliness_rule": "Planner Python must execute from a clean detached snapshot whose HEAD exactly equals rules_source_sha. Unrelated uncommitted changes in another worktree must not contaminate the planner snapshot.",
-    "authentication_rule": "Use environment-provided Git authorization when available. Authentication failure selects connector_materialization fallback rather than stale local source.",
-    "failure_rule": "If current main cannot be fetched or the exact resolved commit cannot be checked out and verified, use connector_materialization fallback. Never plan from stale Git state."
+    "reuse_rule": "Real Git checkout mode is retained only for developer/CI contexts that genuinely operate from Git metadata. It is not attempted by ChatGPT/Work planner execution.",
+    "cleanliness_rule": "When real Git checkout mode is explicitly used outside ChatGPT/Work, planner Python must execute from a clean detached snapshot whose HEAD exactly equals rules_source_sha.",
+    "authentication_rule": "Developer/CI Git mode uses that environment's Git authorization. ChatGPT/Work never tests or repairs Git authentication before connector acquisition.",
+    "failure_rule": "A Git checkout failure outside ChatGPT/Work is local to that execution context. It must not be emitted as a ChatGPT/Work planner bootstrap failure."
   },
   "git_required": false,
   "git_executable_required": false,
@@ -36,12 +39,12 @@
   "connector_filesystem_mount_required": false,
   "repository_identity": {
     "field": "rules_source_sha",
-    "source": "Exact current-main commit SHA resolved by preferred Git fetch/rev-parse or by GitHub API/connector fallback"
+    "source": "Exact current-main commit SHA returned by the authorized GitHub connector/API for ChatGPT/Work"
   },
   "connector_materialization": {
-    "role": "fallback_when_git_is_unavailable_or_cannot_access_the_exact_current_main_snapshot",
+    "role": "canonical_chatgpt_work_repository_source_acquisition",
     "manifest_path": "youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json",
-    "source_bytes": "The complete decoded UTF-8 content returned by GitHub fetch_file/API responses for the exact requested path and rules_source_sha is the canonical file content.",
+    "source_bytes": "The complete decoded UTF-8 content returned by GitHub connector/API responses for the exact requested path and rules_source_sha is the canonical file content.",
     "preferred_fetch": "Fetch the complete file in one response when possible.",
     "chunked_fetch_fallback": {
       "enabled": true,
@@ -57,10 +60,10 @@
     "blob_verification": {
       "required_for_chunked_files": true,
       "recommended_for_all_files": true,
-      "expected_sha_source": "GitHub connector fetch_file blob sha for the exact path/ref",
+      "expected_sha_source": "GitHub connector/API blob identity for the exact path/ref",
       "algorithm": "sha1(b'blob ' + ascii_decimal_byte_length + b'\\0' + content_bytes)",
       "git_executable_required": false,
-      "failure_rule": "Fail closed if reconstructed bytes do not match the connector-returned Git blob SHA."
+      "failure_rule": "Fail closed if reconstructed bytes do not match the connector-returned Git blob SHA/equivalent canonical blob identity."
     },
     "evidence_file": {
       "schema_version": 1,
@@ -71,7 +74,7 @@
         "rules_source_sha",
         "blob_sha"
       ],
-      "rule": "Record the connector-returned exact rules_source_sha and Git blob SHA for every required materialized file, including PLANNER_MATERIALIZATION.json itself. This evidence is generated during connector acquisition; do not invent or infer SHAs."
+      "rule": "Record the connector-returned exact rules_source_sha and Git blob SHA/equivalent canonical blob identity for every required materialized file, including PLANNER_MATERIALIZATION.json itself. This evidence is generated during connector acquisition; do not invent or infer SHAs."
     },
     "critical_imports": [
       "planning.planner_contract",
@@ -84,12 +87,12 @@
       "materialize_manifest_itself": true,
       "materialize_all_required_files_before_return": true,
       "entrypoint": "python -m planning.materialization_verify --profile <daily|adhoc> --root <temporary-planner-path> --rules-source-sha <sha> --evidence <materialization-evidence.json>",
-      "pass_rule": "Connector fallback is complete only when materialization_verify returns status=PASS. Continue immediately to planner_contract and media_readiness after PASS.",
+      "pass_rule": "Canonical ChatGPT/Work materialization is complete only when materialization_verify returns status=PASS. Continue immediately to planner_contract and media_readiness after PASS.",
       "early_return_rule": "Do not return merely because connector files are not yet materialized. Materialization is work the current planner invocation must perform when connector/API access and local file execution are available.",
       "blocked_status": "MATERIALIZATION_BLOCKED",
-      "blocked_status_rule": "MATERIALIZATION_BLOCKED is legal only after a named exact-SHA connector fetch/reconstruction/write fails, or materialization_verify returns FAIL. Report the exact path/operation and verifier error code; generic statements such as 'could not complete materialization' are prohibited."
+      "blocked_status_rule": "MATERIALIZATION_BLOCKED is legal only after a named exact-SHA connector fetch/reconstruction/write fails, connector evidence is invalid, or materialization_verify returns FAIL. Report the exact path/operation and verifier error code; Git/DNS/checkout failures are not valid ChatGPT/Work materialization blockers."
     },
-    "write_rule": "ChatGPT/Work creates parent directories and writes verified connector-returned content directly to ordinary local files at repository-relative paths under a temporary materialization root.",
+    "write_rule": "ChatGPT/Work creates parent directories and writes verified connector-returned content directly to ordinary local files at repository-relative paths under a temporary materialization root. No .git metadata is required.",
     "failure_rule": "Fail closed when a required exact-SHA source range cannot be fetched, reconstructed bytes fail blob verification, bytes cannot be written, materialization_verify returns FAIL, or a required canonical Python entrypoint fails after writing."
   },
   "pythonpath_root": "youtube-shorts-bot",
@@ -129,20 +132,20 @@
       "profile_object": "planning.planner_profiles.ADHOC"
     }
   },
-  "source_rule": "Preferred Git mode reads all repository-owned planner state directly from one clean detached checkout at rules_source_sha. Connector fallback materializes PLANNER_MATERIALIZATION.json itself, shared_required_python_files and shared_required_data_files plus only the selected profile additions from the exact rules_source_sha, records connector-returned per-file evidence, and must pass planning.materialization_verify before planner checkpoints. No production promotion or publishing module is required merely to execute planner-time Python.",
+  "source_rule": "For ChatGPT/Work, resolve current main through the authorized GitHub connector/API, materialize PLANNER_MATERIALIZATION.json itself plus shared_required_python_files and shared_required_data_files and only the selected profile additions from one exact rules_source_sha, record connector-returned per-file evidence, and pass planning.materialization_verify before planner checkpoints. Never attempt shell Git first. No production promotion or publishing module is required merely to execute planner-time Python.",
   "immutable_cache": {
     "enabled_when_environment_supports_reuse": true,
     "correctness_dependency": false,
     "primary_key": "rules_source_sha",
-    "shared_cache_scope": "Reusable Git object database/clone in Git mode; shared_required_python_files + shared_required_data_files in connector fallback",
+    "shared_cache_scope": "blob-verified shared_required_python_files + shared_required_data_files for the identical connector-resolved SHA",
     "profile_cache_scope": "selected profile additions",
     "cross_profile_shared_reuse": true,
-    "validation_rule": "Git reuse must fetch current main and create/verify a clean detached exact-SHA snapshot. Connector reuse is valid only when previously verified Git blob SHAs belong to the identical rules_source_sha manifest entry.",
-    "sha_change_rule": "A newer current-main SHA must be classified by planner-relevant drift before reusing prior planning work. Never silently execute planner Python from stale source bytes."
+    "validation_rule": "ChatGPT/Work cache reuse is valid only when previously verified connector blob identities belong to the identical rules_source_sha manifest entry. Developer/CI real-Git reuse is a separate execution mode.",
+    "sha_change_rule": "A newer connector-returned current-main SHA must be classified by planner-relevant drift before reusing prior planning work. Never silently execute planner Python from stale source bytes."
   },
   "planner_state_placeholders": {
-    "scope": "connector_materialization_only",
-    "rule": "For explicit existence/uniqueness checks in connector fallback, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks. Git mode reads the real exact-SHA repository state directly.",
+    "scope": "chatgpt_work_connector_materialization",
+    "rule": "For explicit existence/uniqueness checks in ChatGPT/Work connector mode, materialize zero-byte placeholder files for matching canonical repository paths when only path existence is required. Their contents are not read by those checks. Real Git checkout mode outside ChatGPT/Work may read repository state directly.",
     "adhoc_scheduled_uniqueness": [
       "youtube-shorts-bot/content/requests/wd-<YYYYMMDD>T010000-adhoc-*.json"
     ],
@@ -156,14 +159,16 @@
     "contract": "python -m planning.planner_contract",
     "media_readiness": "python -m media.media_readiness audit --allow-not-ready",
     "precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha>",
+    "connector_drift": "python -m planning.planner_drift --base-sha <rules_source_sha> --connector-current-main-sha <latest_main_sha> [--changed-path <path> ...]",
     "git_precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha> --verify-git-head",
     "git_drift": "python -m planning.planner_drift --base-sha <rules_source_sha> --head-sha <latest_main_sha>"
   },
   "drift_policy": {
-    "git_classifier": "planning.planner_drift",
+    "classifier": "planning.planner_drift",
+    "chatgpt_work_detection": "Re-query current main through the authorized GitHub connector/API immediately before immutable commit and compare that SHA with rules_source_sha. No shell Git network command is used.",
     "unknown_path_rule": "full_refresh",
     "categories": {
-      "rules": "refresh source snapshot; rerun planner contract, media readiness and complete precommit",
+      "rules": "refresh source snapshot; rerun materialization verification, planner contract, media readiness and complete precommit",
       "media": "refresh media state; rerun media readiness, background selection validation and complete precommit",
       "history": "refresh creative/history inputs; rerun duplicate, analytics and recent-background reasoning; rerun complete precommit whenever authored pool bytes change",
       "operational": "do not restart planning solely for operational evidence/recovery/completion changes"
@@ -173,15 +178,14 @@
       "media_state_digest",
       "creative_history_digest"
     ],
-    "connector_fallback_rule": "If main changes and connector/API tooling cannot provide the changed path set safely, conservatively perform a full refresh. If changed paths are available, apply the same category policy."
+    "connector_rule": "If connector/API current-main SHA changes, obtain exact-SHA state and connector/API changed-path evidence when available, then apply the same planning.planner_drift category policy. If a trustworthy changed-path set is unavailable, conservatively perform a full refresh."
   },
   "performance_diagnostics": {
     "persistence": "report_only_unless_a_caller_explicitly_persists_diagnostics",
     "fields": [
       "materialization_mode",
-      "git_reused",
       "bootstrap_ms",
-      "git_fetch_ms",
+      "connector_resolve_ms",
       "materialization_ms",
       "contract_ms",
       "media_readiness_ms",
@@ -189,7 +193,11 @@
       "precommit_ms",
       "commit_ms"
     ],
-    "rule": "Measure with a monotonic clock around actual work. Diagnostics are observability only and must not influence creative ranking or validation."
+    "developer_git_fields": [
+      "git_reused",
+      "git_fetch_ms"
+    ],
+    "rule": "Measure with a monotonic clock around actual work. Diagnostics are observability only and must not influence creative ranking or validation. Git-specific fields apply only to explicit developer/CI real-Git mode."
   },
   "compatibility_wrappers_not_required_for_materialization": {
     "daily": "python -m planning.daily_precommit --pool <pool> --rules-source-sha <sha>",
@@ -197,9 +205,9 @@
   },
   "baseline": {
     "previous_schema_version": 6,
-    "connector_fallback_shared_python_files": 19,
-    "connector_fallback_shared_data_files": 1,
-    "optimization": "Git-first exact repository snapshots avoid repeated per-file connector reconstruction when Git access is available; connector materialization remains the correctness-preserving fallback."
+    "connector_materialization_shared_python_files": 19,
+    "connector_materialization_shared_data_files": 1,
+    "optimization": "Connector/API exact-SHA materialization is canonical for ChatGPT/Work. Reuse verified bytes only for the identical SHA; real Git checkout optimization is restricted to developer/CI contexts."
   },
   "forbidden_bootstrap_requirements": [
     "GitHub Actions planner execution",
@@ -207,7 +215,16 @@
     "fake repository identity",
     "running planner Python from an unpinned mutable checkout",
     "silently mixing source/state files from different commits",
-    "using stale cached source after current-main fetch failure",
+    "using stale cached source after current-main connector resolution changes",
+    "ChatGPT/Work git fetch before connector/API acquisition",
+    "ChatGPT/Work git clone before connector/API acquisition",
+    "ChatGPT/Work git pull before connector/API acquisition",
+    "ChatGPT/Work git ls-remote before connector/API acquisition",
+    "ChatGPT/Work git rev-parse origin/main before connector/API acquisition",
+    "ChatGPT/Work Git worktree creation",
+    "ChatGPT/Work github.com DNS/proxy/network repair",
+    "requiring .git metadata for ChatGPT/Work",
+    "returning a Git/DNS/checkout failure before connector/API materialization",
     "returning early merely because connector materialization work has not yet been performed",
     "generic MATERIALIZATION_BLOCKED without an exact failed path/operation or verifier error",
     "bypassing canonical local planner validation"

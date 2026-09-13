@@ -4,8 +4,13 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from planning import planner_drift
+
+
+BASE_SHA = "1" * 40
+HEAD_SHA = "2" * 40
 
 
 def _git(cwd, *args):
@@ -91,6 +96,46 @@ class PlannerDriftTests(unittest.TestCase):
             ["./.state/observations/latest.json"]
         )
         self.assertEqual(result["refresh"], "operational_only")
+
+    def test_connector_same_sha_needs_no_refresh_and_never_invokes_git(self):
+        with mock.patch.object(
+            planner_drift,
+            "_git",
+            side_effect=AssertionError("connector mode must not invoke Git"),
+        ):
+            result = planner_drift.classify_connector_transition(BASE_SHA, BASE_SHA)
+        self.assertFalse(result["main_changed"])
+        self.assertEqual(result["refresh"], "none")
+        self.assertEqual(result["source"], "connector_sha_compare")
+        self.assertEqual(result["changed_path_source"], "not_required")
+
+    def test_connector_sha_change_uses_connector_paths_without_git(self):
+        with mock.patch.object(
+            planner_drift,
+            "_git",
+            side_effect=AssertionError("connector mode must not invoke Git"),
+        ):
+            result = planner_drift.classify_connector_transition(
+                BASE_SHA,
+                HEAD_SHA,
+                ["youtube-shorts-bot/media-library/backgrounds.json"],
+            )
+        self.assertTrue(result["main_changed"])
+        self.assertEqual(result["refresh"], "media_refresh")
+        self.assertEqual(result["changed_path_source"], "connector_compare")
+
+    def test_connector_sha_change_without_path_evidence_full_refreshes_without_git(self):
+        with mock.patch.object(
+            planner_drift,
+            "_git",
+            side_effect=AssertionError("connector mode must not invoke Git"),
+        ):
+            result = planner_drift.classify_connector_transition(BASE_SHA, HEAD_SHA)
+        self.assertTrue(result["main_changed"])
+        self.assertEqual(result["refresh"], "full_refresh")
+        self.assertEqual(
+            result["changed_path_source"], "unavailable_full_refresh"
+        )
 
     @unittest.skipUnless(shutil.which("git"), "git is not installed")
     def test_git_compare_ignores_operational_only_head_movement(self):

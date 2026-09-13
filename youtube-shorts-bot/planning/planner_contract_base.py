@@ -140,13 +140,16 @@ def build_contract():
         "daily_publication_template": DAILY_PUBLICATION,
         "materialization": _materialization_summary(),
         "execution_environment": {
-            "canonical_mode": "explicit_rules_source_sha",
-            "preferred_bootstrap": "git",
-            "fallback_bootstrap": "connector_materialization",
+            "canonical_mode": "connector_exact_sha_materialization",
+            "preferred_bootstrap": "connector_materialization",
+            "fallback_bootstrap": "none",
+            "chatgpt_work_repository_source": "authorized_github_connector_api",
             "materialization_manifest": "planning/PLANNER_MATERIALIZATION.json",
             "materialization_mode": "shared_plus_selected_profile",
-            "git_preferred": True,
-            "git_reuse_preferred": True,
+            "git_preferred": False,
+            "git_reuse_preferred": False,
+            "chatgpt_work_shell_git_allowed": False,
+            "developer_git_checkout_supported": True,
             "exact_detached_snapshot_required_in_git_mode": True,
             "authenticated_checkout_required": False,
             "git_metadata_required": False,
@@ -155,7 +158,7 @@ def build_contract():
             "connector_filesystem_mount_required": False,
             "special_connector_materialization_bridge_required": False,
             "github_actions_planner_execution_required": False,
-            "repository_identity_source": "explicit_rules_source_sha",
+            "repository_identity_source": "connector_resolved_current_main_sha",
             "canonical_precommit_command": (
                 "python -m planning.planner_precommit --profile <daily|adhoc> "
                 "--pool <pool> --rules-source-sha <sha>"
@@ -165,6 +168,11 @@ def build_contract():
                 "--pool <pool> --rules-source-sha <sha> --verify-git-head"
             ),
             "drift_command": (
+                "python -m planning.planner_drift --base-sha <rules_source_sha> "
+                "--connector-current-main-sha <latest_main_sha> "
+                "[--changed-path <path> ...]"
+            ),
+            "developer_git_drift_command": (
                 "python -m planning.planner_drift "
                 "--base-sha <rules_source_sha> --head-sha <latest_main_sha>"
             ),
@@ -176,12 +184,12 @@ def build_contract():
                 "optional": True,
                 "correctness_dependency": False,
                 "primary_key": "rules_source_sha",
-                "git_reuse_rule": (
-                    "reuse the authorized local Git object database/clone, "
-                    "but fetch current main and create a clean exact-SHA detached snapshot"
-                ),
                 "connector_reuse_rule": (
                     "reuse only previously blob-verified files for the identical immutable SHA"
+                ),
+                "developer_git_reuse_rule": (
+                    "real Git checkout reuse is allowed only outside ChatGPT/Work and must "
+                    "verify the exact intended commit"
                 ),
                 "cross_profile_shared_reuse": True,
             },
@@ -194,9 +202,8 @@ def build_contract():
             },
             "performance_diagnostics": [
                 "materialization_mode",
-                "git_reused",
                 "bootstrap_ms",
-                "git_fetch_ms",
+                "connector_resolve_ms",
                 "materialization_ms",
                 "contract_ms",
                 "media_readiness_ms",
@@ -205,14 +212,14 @@ def build_contract():
                 "commit_ms",
             ],
             "rules": [
-                "Prefer an authorized reusable Git repository and fetch current main before planning.",
-                "Resolve one exact immutable current-main SHA and use it as explicit rules_source_sha.",
-                "In Git mode run planner Python only from a clean detached snapshot whose HEAD equals rules_source_sha.",
-                "If Git cannot obtain the exact current-main snapshot, use the exact-SHA connector materialization fallback.",
-                "Pass rules_source_sha explicitly to the shared precommit engine; in Git mode also use --verify-git-head.",
+                "For ChatGPT/Work, begin directly with the authorized GitHub connector/API; shell Git access to github.com is neither attempted nor required.",
+                "Resolve one exact immutable current-main SHA through the connector/API and use it as explicit rules_source_sha.",
+                "Materialize the exact manifest and every required file from that same SHA, record connector-returned source/blob evidence, and require planning.materialization_verify PASS.",
+                "Pass rules_source_sha explicitly to the shared precommit engine without --verify-git-head in connector-materialized ChatGPT/Work execution.",
                 "Never manufacture synthetic Git metadata or a fake HEAD for connector-materialized source.",
+                "Real Git checkout verification remains available only for developer/CI contexts that genuinely use Git metadata.",
                 "GitHub Actions must not execute creative planning.",
-                "If main advances before immutable commit, classify planner-relevant drift and refresh only the affected planner state; unknown drift fails safe as a full refresh.",
+                "Before immutable commit, re-query current main through the connector/API; if it advanced, apply planning.planner_drift with connector-supplied changed paths or conservatively full-refresh when path evidence is unavailable.",
             ],
         },
         "media_readiness": {
