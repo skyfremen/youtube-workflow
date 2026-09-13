@@ -302,13 +302,23 @@ jobs:
           assert 'content/background-sourcing/readiness/*.json' in maintenance
           assert 'FAIL CLOSED if the exact precommit module cannot execute' in shared_prompt
           assert 'GitHub Actions planner execution remains prohibited' in shared_prompt
+          assert 'authorized GitHub connector/API is the canonical repository source-acquisition mechanism' in shared_prompt
+          assert 'Shell Git access to github.com is neither attempted nor required' in shared_prompt
           for prompt in (adhoc_prompt, daily_prompt):
               assert 'docs/private/PLANNER_PROMPT.md' in prompt
-              assert 'Git-first exact detached snapshot' in prompt
-              assert 'connector/API fallback' in prompt
-              assert '--verify-git-head' in prompt
+              assert 'canonical shared connector-first bootstrap' in prompt
+              assert 'Shared materialization completion gate' in prompt
+              assert '--verify-git-head' not in prompt
               assert 'not substitutes for planner-time pre-commit' in prompt
-          print('Dry-run isolation, Git-first planner bootstrap with connector fallback, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
+              for forbidden in (
+                  'git fetch origin main',
+                  'git clone',
+                  'git ls-remote',
+                  'git rev-parse origin/main',
+                  'git worktree',
+              ):
+                  assert forbidden not in prompt
+          print('Dry-run isolation, connector-first ChatGPT/Work planner bootstrap, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
