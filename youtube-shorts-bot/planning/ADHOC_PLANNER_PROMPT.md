@@ -43,7 +43,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
 
 The gate requires **all five candidates PASS** before immutable pool commit. `planning.adhoc_precommit` remains only a backward-compatible wrapper.
 
-**FAIL CLOSED if the exact precommit module cannot execute.** Manual checks, downstream pool admission, ranked promotion or GitHub Actions are not substitutes.
+**FAIL CLOSED if the exact precommit module cannot execute.** Manual checks, downstream pool admission, ranked promotion or GitHub Actions are not substitutes for planner-time pre-commit.
 
 For `manual_on_demand`, multiple same-date manual runs remain allowed under distinct stable immutable invocation identities. Existing `scheduled_daily` state is not a reuse/stop condition for a distinct manual invocation. Scheduled-daily uniqueness remains fail closed.
 

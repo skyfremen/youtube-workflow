@@ -43,7 +43,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
 
 The gate requires **all 36 candidates PASS** before immutable pool commit. `planning.daily_precommit` remains only a backward-compatible wrapper.
 
-**FAIL CLOSED if the exact precommit module cannot execute.** Manual checks, downstream pool admission, ranked promotion or GitHub Actions are not substitutes.
+**FAIL CLOSED if the exact precommit module cannot execute.** Manual checks, downstream pool admission, ranked promotion or GitHub Actions are not substitutes for planner-time pre-commit.
 
 Before immutable commit, apply the shared planner-relevant drift policy from `docs/private/PLANNER_PROMPT.md`; do not restart the whole planner merely because operational-only commits advanced `main`. The final immutable pool bytes must exactly match the successful `draft_sha256`.
 
