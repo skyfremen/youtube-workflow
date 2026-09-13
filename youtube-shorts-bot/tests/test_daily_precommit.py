@@ -8,6 +8,7 @@ from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIM
 from planning import daily_precommit, ranked_promotion
 from planning.planner_contract import DAILY_PUBLICATION, build_contract
 from planning.planning_config import TITLE_WEIGHTS
+from validation.validate_content import SCHEMA_VERSION
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
@@ -22,14 +23,19 @@ RULES_SHA = "1" * 40
 PLAN_DATE = "2099-01-01"
 
 
-def _upgrade_request_v6(request):
-    request["schema_version"] = 6
-    for slot in ("primary", "backup"):
-        request["visual"][f"background_{slot}_treatment"] = {
-            "mode": "fit_to_short",
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": 300.0,
-        }
+def _upgrade_request_v7(request):
+    request["schema_version"] = SCHEMA_VERSION
+    request["visual"] = {
+        "background_mode": "concatenated_fit_to_short",
+        "background_primary_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (1, 2, 3)
+        ],
+        "background_backup_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (4, 5, 6)
+        ],
+    }
 
 
 def valid_pool():
@@ -41,7 +47,7 @@ def valid_pool():
         request["content_id"] = f"wd-20990101T000000-daily-c{index:05d}"
         request["publication"] = copy.deepcopy(DAILY_PUBLICATION)
         request["planning"]["plan_date"] = PLAN_DATE
-        _upgrade_request_v6(request)
+        _upgrade_request_v7(request)
         ranked.append({
             "rank": index,
             "candidate_id": f"daily-c{index:02d}",
@@ -95,12 +101,13 @@ def _ready_asset(asset_id, category, counter):
 def ready_registry():
     assets = []
     counter = 0
+    fixture_ids = [f"satisfying-{index:03d}" for index in range(1, 7)]
     for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
         for _ in range(minimum):
             counter += 1
             asset_id = (
-                "satisfying-001" if counter == 1
-                else "satisfying-002" if counter == 2
+                fixture_ids[counter - 1]
+                if counter <= len(fixture_ids)
                 else f"test-ready-{counter:03d}"
             )
             assets.append(_ready_asset(asset_id, category, counter))
@@ -131,7 +138,7 @@ class DailyPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["daily_normal_target"], ranked_promotion.NORMAL_DAILY_TARGET)
         self.assertEqual(contract["daily_publication_template"], DAILY_PUBLICATION)
         self.assertTrue(contract["media_readiness"]["required_before_daily"])
-        self.assertEqual(contract["request_schema_version"], 6)
+        self.assertEqual(contract["request_schema_version"], SCHEMA_VERSION)
 
     def test_known_good_pool_requires_thirty_six_of_thirty_six(self):
         result = validate(valid_pool())
