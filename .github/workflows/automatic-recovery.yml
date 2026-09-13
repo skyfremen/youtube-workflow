@@ -6,13 +6,14 @@ env:
   RECOVERY_STARTUP_GRACE_MINUTES: '25'
   RECOVERY_SCHEDULE_BUFFER_MINUTES: '10'
   RECOVERY_MAX_AUTOMATIC_ATTEMPTS: '3'
-  RECOVERY_BACKOFF_MINUTES: '0,120,240'
+  RECOVERY_BACKOFF_MINUTES: '0,5,120'
 
 on:
   push:
     branches: [main]
     paths:
       - 'youtube-shorts-bot/content/diagnostics/**/*.json'
+      - '.github/workflows/automatic-recovery.yml'
   workflow_run:
     workflows: ['Daily Production', 'Ad-hoc Production']
     types: [completed]
