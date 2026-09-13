@@ -166,10 +166,12 @@ class DailyPrecommitTests(unittest.TestCase):
     def test_daily_prompt_requires_executable_precommit_gate(self):
         prompt = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         self.assertIn("planning.daily_precommit", prompt)
-        self.assertIn("36/36", prompt)
+        self.assertIn("all 36 candidates PASS", prompt)
         self.assertIn("draft_sha256", prompt)
-        self.assertIn("Do not substitute", prompt)
+        self.assertIn("not substitutes for planner-time pre-commit", prompt)
         self.assertIn("media.media_readiness", prompt)
+        self.assertIn("rules_source_sha", prompt)
+        self.assertNotIn("$(git rev-parse HEAD)", prompt)
 
 
 if __name__ == "__main__":
