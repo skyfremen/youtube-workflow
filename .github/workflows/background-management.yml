@@ -23,6 +23,7 @@ on:
       - 'youtube-shorts-bot/media/background_policy.py'
       - 'youtube-shorts-bot/media/continuous_background.py'
       - 'youtube-shorts-bot/media/preview_review_materializer.py'
+      - 'youtube-shorts-bot/docs/background-media-strategy.md'
       - '.github/workflows/background-management.yml'
 
 concurrency:
@@ -97,6 +98,9 @@ jobs:
             fi
           fi
 
+          # Operational/configuration changes are also a safe recovery surface for
+          # review evidence. Re-publish the latest immutable discovery result without
+          # changing provider/editorial state.
           if [ "${action}" = "audit" ]; then
             latest_result="$(find youtube-shorts-bot/content/background-sourcing/discovery-results \
               -maxdepth 1 -type f -name 'dr-*.json' -printf '%f\n' 2>/dev/null | sort | tail -n 1 || true)"
@@ -127,6 +131,24 @@ jobs:
           OUTPUT: ${{ steps.action.outputs.discovery_output }}
         run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
 
+      # Persist provider discovery before review transport. If evidence generation
+      # later fails, a retry can regenerate evidence from this exact immutable result
+      # instead of repeating provider discovery or losing the attempt identity.
+      - name: Commit discovery result
+        if: steps.action.outputs.action == 'discover'
+        shell: bash
+        env:
+          OUTPUT: ${{ steps.action.outputs.discovery_output }}
+        run: |
+          set -euo pipefail
+          test -f "${OUTPUT}"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "${OUTPUT}"
+          git commit -m '[media discovery] add eligible long Pexels candidates'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Materialize exact preview evidence for ChatGPT review
         id: review_evidence
         if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
@@ -139,7 +161,10 @@ jobs:
           rm -rf /tmp/background-review-evidence
           python -m media.preview_review_materializer \
             --discovery-result "${OUTPUT}" \
-            --output-dir /tmp/background-review-evidence
+            --output-dir /tmp/background-review-evidence \
+            --include-motion-evidence \
+            --representative-frames 5 \
+            --motion-sample-seconds 6
 
       - name: Upload exact preview evidence artifact
         if: always() && (steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review')
@@ -149,6 +174,20 @@ jobs:
           path: /tmp/background-review-evidence
           if-no-files-found: warn
           retention-days: 7
+          compression-level: 6
+
+      - name: Report partial discovery review-evidence failure
+        if: steps.action.outputs.action == 'discover' && steps.review_evidence.outcome != 'success'
+        shell: bash
+        run: |
+          echo '::warning::Discovery result was persisted, but review evidence was incomplete. Re-run Background Management with discovery_result set to the immutable result path.'
+
+      - name: Enforce explicit review-evidence regeneration
+        if: steps.action.outputs.action == 'review' && steps.review_evidence.outcome != 'success'
+        shell: bash
+        run: |
+          echo '::error::Exact-source review evidence could not be materialized for this explicit review attempt.'
+          exit 1
 
       - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
@@ -185,18 +224,3 @@ jobs:
       - name: Report expected empty or insufficient state
         if: steps.action.outputs.action != 'replenish'
         run: python -m media.media_readiness audit --allow-not-ready
-
-      - name: Commit discovery result
-        if: steps.action.outputs.action == 'discover'
-        shell: bash
-        env:
-          OUTPUT: ${{ steps.action.outputs.discovery_output }}
-        run: |
-          set -euo pipefail
-          test -f "${OUTPUT}"
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add "${OUTPUT}"
-          git commit -m '[media discovery] add eligible long Pexels candidates'
-          git pull --rebase origin main
-          git push origin HEAD:main
