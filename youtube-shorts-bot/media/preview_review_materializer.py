@@ -10,6 +10,18 @@ The default evidence is the exact provider preview image. When
 representative contact sheet and a short low-resolution motion sample from the
 exact ``preview_video_url`` recorded in the immutable discovery result.
 
+Python HTTP is not a correctness dependency. If another trustworthy transport has
+already downloaded the exact immutable preview bytes, ``--input-dir`` may point at
+those files. Local exact-source files are preferred over network retrieval, using
+this deterministic layout per Pexels provider ID::
+
+    <input-dir>/<provider_asset_id>/preview.jpg
+    <input-dir>/<provider_asset_id>/preview.mp4
+
+The image extension may also be jpeg/png/webp and the video extension may also be
+mov/webm. The immutable discovery-result URL remains the source identity recorded
+in the evidence manifest; local files are only a transport fallback.
+
 Image and video transports are deliberately independent. Failure to acquire the
 preview image must not prevent exact preview-video review, and failure of either
 transport affects only that candidate. A candidate is materialized when at least
@@ -34,6 +46,8 @@ DEFAULT_SAMPLE_SECONDS = 6.0
 DEFAULT_SAMPLE_WIDTH = 480
 FFMPEG_TIMEOUT_SECONDS = 240
 _ALLOWED_PREVIEW_HOST_SUFFIX = ".pexels.com"
+LOCAL_IMAGE_FILENAMES = ("preview.jpg", "preview.jpeg", "preview.png", "preview.webp")
+LOCAL_VIDEO_FILENAMES = ("preview.mp4", "preview.mov", "preview.webm")
 
 
 def _safe_provider_id(value):
@@ -90,6 +104,28 @@ def _file_evidence(path):
     return {"path": str(path), "bytes": total, "sha256": digest.hexdigest()}
 
 
+def _local_transport_file(input_dir, provider_id, filenames):
+    if input_dir is None:
+        return None
+    candidate_dir = Path(input_dir) / _safe_provider_id(provider_id)
+    for filename in filenames:
+        path = candidate_dir / filename
+        if path.is_file():
+            if path.stat().st_size <= 0:
+                raise ValueError(f"local preview evidence is empty: {path}")
+            return path
+    return None
+
+
+def _copy_local_evidence(source, destination):
+    source = Path(source)
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source.resolve() != destination.resolve():
+        shutil.copyfile(source, destination)
+    return _file_evidence(destination)
+
+
 def _positive_float(value, field):
     try:
         number = float(value)
@@ -127,7 +163,13 @@ def _representative_timestamps(duration_seconds, frame_count):
     ]
 
 
-def _materialize_motion_evidence(candidate, destination, frame_count, sample_seconds):
+def _materialize_motion_evidence(
+    candidate,
+    destination,
+    frame_count,
+    sample_seconds,
+    video_input=None,
+):
     video_url = _https_url(candidate.get("preview_video_url"), "preview_video_url")
     duration = _positive_float(candidate.get("duration_seconds"), "duration_seconds")
     fps = _positive_float(candidate.get("preview_video_fps") or 30.0, "preview_video_fps")
@@ -135,6 +177,16 @@ def _materialize_motion_evidence(candidate, destination, frame_count, sample_sec
     frame_indices = sorted({max(0, int(round(timestamp * fps))) for timestamp in timestamps})
     if len(frame_indices) != frame_count:
         raise ValueError("representative frame timestamps did not map to unique frames")
+
+    local_video = Path(video_input) if video_input is not None else None
+    if local_video is not None:
+        source_file = _file_evidence(local_video)
+        ffmpeg_input = str(local_video)
+        transport = "local_file"
+    else:
+        source_file = None
+        ffmpeg_input = video_url
+        transport = "direct_url"
 
     destination.mkdir(parents=True, exist_ok=True)
     select = "+".join(f"eq(n\\,{frame})" for frame in frame_indices)
@@ -148,22 +200,23 @@ def _materialize_motion_evidence(candidate, destination, frame_count, sample_sec
         f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:padding=4:margin=4"
     )
     _run_ffmpeg([
-        "-i", video_url, "-vf", contact_filter, "-frames:v", "1", str(contact_sheet)
+        "-i", ffmpeg_input, "-vf", contact_filter, "-frames:v", "1", str(contact_sheet)
     ])
 
     sample_seconds = min(_positive_float(sample_seconds, "sample_seconds"), duration)
     sample_start = max(0.0, (duration - sample_seconds) / 2.0)
     motion_sample = destination / "motion-sample.mp4"
     _run_ffmpeg([
-        "-ss", f"{sample_start:.3f}", "-i", video_url,
+        "-ss", f"{sample_start:.3f}", "-i", ffmpeg_input,
         "-t", f"{sample_seconds:.3f}", "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
         "-r", "12", "-an", "-c:v", "libx264", "-preset", "veryfast",
         "-crf", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
         str(motion_sample),
     ])
 
-    return {
+    result = {
         "source_url": video_url,
+        "transport": transport,
         "source_duration_seconds": duration,
         "source_fps": fps,
         "representative_timestamps_seconds": timestamps,
@@ -174,6 +227,9 @@ def _materialize_motion_evidence(candidate, destination, frame_count, sample_sec
             "duration_seconds": round(sample_seconds, 3),
         },
     }
+    if local_video is not None:
+        result["source_input"] = source_file
+    return result
 
 
 def materialize(
@@ -182,6 +238,7 @@ def materialize(
     include_motion_evidence=False,
     frame_count=DEFAULT_FRAME_COUNT,
     sample_seconds=DEFAULT_SAMPLE_SECONDS,
+    input_dir=None,
 ):
     data = json.loads(Path(discovery_result).read_text(encoding="utf-8"))
     candidates = data.get("candidates")
@@ -190,11 +247,13 @@ def materialize(
 
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    local_input_root = Path(input_dir) if input_dir is not None else None
     evidence = []
     failures = []
     image_failures = []
     motion_failures = []
     motion_evidence_count = 0
+    local_file_evidence_count = 0
 
     for candidate in candidates:
         provider_id = _safe_provider_id(candidate.get("provider_asset_id"))
@@ -209,9 +268,26 @@ def materialize(
         # here: a broken/blocked still must fall through to motion evidence.
         try:
             image_url = _https_url(candidate.get("preview_image_url"), "preview_image_url")
-            item["image"] = _download(
-                image_url, output / provider_id / "preview.jpg", MAX_IMAGE_BYTES
+            local_image = _local_transport_file(
+                local_input_root,
+                provider_id,
+                LOCAL_IMAGE_FILENAMES,
             )
+            if local_image is not None:
+                item["image"] = _copy_local_evidence(
+                    local_image,
+                    output / provider_id / "preview.jpg",
+                )
+                item["image"]["transport"] = "local_file"
+                item["image"]["source_input_path"] = str(local_image)
+                local_file_evidence_count += 1
+            else:
+                item["image"] = _download(
+                    image_url,
+                    output / provider_id / "preview.jpg",
+                    MAX_IMAGE_BYTES,
+                )
+                item["image"]["transport"] = "direct_url"
             item["image"]["source_url"] = image_url
             image_ok = True
         except Exception as exc:
@@ -220,14 +296,22 @@ def materialize(
 
         if include_motion_evidence:
             try:
+                local_video = _local_transport_file(
+                    local_input_root,
+                    provider_id,
+                    LOCAL_VIDEO_FILENAMES,
+                )
                 item["motion"] = _materialize_motion_evidence(
                     candidate,
                     output / provider_id,
                     frame_count=frame_count,
                     sample_seconds=sample_seconds,
+                    video_input=local_video,
                 )
                 motion_ok = True
                 motion_evidence_count += 1
+                if local_video is not None:
+                    local_file_evidence_count += 1
             except Exception as exc:
                 item["motion_error"] = str(exc)
                 motion_failures.append({"provider_asset_id": provider_id, "error": str(exc)})
@@ -249,12 +333,14 @@ def materialize(
         "schema_version": 2,
         "request_id": data.get("request_id"),
         "discovery_result": str(discovery_result),
+        "input_dir": str(local_input_root) if local_input_root is not None else None,
         "evidence_count": len(evidence),
         "failure_count": len(failures),
         "image_failure_count": len(image_failures),
         "motion_evidence_requested": bool(include_motion_evidence),
         "motion_evidence_count": motion_evidence_count,
         "motion_failure_count": len(motion_failures),
+        "local_file_evidence_count": local_file_evidence_count,
         "representative_frame_count": frame_count if include_motion_evidence else 0,
         "motion_sample_seconds": sample_seconds if include_motion_evidence else 0,
         "evidence": evidence,
@@ -277,11 +363,18 @@ def main():
     parser.add_argument("--discovery-result", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument(
+        "--input-dir",
+        help=(
+            "Optional directory containing exact preview bytes staged by another transport. "
+            "Use <input-dir>/<provider_asset_id>/preview.jpg and/or preview.mp4."
+        ),
+    )
+    parser.add_argument(
         "--include-motion-evidence",
         action="store_true",
         help=(
             "Also derive a representative contact sheet and short compact motion sample "
-            "from each exact preview_video_url."
+            "from each exact preview_video_url or staged preview.mp4."
         ),
     )
     parser.add_argument(
@@ -303,6 +396,7 @@ def main():
         include_motion_evidence=args.include_motion_evidence,
         frame_count=args.representative_frames,
         sample_seconds=args.motion_sample_seconds,
+        input_dir=args.input_dir,
     )
     print(json.dumps(manifest, indent=2))
     if manifest["evidence_count"] == 0:
