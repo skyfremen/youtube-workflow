@@ -8,9 +8,9 @@ from unittest import mock
 from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
 from planning import planner_core, ranked_promotion
 from test_request_schema import valid_request
+from validation import validate_content_v5 as legacy_v5
 from validation.validate_content import (
     validate_background_registry_contract,
-    validate_background_treatment,
     validate_request_data,
 )
 
@@ -194,7 +194,7 @@ class RankedPoolContractTests(unittest.TestCase):
             "segment_duration_seconds": 12.0,
             "playback_rate": float("inf"),
         }
-        errors = validate_background_treatment(treatment)
+        errors = legacy_v5.validate_background_treatment(treatment)
         self.assertGreaterEqual(sum("must be finite" in error for error in errors), 2)
 
     def test_unknown_asset_duration_requires_full_source_treatment(self):

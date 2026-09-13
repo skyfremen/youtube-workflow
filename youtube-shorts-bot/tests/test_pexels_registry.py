@@ -14,7 +14,7 @@ from media import pexels_registry
 class PexelsRegistryTests(unittest.TestCase):
     def video(self):
         return {
-            "id": 424242, "width": 1080, "height": 1920, "duration": 12,
+            "id": 424242, "width": 1080, "height": 1920, "duration": 300,
             "url": "https://www.pexels.com/video/sample-424242/",
             "user": {"name": "Creator"},
             "video_files": [
@@ -29,8 +29,8 @@ class PexelsRegistryTests(unittest.TestCase):
 
     def metadata(self):
         return {
-            "title": "Satisfying fluid loop", "visual_tags": ["fluid", "loop"],
-            "motion_type": "loop", "motion_intensity": "medium",
+            "title": "Satisfying continuous process", "visual_tags": ["fluid", "process"],
+            "motion_type": "continuous_process", "motion_intensity": "medium",
             "loopability_score": 95, "visual_satisfaction_score": 94,
             "caption_readability_score": 92, "verified_preview": True,
         }
@@ -67,6 +67,7 @@ class PexelsRegistryTests(unittest.TestCase):
             stored = json.loads(path.read_text())
             self.assertEqual(added["id"], "satisfying-031")
             self.assertEqual(stored["assets"][-1]["provider_asset_id"], "424242")
+            self.assertEqual(stored["assets"][-1]["duration_seconds"], 300.0)
             self.assertEqual(len(stored["assets"][-1]["renditions"]), 3)
             self.assertTrue(stored["rendition_policy"]["uhd_downloads_allowed_when_required_after_crop"])
 
@@ -103,6 +104,7 @@ class PexelsRegistryTests(unittest.TestCase):
             self.assertEqual(second["already_cached"], ["satisfying-px-424242"])
             self.assertEqual(len(stored["assets"]), 1)
             self.assertEqual(stored["assets"][0]["provider_asset_id"], "424242")
+            self.assertEqual(stored["assets"][0]["duration_seconds"], 300.0)
             self.assertEqual(len(stored["assets"][0]["renditions"]), 3)
             self.assertTrue(stored["rendition_policy"]["uhd_downloads_allowed_when_required_after_crop"])
 

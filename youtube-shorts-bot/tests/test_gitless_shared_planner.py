@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
+
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = BOT_ROOT.parent
@@ -35,6 +37,96 @@ def _run(root, *args):
         capture_output=True,
         check=False,
     )
+
+
+def _upgrade_request_to_v6(request):
+    request = copy.deepcopy(request)
+    request["schema_version"] = 6
+    visual = request["visual"]
+    for slot in ("primary", "backup"):
+        visual[f"background_{slot}_treatment"] = {
+            "mode": "fit_to_short",
+            "segment_start_seconds": 0.0,
+            "segment_duration_seconds": 240.0,
+        }
+    return request
+
+
+def _upgrade_adhoc_pool_to_v6(pool):
+    pool = copy.deepcopy(pool)
+    pool["planning_execution"]["rules_source_sha"] = RULES_SHA
+    for item in pool["ranked_candidates"]:
+        item["request"] = _upgrade_request_to_v6(item["request"])
+    return pool
+
+
+def _ready_asset(asset_id, category, counter):
+    return {
+        "id": asset_id,
+        "type": "video",
+        "title": f"Gitless long-form test asset {counter}",
+        "source": "Pexels",
+        "source_page": f"https://www.pexels.com/video/gitless-{100000 + counter}/",
+        "direct_url": f"https://videos.pexels.com/gitless-{counter:03d}.mp4",
+        "creator": None,
+        "license": "Pexels License",
+        "commercial_use": True,
+        "attribution_required": False,
+        "verified": True,
+        "last_verified_at": "2026-09-13T00:00:00+08:00",
+        "status": "active",
+        "orientation": "vertical",
+        "visual_tags": [category, "continuous", "process"],
+        "motion_type": "continuous_process",
+        "motion_intensity": "high",
+        "visual_satisfaction_score": 100,
+        "loopability_score": 100,
+        "caption_readability_score": 100,
+        "has_embedded_text": False,
+        "has_watermark": False,
+        "retention_category": category,
+        "duration_seconds": 300.0,
+        "renditions": [
+            {
+                "id": f"test-r-{counter:03d}",
+                "width": 1080,
+                "height": 1920,
+                "fps": 30.0,
+                "file_type": "video/mp4",
+                "direct_url": f"https://videos.pexels.com/gitless-{counter:03d}.mp4",
+            }
+        ],
+    }
+
+
+def _ready_registry_for_pool(pool):
+    requested_ids = []
+    for item in pool["ranked_candidates"]:
+        visual = item["request"]["visual"]
+        for slot in ("primary", "backup"):
+            asset_id = visual[f"background_{slot}_id"]
+            if asset_id not in requested_ids:
+                requested_ids.append(asset_id)
+
+    category_plan = []
+    for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
+        category_plan.extend([category] * minimum)
+    while len(category_plan) < MIN_SELECTABLE_ASSETS:
+        category_plan.append("satisfying_process")
+
+    asset_ids = list(requested_ids)
+    counter = 0
+    while len(asset_ids) < MIN_SELECTABLE_ASSETS:
+        counter += 1
+        synthetic = f"satisfying-{500 + counter:03d}"
+        if synthetic not in asset_ids:
+            asset_ids.append(synthetic)
+
+    assets = [
+        _ready_asset(asset_id, category_plan[index], index + 1)
+        for index, asset_id in enumerate(asset_ids[:MIN_SELECTABLE_ASSETS])
+    ]
+    return {"schema_version": 3, "assets": assets}
 
 
 def _daily_pool_from_adhoc(adhoc_pool):
@@ -93,10 +185,18 @@ class GitlessSharedPlannerTests(unittest.TestCase):
                 shutil.copyfile(source, target)
 
             self.assertFalse((root / ".git").exists())
-            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "ranked_promotion.py").exists())
-            self.assertFalse((root / "youtube-shorts-bot" / "publishing" / "upload.py").exists())
-            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "daily_precommit.py").exists())
-            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "adhoc_precommit.py").exists())
+            self.assertFalse(
+                (root / "youtube-shorts-bot" / "planning" / "ranked_promotion.py").exists()
+            )
+            self.assertFalse(
+                (root / "youtube-shorts-bot" / "publishing" / "upload.py").exists()
+            )
+            self.assertFalse(
+                (root / "youtube-shorts-bot" / "planning" / "daily_precommit.py").exists()
+            )
+            self.assertFalse(
+                (root / "youtube-shorts-bot" / "planning" / "adhoc_precommit.py").exists()
+            )
 
             contract = _run(root, "-m", "planning.planner_contract")
             self.assertEqual(contract.returncode, 0, contract.stderr or contract.stdout)
@@ -114,9 +214,28 @@ class GitlessSharedPlannerTests(unittest.TestCase):
                 "--allow-not-ready",
             )
             self.assertEqual(readiness.returncode, 0, readiness.stderr or readiness.stdout)
+            self.assertEqual(json.loads(readiness.stdout)["status"], "REPLENISH")
 
-            adhoc_pool = json.loads(SOURCE_ADHOC_POOL.read_text(encoding="utf-8"))
-            adhoc_pool["planning_execution"]["rules_source_sha"] = RULES_SHA
+            adhoc_pool = _upgrade_adhoc_pool_to_v6(
+                json.loads(SOURCE_ADHOC_POOL.read_text(encoding="utf-8"))
+            )
+            registry_path = root / "youtube-shorts-bot" / "media-library" / "backgrounds.json"
+            registry_path.write_text(
+                json.dumps(_ready_registry_for_pool(adhoc_pool), indent=2, sort_keys=True)
+                + "\n",
+                encoding="utf-8",
+            )
+
+            ready = _run(
+                root,
+                "-m",
+                "media.media_readiness",
+                "audit",
+                "--allow-not-ready",
+            )
+            self.assertEqual(ready.returncode, 0, ready.stderr or ready.stdout)
+            self.assertEqual(json.loads(ready.stdout)["status"], "PASS")
+
             adhoc_path = root / "adhoc-pool.json"
             adhoc_path.write_text(
                 json.dumps(adhoc_pool, indent=2, sort_keys=True) + "\n",

@@ -12,35 +12,32 @@ from media.background_treatment import (
     derive_treatment_history,
     select_background_treatment,
     select_pair_treatments,
-    speed_range,
 )
 from validation.validate_content import validate_request_data
 from test_request_schema import valid_request
 
 
-def asset(asset_id="satisfying-001", *, duration=42.0, category="baking"):
-    item = {
+def asset(asset_id="satisfying-001", *, duration=720.0, category="baking"):
+    return {
         "id": asset_id,
+        "duration_seconds": duration,
         "retention_category": category,
         "motion_intensity": "high",
         "motion_type": "continuous_process",
         "orientation": "vertical",
         "visual_tags": [category],
     }
-    if duration is not None:
-        item["duration_seconds"] = duration
-    return item
 
 
-def receipt(asset_id, start, duration, rate, *, minutes_ago=0, state="verified_scheduled"):
+def receipt(asset_id, start, duration, *, minutes_ago=0, state="verified_scheduled"):
     now = datetime.now(timezone.utc) - timedelta(minutes=minutes_ago)
     result = {
         "content_id": f"wd-{minutes_ago:04d}",
         "background_asset_id": asset_id,
         "background_treatment": {
+            "mode": "fit_to_short",
             "segment_start_seconds": start,
             "segment_duration_seconds": duration,
-            "playback_rate": rate,
         },
         "receipt_created_at": now.isoformat(),
         "verification": {"passed": True},
@@ -62,49 +59,45 @@ def receipt(asset_id, start, duration, rate, *, minutes_ago=0, state="verified_s
 class PrivateTreatmentHistoryTests(unittest.TestCase):
     def test_immediate_public_adhoc_receipt_counts_as_success(self):
         record = receipt(
-            "satisfying-001", 0, 12, 1.4,
+            "satisfying-001", 0, 300,
             state="verified_immediate_public",
         )
         self.assertTrue(is_successful_receipt(record))
         history = derive_treatment_history([record], "satisfying-001")
         self.assertEqual(len(history), 1)
-        self.assertEqual(history[0]["treatment"]["playback_rate"], 1.4)
+        self.assertEqual(history[0]["mode"], "fit_to_short")
+        self.assertEqual(history[0]["segment_duration_seconds"], 300.0)
 
-    def test_long_source_avoids_recent_and_planned_segments(self):
-        source = asset(duration=42.0)
-        receipts = [receipt(source["id"], 0, 12, 1.2, minutes_ago=2)]
+    def test_long_source_avoids_recent_and_planned_ranges(self):
+        source = asset(duration=900.0)
+        receipts = [receipt(source["id"], 0, 300, minutes_ago=2)]
         planned = [{
             "asset_id": source["id"],
             "treatment": {
-                "segment_start_seconds": 12.0,
-                "segment_duration_seconds": 12.0,
-                "playback_rate": 1.35,
+                "mode": "fit_to_short",
+                "segment_start_seconds": 300.0,
+                "segment_duration_seconds": 300.0,
             },
         }]
         chosen = select_background_treatment(source, receipts, planned)
-        self.assertEqual(chosen["segment_start_seconds"], 24.0)
-        self.assertEqual(chosen["segment_duration_seconds"], 12.0)
+        self.assertEqual(chosen["mode"], "fit_to_short")
+        self.assertEqual(chosen["segment_start_seconds"], 600.0)
+        self.assertEqual(chosen["segment_duration_seconds"], 300.0)
+        self.assertNotIn("playback_rate", chosen)
 
-    def test_unknown_duration_stays_full_source_and_backward_compatible(self):
-        chosen = select_background_treatment(asset(duration=None), [], [])
-        self.assertEqual(chosen["segment_start_seconds"], 0.0)
-        self.assertIsNone(chosen["segment_duration_seconds"])
-        self.assertGreaterEqual(chosen["playback_rate"], 1.0)
-        self.assertLessEqual(chosen["playback_rate"], 2.0)
+    def test_insufficient_or_unknown_duration_fails_closed(self):
+        with self.assertRaises(ValueError):
+            select_background_treatment(asset(duration=100.0), [], [])
+        unknown = asset()
+        unknown.pop("duration_seconds")
+        with self.assertRaises(ValueError):
+            select_background_treatment(unknown, [], [])
 
-    def test_speed_ranges_are_category_aware_and_bounded(self):
-        minimum, maximum = speed_range(asset(category="cleaning"))
-        self.assertEqual((minimum, maximum), (1.3, 1.8))
-        source = asset(category="cleaning")
-        source["recommended_speed_min"] = 0.5
-        source["recommended_speed_max"] = 3.0
-        self.assertEqual(speed_range(source), (1.0, 2.0))
-
-    def test_pair_allocator_returns_frozen_primary_and_backup_treatments(self):
+    def test_pair_allocator_returns_continuous_ranges_without_rate(self):
         registry = {
             "assets": [
-                asset("satisfying-001", duration=42, category="baking"),
-                asset("satisfying-002", duration=30, category="pov_movement"),
+                asset("satisfying-001", duration=720, category="baking"),
+                asset("satisfying-002", duration=360, category="pov_movement"),
             ]
         }
         selected = select_pair_treatments(
@@ -117,16 +110,14 @@ class PrivateTreatmentHistoryTests(unittest.TestCase):
             set(selected),
             {"background_primary_treatment", "background_backup_treatment"},
         )
-        self.assertGreaterEqual(
-            selected["background_primary_treatment"]["playback_rate"], 1.2
-        )
-        self.assertLessEqual(
-            selected["background_backup_treatment"]["playback_rate"], 1.35
-        )
+        for treatment in selected.values():
+            self.assertEqual(treatment["mode"], "fit_to_short")
+            self.assertGreaterEqual(treatment["segment_duration_seconds"], 180.0)
+            self.assertNotIn("playback_rate", treatment)
 
 
 class PrivateTreatmentSchemaTests(unittest.TestCase):
-    def test_v5_request_with_frozen_pair_treatments_is_valid(self):
+    def test_v5_request_with_frozen_pair_treatments_remains_valid_for_recovery(self):
         data = copy.deepcopy(valid_request())
         data["schema_version"] = 5
         data["visual"].update({
@@ -145,6 +136,23 @@ class PrivateTreatmentSchemaTests(unittest.TestCase):
 
     def test_v4_request_remains_valid_during_staged_rollout(self):
         self.assertEqual(validate_request_data(valid_request()), [])
+
+    def test_v6_request_freezes_range_not_rate(self):
+        data = copy.deepcopy(valid_request())
+        data["schema_version"] = 6
+        data["visual"].update({
+            "background_primary_treatment": {
+                "mode": "fit_to_short",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 300.0,
+            },
+            "background_backup_treatment": {
+                "mode": "fit_to_short",
+                "segment_start_seconds": 300.0,
+                "segment_duration_seconds": 300.0,
+            },
+        })
+        self.assertEqual(validate_request_data(data), [])
 
 
 if __name__ == "__main__":

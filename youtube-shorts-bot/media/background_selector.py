@@ -1,20 +1,16 @@
-"""Private background selector with canonical successful-receipt semantics.
+"""Private retention-first background selector for new continuous production.
 
-The retention-first ranking implementation is retained in background_selector_base.
-This wrapper fixes production-history classification so current immediate-public
-Ad-hoc receipts contribute to the same private anti-repetition history as scheduled
-successes, excludes recovery-only retired assets from all new planning, and adds
-the one allowed mechanical substitution: a fixed emergency default pair when
-ChatGPT's chosen pair fails audit.
+New planning uses only the active schema-v3 registry and never falls back to
+immortal default IDs. Compatibility callers that pass an unversioned in-memory
+registry retain the established ranking semantics; authoritative active-registry
+selection always enforces continuous-duration eligibility.
 """
-
 from media import background_selector_base as base
-from media.background_selector_base import *  # re-export selector API
+from media.background_selector_base import *  # re-export established selector surface
+from media.continuous_background import continuous_source_eligible
 
-DEFAULT_BACKGROUND_PRIMARY_ID = "satisfying-001"
-DEFAULT_BACKGROUND_BACKUP_ID = "satisfying-002"
-_base_audit_ai_selection = base.audit_ai_selection
 _base_rank_assets = base.rank_assets
+_base_audit_ai_selection = base.audit_ai_selection
 
 
 def is_successful_receipt(record):
@@ -50,14 +46,22 @@ def is_successful_receipt(record):
     return False
 
 
-def _selection_registry(registry):
-    """Return a planning-only view that excludes recovery-only retired assets."""
+def _is_authoritative_active_registry(registry):
+    return isinstance(registry, dict) and registry.get("schema_version") == 3
+
+
+def _continuous_registry(registry):
+    if not _is_authoritative_active_registry(registry):
+        # Preserve the long-established pure ranking helper contract for
+        # unversioned in-memory fixtures/callers. Real planner state is always a
+        # schema-v3 registry and therefore takes the strict branch below.
+        return registry
     return {
         **registry,
         "assets": [
             asset
             for asset in registry.get("assets", [])
-            if asset.get("selection_enabled") is not False
+            if continuous_source_eligible(asset)
         ],
     }
 
@@ -70,7 +74,7 @@ def rank_assets(
     planned_categories=(),
 ):
     return _base_rank_assets(
-        _selection_registry(registry),
+        _continuous_registry(registry),
         requirements,
         receipts,
         planned_asset_ids=planned_asset_ids,
@@ -78,108 +82,43 @@ def rank_assets(
     )
 
 
-def _fallback_asset_audit(registry, asset_id):
-    asset = base.asset_map(registry).get(asset_id)
-    if not asset:
-        return None, f"default background {asset_id} is missing from cache"
-    if asset.get("selection_enabled") is False:
-        return None, f"default background {asset_id} is retired from new selection"
-    if asset.get("status") != "active" or asset.get("verified") is not True:
-        return None, f"default background {asset_id} must be active and verified"
-    if asset.get("commercial_use") is not True:
-        return None, f"default background {asset_id} must allow commercial use"
-    if asset.get("has_watermark") is not False or asset.get("has_embedded_text") is not False:
-        return None, f"default background {asset_id} must be watermark/text free"
-    quality = base.quality_score(asset)
-    if quality < base.MIN_QUALITY_SCORE:
-        return None, f"default background {asset_id} is below the quality floor"
-    if not base._has_production_rendition(asset):
-        return None, f"default background {asset_id} has no qualifying post-crop 1080x1920 rendition"
-    return {
-        **asset,
-        "retention_category": base.retention_category(asset),
-        "semantic_score": None,
-        "quality_score": quality,
-        "retention_score": base.retention_score(asset),
-        "fallback_default": True,
-    }, None
-
-
 def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=None):
-    """Audit ChatGPT's exact pair, falling back only to the fixed safe default pair."""
-    mapping = base.asset_map(registry)
-    retired = [
-        asset_id
-        for asset_id in (primary_id, backup_id)
-        if mapping.get(asset_id, {}).get("selection_enabled") is False
-    ]
-    if retired:
-        requested = {
-            "passed": False,
-            "errors": [
-                "retired backgrounds may not be used for new production: "
-                + ", ".join(retired)
-            ],
-        }
-    else:
-        requested = _base_audit_ai_selection(
-            registry, primary_id, backup_id, receipts, requirements
-        )
-    if requested.get("passed"):
-        return {
-            **requested,
-            "fallback_used": False,
-            "requested_primary_id": primary_id,
-            "requested_backup_id": backup_id,
-            "resolved_primary_id": primary_id,
-            "resolved_backup_id": backup_id,
-            "selection_errors": [],
-        }
-
-    selection_errors = list(requested.get("errors") or [])
-    fallback_errors = []
-    if DEFAULT_BACKGROUND_PRIMARY_ID == DEFAULT_BACKGROUND_BACKUP_ID:
-        fallback_errors.append("default primary and backup background IDs must differ")
-    fallback_primary, error = _fallback_asset_audit(registry, DEFAULT_BACKGROUND_PRIMARY_ID)
-    if error:
-        fallback_errors.append(error)
-    fallback_backup, error = _fallback_asset_audit(registry, DEFAULT_BACKGROUND_BACKUP_ID)
-    if error:
-        fallback_errors.append(error)
-
-    if fallback_errors:
+    if primary_id == backup_id:
         return {
             "passed": False,
-            "errors": selection_errors + fallback_errors,
-            "selection_errors": selection_errors,
-            "fallback_errors": fallback_errors,
+            "errors": ["primary and backup background IDs must differ"],
             "fallback_used": False,
             "requested_primary_id": primary_id,
             "requested_backup_id": backup_id,
             "resolved_primary_id": None,
             "resolved_backup_id": None,
-            "primary": None,
-            "backup": None,
         }
-
+    mapping = base.asset_map(registry)
+    duration_errors = []
+    if _is_authoritative_active_registry(registry):
+        duration_errors = [
+            f"background {asset_id} is not eligible for continuous fit-to-short"
+            for asset_id in (primary_id, backup_id)
+            if asset_id in mapping and not continuous_source_eligible(mapping[asset_id])
+        ]
+    requested = _base_audit_ai_selection(
+        _continuous_registry(registry), primary_id, backup_id, receipts, requirements
+    )
+    errors = [*duration_errors, *(requested.get("errors") or [])]
+    passed = bool(requested.get("passed")) and not duration_errors
     return {
-        "passed": True,
-        "errors": selection_errors,
-        "selection_errors": selection_errors,
-        "fallback_errors": [],
-        "fallback_used": True,
-        "fallback_reason": "ChatGPT-selected background pair failed audit",
+        **requested,
+        "passed": passed,
+        "errors": errors,
+        "selection_errors": errors,
+        "fallback_used": False,
         "requested_primary_id": primary_id,
         "requested_backup_id": backup_id,
-        "resolved_primary_id": DEFAULT_BACKGROUND_PRIMARY_ID,
-        "resolved_backup_id": DEFAULT_BACKGROUND_BACKUP_ID,
-        "primary": fallback_primary,
-        "backup": fallback_backup,
+        "resolved_primary_id": primary_id if passed else None,
+        "resolved_backup_id": backup_id if passed else None,
     }
 
 
-# Existing selector helpers resolve these symbols through their defining module's
-# globals, so update those hooks rather than duplicating ranking/history logic.
 base.is_successful_receipt = is_successful_receipt
 base.audit_ai_selection = audit_ai_selection
 base.rank_assets = rank_assets

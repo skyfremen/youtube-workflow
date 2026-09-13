@@ -9,10 +9,12 @@ on:
     branches: [main]
     paths:
       - 'youtube-shorts-bot/content/background-sourcing/readiness/*.json'
+      - 'youtube-shorts-bot/media-library/backgrounds.json'
       - 'youtube-shorts-bot/media/media_readiness.py'
       - 'youtube-shorts-bot/media/pexels_registry.py'
       - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
       - 'youtube-shorts-bot/media/background_policy.py'
+      - 'youtube-shorts-bot/media/continuous_background.py'
       - '.github/workflows/background-management.yml'
 
 concurrency:
@@ -40,13 +42,9 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
-          action=refresh
+          action=audit
           manifest=''
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            if [[ ! "${BEFORE_SHA}" =~ ^[0-9a-f]{40}$ ]] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
-              echo '::error::Push-triggered background maintenance requires a concrete previous main SHA.'
-              exit 1
-            fi
             changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
             mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
             if [ "${#readiness_files[@]}" -gt 1 ]; then
@@ -61,15 +59,12 @@ jobs:
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
 
-      - name: Require planning-only Pexels API key
-        if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'refresh'
+      - name: Require Pexels API key for replenishment
+        if: steps.action.outputs.action == 'replenish'
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${PEXELS_API_KEY}" ]; then
-            echo '::error::PEXELS_API_KEY is required for background replenishment/refresh.'
-            exit 1
-          fi
+          test -n "${PEXELS_API_KEY}" || { echo '::error::PEXELS_API_KEY is required.'; exit 1; }
 
       - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
@@ -77,21 +72,20 @@ jobs:
           MANIFEST: ${{ steps.action.outputs.manifest }}
         run: python -m media.pexels_resilient_ingest --manifest "${MANIFEST}"
 
-      - name: Refresh exact rendition metadata
-        if: steps.action.outputs.action == 'refresh'
-        run: python youtube-shorts-bot/media/pexels_registry.py enrich-existing --require-any
-
-      - name: Validate registry structure
+      - name: Validate active registry structure
         run: python youtube-shorts-bot/media/validate_media_library.py
 
-      - name: Enforce shared media readiness after replenishment
+      - name: Enforce readiness after replenishment
         if: steps.action.outputs.action == 'replenish'
         run: python -m media.media_readiness audit
 
+      - name: Report expected empty or insufficient state
+        if: steps.action.outputs.action != 'replenish'
+        run: python -m media.media_readiness audit --allow-not-ready
+
       - name: Commit registry maintenance
+        if: steps.action.outputs.action == 'replenish'
         shell: bash
-        env:
-          ACTION: ${{ steps.action.outputs.action }}
         run: |
           set -euo pipefail
           if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
@@ -101,10 +95,6 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add youtube-shorts-bot/media-library/backgrounds.json
-          case "${ACTION}" in
-            replenish) message='[media readiness] replenish background registry' ;;
-            *) message='refresh Pexels background rendition metadata' ;;
-          esac
-          git commit -m "${message}"
+          git commit -m '[media readiness] replenish continuous background registry'
           git pull --rebase origin main
           git push origin HEAD:main

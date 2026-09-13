@@ -4,19 +4,14 @@ This is the canonical **Ad-hoc profile** entry point for the shared Wacky Dramas
 
 Read and follow, in order:
 
-1. `docs/private/PLANNER_PROMPT.md` — canonical shared Git-first/bootstrap/materialization/drift contract.
-2. `planning/ADHOC_PLANNER_RULES.md` — Ad-hoc ranked-pool, identity, immediate-public, promotion and recovery rules.
-3. `planning/STORY_RULES.md` and current shared background/analytics rules referenced by the Ad-hoc rules.
+1. `docs/private/PLANNER_PROMPT.md` — shared bootstrap/materialization/drift contract.
+2. `planning/ADHOC_PLANNER_RULES.md` — Ad-hoc creative/identity/promotion rules.
+3. `planning/STORY_RULES.md`.
+4. `docs/background-media-strategy.md` — canonical shared background policy.
 
-Repository code/configuration at current `main` remains the source of truth. If older Ad-hoc rule text repeats bootstrap/materialization instructions, `docs/private/PLANNER_PROMPT.md` supersedes only those duplicated execution-environment instructions; Ad-hoc business/creative rules remain mandatory.
+Repository code/configuration at current `main` is authoritative. Prefer the shared **Git-first exact detached snapshot**. If Git cannot obtain the exact current-main snapshot, use the canonical **connector/API fallback**; Git metadata is not required to execute deterministic planner Python. Use `profile=adhoc` from the live `planning.planner_contract` output.
 
-Prefer the shared contract's **Git-first exact detached snapshot** and reuse an existing authorized clone when possible. If Git cannot obtain and verify current `main`, use the exact-SHA connector/API fallback in `planning/PLANNER_MATERIALIZATION.json`. GitHub Actions planner execution is prohibited.
-
-## Profile
-
-Use `profile=adhoc` from the live `planning.planner_contract` output.
-
-Daily and Ad-hoc must use the same shared request/schema/semantic/background/media/narration/publication-validation implementation and the same shared-contract fingerprint. Ad-hoc-specific behavior may differ only where the `adhoc` profile declares it.
+For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy schema-v5, `selection_enabled`, emergency-default, short-window, or planner-frozen-playback wording; non-background Ad-hoc rules remain mandatory.
 
 ## Mandatory checkpoints
 
@@ -27,11 +22,31 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_contract
 PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-ready
 ```
 
-Consume the actual live contract, including Ad-hoc pool size, planning modes, identity policy, immediate-public template, content/candidate identity patterns, controlled values and media-readiness thresholds.
+An empty active background registry is a normal `REPLENISH` state, not a terminal failure. If readiness is `REPLENISH`, **automatically complete the canonical replenishment path before candidate finalization**:
 
-If readiness is `REPLENISH`, complete the canonical replenishment path and refresh current `main` before candidate finalization.
+1. consume exact total/category/duration deficits;
+2. discover licensed long continuous Pexels footage;
+3. visually review every proposed source before `verified_preview=true`;
+4. create exactly one immutable readiness manifest;
+5. commit that manifest so Background Management performs official API enrichment/persistence;
+6. refresh current `main`;
+7. rerun contract + readiness;
+8. repeat with a new immutable manifest if deficits remain;
+9. continue Ad-hoc planning only after `PASS`.
 
-After authoring and freezing the complete five-candidate ranked pool, run the shared precommit engine. In Git mode use `--verify-git-head`; in connector fallback omit that flag:
+No separate manual seed/populate step is required.
+
+## Continuous background contract
+
+New candidates must use the current schema and `fit_to_short` background contract exposed by `planning.planner_contract`.
+
+- Freeze distinct primary/backup logical IDs and one long continuous range for each slot.
+- Do **not** freeze playback rate; runtime derives it after actual TTS duration is known.
+- Prefer long continuous retention-first footage; reject normal short-loop footage.
+- Do not use the legacy recovery registry or hard-coded emergency background IDs for new planning.
+- Avoid repeated assets, categories and substantially overlapping temporal ranges using verified private receipt history.
+
+After authoring the complete five-candidate ranked pool, run:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
@@ -41,12 +56,10 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --verify-git-head
 ```
 
-The gate requires **all five candidates PASS** before immutable pool commit. `planning.adhoc_precommit` remains only a backward-compatible wrapper.
+In connector/API fallback omit `--verify-git-head`. The gate requires all five candidates PASS. The compatibility wrapper `planning.adhoc_precommit` remains available for existing callers but contains no independent validation logic.
 
-**FAIL CLOSED if the exact precommit module cannot execute.** Manual checks, downstream pool admission, ranked promotion or GitHub Actions are not substitutes for planner-time pre-commit.
+The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
 
-For `manual_on_demand`, multiple same-date manual runs remain allowed under distinct stable immutable invocation identities. Existing `scheduled_daily` state is not a reuse/stop condition for a distinct manual invocation. Scheduled-daily uniqueness remains fail closed.
+For `manual_on_demand`, distinct same-date invocations may coexist. For `scheduled_daily`, preserve current once-per-date uniqueness. Every promoted Ad-hoc request remains immediate-public according to the live profile contract.
 
-Before immutable commit, apply the shared planner-relevant drift policy from `docs/private/PLANNER_PROMPT.md`; do not restart the whole planner merely because operational-only commits advanced `main`. The final immutable pool bytes must exactly match the successful `draft_sha256`.
-
-ChatGPT/Work remains the creative/editorial owner and freezes rank #1 through #5. Private workflow promotion preserves rank order and selects the first valid candidate mechanically; public runtime executes statelessly.
+ChatGPT/Work remains creative/editorial owner. Private promotion preserves frozen rank order; public runtime executes statelessly.
