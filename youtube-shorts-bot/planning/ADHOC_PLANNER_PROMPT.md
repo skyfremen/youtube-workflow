@@ -9,7 +9,7 @@ Read and follow, in order:
 3. `planning/STORY_RULES.md`.
 4. `docs/background-media-strategy.md` — canonical shared background policy.
 
-Repository code/configuration at current `main` is authoritative. Use `profile=adhoc` from the live `planning.planner_contract` output.
+Repository code/configuration at current `main` is authoritative. Use `profile=adhoc` from the live `planning.planner_contract` output. For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy schema-v5, `selection_enabled`, emergency-default, short-window, or planner-frozen-playback wording; non-background Ad-hoc rules remain mandatory.
 
 ## Mandatory checkpoints
 
