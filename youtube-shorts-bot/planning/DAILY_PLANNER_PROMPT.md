@@ -45,7 +45,7 @@ New candidates must use the current schema and `fit_to_short` background contrac
 - Do **not** freeze playback rate; runtime derives it after actual TTS duration is known.
 - Prefer long continuous cooking/baking/food-prep/satisfying/crafting/cleaning/assembly/POV/city-motion/licensed-gameplay footage.
 - Do not plan normal short-loop footage.
-- Do not use any legacy recovery registry for new planning.
+- Old pre-reset backgrounds were deleted; do not reference, recreate, or assume a hidden legacy background registry.
 - Do not invent emergency default IDs.
 - Avoid repeated assets, categories and substantially overlapping temporal ranges using verified private receipt history.
 
