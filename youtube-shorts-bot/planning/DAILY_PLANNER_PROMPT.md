@@ -25,16 +25,17 @@ PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-
 An empty active background registry is a normal `REPLENISH` state, not a terminal failure. If readiness is `REPLENISH`, **automatically complete the canonical replenishment path before candidate finalization**:
 
 1. consume exact total/category/duration deficits;
-2. discover licensed Pexels footage, prioritizing visually satisfying atomic clips of at least the live minimum duration (currently 60 seconds);
-3. review actual visual preview evidence for every proposed source before `verified_preview=true`, following the live `media_readiness.preview_review` contract and `docs/background-media-strategy.md`; **full-length/end-to-end playback is not required**, but metadata-only review is insufficient; if one candidate has no accessible visual preview evidence, reject that candidate and continue discovery/reserves rather than failing the whole replenishment attempt;
-4. create exactly one immutable readiness manifest;
-5. commit that manifest so Background Management performs official API enrichment/persistence;
-6. refresh current `main`;
-7. rerun contract + readiness;
-8. repeat with a new immutable manifest if deficits remain;
-9. continue Daily planning only after `PASS`.
+2. request deterministic provider discovery by creating exactly one new immutable file under `youtube-shorts-bot/content/background-sourcing/discovery-requests/` with fields `schema_version=1`, current `plan_date`, a unique stable `request_id` matching `dr-[A-Za-z0-9-]{8,96}`, and `max_candidates=48`; commit it with a `[media discovery]` message;
+3. Background Management uses the repository's `media.pexels_discovery` helper and the GitHub-held `PEXELS_API_KEY` only for provider/API discovery. It filters out clips below the live atomic minimum and clips without a production-suitable rendition, then commits the matching immutable result under `youtube-shorts-bot/content/background-sourcing/discovery-results/`. This stage is deterministic eligibility filtering only and must never set `verified_preview=true`, assign final semantic metadata, or make editorial choices;
+4. refresh current `main` and consume the matching discovery result. If the result has not been committed yet, inspect Background Management status and refresh again within the current planning run; never fabricate provider IDs, durations, renditions, or preview URLs;
+5. review actual visual preview evidence from the discovery result for every proposed source before `verified_preview=true`, following the live `media_readiness.preview_review` contract and `docs/background-media-strategy.md`; **full-length/end-to-end playback is not required**, but metadata-only review is insufficient; if one candidate has no accessible visual preview evidence or is visually unsuitable, reject it and continue through the remaining discovery candidates rather than failing the whole replenishment attempt;
+6. create exactly one immutable readiness manifest from visually approved candidates only;
+7. commit that manifest so Background Management performs official API re-enrichment/persistence and reserve fallback;
+8. refresh current `main`;
+9. rerun contract + readiness;
+10. if deficits remain, create a new immutable discovery request/result/review/readiness attempt; continue Daily planning only after `PASS`.
 
-No separate manual seed/populate step is required.
+Do not bypass the discovery result by guessing duration from public search pages. Do not move creative/editorial review into GitHub Actions. No separate manual seed/populate step is required.
 
 ## Sequence background contract
 
