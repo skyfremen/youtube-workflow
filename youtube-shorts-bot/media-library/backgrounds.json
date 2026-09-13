@@ -1735,6 +1735,113 @@
       "duration_seconds": 62.0,
       "renditions_retrieved_at": "2026-09-13T16:22:55.207549+00:00",
       "renditions_source": "Pexels API v1 video_files"
+    },
+    {
+      "id": "satisfying-px-5786587",
+      "type": "video",
+      "title": "Moving highway view from a vehicle",
+      "source": "Pexels",
+      "source_page": "https://www.pexels.com/video/vehicles-moving-on-a-highway-5786587/",
+      "direct_url": "https://www.pexels.com/download/video/5786587/",
+      "provider_asset_id": "5786587",
+      "creator": "Tom Fisk",
+      "license": "Pexels License",
+      "commercial_use": true,
+      "attribution_required": false,
+      "verified": true,
+      "last_verified_at": "2026-09-13T16:26:59.042290+00:00",
+      "status": "active",
+      "orientation": "horizontal",
+      "visual_tags": [
+        "pov",
+        "continuous-motion",
+        "caption-friendly"
+      ],
+      "motion_type": "continuous-pov",
+      "motion_intensity": "high",
+      "loopability_score": 87,
+      "visual_satisfaction_score": 92,
+      "caption_readability_score": 91,
+      "has_embedded_text": false,
+      "has_watermark": false,
+      "content_verified_by": "chatgpt_planner_visual_review",
+      "renditions": [
+        {
+          "id": "9821792",
+          "width": 426,
+          "height": 240,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "sd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-sd_426_240_30fps.mp4",
+          "file_size_bytes": 4532390
+        },
+        {
+          "id": "9821842",
+          "width": 640,
+          "height": 360,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "sd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-sd_640_360_30fps.mp4",
+          "file_size_bytes": 7765735
+        },
+        {
+          "id": "9821765",
+          "width": 960,
+          "height": 540,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "sd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-sd_960_540_30fps.mp4",
+          "file_size_bytes": 21539033
+        },
+        {
+          "id": "9821877",
+          "width": 1280,
+          "height": 720,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "hd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-hd_1280_720_30fps.mp4",
+          "file_size_bytes": 34622694
+        },
+        {
+          "id": "9821817",
+          "width": 1920,
+          "height": 1080,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "hd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-hd_1920_1080_30fps.mp4",
+          "file_size_bytes": 66147693
+        },
+        {
+          "id": "9821747",
+          "width": 2560,
+          "height": 1440,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "uhd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-uhd_2560_1440_30fps.mp4",
+          "file_size_bytes": 154602355
+        },
+        {
+          "id": "9821905",
+          "width": 3840,
+          "height": 2160,
+          "fps": 29.97,
+          "file_type": "video/mp4",
+          "quality": "uhd",
+          "direct_url": "https://videos.pexels.com/video-files/5786587/5786587-uhd_3840_2160_30fps.mp4",
+          "file_size_bytes": 281175541
+        }
+      ],
+      "width": 3840,
+      "height": 2160,
+      "duration_seconds": 91.0,
+      "renditions_retrieved_at": "2026-09-13T16:26:59.042290+00:00",
+      "renditions_source": "Pexels API v1 video_files"
     }
   ],
   "rendition_policy": {
