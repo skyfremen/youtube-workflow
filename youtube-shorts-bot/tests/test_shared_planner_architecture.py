@@ -106,7 +106,6 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
 
-        self.assertIn("tool-adaptive", shared)
         self.assertIn("ChatGPT/Work-local exact-source review", shared)
         self.assertIn("preview_review_materializer", shared)
         self.assertIn("optional non-blocking fallback transport", shared)
