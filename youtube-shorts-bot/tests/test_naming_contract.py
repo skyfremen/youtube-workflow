@@ -9,6 +9,14 @@ PLANNER = BOT_ROOT / "planning"
 ARCH_TERM = "gro" + "wth"
 
 
+def canonical_planner_text(prefix):
+    return (
+        (PLANNER / f"{prefix}_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        + "\n"
+        + (PLANNER / f"{prefix}_PLANNER_RULES.md").read_text(encoding="utf-8")
+    )
+
+
 class ArchitectureContractTests(unittest.TestCase):
     def test_supported_surface_has_required_workflows_and_no_retired_paths(self):
         actual = {path.name for path in WORKFLOWS.glob("*.yml")}
@@ -37,12 +45,15 @@ class ArchitectureContractTests(unittest.TestCase):
             {path.name for path in PLANNER.glob("*.md")},
             {
                 "ADHOC_PLANNER_PROMPT.md",
+                "ADHOC_PLANNER_RULES.md",
                 "DAILY_PLANNER_PROMPT.md",
+                "DAILY_PLANNER_RULES.md",
                 "STORY_RULES.md",
             },
         )
         self.assertFalse((PLANNER / "execution_bridge.py").exists())
         self.assertTrue((PLANNER / "ranked_promotion.py").is_file())
+        self.assertTrue((PLANNER / "pool_admission.py").is_file())
         self.assertFalse((BOT_ROOT / "docs/DAILY_PLANNER_V4_BASE.md").exists())
         self.assertFalse((BOT_ROOT / "docs/ADHOC_PLANNER_V4_BASE.md").exists())
 
@@ -70,11 +81,11 @@ class ArchitectureContractTests(unittest.TestCase):
             code_hits, "architecture term remains in code: " + "; ".join(code_hits)
         )
 
-        prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("DAILY")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
             encoding="utf-8"
         )
-        for text in (prompt, overview):
+        for text in (planner, overview):
             self.assertIn("subscriber and qualified-view " + ARCH_TERM, text)
             self.assertIn("1,000 subscribers", text)
             self.assertIn("10 million qualified public Shorts views", text)
@@ -153,17 +164,18 @@ class ArchitectureContractTests(unittest.TestCase):
         )
 
     def test_ad_hoc_prompt_uses_ranked_pool_immediate_public_path(self):
-        prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("ADHOC")
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
         promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
-        self.assertIn('"mode": "immediate"', prompt)
-        self.assertIn('"publish_at": null', prompt)
-        self.assertIn("privacyStatus: public", prompt)
-        self.assertIn("exactly **5**", prompt)
-        self.assertIn("scheduled_daily", prompt)
-        self.assertIn("manual_on_demand", prompt)
-        self.assertIn("[adhoc pool]", prompt)
+        self.assertIn('"mode": "immediate"', planner)
+        self.assertIn('"publish_at": null', planner)
+        self.assertIn("privacyStatus: public", planner)
+        self.assertIn("exactly **5**", planner)
+        self.assertIn("scheduled_daily", planner)
+        self.assertIn("manual_on_demand", planner)
+        self.assertIn("[adhoc pool]", planner)
         self.assertIn("planning-pools/adhoc", adhoc)
+        self.assertIn("planning.pool_admission adhoc", adhoc)
         self.assertIn("planning.ranked_promotion adhoc", adhoc)
         self.assertIn("planning.ranked_promotion verify-adhoc", adhoc)
         self.assertIn("private-adhoc-production-${{ github.ref }}", adhoc)
@@ -189,7 +201,7 @@ class ArchitectureContractTests(unittest.TestCase):
             )
 
     def test_planner_handoff_matches_daily_ranked_promotion(self):
-        prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("DAILY")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
 
@@ -204,11 +216,16 @@ class ArchitectureContractTests(unittest.TestCase):
             "new immutable attempt",
             "chatgpt_ranked_pool",
         ):
-            self.assertIn(token, prompt)
+            self.assertIn(token, planner)
         self.assertIn("name: Daily Production", batch)
         self.assertIn("contains(github.event.head_commit.message, '[daily pool]')", batch)
         self.assertIn("planning-pools/daily/**/*.json", batch)
+        self.assertIn("planning.pool_admission daily", batch)
         self.assertIn("planning.ranked_promotion daily", batch)
+        self.assertLess(
+            batch.index("planning.pool_admission daily"),
+            batch.index("planning.ranked_promotion daily"),
+        )
         self.assertIn("Validate rebased canonical Daily production commit", batch)
         self.assertIn("Publish validated Daily production state", batch)
         self.assertLess(
@@ -243,6 +260,7 @@ class ArchitectureContractTests(unittest.TestCase):
         )
         self.assertIn("analytics/analytics_collection.py", analytics)
         self.assertIn("media/pexels_registry.py", backgrounds)
+        self.assertIn("media.pexels_resilient_ingest", backgrounds)
         self.assertIn("media/validate_media_library.py", backgrounds)
         self.assertFalse((WORKFLOWS / "build-image.yml").exists())
         self.assertFalse((BOT_ROOT / "Dockerfile").exists())
@@ -273,7 +291,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("1080x1920", runtime_map)
 
     def test_analytics_contract_is_current_and_consistent(self):
-        prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("DAILY")
         collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(
             encoding="utf-8"
         )
@@ -281,17 +299,17 @@ class ArchitectureContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         model = (BOT_ROOT / "analytics" / "model.json").read_text(encoding="utf-8")
-        for text in (prompt, collector, learning):
+        for text in (planner, collector, learning):
             self.assertIn("analytics_evidence_count", text)
         self.assertIn('\"model_version\": 1', model)
         self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4, 5}", collector)
         self.assertIn('in {"scheduled", "immediate"}', collector)
         self.assertNotIn("analytics_epoch", collector)
         self.assertNotIn("epoch.json", collector)
-        lower_prompt = prompt.lower()
-        self.assertIn("do not substitute", lower_prompt)
+        lower_planner = planner.lower()
+        self.assertIn("do not substitute", lower_planner)
         for token in ("video_count", "published_video_count", "mature_video_count"):
-            self.assertIn(token, prompt)
+            self.assertIn(token, planner)
 
 
 if __name__ == "__main__":
