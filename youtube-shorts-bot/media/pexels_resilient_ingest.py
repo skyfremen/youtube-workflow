@@ -22,6 +22,7 @@ HARD_FAILURE_MARKERS = (
     "duplicate logical_id",
     "duplicate provider_asset_id",
 )
+RECOVERABLE_CANDIDATE_ERRORS = (OSError, RuntimeError, ValueError)
 
 
 def _single_candidate_manifest(manifest, candidate):
@@ -60,7 +61,7 @@ def ingest_resilient(manifest_path, registry_path=pexels_registry.REGISTRY_PATH,
                 path=Path(registry_path),
                 key=key,
             )
-        except Exception as exc:
+        except RECOVERABLE_CANDIDATE_ERRORS as exc:
             message = str(exc)
             if any(marker in message for marker in HARD_FAILURE_MARKERS):
                 raise
