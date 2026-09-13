@@ -118,7 +118,7 @@ def _ready_registry_for_pool(pool):
     counter = 0
     while len(asset_ids) < MIN_SELECTABLE_ASSETS:
         counter += 1
-        synthetic = f"gitless-ready-{counter:03d}"
+        synthetic = f"satisfying-{500 + counter:03d}"
         if synthetic not in asset_ids:
             asset_ids.append(synthetic)
 
