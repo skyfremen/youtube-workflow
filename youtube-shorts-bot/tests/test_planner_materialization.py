@@ -145,7 +145,7 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertIn("Shell Git access to github.com is neither attempted nor required", shared)
         self.assertIn("planning.materialization_verify", shared)
         self.assertIn("MATERIALIZATION_BLOCKED", shared)
-        self.assertIn("--connector-current-main-sha", shared)
+        self.assertIn("connector-returned current-main SHA", shared)
         self.assertIn("GitHub Actions planner execution remains prohibited", shared)
 
         prohibited_profile_text = (
