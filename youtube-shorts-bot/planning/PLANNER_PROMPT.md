@@ -2,7 +2,7 @@
 
 Daily and Ad-hoc are profiles of **one planner**. This file is the canonical shared execution/materialization contract. `DAILY_PLANNER_PROMPT.md` and `ADHOC_PLANNER_PROMPT.md` select a profile and add only mode-specific instructions.
 
-If older mode-specific rule text duplicates execution-environment/bootstrap instructions, this shared contract wins. Creative/business rules in the mode-specific rules remain mandatory unless current executable repository code/configuration supersedes them.
+If older mode-specific rule text duplicates execution-environment/bootstrap or planner-source-read instructions, this shared contract wins. Creative/business rules in the mode-specific rules remain mandatory unless current executable repository code/configuration supersedes them.
 
 ## Repository-first identity
 
@@ -10,8 +10,10 @@ If older mode-specific rule text duplicates execution-environment/bootstrap inst
 2. Retain the exact immutable 40-character commit SHA as `rules_source_sha`.
 3. Read `planning/PLANNER_MATERIALIZATION.json` from that exact SHA.
 4. Select the requested profile: `daily` or `adhoc`.
-5. Fetch only `shared_required_python_files`, `shared_required_data_files`, and the selected profile additions declared by the manifest.
+5. Fetch only `shared_required_python_files`, `shared_required_data_files`, and the selected profile additions declared by the manifest for executable planner bootstrap.
 6. Fetch every source path from the exact `rules_source_sha`.
+
+Do **not** separately fetch `planning/ranked_promotion.py`, `publishing/upload.py`, compatibility precommit wrappers, package `__init__` files, or opposite-profile implementation files merely to execute planner-time Python. Those are downstream/compatibility surfaces and are intentionally excluded from the canonical materialization set. Inspect them only when the user explicitly requests downstream verification or when resolving a concrete contract discrepancy.
 
 Do not require a Git checkout, Git executable, `.git`, authenticated clone, repository archive, whole-repository download, synthetic HEAD, automatic connector filesystem mount, special connector bridge, or GitHub Actions planner job.
 
