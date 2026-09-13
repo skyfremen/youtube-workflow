@@ -37,9 +37,12 @@ class PrecommitExecutionEnvironmentTests(unittest.TestCase):
         for name in ("ADHOC_PLANNER_PROMPT.md", "DAILY_PLANNER_PROMPT.md"):
             prompt = (BOT_ROOT / "planning" / name).read_text(encoding="utf-8")
             self.assertIn("--rules-source-sha", prompt)
-            self.assertIn("Git checkout is **not** required", prompt)
+            self.assertIn("A Git checkout, Git executable, `.git` directory", prompt)
+            self.assertIn("is **not** a planner prerequisite", prompt)
+            self.assertIn("GitHub API/connector", prompt)
             self.assertIn("--verify-git-head", prompt)
             self.assertNotIn("$(git rev-parse HEAD)", prompt)
+            self.assertNotIn("git clone", prompt.lower())
 
 
 if __name__ == "__main__":
