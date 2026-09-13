@@ -6,15 +6,16 @@ Pexels footage, wait for Background Management to persist the refreshed atomic
 registry, then continue only after PASS.
 
 Readiness is schema-v7 sequence-capable: an individual asset no longer needs to
-cover a whole Short. It must be a production-quality >=60s atomic clip. The
-planner later freezes 2-3 distinct clips whose combined source coverage satisfies
-the sequence contract.
+cover a whole Short. It must be a production-quality >=60s atomic clip. PASS also
+proves that two disjoint 2-3 clip sequences can each provide at least the minimum
+frozen source coverage, so primary/backup planning cannot dead-end after readiness.
 """
 from __future__ import annotations
 
 import argparse
 import json
 from collections import Counter
+from itertools import combinations
 
 from media.background_selector_base import (
     HIGH_RETENTION_CATEGORIES,
@@ -34,6 +35,7 @@ from media.continuous_background import (
     PREFERRED_SEQUENCE_CLIPS,
     PREFERRED_SEQUENCE_SOURCE_SECONDS,
     sequence_clip_eligible,
+    trusted_duration_seconds,
 )
 from media.validate_media_library import REGISTRY_PATH, load_registry
 
@@ -69,6 +71,40 @@ def is_selectable(asset):
     return sequence_clip_eligible(asset)
 
 
+def _can_form_sequence(capacities):
+    """Return whether 2-3 distinct clips can be trimmed to a valid v7 sequence."""
+    values = [float(value) for value in capacities]
+    if len(values) < MIN_SEQUENCE_CLIPS:
+        return False
+    for size in range(MIN_SEQUENCE_CLIPS, min(MAX_SEQUENCE_CLIPS, len(values)) + 1):
+        if any(sum(group) >= MIN_SEQUENCE_SOURCE_SECONDS for group in combinations(values, size)):
+            return True
+    return False
+
+
+def has_two_disjoint_sequences(selectable):
+    """Prove primary and backup can be formed without sharing a logical asset."""
+    capacities = [trusted_duration_seconds(asset) for asset in selectable]
+    if any(value is None for value in capacities):
+        return False
+    if len(capacities) < MIN_SEQUENCE_CLIPS * 2:
+        return False
+
+    indexed = list(enumerate(float(value) for value in capacities))
+    for size in range(MIN_SEQUENCE_CLIPS, MAX_SEQUENCE_CLIPS + 1):
+        for first in combinations(indexed, size):
+            if sum(value for _, value in first) < MIN_SEQUENCE_SOURCE_SECONDS:
+                continue
+            used = {index for index, _ in first}
+            remaining = sorted(
+                (value for index, value in indexed if index not in used),
+                reverse=True,
+            )[:MAX_SEQUENCE_CLIPS]
+            if _can_form_sequence(remaining):
+                return True
+    return False
+
+
 def audit_registry(registry):
     assets = list(registry.get("assets") or [])
     selectable = [asset for asset in assets if is_selectable(asset)]
@@ -78,8 +114,14 @@ def audit_registry(registry):
         for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items()
     }
     total_deficit = max(0, MIN_SELECTABLE_ASSETS - len(selectable))
-    required_new_assets = max(total_deficit, sum(category_deficits.values()))
-    ready = total_deficit == 0 and not any(category_deficits.values())
+    inventory_ready = total_deficit == 0 and not any(category_deficits.values())
+    sequence_pair_feasible = has_two_disjoint_sequences(selectable)
+    required_new_assets = max(
+        total_deficit,
+        sum(category_deficits.values()),
+        0 if sequence_pair_feasible else 1,
+    )
+    ready = inventory_ready and sequence_pair_feasible
     duration_ineligible = sum(
         1
         for asset in assets
@@ -90,6 +132,8 @@ def audit_registry(registry):
     return {
         "status": "PASS" if ready else "REPLENISH",
         "ready": ready,
+        "inventory_ready": inventory_ready,
+        "sequence_pair_feasible": sequence_pair_feasible,
         "registry_assets": len(assets),
         "selectable_assets": len(selectable),
         "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,

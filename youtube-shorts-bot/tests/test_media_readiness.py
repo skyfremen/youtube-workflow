@@ -38,6 +38,19 @@ def asset(asset_id, category, *, duration=300.0):
     }
 
 
+def diverse_assets(*, duration=300.0):
+    assets = []
+    counter = 0
+    for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
+        for _ in range(minimum):
+            counter += 1
+            assets.append(asset(f"a-{counter}", category, duration=duration))
+    while len(assets) < MIN_SELECTABLE_ASSETS:
+        counter += 1
+        assets.append(asset(f"a-{counter}", "satisfying_process", duration=duration))
+    return assets
+
+
 class MediaReadinessTests(unittest.TestCase):
     def test_empty_active_registry_is_valid_replenish_state(self):
         registry = {"schema_version": 3, "assets": []}
@@ -60,21 +73,31 @@ class MediaReadinessTests(unittest.TestCase):
         self.assertEqual(report["status"], "REPLENISH")
         self.assertEqual(report["duration_ineligible_assets"], 1)
 
+    def test_count_ready_but_sequence_pair_infeasible_stays_replenish(self):
+        report = audit_registry({"schema_version": 3, "assets": diverse_assets(duration=60.0)})
+        self.assertTrue(report["inventory_ready"])
+        self.assertFalse(report["sequence_pair_feasible"])
+        self.assertEqual(report["status"], "REPLENISH")
+        self.assertGreaterEqual(report["required_new_assets_at_least"], 1)
+
+    def test_typical_atomic_pexels_lengths_can_pass_sequence_feasibility(self):
+        assets = diverse_assets(duration=60.0)
+        for item in assets[:6]:
+            item["duration_seconds"] = 70.0
+        report = audit_registry({"schema_version": 3, "assets": assets})
+        self.assertEqual(report["status"], "PASS")
+        self.assertTrue(report["ready"])
+        self.assertTrue(report["inventory_ready"])
+        self.assertTrue(report["sequence_pair_feasible"])
+
     def test_diverse_long_form_pool_passes(self):
-        assets = []
-        counter = 0
-        for category, minimum in REQUIRED_CATEGORY_MINIMUMS.items():
-            for _ in range(minimum):
-                counter += 1
-                assets.append(asset(f"a-{counter}", category))
-        while len(assets) < MIN_SELECTABLE_ASSETS:
-            counter += 1
-            assets.append(asset(f"a-{counter}", "satisfying_process"))
+        assets = diverse_assets()
         report = audit_registry({"schema_version": 3, "assets": assets})
         self.assertEqual(report["status"], "PASS")
         self.assertTrue(report["ready"])
         self.assertEqual(report["selectable_assets"], len(assets))
         self.assertFalse(any(report["category_deficits"].values()))
+        self.assertTrue(report["sequence_pair_feasible"])
 
 
 if __name__ == "__main__":
