@@ -45,6 +45,7 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         self.assertIn(
             "contains(github.event.head_commit.message, '[daily pool]')", text
         )
+        self.assertIn("planning.pool_admission daily", text)
         self.assertIn("planning.ranked_promotion daily", text)
         self.assertIn("[daily production] ${plan_date}", text)
         self.assertIn("python -m common.runtime_contract", text)
@@ -57,15 +58,21 @@ class WorkflowBoundaryContracts(unittest.TestCase):
 
     def test_promoted_state_is_validated_before_first_push(self):
         daily = self.daily()
+        daily_admission = daily.index("planning.pool_admission daily")
+        daily_promotion = daily.index("planning.ranked_promotion daily")
         daily_validate = daily.index("python -m validation.planning_audit")
         daily_publish = daily.index("Publish validated Daily production state")
+        self.assertLess(daily_admission, daily_promotion)
         self.assertLess(daily_validate, daily_publish)
         self.assertLess(daily_publish, daily.index("Dispatch public execution"))
 
         adhoc = self.adhoc()
+        adhoc_admission = adhoc.index("planning.pool_admission adhoc")
+        adhoc_promotion = adhoc.index("planning.ranked_promotion adhoc")
         adhoc_validate = adhoc.index("python -m validation.validate_content --request")
         adhoc_unique = adhoc.index("planning.ranked_promotion verify-adhoc")
         adhoc_publish = adhoc.index("Publish validated Ad-hoc production state")
+        self.assertLess(adhoc_admission, adhoc_promotion)
         self.assertLess(adhoc_validate, adhoc_publish)
         self.assertLess(adhoc_unique, adhoc_publish)
         self.assertLess(adhoc_publish, adhoc.index("Create opaque execution"))
@@ -111,12 +118,12 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         trigger = text.split("concurrency:", 1)[0]
         self.assertIn("branches: [main]", trigger)
         self.assertIn("content/background-sourcing/readiness/*.json", trigger)
-        self.assertIn("media-library/reset-selection-*.json", trigger)
+        self.assertNotIn("media-library/reset-selection-", trigger)
         self.assertIn("BEFORE_SHA: ${{ github.event.before }}", text)
         self.assertIn('git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}"', text)
-        self.assertIn("media.media_readiness retire-current", text)
+        self.assertNotIn("media.media_readiness retire-current", text)
         self.assertIn("media.media_readiness audit", text)
-        self.assertIn("media/pexels_registry.py ingest-manifest", text)
+        self.assertIn("media.pexels_resilient_ingest", text)
         self.assertIn("PEXELS_API_KEY", text)
         self.assertIn("contents: write", text)
         for forbidden in (
