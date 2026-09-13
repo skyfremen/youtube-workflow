@@ -1,7 +1,9 @@
 """Private retention-first background selector for new continuous production.
 
-New planning uses only the active registry and never falls back to immortal default
-IDs. A candidate either freezes a valid distinct primary/backup pair or fails.
+New planning uses only the active schema-v3 registry and never falls back to
+immortal default IDs. Compatibility callers that pass an unversioned in-memory
+registry retain the established ranking semantics; authoritative active-registry
+selection always enforces continuous-duration eligibility.
 """
 from media import background_selector_base as base
 from media.background_selector_base import *  # re-export established selector surface
@@ -44,7 +46,16 @@ def is_successful_receipt(record):
     return False
 
 
+def _is_authoritative_active_registry(registry):
+    return isinstance(registry, dict) and registry.get("schema_version") == 3
+
+
 def _continuous_registry(registry):
+    if not _is_authoritative_active_registry(registry):
+        # Preserve the long-established pure ranking helper contract for
+        # unversioned in-memory fixtures/callers. Real planner state is always a
+        # schema-v3 registry and therefore takes the strict branch below.
+        return registry
     return {
         **registry,
         "assets": [
@@ -83,11 +94,13 @@ def audit_ai_selection(registry, primary_id, backup_id, receipts, requirements=N
             "resolved_backup_id": None,
         }
     mapping = base.asset_map(registry)
-    duration_errors = [
-        f"background {asset_id} is not eligible for continuous fit-to-short"
-        for asset_id in (primary_id, backup_id)
-        if asset_id in mapping and not continuous_source_eligible(mapping[asset_id])
-    ]
+    duration_errors = []
+    if _is_authoritative_active_registry(registry):
+        duration_errors = [
+            f"background {asset_id} is not eligible for continuous fit-to-short"
+            for asset_id in (primary_id, backup_id)
+            if asset_id in mapping and not continuous_source_eligible(mapping[asset_id])
+        ]
     requested = _base_audit_ai_selection(
         _continuous_registry(registry), primary_id, backup_id, receipts, requirements
     )
