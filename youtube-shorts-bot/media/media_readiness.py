@@ -46,7 +46,7 @@ REQUIRED_CATEGORY_MINIMUMS = {
     "food_prep": 3,
     "satisfying_process": 4,
     "crafting": 3,
-    "cleaning": 3,
+    "cleaning": 2,
     "assembly": 3,
     "pov_movement": 3,
     "city_motion": 3,
