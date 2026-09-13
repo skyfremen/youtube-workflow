@@ -1,0 +1,827 @@
+name: Apply Background Review Bridge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-background-review-bridge.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Apply transport bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              path = Path(path)
+              text = path.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'missing expected text in {path}: {old[:100]!r}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          def replace_between(path, start, end, replacement):
+              path = Path(path)
+              text = path.read_text(encoding='utf-8')
+              i = text.find(start)
+              if i < 0:
+                  raise SystemExit(f'missing start marker in {path}: {start!r}')
+              j = text.find(end, i)
+              if j < 0:
+                  raise SystemExit(f'missing end marker in {path}: {end!r}')
+              path.write_text(text[:i] + replacement.rstrip() + '\n\n' + text[j:], encoding='utf-8')
+
+          workflow = r'''name: Background Management
+
+env:
+  PYTHONPATH: youtube-shorts-bot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'youtube-shorts-bot/content/background-sourcing/discovery-requests/*.json'
+      - 'youtube-shorts-bot/content/background-sourcing/readiness/*.json'
+      - 'youtube-shorts-bot/media-library/backgrounds.json'
+      - 'youtube-shorts-bot/media/media_readiness.py'
+      - 'youtube-shorts-bot/media/pexels_discovery.py'
+      - 'youtube-shorts-bot/media/pexels_registry.py'
+      - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
+      - 'youtube-shorts-bot/media/background_policy.py'
+      - 'youtube-shorts-bot/media/continuous_background.py'
+      - 'youtube-shorts-bot/media/preview_review_materializer.py'
+      - 'youtube-shorts-bot/docs/background-media-strategy.md'
+      - '.github/workflows/background-management.yml'
+
+concurrency:
+  group: wacky-dramas-background-registry-maintenance-v2
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PEXELS_API_KEY: @@{{ secrets.PEXELS_API_KEY }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Resolve maintenance action
+        id: action
+        shell: bash
+        env:
+          BEFORE_SHA: @@{{ github.event.before }}
+        run: |
+          set -euo pipefail
+          action=audit
+          manifest=''
+          discovery_request=''
+          discovery_output=''
+          review_output=''
+          review_artifact=''
+          review_index=''
+          request_id=''
+
+          set_review_fields() {
+            request_id="$(basename "${discovery_output}" .json)"
+            review_output="/tmp/wacky-background-review/${request_id}"
+            review_artifact="background-review-evidence-${request_id}"
+            review_index="youtube-shorts-bot/content/background-sourcing/review-evidence/${request_id}.json"
+          }
+
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
+            mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
+            mapfile -t discovery_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/discovery-requests\/[A-Za-z0-9._-]+\.json$/ {print $2}')
+            if [ "${#readiness_files[@]}" -gt 1 ] || [ "${#discovery_files[@]}" -gt 1 ]; then
+              echo '::error::One push may add at most one readiness manifest and one discovery request.'
+              exit 1
+            fi
+            if [ "${#readiness_files[@]}" -eq 1 ] && [ "${#discovery_files[@]}" -eq 1 ]; then
+              echo '::error::Do not add a readiness manifest and discovery request in the same push.'
+              exit 1
+            fi
+            if [ "${#readiness_files[@]}" -eq 1 ]; then
+              action=replenish
+              manifest="${readiness_files[0]}"
+            elif [ "${#discovery_files[@]}" -eq 1 ]; then
+              action=discover
+              discovery_request="${discovery_files[0]}"
+              base="$(basename "${discovery_request}")"
+              discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${base}"
+              set_review_fields
+            fi
+          fi
+
+          # Code/config updates and manual runs can backfill transport evidence for the
+          # newest immutable discovery result that predates the artifact bridge.
+          if [ "${action}" = "audit" ]; then
+            while IFS= read -r candidate; do
+              [ -n "${candidate}" ] || continue
+              candidate_id="$(basename "${candidate}" .json)"
+              candidate_index="youtube-shorts-bot/content/background-sourcing/review-evidence/${candidate_id}.json"
+              if [ ! -f "${candidate_index}" ]; then
+                action=review
+                discovery_output="${candidate}"
+                set_review_fields
+                break
+              fi
+            done < <(find youtube-shorts-bot/content/background-sourcing/discovery-results \
+              -maxdepth 1 -type f -name 'dr-*.json' -print 2>/dev/null | sort -r)
+          fi
+
+          echo "action=${action}" >> "${GITHUB_OUTPUT}"
+          echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
+          echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
+          echo "discovery_output=${discovery_output}" >> "${GITHUB_OUTPUT}"
+          echo "request_id=${request_id}" >> "${GITHUB_OUTPUT}"
+          echo "review_output=${review_output}" >> "${GITHUB_OUTPUT}"
+          echo "review_artifact=${review_artifact}" >> "${GITHUB_OUTPUT}"
+          echo "review_index=${review_index}" >> "${GITHUB_OUTPUT}"
+
+      - name: Require Pexels API key
+        if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'discover'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PEXELS_API_KEY}" || { echo '::error::PEXELS_API_KEY is required.'; exit 1; }
+
+      - name: Discover long production-suitable Pexels candidates
+        if: steps.action.outputs.action == 'discover'
+        env:
+          REQUEST: @@{{ steps.action.outputs.discovery_request }}
+          OUTPUT: @@{{ steps.action.outputs.discovery_output }}
+        run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
+
+      - name: Materialize exact-source review contact sheets
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        env:
+          OUTPUT: @@{{ steps.action.outputs.discovery_output }}
+          REVIEW_OUTPUT: @@{{ steps.action.outputs.review_output }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${OUTPUT}"
+          rm -rf "${REVIEW_OUTPUT}"
+          python -m media.preview_review_materializer \
+            --discovery-result "${OUTPUT}" \
+            --output-dir "${REVIEW_OUTPUT}" \
+            --contact-sheets-only
+
+      - name: Upload ChatGPT review evidence
+        id: review_artifact
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: @@{{ steps.action.outputs.review_artifact }}
+          path: |
+            @@{{ steps.action.outputs.review_output }}/evidence-manifest.json
+            @@{{ steps.action.outputs.review_output }}/*/preview.jpg
+            @@{{ steps.action.outputs.review_output }}/*/contact-sheet.jpg
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 6
+
+      - name: Write immutable review evidence index
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        env:
+          REQUEST_ID: @@{{ steps.action.outputs.request_id }}
+          DISCOVERY_RESULT: @@{{ steps.action.outputs.discovery_output }}
+          REVIEW_OUTPUT: @@{{ steps.action.outputs.review_output }}
+          REVIEW_INDEX: @@{{ steps.action.outputs.review_index }}
+          ARTIFACT_ID: @@{{ steps.review_artifact.outputs.artifact-id }}
+          ARTIFACT_NAME: @@{{ steps.action.outputs.review_artifact }}
+          ARTIFACT_DIGEST: @@{{ steps.review_artifact.outputs.artifact-digest }}
+          ARTIFACT_URL: @@{{ steps.review_artifact.outputs.artifact-url }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          evidence_path = Path(os.environ['REVIEW_OUTPUT']) / 'evidence-manifest.json'
+          evidence_bytes = evidence_path.read_bytes()
+          evidence = json.loads(evidence_bytes)
+          provider_ids = [
+              item['provider_asset_id']
+              for item in evidence.get('evidence', [])
+              if isinstance(item, dict) and item.get('motion', {}).get('contact_sheet')
+          ]
+          index = {
+              'schema_version': 1,
+              'request_id': os.environ['REQUEST_ID'],
+              'discovery_result': os.environ['DISCOVERY_RESULT'],
+              'workflow': 'Background Management',
+              'workflow_run_id': int(os.environ['GITHUB_RUN_ID']),
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'artifact_id': int(os.environ['ARTIFACT_ID']),
+              'artifact_name': os.environ['ARTIFACT_NAME'],
+              'artifact_digest': os.environ.get('ARTIFACT_DIGEST') or None,
+              'artifact_url': os.environ.get('ARTIFACT_URL') or None,
+              'artifact_retention_days': 3,
+              'evidence_manifest_sha256': hashlib.sha256(evidence_bytes).hexdigest(),
+              'evidence_count': int(evidence.get('evidence_count') or 0),
+              'failure_count': int(evidence.get('failure_count') or 0),
+              'contact_sheet_count': len(provider_ids),
+              'provider_asset_ids_with_contact_sheet': provider_ids,
+              'artifact_contents': [
+                  'evidence-manifest.json',
+                  '<provider_asset_id>/preview.jpg (when available)',
+                  '<provider_asset_id>/contact-sheet.jpg',
+              ],
+              'rule': (
+                  'Transport evidence only. ChatGPT/Work must inspect the actual JPEG '
+                  'pixels and remains the sole visual/editorial approval owner.'
+              ),
+          }
+          output = Path(os.environ['REVIEW_INDEX'])
+          output.parent.mkdir(parents=True, exist_ok=True)
+          if output.exists():
+              raise SystemExit(f'review evidence index is immutable and already exists: {output}')
+          output.write_text(json.dumps(index, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(index, indent=2))
+          PY
+
+      - name: Commit discovery result and review evidence index
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        shell: bash
+        env:
+          ACTION: @@{{ steps.action.outputs.action }}
+          OUTPUT: @@{{ steps.action.outputs.discovery_output }}
+          REVIEW_INDEX: @@{{ steps.action.outputs.review_index }}
+        run: |
+          set -euo pipefail
+          test -f "${OUTPUT}"
+          test -f "${REVIEW_INDEX}"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          if [ "${ACTION}" = "discover" ]; then
+            git add "${OUTPUT}"
+            message='[media discovery] add eligible Pexels candidates and review evidence index'
+          else
+            message='[media review] add contact-sheet evidence index'
+          fi
+          git add "${REVIEW_INDEX}"
+          git commit -m "${message}"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Ingest reviewed readiness manifest with reserve fallback
+        if: steps.action.outputs.action == 'replenish'
+        env:
+          MANIFEST: @@{{ steps.action.outputs.manifest }}
+        run: python -m media.pexels_resilient_ingest --manifest "${MANIFEST}"
+
+      - name: Validate active registry structure
+        run: python youtube-shorts-bot/media/validate_media_library.py
+
+      - name: Commit registry maintenance
+        if: steps.action.outputs.action == 'replenish'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
+            echo 'Registry is already current.'
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add youtube-shorts-bot/media-library/backgrounds.json
+          git commit -m '[media readiness] replenish continuous background registry'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Enforce readiness after persisted replenishment
+        if: steps.action.outputs.action == 'replenish'
+        run: python -m media.media_readiness audit --allow-not-ready
+
+      - name: Report expected empty or insufficient state
+        if: steps.action.outputs.action != 'replenish'
+        run: python -m media.media_readiness audit --allow-not-ready
+'''.replace('@@', '$')
+          Path('.github/workflows/background-management.yml').write_text(workflow, encoding='utf-8')
+
+          materializer = Path('youtube-shorts-bot/media/preview_review_materializer.py')
+          text = materializer.read_text(encoding='utf-8')
+          text = text.replace(
+              'When\n``--include-motion-evidence`` is supplied, ffmpeg also derives a compact\nrepresentative contact sheet and a short low-resolution motion sample from the\nexact ``preview_video_url`` recorded in the immutable discovery result.\n',
+              'When ``--contact-sheets-only`` is supplied, FFmpeg derives only compact JPEG\ncontact sheets from the exact ``preview_video_url``; this is the preferred GitHub\nartifact transport because it avoids shipping source video to ChatGPT. When\n``--include-motion-evidence`` is supplied, a short low-resolution motion sample is\nalso produced.\n',
+              1,
+          )
+          start = text.index('def _materialize_motion_evidence(')
+          end = text.index('\n\ndef materialize(', start)
+          replacement = r'''def _materialize_motion_evidence(
+    candidate,
+    destination,
+    frame_count,
+    sample_seconds,
+    video_input=None,
+    include_motion_sample=True,
+):
+    video_url = _https_url(candidate.get("preview_video_url"), "preview_video_url")
+    duration = _positive_float(candidate.get("duration_seconds"), "duration_seconds")
+    fps = _positive_float(candidate.get("preview_video_fps") or 30.0, "preview_video_fps")
+    timestamps = _representative_timestamps(duration, frame_count)
+    frame_indices = sorted({max(0, int(round(timestamp * fps))) for timestamp in timestamps})
+    if len(frame_indices) != frame_count:
+        raise ValueError("representative frame timestamps did not map to unique frames")
+
+    local_video = Path(video_input) if video_input is not None else None
+    if local_video is not None:
+        source_file = _file_evidence(local_video)
+        ffmpeg_input = str(local_video)
+        transport = "local_file"
+    else:
+        source_file = None
+        ffmpeg_input = video_url
+        transport = "direct_url"
+
+    destination.mkdir(parents=True, exist_ok=True)
+    select = "+".join(f"eq(n\\,{frame})" for frame in frame_indices)
+    grid_columns = 3 if frame_count > 4 else 2
+    grid_rows = (frame_count + grid_columns - 1) // grid_columns
+    contact_sheet = destination / "contact-sheet.jpg"
+    contact_filter = (
+        f"select={select},"
+        "setpts=N/FRAME_RATE/TB,"
+        f"scale={DEFAULT_SAMPLE_WIDTH}:-2,"
+        f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:padding=4:margin=4"
+    )
+    _run_ffmpeg([
+        "-i", ffmpeg_input, "-vf", contact_filter, "-frames:v", "1",
+        "-q:v", "5", str(contact_sheet)
+    ])
+
+    result = {
+        "source_url": video_url,
+        "transport": transport,
+        "source_duration_seconds": duration,
+        "source_fps": fps,
+        "representative_timestamps_seconds": timestamps,
+        "contact_sheet": _file_evidence(contact_sheet),
+    }
+    if local_video is not None:
+        result["source_input"] = source_file
+
+    if include_motion_sample:
+        sample_seconds = min(_positive_float(sample_seconds, "sample_seconds"), duration)
+        sample_start = max(0.0, (duration - sample_seconds) / 2.0)
+        motion_sample = destination / "motion-sample.mp4"
+        _run_ffmpeg([
+            "-ss", f"{sample_start:.3f}", "-i", ffmpeg_input,
+            "-t", f"{sample_seconds:.3f}", "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
+            "-r", "12", "-an", "-c:v", "libx264", "-preset", "veryfast",
+            "-crf", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+            str(motion_sample),
+        ])
+        result["motion_sample"] = {
+            **_file_evidence(motion_sample),
+            "start_seconds": round(sample_start, 3),
+            "duration_seconds": round(sample_seconds, 3),
+        }
+    return result'''
+          text = text[:start] + replacement + text[end:]
+          text = text.replace(
+              '    input_dir=None,\n):\n',
+              '    input_dir=None,\n    contact_sheets_only=False,\n):\n',
+              1,
+          )
+          text = text.replace(
+              '                    video_input=local_video,\n                )\n',
+              '                    video_input=local_video,\n                    include_motion_sample=not contact_sheets_only,\n                )\n',
+              1,
+          )
+          text = text.replace(
+              '        "motion_evidence_requested": bool(include_motion_evidence),\n',
+              '        "motion_evidence_requested": bool(include_motion_evidence),\n        "contact_sheets_only": bool(contact_sheets_only),\n        "motion_sample_requested": bool(include_motion_evidence and not contact_sheets_only),\n',
+              1,
+          )
+          text = text.replace(
+              '    parser.add_argument(\n        "--include-motion-evidence",\n',
+              '    parser.add_argument(\n        "--contact-sheets-only",\n        action="store_true",\n        help=(\n            "Derive compact representative JPEG contact sheets from exact preview video "\n            "without creating motion-sample MP4 files. Intended for GitHub review artifacts."\n        ),\n    )\n    parser.add_argument(\n        "--include-motion-evidence",\n',
+              1,
+          )
+          text = text.replace(
+              '    manifest = materialize(\n        args.discovery_result,\n        args.output_dir,\n        include_motion_evidence=args.include_motion_evidence,\n',
+              '    motion_requested = bool(args.include_motion_evidence or args.contact_sheets_only)\n    manifest = materialize(\n        args.discovery_result,\n        args.output_dir,\n        include_motion_evidence=motion_requested,\n',
+              1,
+          )
+          text = text.replace(
+              '        input_dir=args.input_dir,\n    )\n',
+              '        input_dir=args.input_dir,\n        contact_sheets_only=args.contact_sheets_only,\n    )\n',
+              1,
+          )
+          text = text.replace(
+              '    if args.include_motion_evidence and manifest["motion_evidence_count"] == 0:\n',
+              '    if motion_requested and manifest["motion_evidence_count"] == 0:\n',
+              1,
+          )
+          materializer.write_text(text, encoding='utf-8')
+
+          discovery = Path('youtube-shorts-bot/media/pexels_discovery.py')
+          text = discovery.read_text(encoding='utf-8')
+          old = '''    renditions = renditions_from_video(video)\n    suitable = [item for item in renditions if rendition_is_production_suitable(item)]\n    if not suitable:\n        return None\n    suitable.sort(key=lambda item: (int(item["width"]) * int(item["height"]), float(item.get("fps") or 999), str(item.get("id") or "")))\n    preview_rendition = suitable[0]\n'''
+          new = '''    renditions = renditions_from_video(video)\n    suitable = [item for item in renditions if rendition_is_production_suitable(item)]\n    if not suitable:\n        return None\n    suitable.sort(key=lambda item: (int(item["width"]) * int(item["height"]), float(item.get("fps") or 999), str(item.get("id") or "")))\n\n    # Visual review needs exact asset identity, not a production-sized transfer. Use\n    # the smallest useful provider rendition for contact-sheet transport while\n    # independently requiring at least one production-suitable rendition above.\n    review_renditions = [\n        item for item in renditions\n        if int(item.get("width") or 0) >= 360 and int(item.get("height") or 0) >= 360\n    ] or list(renditions)\n    review_renditions.sort(\n        key=lambda item: (\n            int(item.get("width") or 0) * int(item.get("height") or 0),\n            float(item.get("fps") or 999),\n            str(item.get("id") or ""),\n        )\n    )\n    preview_rendition = review_renditions[0]\n'''
+          if old not in text:
+              raise SystemExit('pexels discovery rendition block drifted')
+          discovery.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          tests = r'''import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from media.preview_review_materializer import (
+    _https_url,
+    _representative_timestamps,
+    materialize,
+)
+
+
+class BackgroundReviewTransportContractTests(unittest.TestCase):
+    def test_background_management_generates_private_review_artifact_without_approving(self):
+        workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
+        self.assertNotIn('PUBLIC_PRODUCTION_TOKEN', workflow)
+        self.assertNotIn('verified_preview=true', workflow)
+        self.assertIn('Materialize exact-source review contact sheets', workflow)
+        self.assertIn('media.preview_review_materializer', workflow)
+        self.assertIn('--contact-sheets-only', workflow)
+        self.assertIn('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02', workflow)
+        self.assertIn('background-review-evidence-', workflow)
+        self.assertIn('retention-days: 3', workflow)
+        self.assertIn('Write immutable review evidence index', workflow)
+        self.assertIn('content/background-sourcing/review-evidence/', workflow)
+        self.assertIn('Ingest reviewed readiness manifest', workflow)
+
+    def test_background_management_can_backfill_unindexed_discovery(self):
+        workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
+        self.assertIn('action=review', workflow)
+        self.assertIn('newest immutable discovery result that predates the artifact bridge', workflow)
+
+    def test_materializer_builds_evenly_distributed_review_points(self):
+        self.assertEqual(
+            _representative_timestamps(60.0, 5),
+            [10.0, 20.0, 30.0, 40.0, 50.0],
+        )
+
+    def test_materializer_rejects_non_pexels_visual_transport(self):
+        with self.assertRaises(ValueError):
+            _https_url('https://example.com/video.mp4', 'preview_video_url')
+
+    def test_image_failure_falls_through_to_exact_video_evidence(self):
+        discovery = {
+            'request_id': 'dr-test',
+            'candidates': [{
+                'provider_asset_id': '123',
+                'source_page': 'https://www.pexels.com/video/example-123/',
+                'preview_image_url': 'https://images.pexels.com/photos/123/pexels-photo-123.jpeg',
+                'preview_video_url': 'https://videos.pexels.com/video-files/123/example.mp4',
+                'duration_seconds': 60,
+                'preview_video_fps': 30,
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'discovery.json'
+            source.write_text(json.dumps(discovery), encoding='utf-8')
+            motion = {
+                'source_url': discovery['candidates'][0]['preview_video_url'],
+                'contact_sheet': {'path': 'contact-sheet.jpg', 'bytes': 1, 'sha256': 'x'},
+                'motion_sample': {'path': 'motion-sample.mp4', 'bytes': 1, 'sha256': 'y'},
+            }
+            with patch('media.preview_review_materializer._download', side_effect=RuntimeError('image blocked')):
+                with patch('media.preview_review_materializer._materialize_motion_evidence', return_value=motion):
+                    result = materialize(source, Path(tmp) / 'evidence', include_motion_evidence=True)
+
+        self.assertEqual(result['evidence_count'], 1)
+        self.assertEqual(result['failure_count'], 0)
+        self.assertEqual(result['image_failure_count'], 1)
+        self.assertEqual(result['motion_evidence_count'], 1)
+        self.assertEqual(result['evidence'][0]['available_visual_transports'], ['motion'])
+
+    def test_one_candidate_transport_failure_does_not_abort_remaining_candidates(self):
+        discovery = {
+            'request_id': 'dr-test',
+            'candidates': [
+                {
+                    'provider_asset_id': '123',
+                    'source_page': 'https://www.pexels.com/video/example-123/',
+                    'preview_image_url': 'https://images.pexels.com/photos/123/a.jpeg',
+                    'preview_video_url': 'https://videos.pexels.com/video-files/123/a.mp4',
+                    'duration_seconds': 60,
+                    'preview_video_fps': 30,
+                },
+                {
+                    'provider_asset_id': '456',
+                    'source_page': 'https://www.pexels.com/video/example-456/',
+                    'preview_image_url': 'https://images.pexels.com/photos/456/b.jpeg',
+                    'preview_video_url': 'https://videos.pexels.com/video-files/456/b.mp4',
+                    'duration_seconds': 60,
+                    'preview_video_fps': 30,
+                },
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'discovery.json'
+            source.write_text(json.dumps(discovery), encoding='utf-8')
+
+            def fake_download(url, destination, max_bytes):
+                if '/123/' in url:
+                    raise RuntimeError('candidate 123 blocked')
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(b'x')
+                return {'path': str(destination), 'bytes': 1, 'sha256': 'x'}
+
+            with patch('media.preview_review_materializer._download', side_effect=fake_download):
+                result = materialize(source, Path(tmp) / 'evidence', include_motion_evidence=False)
+
+        self.assertEqual(result['evidence_count'], 1)
+        self.assertEqual(result['failure_count'], 1)
+        self.assertEqual(result['evidence'][0]['provider_asset_id'], '456')
+
+    def test_staged_local_image_bypasses_blocked_python_network(self):
+        discovery = {
+            'request_id': 'dr-test',
+            'candidates': [{
+                'provider_asset_id': '123',
+                'source_page': 'https://www.pexels.com/video/example-123/',
+                'preview_image_url': 'https://images.pexels.com/photos/123/a.jpeg',
+                'preview_video_url': 'https://videos.pexels.com/video-files/123/a.mp4',
+                'duration_seconds': 60,
+                'preview_video_fps': 30,
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / 'discovery.json'
+            source.write_text(json.dumps(discovery), encoding='utf-8')
+            input_dir = root / 'input'
+            staged = input_dir / '123' / 'preview.jpg'
+            staged.parent.mkdir(parents=True)
+            staged.write_bytes(b'exact-preview-pixels')
+
+            with patch(
+                'media.preview_review_materializer._download',
+                side_effect=RuntimeError('python networking blocked'),
+            ) as download:
+                result = materialize(source, root / 'evidence', input_dir=input_dir)
+
+        download.assert_not_called()
+        self.assertEqual(result['evidence_count'], 1)
+        self.assertEqual(result['local_file_evidence_count'], 1)
+        self.assertEqual(result['evidence'][0]['image']['transport'], 'local_file')
+
+    def test_contact_sheets_only_skips_motion_sample(self):
+        discovery = {
+            'request_id': 'dr-test',
+            'candidates': [{
+                'provider_asset_id': '123',
+                'source_page': 'https://www.pexels.com/video/example-123/',
+                'preview_image_url': 'https://images.pexels.com/photos/123/a.jpeg',
+                'preview_video_url': 'https://videos.pexels.com/video-files/123/a.mp4',
+                'duration_seconds': 60,
+                'preview_video_fps': 30,
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'discovery.json'
+            source.write_text(json.dumps(discovery), encoding='utf-8')
+
+            def fake_motion(candidate, destination, frame_count, sample_seconds, video_input=None, include_motion_sample=True):
+                self.assertFalse(include_motion_sample)
+                return {
+                    'source_url': candidate['preview_video_url'],
+                    'transport': 'direct_url',
+                    'contact_sheet': {'path': 'contact-sheet.jpg', 'bytes': 1, 'sha256': 'x'},
+                }
+
+            with patch('media.preview_review_materializer._download', side_effect=RuntimeError('image blocked')):
+                with patch('media.preview_review_materializer._materialize_motion_evidence', side_effect=fake_motion):
+                    result = materialize(
+                        source,
+                        Path(tmp) / 'evidence',
+                        include_motion_evidence=True,
+                        contact_sheets_only=True,
+                    )
+
+        self.assertTrue(result['contact_sheets_only'])
+        self.assertFalse(result['motion_sample_requested'])
+        self.assertEqual(result['motion_evidence_count'], 1)
+
+    def test_shared_background_policy_keeps_editorial_ownership_in_chatgpt(self):
+        policy = Path('youtube-shorts-bot/docs/background-media-strategy.md').read_text(encoding='utf-8')
+        self.assertIn('private Background Management review-evidence artifact', policy)
+        self.assertIn('review-evidence/<request_id>.json', policy)
+        self.assertIn('contact-sheet.jpg', policy)
+        self.assertIn('GitHub Actions must never set `verified_preview`', policy)
+        self.assertIn('transport-only', policy)
+
+
+if __name__ == '__main__':
+    unittest.main()
+'''
+          Path('youtube-shorts-bot/tests/test_background_review_transport.py').write_text(tests, encoding='utf-8')
+
+          discovery_tests = Path('youtube-shorts-bot/tests/test_pexels_discovery.py')
+          text = discovery_tests.read_text(encoding='utf-8')
+          if 'test_review_preview_prefers_small_exact_rendition' not in text:
+              text += r'''
+
+
+def test_review_preview_prefers_small_exact_rendition():
+    video = _video(201, 90, width=3840, height=2160, file_width=3840, file_height=2160)
+    video["video_files"].insert(0, {
+        "id": 2011,
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "file_type": "video/mp4",
+        "quality": "sd",
+        "link": "https://videos.pexels.com/video-files/201/review-640.mp4",
+    })
+    candidate = discovery._eligible_candidate(video, "city_motion", "city traffic")
+    assert candidate is not None
+    assert candidate["production_suitable_rendition_count"] == 1
+    assert candidate["preview_video_width"] == 640
+    assert candidate["preview_video_height"] == 360
+    assert candidate["preview_video_url"].endswith("review-640.mp4")
+'''
+              discovery_tests.write_text(text, encoding='utf-8')
+
+          background_section = r'''Daily and Ad-hoc share one readiness/replenishment path:
+
+```text
+audit -> REPLENISH -> immutable discovery request
+      -> Background Management/Pexels API filters duration + rendition eligibility
+      -> Background Management downloads/reads the exact Pexels preview rendition
+      -> FFmpeg creates small representative JPEG contact sheets
+      -> short-lived private GitHub artifact + immutable review-evidence index
+      -> ChatGPT/Work downloads that exact artifact through the GitHub connection
+      -> ChatGPT inspects the actual contact-sheet pixels and assigns approval + semantics
+      -> immutable readiness manifest -> Background Management re-enriches/persists
+      -> refresh main -> audit again -> PASS -> planning continues
+```
+
+Provider discovery is deliberately split from editorial review. `media.pexels_discovery` may use the GitHub-held `PEXELS_API_KEY` to fetch exact provider metadata and discard clips below the live atomic-duration minimum or without a production-suitable rendition. For review transport it records the smallest useful exact provider rendition, while production suitability remains independently required. Background Management may perform **transport-only** media work: fetch/read those exact URLs, derive JPEG contact sheets, upload a private artifact and persist an immutable artifact index. It must not set `verified_preview=true`, invent semantic tags/scores, approve/reject a source, or write reviewed assets directly to the registry. ChatGPT/Work remains the sole visual/editorial approval owner.
+
+A discovery request is an immutable JSON object under `content/background-sourcing/discovery-requests/` containing exactly `schema_version`, `plan_date`, `request_id`, and `max_candidates`. Background Management writes the matching immutable provider result under `content/background-sourcing/discovery-results/` and the matching immutable transport index under `content/background-sourcing/review-evidence/<request_id>.json`. The index records the Background Management workflow run ID, artifact ID/name/digest, evidence-manifest SHA-256 and contact-sheet provider IDs so ChatGPT can retrieve the exact private artifact without guessing. The discovery result plus transport index are evidence transport, not admission decisions.'''
+          strategy = Path('youtube-shorts-bot/docs/background-media-strategy.md')
+          text = strategy.read_text(encoding='utf-8')
+          start = text.index('Daily and Ad-hoc share one readiness/replenishment path:')
+          end = text.index('Readiness PASS requires', start)
+          text = text[:start] + background_section + '\n\n' + text[end:]
+          preview_section = r'''## Preview-review evidence
+
+`verified_preview=true` means ChatGPT/Work reviewed **actual visual evidence for the exact Pexels source** before proposing it. GitHub transport success alone is never approval.
+
+The preferred transport is the **private Background Management review-evidence artifact**. For every new discovery result, Background Management uses `media.preview_review_materializer --contact-sheets-only` to read the exact immutable Pexels preview URLs and produce compact JPEG contact sheets. It uploads only lightweight review evidence, not the source video, using the deterministic artifact name `background-review-evidence-<request_id>` with a three-day retention window. It then commits `content/background-sourcing/review-evidence/<request_id>.json` containing the exact workflow run ID, artifact ID/name/digest, evidence-manifest hash and provider IDs with contact sheets.
+
+Planner review order:
+
+1. Read the immutable discovery result and matching `review-evidence/<request_id>.json`.
+2. Through the authorized GitHub connection, retrieve artifacts for the indexed Background Management `workflow_run_id`, require the indexed artifact ID/name/digest to match, and download that artifact. The connector-provided ZIP is an acceptable exact file-transfer bridge into ChatGPT/Work local storage.
+3. Extract the ZIP locally. Verify `evidence-manifest.json` hashes to the index's `evidence_manifest_sha256` and that provider IDs/source URLs correspond to the immutable discovery result.
+4. Inspect the actual `*/contact-sheet.jpg` pixels (and `*/preview.jpg` when useful). Contact sheets contain representative frames from the exact provider preview rendition. ChatGPT/Work decides approval, semantic tags, motion/readability judgments and scores.
+5. Reject candidate-specific missing/unsuitable evidence and continue through reserves. Never convert transport success directly into `verified_preview=true`.
+
+If the private artifact is unavailable, expired, or candidate-specific extraction failed, native exact-source provider inspection and ChatGPT-local exact download remain valid fallbacks. `media.preview_review_materializer --input-dir` remains available when another exact transfer surface can stage `preview.jpg` or `preview.mp4`. These are fallback transports; the private Background Management artifact exists specifically so local Python outbound HTTPS is not required.
+
+GitHub Actions may download/read exact provider media and derive contact sheets because that is **transport-only** processing. GitHub Actions must never set `verified_preview`, assign semantic metadata, approve/reject a source, create a readiness manifest, or otherwise perform ChatGPT-owned editorial judgment. Metadata, title, tags, duration, or artifact creation alone are not enough to approve a clip.
+
+`EVIDENCE_ACCESS_BLOCKED` is valid only after the indexed private artifact and all other trustworthy exact-source transports available to the run are unusable for the candidates still needed for readiness. A successful Background Management run that should have produced evidence but has no matching immutable review-evidence index is an infrastructure/contract failure, not a creative rejection. If the matching run/index is still legitimately in progress beyond the shared bounded continuation window, use `DEFERRED_REPLENISHMENT`.
+
+Background Management remains the hard technical admission boundary after ChatGPT review: it re-fetches official Pexels metadata/renditions and validates the reviewed readiness manifest before any asset becomes selectable.'''
+          start = text.index('## Preview-review evidence')
+          end = text.index('## New-production visual model', start)
+          strategy.write_text(text[:start] + preview_section + '\n\n' + text[end:], encoding='utf-8')
+
+          shared = r'''## Shared automatic background replenishment and continuation
+
+`REPLENISH` is a recoverable planner state, not a terminal planner failure. Daily and Ad-hoc use this exact shared procedure before freezing final backgrounds or committing a ranked pool.
+
+1. Consume the exact readiness total/category/duration deficits.
+2. Inspect immutable discovery requests/results/readiness manifests, matching `content/background-sourcing/review-evidence/*.json` indexes, and Background Management runs. **Resume a compatible unfinished attempt instead of creating duplicates.**
+3. If no compatible attempt exists, create exactly one immutable discovery request with the live schema and canonical `[media discovery]` convention.
+4. Private Background Management owns deterministic provider discovery, exact-source **transport-only** review evidence generation and readiness persistence. It may read/download the exact Pexels preview media, run FFmpeg to derive representative JPEG contact sheets, upload a private short-lived GitHub artifact, and commit an immutable review-evidence index. It must never perform ChatGPT-owned visual/editorial approval, set `verified_preview`, assign semantic metadata/scores, or create the reviewed readiness manifest.
+5. After triggering/finding the matching Background Management discovery/review run, poll/refresh for up to 10 minutes rather than returning just because it is queued/in progress. Normal continuation requires the matching immutable discovery result **and** `content/background-sourcing/review-evidence/<request_id>.json`. A terminal workflow failure is infrastructure/authentication failure. A still-running required run at the bounded deadline is `DEFERRED_REPLENISHMENT`, preserving the immutable attempt identity.
+6. Review the discovery set using actual exact-source pixels. The preferred transport is the indexed private Background Management artifact:
+   - Read the review-evidence index and use its exact `workflow_run_id`, `artifact_id`, `artifact_name`, `artifact_digest`, and `evidence_manifest_sha256`; never guess a run or artifact.
+   - Through the authorized GitHub connection, list the indexed run's artifacts, require ID/name/digest consistency, download the exact artifact ZIP, and extract it into local working storage. Connector-delivered artifact files are a canonical transfer bridge and do not require local outbound internet.
+   - Verify the extracted `evidence-manifest.json` SHA-256 equals the index and verify provider IDs/source URLs against the immutable discovery result.
+   - Inspect the actual `*/contact-sheet.jpg` pixels (and exact `*/preview.jpg` where useful). Artifact creation is transport evidence only; ChatGPT/Work remains the sole approval/semantic owner.
+   - Reject candidate-specific missing/unsuitable evidence and continue through remaining candidates/reserves.
+
+   If the indexed artifact is unavailable/expired or a candidate needs another surface, fall back to native exact Pexels inspection, exact preview-image download, or exact preview-video staging. `media.preview_review_materializer --input-dir` remains the canonical local helper for bytes moved by another trustworthy transport. Never substitute a visually similar source.
+
+   `EVIDENCE_ACCESS_BLOCKED` is legal only after the indexed private artifact and every other trustworthy exact-source visual transport available to the run are unusable for the remaining candidates needed for readiness. A successful required Background Management run with a missing/mismatched review-evidence index or artifact is `REVIEW_EVIDENCE_TRANSPORT_FAILED`, an infrastructure/contract problem, not a creative/content failure. If the required run is merely still pending after the bounded wait, use `DEFERRED_REPLENISHMENT`.
+7. Create exactly one immutable readiness manifest from visually approved candidates only. Re-check immutable state first and never overwrite an earlier attempt.
+8. Commit the readiness manifest so Background Management performs canonical provider re-enrichment/persistence and reserve fallback.
+9. Poll/refresh that required ingestion run for up to 10 minutes. Continue as soon as the registry commit appears; terminal failure is infrastructure/authentication failure and a still-running job at the bounded deadline is `DEFERRED_REPLENISHMENT`.
+10. Refresh current `main`, apply planner drift policy, rerun `planner_contract` and `media_readiness`, and repeat replenishment if still required. Candidate finalization may begin only after `PASS`.
+
+A `DEFERRED_REPLENISHMENT` report must include profile, plan date, source SHA, immutable request/result/index paths, required workflow run ID/status, current deficits and exact continuation point, and must state that no ranked pool/request was created. Do not create a second discovery request because a required run is still working.
+
+Do not bypass provider discovery, fabricate metadata, or move creative/editorial approval into GitHub Actions. Private GitHub Actions may perform deterministic provider/media **transport** work; ChatGPT/Work performs the visual decision.'''
+          replace_between(
+              'docs/private/PLANNER_PROMPT.md',
+              '## Shared automatic background replenishment and continuation',
+              '## Shared precommit engine',
+              shared,
+          )
+
+          profile_review = r'''Once a matching immutable discovery result exists, continue through visual review and readiness-manifest creation in the **same planner invocation**. Follow the shared artifact-first evidence contract in `docs/private/PLANNER_PROMPT.md` and `docs/background-media-strategy.md`:
+
+1. Require the matching immutable `content/background-sourcing/review-evidence/<request_id>.json` produced by private Background Management. If the required Background Management run is still legitimately building/uploading evidence, use the shared bounded continuation window rather than returning early.
+2. Use the index's exact workflow run ID and artifact ID/name/digest to retrieve the private `background-review-evidence-<request_id>` artifact through the GitHub connection. Download/extract it into local working storage, verify `evidence-manifest.json` against the indexed SHA-256 and immutable discovery result, then inspect the actual `*/contact-sheet.jpg` pixels. GitHub generated the frames but did **not** approve them; ChatGPT/Work owns approval and semantic metadata.
+3. If the artifact is unavailable/expired or individual evidence is insufficient, exhaust native exact-source Pexels inspection and exact local preview-image/video transfer, including `media.preview_review_materializer --input-dir` when applicable. Reject inaccessible candidates individually and continue reserves.
+4. `EVIDENCE_ACCESS_BLOCKED` is legal only after the private indexed artifact plus all other trustworthy exact-source visual channels are unusable for the remaining candidates needed for readiness. A successful required Background Management run with a missing/mismatched artifact/index is `REVIEW_EVIDENCE_TRANSPORT_FAILED`, not a creative failure.
+5. If too few candidates survive visual review, continue the next immutable discovery attempt under the same deficits; never weaken `verified_preview`.
+
+Do not bypass discovery results by guessing provider metadata. Private GitHub Actions may perform exact-source transport/download/FFmpeg contact-sheet generation, but must never set `verified_preview`, approve/reject candidates, assign semantic metadata, or author the readiness manifest. No separate manual seed/populate step is required.'''
+          replace_between(
+              'youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md',
+              'Once a matching immutable discovery result exists',
+              '## Sequence background contract',
+              profile_review,
+          )
+          replace_between(
+              'youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md',
+              'Once a matching immutable discovery result exists',
+              '## Sequence background contract',
+              profile_review,
+          )
+          PY
+
+      - name: Validate patch
+        shell: bash
+        env:
+          PYTHONPATH: youtube-shorts-bot
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            youtube-shorts-bot/media/preview_review_materializer.py \
+            youtube-shorts-bot/media/pexels_discovery.py \
+            youtube-shorts-bot/tests/test_background_review_transport.py \
+            youtube-shorts-bot/tests/test_pexels_discovery.py
+          python -m unittest discover -s youtube-shorts-bot/tests -p 'test_background_review_transport.py' -v
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'youtube-shorts-bot')
+          from media import pexels_discovery as d
+          video = {
+              'id': 1, 'duration': 90, 'width': 3840, 'height': 2160,
+              'url': 'https://www.pexels.com/video/example-1/',
+              'image': 'https://images.pexels.com/videos/1/preview.jpg',
+              'user': {'name': 'Tester'},
+              'video_files': [
+                  {'id': 11, 'width': 640, 'height': 360, 'fps': 30, 'file_type': 'video/mp4', 'quality': 'sd', 'link': 'https://videos.pexels.com/video-files/1/small.mp4'},
+                  {'id': 12, 'width': 3840, 'height': 2160, 'fps': 30, 'file_type': 'video/mp4', 'quality': 'uhd', 'link': 'https://videos.pexels.com/video-files/1/large.mp4'},
+              ],
+          }
+          candidate = d._eligible_candidate(video, 'city_motion', 'city traffic')
+          assert candidate['preview_video_width'] == 640
+          assert candidate['production_suitable_rendition_count'] == 1
+          print('Low-bandwidth exact review rendition PASS')
+          PY
+
+      - name: Commit fix and remove migrator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name skyfremen
+          git config user.email skyfremen@me.com
+          git rm .github/workflows/apply-background-review-bridge.yml
+          git add \
+            .github/workflows/background-management.yml \
+            docs/private/PLANNER_PROMPT.md \
+            youtube-shorts-bot/docs/background-media-strategy.md \
+            youtube-shorts-bot/media/preview_review_materializer.py \
+            youtube-shorts-bot/media/pexels_discovery.py \
+            youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md \
+            youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md \
+            youtube-shorts-bot/tests/test_background_review_transport.py \
+            youtube-shorts-bot/tests/test_pexels_discovery.py
+          git commit -m '[media review] bridge Pexels contact sheets through Background Management'
+          git pull --rebase origin main
+          git push origin HEAD:main
