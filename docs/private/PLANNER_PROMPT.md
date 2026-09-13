@@ -86,13 +86,30 @@ PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
   --include-motion-evidence
 ```
 
-   - If local Python networking is unavailable but another exact download primitive is available, download the exact immutable `preview_video_url`/`preview_image_url` through that surface, then inspect/extract representative local frames with available tooling. Local Python outbound HTTP is therefore **not** a correctness dependency.
+   - If local Python networking is unavailable but another exact download/file-transfer primitive is available, use that transport to obtain the exact immutable `preview_image_url` and/or `preview_video_url`. Stage the bytes under the deterministic provider-ID layout:
+
+```text
+<temporary-input-dir>/<provider_asset_id>/preview.jpg
+<temporary-input-dir>/<provider_asset_id>/preview.mp4
+```
+
+   Then feed the staged exact bytes back through the same canonical helper:
+
+```bash
+PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
+  --discovery-result <discovery-result.json> \
+  --input-dir <temporary-input-dir> \
+  --output-dir <temporary-review-evidence-dir> \
+  --include-motion-evidence
+```
+
+   The helper prefers staged local bytes when present, preserves the immutable preview URL as source identity in the evidence manifest, and derives representative contact sheets/motion samples from local video with FFmpeg. `preview.jpeg`, `preview.png`, `preview.webp`, `preview.mov`, and `preview.webm` are also accepted. Staged bytes must come from that exact candidate's immutable preview URL; a similar-looking substitute is prohibited. Local Python outbound HTTP is therefore **not** a correctness dependency.
    - A public/runtime review-evidence workflow may exist as an optional non-blocking fallback transport, but it is never required for canonical planner continuation. Its absence, startup failure, expired artifact, or terminal failure must not block the planner when local or native exact-source evidence is available.
    - Failure of one evidence transport must cause the planner to try the next available exact-source transport rather than terminate the replenishment attempt.
 
    Inspect actual pixels for every proposed source. If a still image is genuinely insufficient to judge a candidate and an exact-source video/representative-frame surface is available, inspect representative frames or short playback; full-length/end-to-end playback is unnecessary. A successful fetch/extraction is **not** approval: ChatGPT/Work must still make the semantic/visual decision. Metadata-only approval remains prohibited. Reject candidates whose exact-source evidence remains inaccessible or is visually unsuitable and continue through the remaining discovery set. If too few candidates survive, continue with the next immutable discovery attempt under the same readiness deficits rather than weakening review.
 
-   Only when **all available exact-source visual channels** are genuinely unusable for the discovery set may the planner stop before a readiness manifest. Report this as `EVIDENCE_ACCESS_BLOCKED`, include the attempted evidence channels and affected discovery-result path, and do not mislabel it `DEFERRED_REPLENISHMENT`.
+   If any generic download/file-transfer primitive can retrieve exact preview bytes, the staged `--input-dir` path above is mandatory before `EVIDENCE_ACCESS_BLOCKED` is legal. Only when **all available exact-source visual channels** are genuinely unusable for the discovery set may the planner stop before a readiness manifest. Report this as `EVIDENCE_ACCESS_BLOCKED`, include the attempted evidence channels and affected discovery-result path, and do not mislabel it `DEFERRED_REPLENISHMENT`.
 7. Create exactly one immutable readiness manifest from visually approved candidates only. Before writing it, re-check whether that attempt already has a manifest or accepted registry update; reuse existing state on retry.
 8. Commit the readiness manifest so Background Management performs canonical provider re-enrichment/persistence and reserve fallback.
 9. Again, **do not stop merely because this second Background Management run is queued/in progress**. Poll/refresh for up to 10 minutes. Continue as soon as the registry commit appears. A terminal workflow failure is an infrastructure/authentication failure; a still-running job at the bounded deadline is `DEFERRED_REPLENISHMENT`, not planner failure.
@@ -100,7 +117,7 @@ PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
 
 `DEFERRED_REPLENISHMENT` is valid only when a **required** matching Background Management discovery or readiness-ingestion workflow is still legitimately queued/in-progress after its bounded wait. It is **not** valid merely because visual review remains, because local Python lacks outbound HTTP, because a browser/connector cannot render one provider URL, because an optional public evidence workflow failed, or because one candidate's preview/extraction failed. A `DEFERRED_REPLENISHMENT` report must include profile, plan date, rules/source SHA used before drift refresh, discovery request ID/path, matching required workflow run ID/status, matching discovery-result/readiness-manifest paths if present, current readiness deficits, and the exact continuation point. It must explicitly say that no ranked pool/request was created. This state is resumable and must never be described as a creative/content failure.
 
-Do not bypass provider discovery by guessing metadata from public pages. Do not move creative/editorial review into GitHub Actions. Do not create a second discovery request simply because an existing required workflow is still running. Do not make Git, local Python outbound HTTP, or any public review-evidence workflow a prerequisite for visual review: exhaust the available exact-source native/local surfaces according to step 6, reject candidate-specific evidence failures individually, and use `EVIDENCE_ACCESS_BLOCKED` only when no trustworthy exact-source visual channel remains usable.
+Do not bypass provider discovery by guessing metadata from public pages. Do not move creative/editorial review into GitHub Actions. Do not create a second discovery request simply because an existing required workflow is still running. Do not make Git, local Python outbound HTTP, or any public review-evidence workflow a prerequisite for visual review: exhaust the available exact-source native/local surfaces according to step 6, including the staged `--input-dir` path whenever another exact file-transfer mechanism works, reject candidate-specific evidence failures individually, and use `EVIDENCE_ACCESS_BLOCKED` only when no trustworthy exact-source visual channel remains usable.
 
 ## Shared precommit engine
 
