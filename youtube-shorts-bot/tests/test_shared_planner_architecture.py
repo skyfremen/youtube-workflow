@@ -33,6 +33,10 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             contract["shared_implementation"]["precommit"],
             "planning.planner_precommit",
         )
+        self.assertEqual(
+            contract["shared_implementation"]["drift_classification"],
+            "planning.planner_drift",
+        )
 
     def test_profiles_cannot_own_shared_validation_contracts(self):
         self.assertTrue(assert_profiles_do_not_override_shared_contract())
@@ -72,39 +76,64 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertEqual(daily_precommit.PROFILE, "daily")
         self.assertEqual(adhoc_precommit.PROFILE, "adhoc")
 
-    def test_materialization_excludes_downstream_and_compatibility_modules(self):
+    def test_connector_fallback_excludes_downstream_modules(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         shared = set(manifest["shared_required_python_files"])
-        self.assertEqual(manifest["materialization_mode"], "shared_plus_selected_profile")
+        self.assertEqual(
+            manifest["materialization_mode"], "shared_plus_selected_profile"
+        )
         self.assertEqual(len(shared), 14)
-        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
+        self.assertNotIn(
+            "youtube-shorts-bot/planning/ranked_promotion.py", shared
+        )
         self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
-        self.assertNotIn("youtube-shorts-bot/planning/daily_precommit.py", shared)
-        self.assertNotIn("youtube-shorts-bot/planning/adhoc_precommit.py", shared)
+        self.assertNotIn(
+            "youtube-shorts-bot/planning/daily_precommit.py", shared
+        )
+        self.assertNotIn(
+            "youtube-shorts-bot/planning/adhoc_precommit.py", shared
+        )
         self.assertFalse(any(path.endswith("/__init__.py") for path in shared))
         for profile in ("daily", "adhoc"):
             entry = manifest["profile_required_files"][profile]
             self.assertEqual(entry["python_files"], [])
             self.assertEqual(entry["data_files"], [])
 
-    def test_materialization_keeps_git_and_actions_out_of_planner_bootstrap(self):
+    def test_git_is_preferred_without_becoming_a_hard_dependency(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["planner_bootstrap"]["preferred"], "git")
+        self.assertEqual(
+            manifest["planner_bootstrap"]["fallback"],
+            "connector_materialization",
+        )
+        self.assertTrue(manifest["git_checkout"]["preferred"])
         self.assertFalse(manifest["git_required"])
         self.assertFalse(manifest["git_executable_required"])
         self.assertFalse(manifest["checkout_required"])
-        self.assertIn("GitHub Actions planner execution", manifest["forbidden_bootstrap_requirements"])
-        self.assertEqual(
-            manifest["immutable_cache"]["primary_key"],
-            "rules_source_sha",
+        self.assertIn(
+            "GitHub Actions planner execution",
+            manifest["forbidden_bootstrap_requirements"],
         )
-        self.assertFalse(manifest["immutable_cache"]["correctness_dependency"])
+        self.assertIn(
+            "synthetic HEAD", manifest["forbidden_bootstrap_requirements"]
+        )
+        self.assertFalse(
+            manifest["immutable_cache"]["correctness_dependency"]
+        )
 
     def test_shared_prompt_is_canonical_for_bootstrap(self):
-        shared = (REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        shared = (
+            REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
+        ).read_text(encoding="utf-8")
+        daily = (
+            BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md"
+        ).read_text(encoding="utf-8")
+        adhoc = (
+            BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md"
+        ).read_text(encoding="utf-8")
         self.assertIn("one planner", shared.lower())
         self.assertIn("planning.planner_precommit", shared)
+        self.assertIn("planning.planner_drift", shared)
         self.assertIn("docs/private/PLANNER_PROMPT.md", daily)
         self.assertIn("docs/private/PLANNER_PROMPT.md", adhoc)
         self.assertIn("--profile daily", daily)

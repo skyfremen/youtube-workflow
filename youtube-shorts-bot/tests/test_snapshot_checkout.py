@@ -11,7 +11,9 @@ SOURCE_SHA = "1" * 40
 
 
 def _blob_sha(data):
-    return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
+    return hashlib.sha1(
+        f"blob {len(data)}\0".encode("ascii") + data
+    ).hexdigest()
 
 
 def test_git_blob_sha_matches_git_object_format():
@@ -44,7 +46,9 @@ def test_snapshot_manifest_verifies_materialized_bytes(tmp_path, monkeypatch):
     assert verify_snapshot_manifest(manifest, SOURCE_SHA) == []
 
 
-def test_snapshot_manifest_fails_when_materialized_bytes_change(tmp_path, monkeypatch):
+def test_snapshot_manifest_fails_when_materialized_bytes_change(
+    tmp_path, monkeypatch
+):
     monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
     path = tmp_path / "rule.txt"
     original = b"original\n"
@@ -55,7 +59,9 @@ def test_snapshot_manifest_fails_when_materialized_bytes_change(tmp_path, monkey
             {
                 "schema_version": 1,
                 "source_sha": SOURCE_SHA,
-                "files": [{"path": "rule.txt", "blob_sha": _blob_sha(original)}],
+                "files": [
+                    {"path": "rule.txt", "blob_sha": _blob_sha(original)}
+                ],
             }
         ),
         encoding="utf-8",
@@ -64,7 +70,9 @@ def test_snapshot_manifest_fails_when_materialized_bytes_change(tmp_path, monkey
     assert any("snapshot blob mismatch" in error for error in errors)
 
 
-def test_bootstrap_makes_rev_parse_head_equal_source_sha(tmp_path, monkeypatch):
+def test_bootstrap_refuses_to_create_synthetic_git_metadata(
+    tmp_path, monkeypatch
+):
     monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
     path = tmp_path / "rule.txt"
     data = b"verified\n"
@@ -82,18 +90,104 @@ def test_bootstrap_makes_rev_parse_head_equal_source_sha(tmp_path, monkeypatch):
     )
 
     result = bootstrap_snapshot(SOURCE_SHA, str(manifest))
-    assert result["status"] == "PASS"
-    assert result["source_mode"] == "github_snapshot"
-    assert subprocess.check_output(
+    assert result["status"] == "FAIL"
+    assert not (tmp_path / ".git").exists()
+    assert any("synthetic Git metadata is prohibited" in error for error in result["errors"])
+
+
+def test_bootstrap_accepts_clean_real_checkout_at_exact_sha(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=tmp_path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "test"],
+        cwd=tmp_path,
+        check=True,
+    )
+    path = tmp_path / "file.txt"
+    path.write_text("x\n", encoding="utf-8")
+    subprocess.run(["git", "add", "file.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "test"], cwd=tmp_path, check=True)
+    source_sha = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
-    ).strip() == SOURCE_SHA
+    ).strip()
+    data = path.read_bytes()
+    manifest = tmp_path / "snapshot.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "source_sha": source_sha,
+                "files": [{"path": "file.txt", "blob_sha": _blob_sha(data)}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = bootstrap_snapshot(source_sha, str(manifest))
+    assert result["status"] == "PASS"
+    assert result["source_mode"] == "checkout"
+    assert result["resolved_head"] == source_sha
+
+
+def test_bootstrap_refuses_dirty_real_checkout(tmp_path, monkeypatch):
+    monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=tmp_path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "test"],
+        cwd=tmp_path,
+        check=True,
+    )
+    path = tmp_path / "file.txt"
+    path.write_text("x\n", encoding="utf-8")
+    subprocess.run(["git", "add", "file.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "test"], cwd=tmp_path, check=True)
+    source_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
+    ).strip()
+    data = path.read_bytes()
+    manifest = tmp_path / "snapshot.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "source_sha": source_sha,
+                "files": [{"path": "file.txt", "blob_sha": _blob_sha(data)}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    path.write_text("dirty\n", encoding="utf-8")
+
+    result = bootstrap_snapshot(source_sha, str(manifest))
+    # Manifest check catches changed tracked bytes before checkout cleanliness.
+    assert result["status"] == "FAIL"
 
 
 def test_bootstrap_refuses_mismatched_existing_checkout(tmp_path, monkeypatch):
     monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.name", "test"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=tmp_path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "test"],
+        cwd=tmp_path,
+        check=True,
+    )
     (tmp_path / "file.txt").write_text("x\n", encoding="utf-8")
     subprocess.run(["git", "add", "file.txt"], cwd=tmp_path, check=True)
     subprocess.run(["git", "commit", "-qm", "test"], cwd=tmp_path, check=True)

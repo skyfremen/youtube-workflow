@@ -1,46 +1,57 @@
 # Wacky Dramas — Shared Planner Execution Contract
 
-Daily and Ad-hoc are profiles of **one planner**. This file is the canonical shared execution/materialization contract. `youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md` and `youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md` select a profile and add only mode-specific instructions.
+Daily and Ad-hoc are profiles of **one planner**. This file is the canonical shared bootstrap, execution, materialization and drift contract. `youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md` and `youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md` select a profile and add only mode-specific instructions.
 
 If older mode-specific rule text duplicates execution-environment/bootstrap or planner-source-read instructions, this shared contract wins. Creative/business rules in the mode-specific rules remain mandatory unless current executable repository code/configuration supersedes them.
 
 ## Repository-first identity
 
-1. Inspect current `main` of `skyfremen/youtube-workflow` through the GitHub API/connector.
-2. Retain the exact immutable 40-character commit SHA as `rules_source_sha`.
-3. Read `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` from that exact SHA.
-4. Select the requested profile: `daily` or `adhoc`.
-5. Fetch only `shared_required_python_files`, `shared_required_data_files`, and the selected profile additions declared by the manifest for executable planner bootstrap.
-6. Fetch every source path from the exact `rules_source_sha`.
+The planner identity remains one explicit immutable 40-character `rules_source_sha`. Git is now the **preferred source-acquisition path**, not the identity itself.
 
-Do **not** separately fetch `planning/ranked_promotion.py`, `publishing/upload.py`, compatibility precommit wrappers, package `__init__` files, or opposite-profile implementation files merely to execute planner-time Python. Those are downstream/compatibility surfaces and are intentionally excluded from the canonical materialization set. Inspect them only when the user explicitly requests downstream verification or when resolving a concrete contract discrepancy.
+1. Prefer an already-authorized local Git repository for `skyfremen/youtube-workflow`; otherwise obtain one when Git access is available.
+2. Run `git fetch origin main --prune`.
+3. Resolve current main with `git rev-parse origin/main` and retain that exact SHA as `rules_source_sha`.
+4. Create a clean detached worktree/check-out at exactly that SHA, for example `git worktree add --detach <temporary-planner-path> <rules_source_sha>`.
+5. Verify `git rev-parse HEAD` equals `rules_source_sha` and `git status --porcelain` is empty in the planner snapshot.
+6. Read `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` from that exact snapshot and select `daily` or `adhoc`.
 
-A Git checkout, Git executable, `.git` directory, authenticated clone, repository archive, whole-repository download, synthetic HEAD, automatic connector filesystem mount, special connector bridge, or GitHub Actions planner job is **not** a planner prerequisite.
+Reuse the Git object database/clone when the environment permits persistence. **Do not require a fresh clone per invocation.** Persistence is an optimization, never a correctness dependency.
 
-## Exact connector materialization
+Do not execute planner Python from the user's mutable working branch or from a dirty planner worktree. Uncommitted changes in another worktree must not contaminate the detached planner snapshot.
 
-Prefer a complete UTF-8 fetch. When a connector response is clipped/truncated, refetch exact non-overlapping line ranges from the same path and same SHA until complete. Preserve newline boundaries.
+## Connector/API fallback
 
-For chunked files, and preferably every file, verify bytes using Git's blob hash algorithm without invoking Git:
+Git authentication or Git availability is **not** a hard architectural dependency. If current `main` cannot be fetched and verified through Git, use the exact-SHA connector/API materialization described by `planning/PLANNER_MATERIALIZATION.json`.
 
-`sha1(b"blob " + ascii_decimal_byte_length + b"\0" + content_bytes)`
+The connector fallback must:
 
-The result must equal the connector-returned Git blob SHA.
+- resolve current `main` through the GitHub API/connector;
+- pin one exact `rules_source_sha`;
+- fetch only the declared shared source/data plus selected-profile additions;
+- fetch every path from the same SHA;
+- reconstruct clipped files only from non-overlapping ranges at the same SHA;
+- verify chunked bytes, and preferably all bytes, with Git blob-SHA semantics;
+- never mix source/state from different commits.
 
-Write verified bytes into an ordinary temporary directory preserving repository-relative paths. Set `PYTHONPATH` to the materialized `youtube-shorts-bot` directory.
+The connector fallback runs in an ordinary temporary directory and must continue to work without `.git` or a Git executable.
 
-## Optional immutable-SHA cache
+If neither an exact Git snapshot nor exact-SHA connector materialization can be obtained, **fail closed**. Never fall back to stale local source.
 
-A previously blob-verified materialization may be reused only for the identical `rules_source_sha` and manifest entry. The cache is an optimization, never a correctness dependency.
+## No synthetic repository identity
 
-- Never cache by `main`, date, or filename alone.
-- Shared files may be reused across Daily and Ad-hoc at the same SHA.
-- When `main` resolves to a different SHA, treat it as a cold snapshot.
-- Never mix source bytes from different SHAs.
+Do not manufacture `.git`, a fake branch/ref, or a synthetic HEAD merely to make `git rev-parse HEAD` return `rules_source_sha`. Git mode uses a real fetched commit. Connector mode passes `rules_source_sha` explicitly and does not pretend to be a checkout.
+
+GitHub Actions planner execution remains prohibited. GitHub Actions is downstream deterministic CI/production only.
+
+## Local repository-state inspection
+
+In Git mode, use the exact detached snapshot for repository-owned planner state: planner code/rules, schemas, background registry, analytics, immutable requests/results/pools and other relevant history. Do not individually refetch those same bytes through the connector when they are already present at the verified SHA.
+
+In connector fallback, materialize only what the manifest requires plus targeted state needed by the selected profile. Do not broaden fallback into an unnecessary whole-repository connector download.
 
 ## Mandatory local Python checkpoints
 
-Run locally in ChatGPT/Work:
+From the exact planner snapshot/materialization run locally in ChatGPT/Work:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_contract
@@ -49,37 +60,77 @@ PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-
 
 Consume actual output. `planner_contract` exposes both profiles and a shared-contract fingerprint. Daily and Ad-hoc must report the same shared fingerprint.
 
-If readiness is `REPLENISH`, complete the current canonical background-replenishment procedure before freezing final backgrounds or committing a ranked pool. Re-read `main` afterward because the accepted registry update changes `rules_source_sha`.
+If readiness is `REPLENISH`, complete the current canonical background-replenishment procedure before freezing final backgrounds or committing a ranked pool. Refresh current `main` afterward because the accepted registry update is planner-relevant media drift.
 
-After complete candidate authorship, execute exactly one shared precommit engine:
+After complete candidate authorship, run exactly one shared precommit engine. In preferred Git mode also attest the detached checkout:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --profile <daily|adhoc> \
   --pool <temporary-pool.json> \
-  --rules-source-sha <rules_source_sha>
+  --rules-source-sha <rules_source_sha> \
+  --verify-git-head
 ```
 
-Compatibility wrappers `planning.daily_precommit` and `planning.adhoc_precommit` may remain for existing callers, but they are not required for planner materialization and must contain no independent validation logic.
+In connector fallback, run the same command **without** `--verify-git-head`; the explicit exact SHA and verified materialized bytes are the authority.
 
-**FAIL CLOSED if the exact pre-commit module cannot be executed** after exact connector-returned source has been materialized. Planner-time Python validation is mandatory. Manual schema checks, hand arithmetic, downstream admission, promotion, or GitHub Actions are not substitutes.
+Compatibility wrappers `planning.daily_precommit` and `planning.adhoc_precommit` may remain for existing callers, but they are not required for planner bootstrap and must contain no independent validation logic.
 
-Do not use `--verify-git-head` for normal ChatGPT/Work planning. It remains optional developer/CI hardening inside a real checkout only.
+**FAIL CLOSED if the exact precommit module cannot execute.** Manual schema checks, hand arithmetic, downstream admission/promotion, or GitHub Actions are not substitutes.
 
-## Shared ownership and drift rule
+## Creative ownership
 
-Shared behavior exists exactly once. If a feature should apply to both profiles, classify it `SHARED` and implement it in shared code/configuration. Profiles may contain only genuine differences such as pool/count policy, identity/uniqueness policy, scheduling/publication mode, and promotion cardinality.
+ChatGPT/Work retains creative ownership: premise generation/rejection, duplicate reasoning, analytics/editorial judgment, full story/title/metadata authoring, voice/punchline semantics, exact logical backgrounds, treatment choices, fallback reasoning and final rank.
 
-Do not add schema, semantic, narration/voice, punchline, background, media-readiness, request-validator, or common publication validation overrides to a profile.
+Python validates contracts. It does not creatively rerank or repair.
 
-ChatGPT/Work retains creative ownership: premise generation/rejection, duplicate reasoning, analytics/editorial judgment, full story/title/metadata authoring, voice/punchline semantics, exact logical backgrounds, treatment choices, fallback reasoning, and final rank.
+## Planner-relevant drift
 
-Python validates contracts; it does not creatively rerank or repair.
+Before committing immutable planner output, refresh current `main`.
 
-## State and final SHA check
+In Git mode:
 
-Materialize only the profile-specific existence/uniqueness placeholders declared by the manifest. Use targeted exact identity checks when sufficient; do not broadly enumerate same-day immutable state merely to prove an exact identity is unused.
+```bash
+git fetch origin main --prune
+LATEST_MAIN_SHA="$(git rev-parse origin/main)"
+```
 
-Before committing immutable planner output, re-read current `main`. If it differs from `rules_source_sha`, refresh the manifest/source/state from the new SHA and rerun contract discovery, media readiness and complete precommit validation. The final pool bytes must match the successful precommit `draft_sha256`.
+If `LATEST_MAIN_SHA == rules_source_sha`, continue.
 
-GitHub Actions remains downstream CI/production only. It is **not** the planner execution engine.
+If it changed, classify the changed paths with:
+
+```bash
+PYTHONPATH=youtube-shorts-bot python -m planning.planner_drift \
+  --base-sha <rules_source_sha> \
+  --head-sha <latest_main_sha>
+```
+
+Apply the returned policy:
+
+- **rules** — planner/validation/media-policy/shared-contract changes: refresh the source snapshot and rerun contract, readiness and complete precommit.
+- **media** — background registry/sourcing/readiness state: refresh media state, rerun readiness, revalidate exact backgrounds and rerun complete precommit.
+- **history** — requests/results/planning pools/analytics: refresh affected creative-history inputs and rerun duplicate/analytics/recent-background reasoning; rerun complete precommit whenever the authored pool bytes change.
+- **operational** — recovery, runtime-progress, completion or diagnostics evidence only: do not restart creative planning solely because HEAD moved.
+- **unknown** — fail safe as a full refresh.
+
+`planning.planner_drift` also reports deterministic `planner_contract_digest`, `media_state_digest` and `creative_history_digest` fingerprints in Git mode.
+
+In connector fallback, if changed paths can be obtained safely from the API/connector, apply the same classifier with repeatable `--changed-path`. If main changed but the changed path set cannot be established safely, conservatively perform a full refresh.
+
+The final immutable pool bytes must exactly match the successful precommit `draft_sha256`.
+
+## Performance diagnostics
+
+Measure planner stages with a monotonic clock where practical and report:
+
+`materialization_mode`, `git_reused`, `bootstrap_ms`, `git_fetch_ms`, `materialization_ms`, `contract_ms`, `media_readiness_ms`, `state_load_ms`, `precommit_ms`, and `commit_ms`.
+
+These diagnostics are observability only. They must not influence creative ranking or validation. Do not add external telemetry infrastructure just to collect them.
+
+## Shared architecture boundary
+
+Shared behavior exists exactly once. If a feature should apply to both profiles, classify it `SHARED` and implement it in shared code/configuration. Profiles may contain only genuine differences such as pool/count policy, identity/uniqueness policy, scheduling/publication mode and promotion cardinality.
+
+Do not add schema, semantic, narration/voice, punchline, background, media-readiness, request-validator or common-publication overrides to a profile.
+
+Git is a fast source-acquisition mechanism, not the planner. ChatGPT/Work owns creative planning; local canonical Python proves the frozen plan is valid; GitHub Actions owns deterministic downstream automation.

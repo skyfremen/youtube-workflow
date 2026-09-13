@@ -85,8 +85,11 @@ def _materialization_summary():
     shared_python = manifest.get("shared_required_python_files") or []
     shared_data = manifest.get("shared_required_data_files") or []
     profile_files = manifest.get("profile_required_files") or {}
+    bootstrap = manifest.get("planner_bootstrap") or {}
     return {
         "manifest_schema_version": manifest.get("schema_version"),
+        "preferred_bootstrap": bootstrap.get("preferred"),
+        "fallback_bootstrap": bootstrap.get("fallback"),
         "shared_python_files": len(shared_python),
         "shared_data_files": len(shared_data),
         "profile_file_counts": {
@@ -100,7 +103,6 @@ def _materialization_summary():
 def build_contract():
     """Return the canonical machine-readable planner contract for both profiles."""
     assert_profiles_do_not_override_shared_contract()
-    shared = _shared_contract_payload()
     fingerprint = _shared_fingerprint()
     profiles = {
         name: {
@@ -120,6 +122,7 @@ def build_contract():
             "candidate_validation": SHARED_CANDIDATE_VALIDATOR,
             "request_validation": SHARED_REQUEST_VALIDATOR,
             "publication_validation": SHARED_PUBLICATION_VALIDATOR,
+            "drift_classification": "planning.planner_drift",
         },
         "profiles": profiles,
         "request_schema_version": SCHEMA_VERSION,
@@ -138,8 +141,13 @@ def build_contract():
         "materialization": _materialization_summary(),
         "execution_environment": {
             "canonical_mode": "explicit_rules_source_sha",
+            "preferred_bootstrap": "git",
+            "fallback_bootstrap": "connector_materialization",
             "materialization_manifest": "planning/PLANNER_MATERIALIZATION.json",
             "materialization_mode": "shared_plus_selected_profile",
+            "git_preferred": True,
+            "git_reuse_preferred": True,
+            "exact_detached_snapshot_required_in_git_mode": True,
             "authenticated_checkout_required": False,
             "git_metadata_required": False,
             "repository_archive_required": False,
@@ -152,6 +160,14 @@ def build_contract():
                 "python -m planning.planner_precommit --profile <daily|adhoc> "
                 "--pool <pool> --rules-source-sha <sha>"
             ),
+            "git_precommit_command": (
+                "python -m planning.planner_precommit --profile <daily|adhoc> "
+                "--pool <pool> --rules-source-sha <sha> --verify-git-head"
+            ),
+            "drift_command": (
+                "python -m planning.planner_drift "
+                "--base-sha <rules_source_sha> --head-sha <latest_main_sha>"
+            ),
             "compatibility_wrappers": {
                 "daily": "python -m planning.daily_precommit",
                 "adhoc": "python -m planning.adhoc_precommit",
@@ -160,17 +176,43 @@ def build_contract():
                 "optional": True,
                 "correctness_dependency": False,
                 "primary_key": "rules_source_sha",
-                "reuse_rule": "reuse only previously blob-verified files for the identical immutable SHA",
+                "git_reuse_rule": (
+                    "reuse the authorized local Git object database/clone, "
+                    "but fetch current main and create a clean exact-SHA detached snapshot"
+                ),
+                "connector_reuse_rule": (
+                    "reuse only previously blob-verified files for the identical immutable SHA"
+                ),
                 "cross_profile_shared_reuse": True,
             },
+            "drift_policy": {
+                "rules": "full_refresh",
+                "media": "media_refresh",
+                "history": "history_refresh",
+                "operational": "continue_without_planner_restart",
+                "unknown": "full_refresh",
+            },
+            "performance_diagnostics": [
+                "materialization_mode",
+                "git_reused",
+                "bootstrap_ms",
+                "git_fetch_ms",
+                "materialization_ms",
+                "contract_ms",
+                "media_readiness_ms",
+                "state_load_ms",
+                "precommit_ms",
+                "commit_ms",
+            ],
             "rules": [
-                "Resolve one exact immutable GitHub main SHA before contract discovery and planning.",
-                "Read planning/PLANNER_MATERIALIZATION.json from that exact SHA.",
-                "Materialize shared_required_* plus only the selected profile additions.",
-                "Verify connector-returned source bytes with Git blob SHA semantics without invoking Git.",
-                "Pass rules_source_sha explicitly to the shared precommit engine.",
-                "Do not require .git, a Git executable, clone, checkout, archive, synthetic HEAD or GitHub Actions planner execution.",
-                "Re-read main before immutable commit and fully refresh/revalidate if the SHA changed.",
+                "Prefer an authorized reusable Git repository and fetch current main before planning.",
+                "Resolve one exact immutable current-main SHA and use it as explicit rules_source_sha.",
+                "In Git mode run planner Python only from a clean detached snapshot whose HEAD equals rules_source_sha.",
+                "If Git cannot obtain the exact current-main snapshot, use the exact-SHA connector materialization fallback.",
+                "Pass rules_source_sha explicitly to the shared precommit engine; in Git mode also use --verify-git-head.",
+                "Never manufacture synthetic Git metadata or a fake HEAD for connector-materialized source.",
+                "GitHub Actions must not execute creative planning.",
+                "If main advances before immutable commit, classify planner-relevant drift and refresh only the affected planner state; unknown drift fails safe as a full refresh.",
             ],
         },
         "media_readiness": {

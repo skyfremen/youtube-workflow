@@ -1,7 +1,32 @@
 {
-  "schema_version": 5,
-  "contract": "gitless_shared_planner_materialization",
+  "schema_version": 6,
+  "contract": "git_first_shared_planner_materialization",
   "materialization_mode": "shared_plus_selected_profile",
+  "planner_bootstrap": {
+    "preferred": "git",
+    "fallback": "connector_materialization",
+    "github_actions_planning": false,
+    "exact_sha_required": true,
+    "reuse_existing_clone_when_available": true,
+    "persistence_is_correctness_dependency": false,
+    "fallback_if_git_unavailable": true
+  },
+  "git_checkout": {
+    "allowed": true,
+    "preferred": true,
+    "repository": "skyfremen/youtube-workflow",
+    "main_ref": "origin/main",
+    "fetch_command": "git fetch origin main --prune",
+    "resolve_sha_command": "git rev-parse origin/main",
+    "snapshot_strategy": "detached_worktree_or_equivalent_clean_detached_checkout",
+    "worktree_command": "git worktree add --detach <temporary-planner-path> <rules_source_sha>",
+    "verify_sha_command": "git rev-parse HEAD",
+    "dirty_guard_command": "git status --porcelain",
+    "reuse_rule": "Reuse an existing authorized local repository when available; otherwise obtain a fresh Git repository. Always fetch current main before resolving rules_source_sha.",
+    "cleanliness_rule": "Planner Python must execute from a clean detached snapshot whose HEAD exactly equals rules_source_sha. Unrelated uncommitted changes in another worktree must not contaminate the planner snapshot.",
+    "authentication_rule": "Use environment-provided Git authorization when available. Authentication failure selects connector_materialization fallback rather than stale local source.",
+    "failure_rule": "If current main cannot be fetched or the exact resolved commit cannot be checked out and verified, use connector_materialization fallback. Never plan from stale Git state."
+  },
   "git_required": false,
   "git_executable_required": false,
   "checkout_required": false,
@@ -11,9 +36,10 @@
   "connector_filesystem_mount_required": false,
   "repository_identity": {
     "field": "rules_source_sha",
-    "source": "GitHub API/connector current-main commit SHA"
+    "source": "Exact current-main commit SHA resolved by preferred Git fetch/rev-parse or by GitHub API/connector fallback"
   },
   "connector_materialization": {
+    "role": "fallback_when_git_is_unavailable_or_cannot_access_the_exact_current_main_snapshot",
     "source_bytes": "The complete decoded UTF-8 content returned by GitHub fetch_file/API responses for the exact requested path and rules_source_sha is the canonical file content.",
     "preferred_fetch": "Fetch the complete file in one response when possible.",
     "chunked_fetch_fallback": {
@@ -36,7 +62,7 @@
       "failure_rule": "Fail closed if reconstructed bytes do not match the connector-returned Git blob SHA."
     },
     "write_rule": "ChatGPT/Work creates parent directories and writes verified connector-returned content directly to ordinary local files at repository-relative paths under a temporary materialization root.",
-    "failure_rule": "Fail closed only when required source ranges cannot be fetched, reconstructed bytes fail blob verification, bytes cannot be written, or a required canonical Python entrypoint fails after writing."
+    "failure_rule": "Fail closed when required source ranges cannot be fetched, reconstructed bytes fail blob verification, bytes cannot be written, or a required canonical Python entrypoint fails after writing."
   },
   "pythonpath_root": "youtube-shorts-bot",
   "shared_required_python_files": [
@@ -70,19 +96,20 @@
       "profile_object": "planning.planner_profiles.ADHOC"
     }
   },
-  "source_rule": "Fetch shared_required_python_files and shared_required_data_files plus only the selected profile's additions from the exact rules_source_sha. Daily and Ad-hoc profiles are declarative objects in the shared planner profile module, so the current profile additions are intentionally empty. No production promotion or publishing module is required for planner-time Python execution.",
+  "source_rule": "Preferred Git mode reads all repository-owned planner state directly from one clean detached checkout at rules_source_sha. Connector fallback materializes shared_required_python_files and shared_required_data_files plus only the selected profile additions from the exact rules_source_sha. No production promotion or publishing module is required merely to execute planner-time Python.",
   "immutable_cache": {
     "enabled_when_environment_supports_reuse": true,
     "correctness_dependency": false,
     "primary_key": "rules_source_sha",
-    "shared_cache_scope": "shared_required_python_files + shared_required_data_files",
+    "shared_cache_scope": "Reusable Git object database/clone in Git mode; shared_required_python_files + shared_required_data_files in connector fallback",
     "profile_cache_scope": "selected profile additions",
     "cross_profile_shared_reuse": true,
-    "validation_rule": "Reuse a cached file only when its previously verified Git blob SHA belongs to the identical rules_source_sha manifest entry.",
-    "sha_change_rule": "A different current-main SHA is a cold source snapshot; never silently reuse source bytes from another SHA."
+    "validation_rule": "Git reuse must fetch current main and create/verify a clean detached exact-SHA snapshot. Connector reuse is valid only when previously verified Git blob SHAs belong to the identical rules_source_sha manifest entry.",
+    "sha_change_rule": "A newer current-main SHA must be classified by planner-relevant drift before reusing prior planning work. Never silently execute planner Python from stale source bytes."
   },
   "planner_state_placeholders": {
-    "rule": "For explicit existence/uniqueness checks, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks.",
+    "scope": "connector_materialization_only",
+    "rule": "For explicit existence/uniqueness checks in connector fallback, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks. Git mode reads the real exact-SHA repository state directly.",
     "adhoc_scheduled_uniqueness": [
       "youtube-shorts-bot/content/requests/wd-<YYYYMMDD>T010000-adhoc-*.json"
     ],
@@ -94,38 +121,59 @@
   "entrypoints": {
     "contract": "python -m planning.planner_contract",
     "media_readiness": "python -m media.media_readiness audit --allow-not-ready",
-    "precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha>"
+    "precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha>",
+    "git_precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha> --verify-git-head",
+    "git_drift": "python -m planning.planner_drift --base-sha <rules_source_sha> --head-sha <latest_main_sha>"
+  },
+  "drift_policy": {
+    "git_classifier": "planning.planner_drift",
+    "unknown_path_rule": "full_refresh",
+    "categories": {
+      "rules": "refresh source snapshot; rerun planner contract, media readiness and complete precommit",
+      "media": "refresh media state; rerun media readiness, background selection validation and complete precommit",
+      "history": "refresh creative/history inputs; rerun duplicate, analytics and recent-background reasoning; rerun complete precommit whenever authored pool bytes change",
+      "operational": "do not restart planning solely for operational evidence/recovery/completion changes"
+    },
+    "fingerprints": [
+      "planner_contract_digest",
+      "media_state_digest",
+      "creative_history_digest"
+    ],
+    "connector_fallback_rule": "If main changes and connector/API tooling cannot provide the changed path set safely, conservatively perform a full refresh. If changed paths are available, apply the same category policy."
+  },
+  "performance_diagnostics": {
+    "persistence": "report_only_unless_a_caller_explicitly_persists_diagnostics",
+    "fields": [
+      "materialization_mode",
+      "git_reused",
+      "bootstrap_ms",
+      "git_fetch_ms",
+      "materialization_ms",
+      "contract_ms",
+      "media_readiness_ms",
+      "state_load_ms",
+      "precommit_ms",
+      "commit_ms"
+    ],
+    "rule": "Measure with a monotonic clock around actual work. Diagnostics are observability only and must not influence creative ranking or validation."
   },
   "compatibility_wrappers_not_required_for_materialization": {
     "daily": "python -m planning.daily_precommit --pool <pool> --rules-source-sha <sha>",
     "adhoc": "python -m planning.adhoc_precommit --pool <pool> --rules-source-sha <sha>"
   },
   "baseline": {
-    "previous_schema_version": 4,
-    "previous_required_python_files": 19,
-    "current_shared_required_python_files": 14,
-    "python_file_count_reduction": 5,
-    "python_file_count_reduction_percent": 26.3,
-    "removed_from_planner_bootstrap": [
-      "package __init__ files",
-      "planning/ranked_promotion.py",
-      "publishing/upload.py",
-      "publishing/__init__.py",
-      "daily/adhoc compatibility wrappers"
-    ]
+    "previous_schema_version": 5,
+    "connector_fallback_shared_python_files": 14,
+    "connector_fallback_shared_data_files": 1,
+    "optimization": "Git-first exact repository snapshots avoid repeated per-file connector reconstruction when Git access is available; connector materialization remains the correctness-preserving fallback."
   },
   "forbidden_bootstrap_requirements": [
-    ".git",
-    "git clone",
-    "git rev-parse",
-    "authenticated checkout",
-    "repository archive",
-    "whole-repository download",
-    "whole-directory source materialization",
-    "automatic connector filesystem mount",
-    "special connector-to-filesystem bridge",
+    "GitHub Actions planner execution",
     "synthetic HEAD",
-    "snapshot bootstrap",
-    "GitHub Actions planner execution"
+    "fake repository identity",
+    "running planner Python from an unpinned mutable checkout",
+    "silently mixing source/state files from different commits",
+    "using stale cached source after current-main fetch failure",
+    "bypassing canonical local planner validation"
   ]
 }
