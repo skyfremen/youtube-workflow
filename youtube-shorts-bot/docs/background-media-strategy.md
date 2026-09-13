@@ -2,14 +2,12 @@
 
 ## Active library lifecycle
 
-`media-library/backgrounds.json` is the **only background registry**. It may validly contain `"assets": []` after a hard reset. Empty or insufficient inventory audits as `REPLENISH`; it is not corruption.
-
-The pre-reset background definitions were destructively removed. There is no legacy background registry, no soft-retirement pool, and no `selection_enabled=false` state. Deleted old logical background IDs are not recoverable through a hidden fallback.
+`media-library/backgrounds.json` is the **only background registry**. It stores reusable **atomic clips**, not Short-specific composites. It may validly contain `"assets": []` after a hard reset. Empty or insufficient inventory audits as `REPLENISH`; it is not corruption.
 
 Daily and Ad-hoc share one readiness/replenishment path:
 
 ```text
-audit -> REPLENISH -> ChatGPT reviews long licensed Pexels sources
+audit -> REPLENISH -> ChatGPT reviews licensed Pexels atomic clips
       -> immutable readiness manifest -> Background Management enriches/persists
       -> refresh main -> audit again -> PASS -> planning continues
 ```
@@ -18,56 +16,72 @@ The planner invocation owns this continuation. Users do not separately seed the 
 
 ## New-production visual model
 
-New requests use schema v6 `fit_to_short`.
+New requests use schema v7 `concatenated_fit_to_short`.
 
-The planner freezes distinct primary/backup logical IDs and one long continuous source range for each slot. The planner does **not** freeze exact playback rate.
+For **each candidate**, ChatGPT freezes:
 
-The public runtime resolves/normalizes the selected rendition, generates TTS, obtains exact final render duration, then derives `playback_rate = selected_unique_source_range / required_background_output_duration`.
+- one primary ordered sequence of 2-3 distinct atomic clips;
+- one backup ordered sequence of 2-3 distinct atomic clips;
+- exact logical background IDs;
+- exact start/duration range for every clip;
+- the exact sequence order.
 
-The job-local background is consumed once. Normal schema-v6 production has `loop_mode=none` and `loop_count=0`.
+Primary and backup sequences must be disjoint. The planner never freezes playback rate and the runtime never creatively reorders or substitutes clips.
 
-Example: a 300.0s selected range over a 151.4s render derives ~1.9815x with zero intentional loops.
+The public runtime resolves and normalizes all clips in the chosen frozen sequence, trims the frozen ranges, concatenates them **once**, generates/uses the exact final render duration, then derives:
+
+`playback_rate = total_unique_sequence_source_seconds / required_background_output_duration`
+
+The combined sequence is consumed once. Normal schema-v7 production has `loop_mode=none` and `loop_count=0`.
 
 ## Duration policy
 
-A new selectable asset requires trusted provider duration and at least the configured continuous-source minimum. Current code uses a 180-second minimum and prefers up to a 300-second continuous range. The live planner contract is authoritative.
+Atomic clips require trusted provider duration and at least **60 seconds**. The registry remains atomic so the same reviewed clip can be used in different future immutable sequence plans without storing composite variants.
 
-A source too short to cover normal production inside allowed rate bounds is excluded/rejected and replenishment supplies a better asset. It is never repaired by looping.
+Each primary/backup sequence must contain 2-3 clips and freeze **210-300 seconds** of total unique source coverage; **240-300 seconds** and 3 clips are preferred. The runtime-derived overall speed must remain within **1.0x-2.5x**.
+
+No clip may repeat within a sequence. Primary and backup sequences may not share an asset. Insufficient coverage is never repaired by looping.
 
 ## Retention-first selection
 
 Backgrounds remain narration-first supporting visuals. High-retention categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel motion and explicitly commercially licensed gameplay.
 
-Continuous progression is a first-class quality requirement: a strong multi-minute process is preferred over an excellent few-second clip that would repeat many times.
+Prefer visually coherent progressions such as cooking + baking + food preparation or crafting + satisfying process + cleaning. Avoid jarring category changes unless the planner has an explicit editorial reason.
 
-Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified, duration-qualified sources are selectable.
+Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified, duration-qualified atomic sources are selectable.
 
 ## Pexels
 
-Pexels remains the canonical automatic provider. ChatGPT visually reviews candidates. Background Management uses the official Pexels API to verify identity, duration and physical rendition metadata before persistence. Short clips below the continuous minimum are rejected during ingestion.
+Pexels remains the canonical automatic provider. ChatGPT visually reviews candidates before `verified_preview=true`. Background Management uses the official Pexels API to verify identity, duration and physical rendition metadata before persistence.
+
+Automatic sourcing should prioritize 60-120 second satisfying clips. A source shorter than the atomic minimum is rejected. A source does **not** need to be 180 seconds long because coverage is provided by the frozen multi-clip sequence.
 
 Random YouTube/TikTok/Instagram/Twitch creator footage is not a substitute for licensed provider footage.
 
 ## Physical rendition and cache
 
-Target remains 1080x1920 at 30 fps using the smallest-sufficient-after-real-9:16-crop policy. Persistent cache identity belongs to the logical/physical normalized source, not a Short-specific speed/range. Fit-to-short output is job-local.
+Target remains 1080x1920 at 30 fps using the smallest-sufficient-after-real-9:16-crop policy. Persistent cache identity belongs to each logical/physical normalized atomic source, not a Short-specific sequence/speed/range. Concatenated fit-to-short output is job-local.
 
 ## Anti-repetition
 
-Successful private receipts remain cross-run creative history. New planning avoids unnecessary reuse of the same asset/category and substantially overlapping ranges. Different non-overlapping ranges from a sufficiently long source may be reused later; merely changing speed over the same range is not meaningful diversity.
+Successful private receipts remain cross-run creative history. New planning avoids unnecessary reuse of the same assets, categories, exact sequences and substantially overlapping temporal ranges. Reordering the same clips is not meaningful diversity by itself.
 
 ## Primary/backup and failure semantics
 
-Both frozen slots must independently satisfy the continuous contract. There is no immortal `satisfying-001`/`satisfying-002` emergency pair and no unrelated third runtime fallback. If neither frozen slot can execute, the candidate fails closed.
+Both frozen sequences must independently satisfy the complete sequence contract. Runtime attempts the frozen primary sequence. If any required primary clip cannot be resolved/executed, it may attempt the **entire frozen backup sequence**. It must never partially mix primary and backup or invent a third fallback.
 
-## Historical request behavior after the hard reset
+If neither frozen sequence can execute, the candidate fails closed.
 
-Schema v4/v5 request structure and execution semantics remain understood for compatibility, but old background definitions are not retained. A historical request whose logical background ID is absent from the current active registry fails closed rather than restoring, importing, or selecting a deleted pre-reset background.
+## Historical request behavior
 
-No recovery path may recreate a deleted background library automatically. If a background is needed again, it must enter `backgrounds.json` through the same current reviewed/licensed readiness path as any other active asset.
+Schema v4/v5/v6 structures and execution semantics remain understood for immutable recovery. Schema v6 retains the historical one-long-source `fit_to_short` behavior and its 180-second minimum; it is not used for new planning.
+
+Deleted pre-reset background definitions are not restored through hidden fallback state. A historical request whose logical ID is absent from the current active registry fails closed.
 
 ## Evidence
 
-For v6 the runtime records source/range/output timing, derived playback rate, hashes and explicit no-loop evidence. Receipt finalization requires `fit_to_short`, `loop_mode=none` and `loop_count=0`.
+For v7 the runtime records the chosen slot, ordered segment IDs/ranges, resolved physical renditions, per-clip hashes, total unique source duration, derived overall playback rate, concatenated output hash and explicit zero-loop evidence.
 
-Dry-run remains a visual production test exercising continuous no-loop treatment while retaining opening card, branding, handle/subscribe UI, captions, word highlighting and semantic punchline emphasis.
+Receipt finalization requires `concatenated_fit_to_short`, `loop_mode=none`, `loop_count=0`, and exact equality between the immutable selected sequence and execution evidence.
+
+Dry-run remains a visual production test retaining opening card, branding, handle/subscribe UI, captions, word highlighting and semantic punchline emphasis while using the no-loop sequence treatment.
