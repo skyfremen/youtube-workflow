@@ -7,10 +7,17 @@
 Daily and Ad-hoc share one readiness/replenishment path:
 
 ```text
-audit -> REPLENISH -> ChatGPT reviews licensed Pexels atomic clips
-      -> immutable readiness manifest -> Background Management enriches/persists
+audit -> REPLENISH -> immutable discovery request
+      -> Background Management/Pexels API filters duration + rendition eligibility
+      -> immutable discovery result with exact-source preview evidence URLs
+      -> ChatGPT reviews actual visual evidence and assigns semantic metadata
+      -> immutable readiness manifest -> Background Management re-enriches/persists
       -> refresh main -> audit again -> PASS -> planning continues
 ```
+
+Provider discovery is deliberately split from editorial review. `media.pexels_discovery` may use the GitHub-held `PEXELS_API_KEY` to fetch exact provider metadata and discard clips below the live atomic-duration minimum or without a production-suitable rendition. It must not set `verified_preview=true`, invent semantic tags/scores, or write to the active registry. ChatGPT/Work remains the owner of visual/editorial approval.
+
+A discovery request is an immutable JSON object under `content/background-sourcing/discovery-requests/` containing exactly `schema_version`, `plan_date`, `request_id`, and `max_candidates`. Background Management writes the matching immutable provider result under `content/background-sourcing/discovery-results/`. The result contains trusted duration/rendition eligibility plus exact-source preview image/video URLs for review; it is not an admission decision.
 
 Readiness PASS requires the configured inventory/category minima and proof that two disjoint executable v7 sequences can actually be formed.
 
@@ -44,7 +51,7 @@ Atomic clips require trusted provider duration and at least **60 seconds**. Each
 
 Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified atomic sources are selectable. Preferred categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel motion and explicitly commercially licensed gameplay.
 
-Pexels remains the canonical automatic provider. ChatGPT visually screens candidates before `verified_preview=true` using the preview-evidence contract above; Background Management uses the official Pexels API to verify identity, duration and rendition metadata. Automatic sourcing should prioritize useful 60-120 second clips. A single source no longer needs to be 180 seconds because coverage comes from the frozen multi-clip sequence.
+Pexels remains the canonical automatic provider. Deterministic provider discovery first removes clips that fail trusted duration/rendition eligibility. ChatGPT then visually screens the remaining exact sources before `verified_preview=true` using the preview-evidence contract above; Background Management rechecks the official Pexels API before registry persistence. Automatic sourcing should prioritize useful 60-120 second clips. A single source no longer needs to be 180 seconds because coverage comes from the frozen multi-clip sequence.
 
 ## Primary/backup failure semantics
 
