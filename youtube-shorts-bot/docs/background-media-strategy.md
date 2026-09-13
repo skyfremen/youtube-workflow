@@ -10,6 +10,7 @@ Daily and Ad-hoc share one readiness/replenishment path:
 audit -> REPLENISH -> immutable discovery request
       -> Background Management/Pexels API filters duration + rendition eligibility
       -> immutable discovery result with exact-source preview evidence URLs
+      -> Background Management materializes exact preview pixels as a short-lived review artifact
       -> ChatGPT reviews actual visual evidence and assigns semantic metadata
       -> immutable readiness manifest -> Background Management re-enriches/persists
       -> refresh main -> audit again -> PASS -> planning continues
@@ -31,9 +32,14 @@ Acceptable evidence includes the strongest exact-source visual surface available
 - the exact `preview_image_url` from the immutable discovery result;
 - representative preview frames from the exact source;
 - a short preview clip from the exact source;
-- web/browser/image-search evidence that is unambiguously tied to the same Pexels provider asset ID.
+- web/browser/image-search evidence that is unambiguously tied to the same Pexels provider asset ID;
+- the matching `background-review-evidence-<request_id>` GitHub Actions artifact produced from the immutable discovery result, after ChatGPT/Work downloads it and inspects the exact preview pixels locally.
 
-Evidence retrieval is **tool-adaptive**. Native ChatGPT/Work web, browser and image-capable surfaces are canonical visual-review paths when available. The credential-free `media.preview_review_materializer` is an optional fallback for execution runtimes that actually provide outbound HTTPS; local Python networking is not a correctness dependency and must never be assumed. When search rather than a direct URL is used, the planner must prove the evidence belongs to the exact `provider_asset_id` or exact source page and must reject lookalike or substituted footage.
+Evidence retrieval is **tool-adaptive**. Native ChatGPT/Work web, browser and image-capable surfaces are canonical visual-review paths when available. On every normal discovery run, Background Management also uses the credential-free `media.preview_review_materializer` on its network-capable runner to publish a short-lived `background-review-evidence-<request_id>` artifact containing the exact downloaded preview images plus `evidence-manifest.json`. That artifact is **transport only**: GitHub Actions must never set `verified_preview`, assign semantic metadata, approve/reject a source, or otherwise perform ChatGPT-owned editorial judgment. ChatGPT/Work must download the artifact through an available GitHub connector/API surface and inspect the actual pixels before approval.
+
+For recovery of a discovery result created before its evidence artifact existed or after the artifact expired, Background Management supports `workflow_dispatch` with the exact immutable `content/background-sourcing/discovery-results/*.json` path as `discovery_result`; this regenerates transport evidence only and does not rerun discovery or alter immutable provider state.
+
+The credential-free local `media.preview_review_materializer` remains an optional fallback for ChatGPT/Work execution runtimes that actually provide outbound HTTPS; local Python networking is not a correctness dependency and must never be assumed. When search rather than a direct URL is used, the planner must prove the evidence belongs to the exact `provider_asset_id` or exact source page and must reject lookalike or substituted footage. A missing or partial workflow artifact is not approval and is not by itself terminal; continue through the remaining exact-source visual transports.
 
 Metadata, title, tags or duration alone are **not** enough to set `verified_preview=true`.
 
