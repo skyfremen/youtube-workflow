@@ -1,8 +1,9 @@
-"""Classify planner-relevant Git drift between immutable repository SHAs.
+"""Classify planner-relevant drift between immutable repository SHAs.
 
-The classifier is deterministic and owns no creative decisions. It tells
-ChatGPT/Work which planner inputs need to be refreshed when ``main`` advances
-while a ranked pool is being authored.
+The classifier is deterministic and owns no creative decisions. ChatGPT/Work
+uses connector/API current-main SHA comparison plus connector-supplied changed
+paths; developer/CI real-Git checkouts may still use the legacy Git comparison
+helpers when Git metadata is genuinely available.
 """
 from __future__ import annotations
 
@@ -136,6 +137,26 @@ def classify_paths(paths) -> dict:
     }
 
 
+def _conservative_full_refresh() -> dict:
+    return {
+        "refresh": "full_refresh",
+        "actions": [
+            "refresh_source_snapshot",
+            "rerun_planner_contract",
+            "rerun_media_readiness",
+            "refresh_planner_state",
+            "rerun_complete_precommit",
+        ],
+        "changed_paths": {
+            "rules": [],
+            "media": [],
+            "history": [],
+            "operational": [],
+            "unknown": [],
+        },
+    }
+
+
 def _git(*args: str) -> str:
     completed = subprocess.run(
         ["git", *args],
@@ -155,7 +176,43 @@ def _require_sha(value: str) -> str:
     return value
 
 
+def classify_connector_transition(
+    base_sha: str,
+    current_main_sha: str,
+    changed_paths=None,
+) -> dict:
+    """Classify a connector/API-observed current-main transition without Git.
+
+    ``changed_paths`` should come from connector/API compare evidence. When the
+    branch moved but a trustworthy path set is unavailable, the shared policy is
+    deliberately conservative and performs a full refresh.
+    """
+    _require_sha(base_sha)
+    _require_sha(current_main_sha)
+    moved = base_sha != current_main_sha
+    if not moved:
+        result = classify_paths([])
+        path_source = "not_required"
+    elif changed_paths is None:
+        result = _conservative_full_refresh()
+        path_source = "unavailable_full_refresh"
+    else:
+        result = classify_paths(changed_paths)
+        path_source = "connector_compare"
+    result.update(
+        {
+            "base_sha": base_sha,
+            "head_sha": current_main_sha,
+            "main_changed": moved,
+            "source": "connector_sha_compare",
+            "changed_path_source": path_source,
+        }
+    )
+    return result
+
+
 def fingerprint(sha: str, paths: tuple[str, ...]) -> str:
+    """Developer/CI real-Git fingerprint helper; not used by ChatGPT/Work."""
     _require_sha(sha)
     tree = _git("ls-tree", "-r", "--full-tree", sha, "--", *paths)
     return hashlib.sha256(tree.encode("utf-8")).hexdigest()
@@ -169,6 +226,7 @@ def fingerprints(sha: str) -> dict[str, str]:
 
 
 def compare(base_sha: str, head_sha: str) -> dict:
+    """Developer/CI real-Git comparison retained for genuine Git checkouts."""
     _require_sha(base_sha)
     _require_sha(head_sha)
     changed = [
@@ -193,24 +251,45 @@ def main():
     parser.add_argument("--base-sha")
     parser.add_argument("--head-sha")
     parser.add_argument(
+        "--connector-current-main-sha",
+        help=(
+            "Current main SHA returned by the authorized GitHub connector/API. "
+            "This mode never invokes Git."
+        ),
+    )
+    parser.add_argument(
         "--changed-path",
         action="append",
         default=[],
-        help="Classify an already-known changed path without invoking Git; repeatable.",
+        help=(
+            "Classify a connector/API-supplied changed path without invoking Git; "
+            "repeatable."
+        ),
     )
     args = parser.parse_args()
 
     try:
-        if args.changed_path:
+        if args.connector_current_main_sha:
+            if not args.base_sha:
+                parser.error(
+                    "--base-sha is required with --connector-current-main-sha"
+                )
+            result = classify_connector_transition(
+                args.base_sha,
+                args.connector_current_main_sha,
+                args.changed_path if args.changed_path else None,
+            )
+        elif args.changed_path:
             result = classify_paths(args.changed_path)
             result["source"] = "supplied_changed_paths"
         else:
             if not args.base_sha or not args.head_sha:
                 parser.error(
-                    "--base-sha and --head-sha are required unless --changed-path is supplied"
+                    "--base-sha and --head-sha are required unless connector "
+                    "current-main SHA or --changed-path is supplied"
                 )
             result = compare(args.base_sha, args.head_sha)
-            result["source"] = "git_compare"
+            result["source"] = "git_compare_developer_mode"
     except (ValueError, RuntimeError) as exc:
         print(
             json.dumps(
