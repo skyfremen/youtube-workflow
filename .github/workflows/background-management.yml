@@ -96,6 +96,20 @@ jobs:
               review_artifact="background-review-evidence-${base%.json}"
             fi
           fi
+
+          # Audit runs are also a safe recovery surface for review evidence. This is
+          # transport only: choose the latest immutable provider result and republish
+          # its exact preview pixels without changing provider/editorial state.
+          if [ "${action}" = "audit" ]; then
+            latest_result="$(find youtube-shorts-bot/content/background-sourcing/discovery-results \
+              -maxdepth 1 -type f -name 'dr-*.json' -printf '%f\n' 2>/dev/null | sort | tail -n 1 || true)"
+            if [ -n "${latest_result}" ]; then
+              action=review
+              discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${latest_result}"
+              review_artifact="background-review-evidence-${latest_result%.json}"
+            fi
+          fi
+
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
           echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
