@@ -187,6 +187,17 @@ jobs:
           PY
           echo "path=${filtered}" >> "${GITHUB_OUTPUT}"
 
+      - name: Install FFmpeg for review evidence
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+
       - name: Materialize exact-source review contact sheets
         if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
         env:
