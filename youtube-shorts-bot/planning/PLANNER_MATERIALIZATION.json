@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "contract": "gitless_planner_materialization",
   "materialization_mode": "explicit_file_list",
   "git_required": false,
@@ -8,9 +8,18 @@
   "git_metadata_required": false,
   "repository_archive_required": false,
   "directory_enumeration_required": false,
+  "connector_filesystem_mount_required": false,
   "repository_identity": {
     "field": "rules_source_sha",
     "source": "GitHub API/connector current-main commit SHA"
+  },
+  "connector_materialization": {
+    "source_bytes": "The decoded UTF-8 content returned by the GitHub fetch_file/API response for the exact requested path and rules_source_sha is the canonical file content.",
+    "write_rule": "ChatGPT/Work must create parent directories and write that returned content directly to an ordinary local/container file at the same repository-relative path under the temporary materialization root.",
+    "mount_not_required": true,
+    "files_materialize_tool_not_required": true,
+    "special_bridge_not_required": true,
+    "failure_rule": "Do not treat the absence of an automatic connector filesystem mount, connector file reference, repository archive, checkout, or special materialization bridge as a blocker. Fail closed only when the exact source content cannot be fetched, cannot be written, or the required Python entrypoint fails after writing."
   },
   "pythonpath_root": "youtube-shorts-bot",
   "required_python_files": [
@@ -37,7 +46,7 @@
   "required_data_files": [
     "youtube-shorts-bot/media-library/backgrounds.json"
   ],
-  "source_rule": "Fetch every required_python_files and required_data_files path directly from the exact rules_source_sha using the GitHub API/connector and write it as an ordinary UTF-8 file preserving repository-relative paths. Do not enumerate or download whole source directories. No repository archive, checkout, .git directory or Git executable is required.",
+  "source_rule": "Fetch every required_python_files and required_data_files path directly from the exact rules_source_sha using the GitHub API/connector. Treat the decoded response content itself as the source bytes and write it directly to an ordinary UTF-8 file preserving repository-relative paths. No automatic connector filesystem mount, special bridge, repository archive, checkout, .git directory or Git executable is required.",
   "planner_state_placeholders": {
     "rule": "For the explicit existence/uniqueness checks below, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks.",
     "adhoc_scheduled_uniqueness": [
@@ -62,6 +71,8 @@
     "repository archive",
     "whole-repository download",
     "whole-directory source materialization",
+    "automatic connector filesystem mount",
+    "special connector-to-filesystem bridge",
     "synthetic HEAD",
     "snapshot bootstrap",
     "GitHub Actions planner execution"
