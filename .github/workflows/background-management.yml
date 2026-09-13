@@ -8,9 +8,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'youtube-shorts-bot/content/background-sourcing/discovery-requests/*.json'
       - 'youtube-shorts-bot/content/background-sourcing/readiness/*.json'
       - 'youtube-shorts-bot/media-library/backgrounds.json'
       - 'youtube-shorts-bot/media/media_readiness.py'
+      - 'youtube-shorts-bot/media/pexels_discovery.py'
       - 'youtube-shorts-bot/media/pexels_registry.py'
       - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
       - 'youtube-shorts-bot/media/background_policy.py'
@@ -44,27 +46,48 @@ jobs:
           set -euo pipefail
           action=audit
           manifest=''
+          discovery_request=''
+          discovery_output=''
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
             changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
             mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
-            if [ "${#readiness_files[@]}" -gt 1 ]; then
-              echo '::error::One push may add at most one readiness manifest.'
+            mapfile -t discovery_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/discovery-requests\/[A-Za-z0-9._-]+\.json$/ {print $2}')
+            if [ "${#readiness_files[@]}" -gt 1 ] || [ "${#discovery_files[@]}" -gt 1 ]; then
+              echo '::error::One push may add at most one readiness manifest and one discovery request.'
+              exit 1
+            fi
+            if [ "${#readiness_files[@]}" -eq 1 ] && [ "${#discovery_files[@]}" -eq 1 ]; then
+              echo '::error::Do not add a readiness manifest and discovery request in the same push.'
               exit 1
             fi
             if [ "${#readiness_files[@]}" -eq 1 ]; then
               action=replenish
               manifest="${readiness_files[0]}"
+            elif [ "${#discovery_files[@]}" -eq 1 ]; then
+              action=discover
+              discovery_request="${discovery_files[0]}"
+              base="$(basename "${discovery_request}")"
+              discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${base}"
             fi
           fi
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
+          echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
+          echo "discovery_output=${discovery_output}" >> "${GITHUB_OUTPUT}"
 
-      - name: Require Pexels API key for replenishment
-        if: steps.action.outputs.action == 'replenish'
+      - name: Require Pexels API key
+        if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'discover'
         shell: bash
         run: |
           set -euo pipefail
           test -n "${PEXELS_API_KEY}" || { echo '::error::PEXELS_API_KEY is required.'; exit 1; }
+
+      - name: Discover long production-suitable Pexels candidates
+        if: steps.action.outputs.action == 'discover'
+        env:
+          REQUEST: ${{ steps.action.outputs.discovery_request }}
+          OUTPUT: ${{ steps.action.outputs.discovery_output }}
+        run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
 
       - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
@@ -82,6 +105,21 @@ jobs:
       - name: Report expected empty or insufficient state
         if: steps.action.outputs.action != 'replenish'
         run: python -m media.media_readiness audit --allow-not-ready
+
+      - name: Commit discovery result
+        if: steps.action.outputs.action == 'discover'
+        shell: bash
+        env:
+          OUTPUT: ${{ steps.action.outputs.discovery_output }}
+        run: |
+          set -euo pipefail
+          test -f "${OUTPUT}"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "${OUTPUT}"
+          git commit -m '[media discovery] add eligible long Pexels candidates'
+          git pull --rebase origin main
+          git push origin HEAD:main
 
       - name: Commit registry maintenance
         if: steps.action.outputs.action == 'replenish'
