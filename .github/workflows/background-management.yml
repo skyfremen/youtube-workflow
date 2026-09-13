@@ -97,9 +97,6 @@ jobs:
             fi
           fi
 
-          # Audit runs are also a safe recovery surface for review evidence. This is
-          # transport only: choose the latest immutable provider result and republish
-          # its exact preview pixels without changing provider/editorial state.
           if [ "${action}" = "audit" ]; then
             latest_result="$(find youtube-shorts-bot/content/background-sourcing/discovery-results \
               -maxdepth 1 -type f -name 'dr-*.json' -printf '%f\n' 2>/dev/null | sort | tail -n 1 || true)"
@@ -162,9 +159,28 @@ jobs:
       - name: Validate active registry structure
         run: python youtube-shorts-bot/media/validate_media_library.py
 
-      - name: Enforce readiness after replenishment
+      # Persist every valid increment before asking whether the complete library is
+      # ready. REPLENISH is an expected intermediate state and must not discard
+      # successfully reviewed assets.
+      - name: Commit registry maintenance
         if: steps.action.outputs.action == 'replenish'
-        run: python -m media.media_readiness audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
+            echo 'Registry is already current.'
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add youtube-shorts-bot/media-library/backgrounds.json
+          git commit -m '[media readiness] replenish continuous background registry'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Enforce readiness after persisted replenishment
+        if: steps.action.outputs.action == 'replenish'
+        run: python -m media.media_readiness audit --allow-not-ready
 
       - name: Report expected empty or insufficient state
         if: steps.action.outputs.action != 'replenish'
@@ -182,21 +198,5 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add "${OUTPUT}"
           git commit -m '[media discovery] add eligible long Pexels candidates'
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-      - name: Commit registry maintenance
-        if: steps.action.outputs.action == 'replenish'
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
-            echo 'Registry is already current.'
-            exit 0
-          fi
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add youtube-shorts-bot/media-library/backgrounds.json
-          git commit -m '[media readiness] replenish continuous background registry'
           git pull --rebase origin main
           git push origin HEAD:main
