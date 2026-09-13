@@ -37,28 +37,33 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertFalse(payload["behavior"]["renditions"]["hd_landscape"]["suitable"])
         self.assertTrue(payload["behavior"]["renditions"]["uhd_landscape"]["suitable"])
 
-    def test_semantic_and_continuous_background_schema_are_fingerprinted(self):
+    def test_semantic_and_sequence_background_schema_are_fingerprinted(self):
         schema = runtime_contract.contract_payload()["schema"]
-        self.assertEqual(schema["current_version"], 6)
-        self.assertEqual(schema["supported_versions"], [4, 5, 6])
+        self.assertEqual(schema["current_version"], 7)
+        self.assertEqual(schema["supported_versions"], [4, 5, 6, 7])
         self.assertEqual(schema["punchline_required_keys"], ["emphasis_text", "text"])
         self.assertEqual(schema["punchline_optional_keys"], ["type"])
         self.assertEqual(schema["punchline_max_emphasis_words"], 5)
         self.assertIn("REVERSAL", schema["punchline_types"])
         self.assertIn("punchline", schema["story_keys"])
         self.assertEqual(
-            schema["treatment_keys"],
-            ["mode", "segment_duration_seconds", "segment_start_seconds"],
+            schema["sequence_segment_keys"],
+            ["background_id", "segment_duration_seconds", "segment_start_seconds"],
         )
-        self.assertEqual(schema["background_modes"], ["fit_to_short"])
+        self.assertEqual(schema["background_modes"], ["concatenated_fit_to_short"])
         self.assertEqual(schema["fit_playback_rate_min"], 1.0)
         self.assertEqual(schema["fit_playback_rate_max"], 2.5)
-        self.assertEqual(schema["min_continuous_source_seconds"], 180.0)
-        self.assertEqual(schema["preferred_continuous_range_seconds"], 300.0)
+        self.assertEqual(schema["min_sequence_clip_seconds"], 60.0)
+        self.assertEqual(schema["min_sequence_clips"], 2)
+        self.assertEqual(schema["max_sequence_clips"], 3)
+        self.assertEqual(schema["min_sequence_source_seconds"], 210.0)
+        self.assertEqual(schema["preferred_sequence_source_seconds"], 240.0)
+        self.assertEqual(schema["max_sequence_source_seconds"], 300.0)
         self.assertTrue(schema["runtime_derived_playback_rate"])
         self.assertEqual(schema["normal_loop_count"], 0)
-        self.assertIn("background_primary_treatment", schema["visual_keys"])
-        self.assertIn("background_backup_treatment", schema["visual_keys"])
+        self.assertTrue(schema["primary_backup_disjoint"])
+        self.assertIn("background_primary_sequence", schema["visual_keys"])
+        self.assertIn("background_backup_sequence", schema["visual_keys"])
 
 
 if __name__ == "__main__":

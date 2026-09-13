@@ -115,7 +115,7 @@ class RequestSchemaTests(unittest.TestCase):
     def test_unsupported_schema_version_is_rejected(self):
         data = valid_request()
         data["schema_version"] = 3
-        self.assertIn("schema_version must be 4, 5 or 6", validate_request_data(data))
+        self.assertIn("schema_version must be 4, 5, 6 or 7", validate_request_data(data))
 
     def test_publication_and_planning_are_required(self):
         for field in ("publication", "planning"):

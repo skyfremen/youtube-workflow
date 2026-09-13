@@ -1,13 +1,14 @@
-"""Canonical semantic contract for the private-to-runtime execution boundary."""
+"""Deterministic compatibility fingerprint for the execution boundary."""
 
 import hashlib
 import json
+import re
 
 from common import workflow_common as base
-from media import background_policy as media_policy
-from planning import planning_config as profile
 from validation import semantic
 from validation import validate_content as schema
+from planning import planning_config as profile
+from media import background_policy as media_policy
 
 CONTRACT_PROTOCOL_VERSION = 1
 _SAMPLE_CONTENT_ID = "wd-20990101T000000-sample-test-a1b2c3"
@@ -56,30 +57,19 @@ def contract_payload():
     )
     renditions = {
         "exact_vertical": {
-            "id": "v1",
-            "file_type": "video/mp4",
-            "width": 1080,
-            "height": 1920,
-            "fps": 30,
-            "file_size_bytes": 1_000_000,
+            "id": "v1", "file_type": "video/mp4", "width": 1080,
+            "height": 1920, "fps": 30, "file_size_bytes": 1_000_000,
         },
         "hd_landscape": {
-            "id": "v2",
-            "file_type": "video/mp4",
-            "width": 1920,
-            "height": 1080,
-            "fps": 30,
-            "file_size_bytes": 1_000_000,
+            "id": "v2", "file_type": "video/mp4", "width": 1920,
+            "height": 1080, "fps": 30, "file_size_bytes": 1_000_000,
         },
         "uhd_landscape": {
-            "id": "v3",
-            "file_type": "video/mp4",
-            "width": 3840,
-            "height": 2160,
-            "fps": 30,
-            "file_size_bytes": 2_000_000,
+            "id": "v3", "file_type": "video/mp4", "width": 3840,
+            "height": 2160, "fps": 30, "file_size_bytes": 2_000_000,
         },
     }
+    visual_keys = getattr(schema, "VISUAL_KEYS", getattr(schema, "V7_VISUAL_KEYS", ()))
     return {
         "protocol": CONTRACT_PROTOCOL_VERSION,
         "base": {
@@ -124,7 +114,7 @@ def contract_payload():
             "punchline_types": _sorted(semantic.PUNCHLINE_TYPES),
             "punchline_max_emphasis_words": semantic.MAX_EMPHASIS_WORDS,
             "narration_keys": _sorted(schema.NARRATION_KEYS),
-            "visual_keys": _sorted(schema.VISUAL_KEYS),
+            "visual_keys": _sorted(visual_keys),
             "youtube_keys": _sorted(schema.YOUTUBE_KEYS),
             "publication_keys": _sorted(schema.PUBLICATION_KEYS),
             "planning_keys": _sorted(schema.PLANNING_KEYS),
@@ -157,15 +147,33 @@ def contract_payload():
 
 def canonical_contract_bytes():
     return json.dumps(
-        contract_payload(),
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
+        contract_payload(), sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode("utf-8")
 
 
 def contract_hash():
     return hashlib.sha256(canonical_contract_bytes()).hexdigest()
+
+
+_HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+LEGACY_CONTRACT_HASHES = frozenset()
+
+
+def supported_contract_hashes():
+    return frozenset({contract_hash(), *LEGACY_CONTRACT_HASHES})
+
+
+def validate_contract_hash(value, *, allow_legacy_empty=False):
+    normalized = str(value or "").strip().lower()
+    if not normalized:
+        if allow_legacy_empty:
+            return ""
+        raise ValueError("Missing compatibility fingerprint")
+    if not _HASH_RE.fullmatch(normalized):
+        raise ValueError("Invalid compatibility fingerprint")
+    if normalized not in supported_contract_hashes():
+        raise ValueError("Incompatible execution contract")
+    return normalized
 
 
 if __name__ == "__main__":
