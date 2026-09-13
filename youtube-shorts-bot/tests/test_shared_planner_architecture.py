@@ -1,0 +1,114 @@
+import json
+import unittest
+from pathlib import Path
+
+from planning import adhoc_precommit, daily_precommit
+from planning.planner_contract import build_contract
+from planning.planner_profiles import (
+    ADHOC,
+    DAILY,
+    PlannerProfile,
+    assert_profiles_do_not_override_shared_contract,
+)
+
+
+BOT_ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = BOT_ROOT / "planning" / "PLANNER_MATERIALIZATION.json"
+
+
+class SharedPlannerArchitectureTests(unittest.TestCase):
+    def test_daily_and_adhoc_share_one_contract_fingerprint(self):
+        contract = build_contract()
+        profiles = contract["profiles"]
+        self.assertEqual(
+            profiles["daily"]["shared_contract_fingerprint"],
+            profiles["adhoc"]["shared_contract_fingerprint"],
+        )
+        self.assertEqual(
+            profiles["daily"]["shared_contract_fingerprint"],
+            contract["shared_contract_fingerprint"],
+        )
+        self.assertEqual(
+            contract["shared_implementation"]["precommit"],
+            "planning.planner_precommit",
+        )
+
+    def test_profiles_cannot_own_shared_validation_contracts(self):
+        self.assertTrue(assert_profiles_do_not_override_shared_contract())
+        fields = set(PlannerProfile.__dataclass_fields__)
+        for forbidden in (
+            "schema",
+            "semantic",
+            "background",
+            "voice",
+            "narration",
+            "punchline",
+            "media_readiness",
+            "request_validator",
+        ):
+            self.assertFalse(
+                any(forbidden in field for field in fields),
+                f"shared contract leaked into profile field containing {forbidden}",
+            )
+
+    def test_profiles_contain_only_expected_mode_differences(self):
+        self.assertEqual(DAILY.pool_size, 36)
+        self.assertEqual(ADHOC.pool_size, 5)
+        self.assertEqual(DAILY.publication_template["mode"], "scheduled")
+        self.assertEqual(ADHOC.publication_template["mode"], "immediate")
+        self.assertEqual(ADHOC.fixed_target_count, 1)
+        self.assertEqual(DAILY.normal_target_count, 24)
+
+    def test_legacy_precommit_modules_are_thin_shared_engine_wrappers(self):
+        self.assertEqual(
+            daily_precommit.SHARED_ENGINE_MODULE,
+            "planning.planner_precommit",
+        )
+        self.assertEqual(
+            adhoc_precommit.SHARED_ENGINE_MODULE,
+            "planning.planner_precommit",
+        )
+        self.assertEqual(daily_precommit.PROFILE, "daily")
+        self.assertEqual(adhoc_precommit.PROFILE, "adhoc")
+
+    def test_materialization_excludes_downstream_and_compatibility_modules(self):
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        shared = set(manifest["shared_required_python_files"])
+        self.assertEqual(manifest["materialization_mode"], "shared_plus_selected_profile")
+        self.assertEqual(len(shared), 14)
+        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
+        self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
+        self.assertNotIn("youtube-shorts-bot/planning/daily_precommit.py", shared)
+        self.assertNotIn("youtube-shorts-bot/planning/adhoc_precommit.py", shared)
+        self.assertFalse(any(path.endswith("/__init__.py") for path in shared))
+        for profile in ("daily", "adhoc"):
+            entry = manifest["profile_required_files"][profile]
+            self.assertEqual(entry["python_files"], [])
+            self.assertEqual(entry["data_files"], [])
+
+    def test_materialization_keeps_git_and_actions_out_of_planner_bootstrap(self):
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        self.assertFalse(manifest["git_required"])
+        self.assertFalse(manifest["git_executable_required"])
+        self.assertFalse(manifest["checkout_required"])
+        self.assertIn("GitHub Actions planner execution", manifest["forbidden_bootstrap_requirements"])
+        self.assertEqual(
+            manifest["immutable_cache"]["primary_key"],
+            "rules_source_sha",
+        )
+        self.assertFalse(manifest["immutable_cache"]["correctness_dependency"])
+
+    def test_shared_prompt_is_canonical_for_bootstrap(self):
+        shared = (BOT_ROOT / "planning" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("one planner", shared.lower())
+        self.assertIn("planning.planner_precommit", shared)
+        self.assertIn("PLANNER_PROMPT.md", daily)
+        self.assertIn("PLANNER_PROMPT.md", adhoc)
+        self.assertIn("--profile daily", daily)
+        self.assertIn("--profile adhoc", adhoc)
+
+
+if __name__ == "__main__":
+    unittest.main()
