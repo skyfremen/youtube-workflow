@@ -65,11 +65,22 @@ class WorkflowBoundaryContracts(unittest.TestCase):
         text = self.background_management()
         self.assertIn("pexels_resilient_ingest", text)
         self.assertIn("git pull --rebase", text)
-        self.assertNotIn("ffmpeg", text.lower())
+
+        # FFmpeg is intentionally allowed here only for exact-source review-evidence
+        # transport. Background Management must not become a production renderer or
+        # an editorial approval engine.
+        self.assertIn("Install FFmpeg for review evidence", text)
+        self.assertIn("media.preview_review_materializer", text)
+        self.assertIn("--contact-sheets-only", text)
+        self.assertIn("actions/upload-artifact@", text)
+        self.assertIn("contact-sheet.jpg", text)
+        self.assertNotIn("verified_preview=true", text)
+        self.assertNotIn("content_verified_by", text)
         self.assertNotIn("kokoro", text.lower())
         self.assertNotIn("wav2vec", text.lower())
         self.assertNotIn("render_aligned.py", text)
         self.assertNotIn("videos().insert", text)
+        self.assertNotIn("PUBLIC_PRODUCTION_TOKEN", text)
         for secret in (
             "YOUTUBE_CLIENT_ID",
             "YOUTUBE_CLIENT_SECRET",
