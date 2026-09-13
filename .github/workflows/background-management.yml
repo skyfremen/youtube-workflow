@@ -5,6 +5,11 @@ env:
 
 on:
   workflow_dispatch:
+    inputs:
+      review_request_id:
+        description: Optional immutable discovery request ID to regenerate review evidence
+        required: false
+        type: string
   push:
     branches: [main]
     paths:
@@ -31,6 +36,7 @@ permissions:
 jobs:
   maintain:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
     steps:
@@ -44,14 +50,35 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          REQUESTED_REVIEW_ID: ${{ inputs.review_request_id || '' }}
         run: |
           set -euo pipefail
           action=audit
           manifest=''
           discovery_request=''
           discovery_output=''
+          review_output=''
+          review_artifact=''
+          review_index=''
+          request_id=''
 
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          set_review_fields() {
+            request_id="$(basename "${discovery_output}" .json)"
+            review_output="/tmp/wacky-background-review/${request_id}"
+            review_artifact="background-review-evidence-${request_id}-${GITHUB_RUN_ID}"
+            review_index="youtube-shorts-bot/content/background-sourcing/review-evidence/${request_id}-run-${GITHUB_RUN_ID}.json"
+          }
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ -n "${REQUESTED_REVIEW_ID}" ]; then
+            if [[ ! "${REQUESTED_REVIEW_ID}" =~ ^dr-[A-Za-z0-9-]{8,96}$ ]]; then
+              echo '::error::review_request_id has invalid format.'
+              exit 1
+            fi
+            discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${REQUESTED_REVIEW_ID}.json"
+            test -f "${discovery_output}" || { echo '::error::Requested discovery result does not exist.'; exit 1; }
+            action=review
+            set_review_fields
+          elif [ "${GITHUB_EVENT_NAME}" = "push" ]; then
             changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
             mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
             mapfile -t discovery_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/discovery-requests\/[A-Za-z0-9._-]+\.json$/ {print $2}')
@@ -71,13 +98,34 @@ jobs:
               discovery_request="${discovery_files[0]}"
               base="$(basename "${discovery_request}")"
               discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${base}"
+              set_review_fields
             fi
+          fi
+
+          # A code/config change or manual audit can backfill the newest discovery
+          # result that has never received a GitHub-to-ChatGPT review artifact.
+          if [ "${action}" = "audit" ]; then
+            while IFS= read -r candidate; do
+              [ -n "${candidate}" ] || continue
+              candidate_id="$(basename "${candidate}" .json)"
+              if ! compgen -G "youtube-shorts-bot/content/background-sourcing/review-evidence/${candidate_id}-run-*.json" >/dev/null; then
+                action=review
+                discovery_output="${candidate}"
+                set_review_fields
+                break
+              fi
+            done < <(find youtube-shorts-bot/content/background-sourcing/discovery-results \
+              -maxdepth 1 -type f -name 'dr-*.json' -print 2>/dev/null | sort -r)
           fi
 
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
           echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
           echo "discovery_output=${discovery_output}" >> "${GITHUB_OUTPUT}"
+          echo "request_id=${request_id}" >> "${GITHUB_OUTPUT}"
+          echo "review_output=${review_output}" >> "${GITHUB_OUTPUT}"
+          echo "review_artifact=${review_artifact}" >> "${GITHUB_OUTPUT}"
+          echo "review_index=${review_index}" >> "${GITHUB_OUTPUT}"
 
       - name: Require Pexels API key
         if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'discover'
@@ -93,21 +141,162 @@ jobs:
           OUTPUT: ${{ steps.action.outputs.discovery_output }}
         run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
 
-      # Persist provider discovery as immutable state. ChatGPT/Work consumes the exact
-      # preview URLs from this result and performs visual review locally; Background
-      # Management does not generate or dispatch review evidence.
-      - name: Commit discovery result
-        if: steps.action.outputs.action == 'discover'
-        shell: bash
+      - name: Filter already-approved candidates from review transport
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        id: review_source
         env:
           OUTPUT: ${{ steps.action.outputs.discovery_output }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          filtered="/tmp/pending-review-${{ steps.action.outputs.request_id }}.json"
+          python - "${OUTPUT}" "${filtered}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          discovery_path = Path(sys.argv[1])
+          filtered_path = Path(sys.argv[2])
+          discovery = json.loads(discovery_path.read_text(encoding='utf-8'))
+          registry = json.loads(Path('youtube-shorts-bot/media-library/backgrounds.json').read_text(encoding='utf-8'))
+          approved = {
+              str(item.get('provider_asset_id') or '')
+              for item in registry.get('assets', [])
+              if item.get('status') == 'active'
+              and item.get('verified') is True
+              and str(item.get('provider_asset_id') or '').isdigit()
+          }
+          pending = [
+              item for item in discovery.get('candidates', [])
+              if str(item.get('provider_asset_id') or '') not in approved
+          ]
+          filtered_doc = dict(discovery)
+          filtered_doc['candidates'] = pending
+          filtered_doc['candidate_count'] = len(pending)
+          filtered_doc['review_transport_filter'] = {
+              'source_candidate_count': len(discovery.get('candidates', [])),
+              'already_approved_provider_ids': sorted(approved),
+              'pending_candidate_count': len(pending),
+              'rule': 'Transport optimization only; approval remains derived from the active registry and ChatGPT review.',
+          }
+          filtered_path.write_text(json.dumps(filtered_doc, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps({
+              'source_candidates': len(discovery.get('candidates', [])),
+              'pending_candidates': len(pending),
+          }))
+          PY
+          echo "path=${filtered}" >> "${GITHUB_OUTPUT}"
+
+      - name: Materialize exact-source review contact sheets
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        env:
+          REVIEW_SOURCE: ${{ steps.review_source.outputs.path }}
+          REVIEW_OUTPUT: ${{ steps.action.outputs.review_output }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${REVIEW_OUTPUT}"
+          python -m media.preview_review_materializer \
+            --discovery-result "${REVIEW_SOURCE}" \
+            --output-dir "${REVIEW_OUTPUT}" \
+            --contact-sheets-only
+
+      - name: Upload ChatGPT review evidence
+        id: review_artifact
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.action.outputs.review_artifact }}
+          path: |
+            ${{ steps.action.outputs.review_output }}/evidence-manifest.json
+            ${{ steps.action.outputs.review_output }}/*/preview.jpg
+            ${{ steps.action.outputs.review_output }}/*/contact-sheet.jpg
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 6
+
+      - name: Write immutable review evidence index
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        env:
+          REQUEST_ID: ${{ steps.action.outputs.request_id }}
+          DISCOVERY_RESULT: ${{ steps.action.outputs.discovery_output }}
+          REVIEW_OUTPUT: ${{ steps.action.outputs.review_output }}
+          REVIEW_INDEX: ${{ steps.action.outputs.review_index }}
+          ARTIFACT_ID: ${{ steps.review_artifact.outputs.artifact-id }}
+          ARTIFACT_NAME: ${{ steps.action.outputs.review_artifact }}
+          ARTIFACT_DIGEST: ${{ steps.review_artifact.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.review_artifact.outputs.artifact-url }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          evidence_path = Path(os.environ['REVIEW_OUTPUT']) / 'evidence-manifest.json'
+          evidence_bytes = evidence_path.read_bytes()
+          evidence = json.loads(evidence_bytes)
+          provider_ids = [
+              str(item['provider_asset_id'])
+              for item in evidence.get('evidence', [])
+              if isinstance(item, dict) and item.get('motion', {}).get('contact_sheet')
+          ]
+          index = {
+              'schema_version': 1,
+              'request_id': os.environ['REQUEST_ID'],
+              'discovery_result': os.environ['DISCOVERY_RESULT'],
+              'workflow': 'Background Management',
+              'workflow_run_id': int(os.environ['GITHUB_RUN_ID']),
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'artifact_id': int(os.environ['ARTIFACT_ID']),
+              'artifact_name': os.environ['ARTIFACT_NAME'],
+              'artifact_digest': os.environ.get('ARTIFACT_DIGEST') or None,
+              'artifact_url': os.environ.get('ARTIFACT_URL') or None,
+              'artifact_retention_days': 3,
+              'evidence_manifest_sha256': hashlib.sha256(evidence_bytes).hexdigest(),
+              'evidence_count': int(evidence.get('evidence_count') or 0),
+              'failure_count': int(evidence.get('failure_count') or 0),
+              'contact_sheet_count': len(provider_ids),
+              'provider_asset_ids_with_contact_sheet': provider_ids,
+              'artifact_contents': [
+                  'evidence-manifest.json',
+                  '<provider_asset_id>/preview.jpg (when exact still transport succeeds)',
+                  '<provider_asset_id>/contact-sheet.jpg',
+              ],
+              'rule': (
+                  'Transport evidence only. GitHub generated representative JPEGs from the exact '
+                  'provider asset; ChatGPT/Work remains the sole visual/editorial approval owner.'
+              ),
+          }
+          output = Path(os.environ['REVIEW_INDEX'])
+          output.parent.mkdir(parents=True, exist_ok=True)
+          if output.exists():
+              raise SystemExit(f'review evidence index is immutable and already exists: {output}')
+          output.write_text(json.dumps(index, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(index, indent=2))
+          PY
+
+      - name: Commit discovery result and review evidence index
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        shell: bash
+        env:
+          ACTION: ${{ steps.action.outputs.action }}
+          OUTPUT: ${{ steps.action.outputs.discovery_output }}
+          REVIEW_INDEX: ${{ steps.action.outputs.review_index }}
         run: |
           set -euo pipefail
           test -f "${OUTPUT}"
+          test -f "${REVIEW_INDEX}"
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add "${OUTPUT}"
-          git commit -m '[media discovery] add eligible long Pexels candidates'
+          if [ "${ACTION}" = "discover" ]; then
+            git add "${OUTPUT}"
+            message='[media discovery] add Pexels candidates and review evidence index'
+          else
+            message='[media review] add contact-sheet evidence index'
+          fi
+          git add "${REVIEW_INDEX}"
+          git commit -m "${message}"
           git pull --rebase origin main
           git push origin HEAD:main
 
@@ -120,9 +309,6 @@ jobs:
       - name: Validate active registry structure
         run: python youtube-shorts-bot/media/validate_media_library.py
 
-      # Persist every valid increment before asking whether the complete library is
-      # ready. REPLENISH is an expected intermediate state and must not discard
-      # successfully reviewed assets.
       - name: Commit registry maintenance
         if: steps.action.outputs.action == 'replenish'
         shell: bash
