@@ -9,7 +9,7 @@ This is the canonical Ad-hoc planner entry point. Read and follow `planning/ADHO
 Daily and Ad-hoc planner Python must run from ordinary materialized source/config/data files. A Git checkout, Git executable, `.git` directory, authenticated clone, branch state or synthetic HEAD is **not** a planner prerequisite.
 
 1. Inspect current `main` through the GitHub API/connector and retain its exact immutable 40-character commit SHA as `rules_source_sha`. Treat that SHA only as explicit immutable repository identity; do not derive it with local Git.
-2. Read/materialize the Python/config/data inputs required by the current planner into any plain temporary directory using the normal available file/connector mechanism. The directory does not need to be a repository.
+2. Read `planning/PLANNER_MATERIALIZATION.json` from that same immutable source SHA. Materialize its declared Python source roots, required data files and only the applicable existence/uniqueness state placeholders into any plain temporary directory, preserving repository-relative paths. The directory is not a repository and must not need `.git` or a Git executable.
 3. Set `PYTHONPATH` to the materialized `youtube-shorts-bot` directory as needed and execute the live contract normally:
 
 ```bash
@@ -36,7 +36,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.adhoc_precommit \
 9. The normal validator must not require or infer any Git state. Do not use `--verify-git-head`, create synthetic Git metadata, clone the repository, or substitute Git commands for the explicit SHA contract.
 10. **FAIL CLOSED if the exact pre-commit module cannot be executed.** Manual schema checks, hand-written arithmetic, partial reimplementation, downstream promotion, or later GitHub Actions validation are not substitutes for planner-time pre-commit. Do not commit a pool unless all five candidates PASS the actual validator.
 11. Private Ad-hoc Production independently reruns the same pre-commit validation as a committed-pool admission gate before ranked promotion. This is defense in depth only; it does not waive step 10.
-12. Before the immutable pool commit, re-read current GitHub `main`. If its SHA differs from `rules_source_sha`—including because background replenishment committed a registry update—do not commit the stale draft. Refresh `rules_source_sha`, rerun live contract discovery, media readiness and complete pre-commit validation against the new canonical state.
+12. Before the immutable pool commit, re-read current GitHub `main`. If its SHA differs from `rules_source_sha`—including because background replenishment committed a registry update—do not commit the stale draft. Refresh `rules_source_sha`, rematerialize from `PLANNER_MATERIALIZATION.json`, rerun live contract discovery, media readiness and complete pre-commit validation against the new canonical state.
 13. The final immutable pool bytes must exactly match the successful validator `draft_sha256`.
 
 For `manual_on_demand`, multiple same-date manual runs remain allowed under distinct stable immutable invocation identities. Existing `scheduled_daily` state is not a reuse/stop condition for a distinct manual invocation.
