@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "request_id": "dr-20260913-manual-1853",
+  "discovery_result": "youtube-shorts-bot/content/background-sourcing/discovery-results/dr-20260913-manual-1853.json",
+  "workflow": "Background Management",
+  "workflow_run_id": 34771480456,
+  "workflow_run_attempt": 1,
+  "artifact_id": 10321949157,
+  "artifact_name": "background-review-evidence-dr-20260913-manual-1853-34771480456",
+  "artifact_digest": "56d958c83c120cdb4c524dbf308a3906220c910194e430281e90f791171c94e2",
+  "artifact_url": "https://github.com/skyfremen/youtube-workflow/actions/runs/34771480456/artifacts/10321949157",
+  "artifact_retention_days": 3,
+  "evidence_manifest_sha256": "5965d1ee3e725d20edb394d27e1ed204255ce8fe1929e1d1a3fe39aeaaa6895b",
+  "evidence_count": 2,
+  "failure_count": 0,
+  "contact_sheet_count": 2,
+  "provider_asset_ids_with_contact_sheet": [
+    "8424070",
+    "11372916"
+  ],
+  "artifact_contents": [
+    "evidence-manifest.json",
+    "<provider_asset_id>/preview.jpg (when exact still transport succeeds)",
+    "<provider_asset_id>/contact-sheet.jpg"
+  ],
+  "rule": "Transport evidence only. GitHub generated representative JPEGs from the exact provider asset; ChatGPT/Work remains the sole visual/editorial approval owner."
+}
