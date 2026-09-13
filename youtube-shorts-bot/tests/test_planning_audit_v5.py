@@ -10,7 +10,7 @@ from validation.validate_content import SCHEMA_VERSION
 
 class PlanningAuditCurrentSchemaTests(unittest.TestCase):
     def test_current_schema_daily_request_passes_version_gate(self):
-        self.assertEqual(SCHEMA_VERSION, 6)
+        self.assertEqual(SCHEMA_VERSION, 7)
         content_id = "wd-20990910T000000-drama-cafe-a1b2c3"
         relative = f"youtube-shorts-bot/content/requests/{content_id}.json"
         request = {
