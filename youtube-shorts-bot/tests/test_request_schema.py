@@ -57,12 +57,8 @@ def valid_request():
             ),
             "hashtags": ["#Shorts", "#WackyDramas", "#WorkplaceDrama", "#Storytime"],
             "tags": [
-                "wacky dramas",
-                "workplace drama",
-                "boss story",
-                "office conflict",
-                "evidence backfire",
-                "storytime",
+                "wacky dramas", "workplace drama", "boss story",
+                "office conflict", "evidence backfire", "storytime",
             ],
             "category_id": "24",
             "made_for_kids": False,
@@ -81,24 +77,10 @@ def valid_request():
             "final_score": 87.5,
             "title_candidates": [
                 _title_candidate(selected_title, "HIDDEN_REVELATION", 91),
-                _title_candidate(
-                    "I Checked the Archive and Found the Proof #Shorts", "DISCOVERY", 86
-                ),
-                _title_candidate(
-                    "It Looked Like a Normal File Error… Until I Saw the Timestamp #Shorts",
-                    "NORMAL_TO_ABNORMAL",
-                    84,
-                ),
-                _title_candidate(
-                    "I Refused to Delete the Archive. Then My Boss Changed His Story #Shorts",
-                    "DECISION_CONSEQUENCE",
-                    83,
-                ),
-                _title_candidate(
-                    "Hours Before the Audit, I Found the Missing Backup #Shorts",
-                    "COUNTDOWN",
-                    82,
-                ),
+                _title_candidate("I Checked the Archive and Found the Proof #Shorts", "DISCOVERY", 86),
+                _title_candidate("It Looked Like a Normal File Error… Until I Saw the Timestamp #Shorts", "NORMAL_TO_ABNORMAL", 84),
+                _title_candidate("I Refused to Delete the Archive. Then My Boss Changed His Story #Shorts", "DECISION_CONSEQUENCE", 83),
+                _title_candidate("Hours Before the Audit, I Found the Missing Backup #Shorts", "COUNTDOWN", 82),
             ],
             "selected_title_score": 91.0,
             "hook_score": 90.0,
@@ -106,14 +88,10 @@ def valid_request():
             "selection_reason": "Strong contradiction, proof-driven escalation and clear reversal.",
             "similarity": {"max_recent_similarity": 0.21},
             "attributes": {
-                "subtype": "EVIDENCE_BACKFIRE",
-                "conflict": "HIDDEN_FILE",
-                "primary_emotion": "INJUSTICE",
-                "protagonist_role": "EMPLOYEE",
-                "antagonist_role": "BOSS",
-                "opening_style": "CONTRADICTION",
-                "title_style": "HIDDEN_REVELATION",
-                "ending_style": "REVERSAL",
+                "subtype": "EVIDENCE_BACKFIRE", "conflict": "HIDDEN_FILE",
+                "primary_emotion": "INJUSTICE", "protagonist_role": "EMPLOYEE",
+                "antagonist_role": "BOSS", "opening_style": "CONTRADICTION",
+                "title_style": "HIDDEN_REVELATION", "ending_style": "REVERSAL",
             },
             "target_duration_seconds": 151,
         },
@@ -126,11 +104,7 @@ class RequestSchemaTests(unittest.TestCase):
 
     def test_immediate_publication_passes_with_null_publish_at(self):
         data = valid_request()
-        data["publication"] = {
-            "mode": "immediate",
-            "timezone": "Asia/Singapore",
-            "publish_at": None,
-        }
+        data["publication"] = {"mode": "immediate", "timezone": "Asia/Singapore", "publish_at": None}
         self.assertEqual(validate_request_data(data), [])
 
     def test_immediate_publication_rejects_non_null_publish_at(self):
@@ -141,7 +115,7 @@ class RequestSchemaTests(unittest.TestCase):
     def test_unsupported_schema_version_is_rejected(self):
         data = valid_request()
         data["schema_version"] = 3
-        self.assertIn("schema_version must be 4 or 5", validate_request_data(data))
+        self.assertIn("schema_version must be 4, 5 or 6", validate_request_data(data))
 
     def test_publication_and_planning_are_required(self):
         for field in ("publication", "planning"):
@@ -154,9 +128,7 @@ class RequestSchemaTests(unittest.TestCase):
     def test_old_field_fails(self):
         data = valid_request()
         data["setup"] = "obsolete"
-        self.assertTrue(
-            any("unexpected" in error or "forbidden" in error for error in validate_request_data(data))
-        )
+        self.assertTrue(any("unexpected" in error or "forbidden" in error for error in validate_request_data(data)))
 
     def test_wrong_brand_fails(self):
         data = valid_request()
@@ -191,7 +163,6 @@ class RequestSchemaTests(unittest.TestCase):
         data = valid_request()
         data["story"].pop("punchline")
         self.assertTrue(any("punchline" in error for error in validate_request_data(data)))
-
         data = valid_request()
         data["story"]["punchline"]["text"] = "He deleted a totally different drive."
         self.assertTrue(any("must occur" in error for error in validate_request_data(data)))
