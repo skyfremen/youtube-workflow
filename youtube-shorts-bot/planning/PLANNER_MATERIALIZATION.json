@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "contract": "gitless_planner_materialization",
+  "git_required": false,
+  "git_executable_required": false,
+  "checkout_required": false,
+  "git_metadata_required": false,
+  "repository_identity": {
+    "field": "rules_source_sha",
+    "source": "GitHub API/connector current-main commit SHA"
+  },
+  "pythonpath_root": "youtube-shorts-bot",
+  "source_roots": [
+    "youtube-shorts-bot/common",
+    "youtube-shorts-bot/media",
+    "youtube-shorts-bot/planning",
+    "youtube-shorts-bot/publishing",
+    "youtube-shorts-bot/validation"
+  ],
+  "source_rule": "Materialize Python files from source_roots preserving repository-relative paths. No .git directory is created or required.",
+  "required_data_files": [
+    "youtube-shorts-bot/media-library/backgrounds.json"
+  ],
+  "planner_state_placeholders": {
+    "rule": "For existence/uniqueness checks, materialize zero-byte placeholder files for matching canonical repository paths; file contents are not required unless another live planner rule explicitly reads them.",
+    "adhoc": [
+      "youtube-shorts-bot/content/requests/wd-<YYYYMMDD>T010000-adhoc-*.json"
+    ],
+    "daily": [
+      "youtube-shorts-bot/content/planning/<plan_date>.json",
+      "youtube-shorts-bot/content/planning-pools/daily/<plan_date>/<pool_id>.json"
+    ],
+    "candidate_content_ids": [
+      "youtube-shorts-bot/content/requests/<candidate_content_id>.json"
+    ]
+  },
+  "entrypoints": [
+    "python -m planning.planner_contract",
+    "python -m media.media_readiness audit --allow-not-ready",
+    "python -m planning.adhoc_precommit --pool <pool> --rules-source-sha <sha>",
+    "python -m planning.daily_precommit --pool <pool> --rules-source-sha <sha>"
+  ],
+  "forbidden_bootstrap_requirements": [
+    ".git",
+    "git clone",
+    "git rev-parse",
+    "authenticated checkout",
+    "synthetic HEAD",
+    "snapshot bootstrap"
+  ]
+}
