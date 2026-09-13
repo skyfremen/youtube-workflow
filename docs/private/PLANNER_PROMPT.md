@@ -10,8 +10,18 @@ Freeze one exact lowercase 40-character `rules_source_sha`. Fetch the current `P
 
 `REPLENISH` is a recoverable intermediate planner state. It is **not** a final result while bounded recovery remains possible. Daily and Ad-hoc must use the same procedure and preserve the original planner invocation throughout it.
 
-1. Read current total/category/duration/sequence deficits from repository-owned readiness evidence.
-2. Resume a compatible unfinished replenishment session for this planner invocation; otherwise create one stable session identity. Compatibility is strict: only discovery-request schema v3 bound to the exact current `planner_invocation` and schema-v2 evidence-bound review decisions are resumable. Legacy discovery requests/review decisions from older schemas are immutable history only; never upgrade them in place, synthesize missing v2 decision metadata from them, or copy their approvals into a new-format readiness manifest. If only legacy state exists, leave it untouched and start a fresh schema-v3 replenishment session for the current planner invocation. Never create a second Daily/Ad-hoc planning invocation merely because replenishment is needed.
+### Mandatory readiness-first gate
+
+Always resolve **current repository media readiness before interpreting any historical replenishment state**.
+
+- If the current registry audits `PASS`, continue the planner immediately. Legacy, incomplete, exhausted, incompatible, or otherwise historical replenishment sessions are history only and **must not block, resume, restart, or downgrade a readiness-PASS planner invocation**.
+- Only when the current registry audits `REPLENISH` may replenishment-session state control the next action.
+- On `REPLENISH`, first resume the sole compatible current-format session for the exact planner invocation when one exists. If no compatible current-format session exists, create one fresh stable replenishment session and commit schema-v3 attempt 1 for that same planner invocation. Legacy-only or incompatible historical state is not a blocker and is not a reason to terminate.
+- `BLOCKED`/failure solely because legacy state exists, because a legacy session is not resumable, or because no compatible current-format session exists is an invalid terminal outcome. The valid action in that case is current readiness `PASS` -> continue planning, or current readiness `REPLENISH` -> create the fresh schema-v3 attempt.
+- Before reporting any replenishment-related terminal result, re-audit current readiness. A terminal replenishment result is permitted only for a genuine bounded infrastructure wait under the media strategy or `E_MEDIA_REPLENISH_EXHAUSTED` after the current-format session reaches attempt 5. Historical session state alone can never satisfy this gate.
+
+1. Read current total/category/duration/sequence deficits from repository-owned readiness evidence. If the current audit is `PASS`, stop evaluating replenishment state and continue candidate planning.
+2. Only when the current audit is `REPLENISH`, resume a compatible unfinished replenishment session for this planner invocation; otherwise create one stable session identity and schema-v3 attempt 1 immediately. Compatibility is strict: only discovery-request schema v3 bound to the exact current `planner_invocation` and schema-v2 evidence-bound review decisions are resumable. Legacy discovery requests/review decisions from older schemas are immutable history only; never upgrade them in place, synthesize missing v2 decision metadata from them, or copy their approvals into a new-format readiness manifest. If only legacy state exists, leave it untouched and start a fresh schema-v3 replenishment session for the current planner invocation. Never create a second Daily/Ad-hoc planning invocation merely because replenishment is needed.
 3. Use discovery-request schema v3 for automatic retries. Freeze `planner_invocation_id`, profile/mode, Singapore date and `initial_rules_source_sha`; target only positive `category_deficits`; carry `attempt` (1-5) and the stable `replenishment_session_id`; and exclude active+verified assets plus every provider asset already discovered or visually reviewed in this session.
 4. Private Background Management performs deterministic provider discovery, exact-source transport/contact sheets/artifact upload and deterministic persistence only. It never performs ChatGPT-owned visual approval or creative planning.
 5. Review exact-source visual evidence. Persist every approve/reject decision as immutable repository evidence under `content/background-sourcing/review-decisions/<request_id>.json` before continuing. Review-decision schema v2 binds the batch to the frozen planner invocation and exact immutable review-evidence index, then records per-provider `decision`, `discovery_category`, `reviewed_category`, `category_match`, reason, source, and approved ingest metadata when applicable. The provider search category is provenance, not truth: an asset may satisfy a deficit only when ChatGPT's visual review confirms that category. Misleading search results are rejected.
@@ -23,15 +33,19 @@ Freeze one exact lowercase 40-character `rules_source_sha`. Fetch the current `P
    - `NEED_DISCOVERY`: if `attempt < 5`, create and commit the next schema-v3 targeted discovery request for the same session/invocation, increment the attempt, rotate/broaden canonical search vocabulary as allowed by current media strategy, and continue the loop automatically.
    - `EXHAUSTED`: stop only with `E_MEDIA_REPLENISH_EXHAUSTED` and the exact remaining deficits/attempt/rejection diagnostics.
 10. If an attempt has **zero approved candidates**, no readiness manifest or ingestion is required. This is not a terminal planner result. If `attempt < 5`, immediately create the next targeted schema-v3 discovery request for the same session/invocation and continue. Only attempt 5 may transition to `EXHAUSTED`.
-11. An individual candidate rejection, an all-rejected batch before attempt 5, completion of visual review, creation of review evidence, creation of a readiness manifest, workflow dispatch/start, or a first missing-event read are **never** valid reasons to terminate the planner invocation.
+11. An individual candidate rejection, an all-rejected batch before attempt 5, completion of visual review, creation of review evidence, creation of a readiness manifest, workflow dispatch/start, a first missing-event read, legacy-only state, or absence of a compatible current-format session are **never** valid reasons to terminate the planner invocation.
 12. A genuine bounded external/infrastructure wait may report `DEFERRED_REPLENISHMENT` only when the current background-media strategy's defer conditions are actually met. The report must identify the exact session, attempt, expected next immutable artifact/event, and why it cannot yet be obtained. It must not be used as a substitute for performing the connector-native continuation loop.
-13. On every resumed execution, reconstruct the phase from immutable repository state before taking action. Never duplicate a discovery request, review decision, readiness manifest, readiness event, or planner invocation. If the expected immutable artifact already exists with matching identity, consume it and continue from the next phase.
+13. On every resumed execution, re-audit current media readiness first, then reconstruct the phase from immutable repository state only if readiness remains `REPLENISH`. Never duplicate a discovery request, review decision, readiness manifest, readiness event, or planner invocation. If the expected immutable artifact already exists with matching identity, consume it and continue from the next phase.
 
 The required state machine is therefore:
 
-`REPLENISH -> NEED_DISCOVERY -> WAITING_DISCOVERY -> WAITING_EVIDENCE -> NEEDS_VISUAL_REVIEW -> (NEED_DISCOVERY when all rejected | NEEDS_INGESTION when approvals exist) -> WAITING_INGESTION -> (READY_TO_RESUME | NEED_DISCOVERY | EXHAUSTED)`.
+`CURRENT_READINESS_PASS -> CONTINUE_PLANNING`
 
-`READY_TO_RESUME` is not a new planning invocation: it returns control to the exact Daily/Ad-hoc invocation that entered `REPLENISH`.
+or, only when current readiness is `REPLENISH`:
+
+`REPLENISH -> (resume compatible session | create fresh schema-v3 attempt 1) -> WAITING_DISCOVERY -> WAITING_EVIDENCE -> NEEDS_VISUAL_REVIEW -> (NEED_DISCOVERY when all rejected | NEEDS_INGESTION when approvals exist) -> WAITING_INGESTION -> (READY_TO_RESUME | NEED_DISCOVERY | EXHAUSTED)`.
+
+`READY_TO_RESUME` is not a new planning invocation: it returns control to the exact Daily/Ad-hoc invocation that entered `REPLENISH` and immediately re-enters the readiness-first gate.
 
 ## Connector evidence and checkpoint
 
