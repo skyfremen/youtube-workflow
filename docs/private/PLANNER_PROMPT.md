@@ -85,7 +85,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --verify-git-head
 ```
 
-In connector fallback omit `--verify-git-head`. The explicit exact SHA and verified materialized bytes are authoritative. Compatibility wrappers may remain but contain no independent validation logic. Fail closed if the exact precommit module cannot execute; manual schema checks, arithmetic, downstream admission/promotion or GitHub Actions are not substitutes.
+In connector fallback omit `--verify-git-head`. The explicit exact SHA and verified materialized bytes are authoritative. Compatibility wrappers may remain but contain no independent validation logic. FAIL CLOSED if the exact precommit module cannot execute; manual schema checks, arithmetic, downstream admission/promotion or GitHub Actions are not substitutes.
 
 ## Creative ownership
 
