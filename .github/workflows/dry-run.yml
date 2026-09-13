@@ -63,7 +63,9 @@ jobs:
 
           expected_planner_docs = {
               'ADHOC_PLANNER_PROMPT.md',
+              'ADHOC_PLANNER_RULES.md',
               'DAILY_PLANNER_PROMPT.md',
+              'DAILY_PLANNER_RULES.md',
               'STORY_RULES.md',
           }
           actual_planner_docs = {path.name for path in Path('youtube-shorts-bot/planning').glob('*.md')}
@@ -248,6 +250,8 @@ jobs:
           adhoc = Path('.github/workflows/adhoc-production.yml').read_text()
           recovery = Path('.github/workflows/automatic-recovery.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
+          adhoc_prompt = Path('youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md').read_text()
+          daily_prompt = Path('youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md').read_text()
           secret_names = (
               'YOUTUBE_' + 'CLIENT_ID',
               'YOUTUBE_' + 'CLIENT_SECRET',
@@ -270,9 +274,11 @@ jobs:
           assert "'batch_id': os.environ['BATCH_ID']" in batch
           assert "'source_sha': os.environ['SOURCE_SHA']" in batch
           assert "'contract_hash': os.environ['CONTRACT_HASH']" in batch
+          assert 'planning.pool_admission daily' in batch
           expected_adhoc_group = 'group: private-adhoc-production-$' + '{{ github.ref }}'
           assert expected_adhoc_group in adhoc
           assert 'actions/workflows/single.yml/dispatches' in adhoc
+          assert 'planning.pool_admission adhoc' in adhoc
           assert 'validation/public_dry_run.py' in dry
           assert 'PUBLIC_EXPECTED_SHA=' in dry
           assert 'timeout-minutes: 20' in dry
@@ -289,11 +295,15 @@ jobs:
               assert forbidden not in batch
               assert forbidden not in recovery
           assert 'branches: [main]' in maintenance
-          assert 'media.media_readiness retire-current' in maintenance
+          assert 'media.pexels_resilient_ingest' in maintenance
           assert 'media.media_readiness audit' in maintenance
           assert 'PEXELS_API_KEY' in maintenance
           assert 'content/background-sourcing/readiness/*.json' in maintenance
-          print('Dry-run isolation, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
+          for prompt in (adhoc_prompt, daily_prompt):
+              assert 'A Git checkout, Git executable, `.git` directory' in prompt
+              assert 'FAIL CLOSED if the exact pre-commit module cannot be executed' in prompt
+              assert 'Do not use `--verify-git-head`' in prompt
+          print('Dry-run isolation, gitless planner admission, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
