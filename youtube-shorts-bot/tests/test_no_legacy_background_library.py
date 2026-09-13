@@ -8,6 +8,8 @@ MEDIA_LIBRARY = BOT_ROOT / "media-library"
 
 class NoLegacyBackgroundLibraryTests(unittest.TestCase):
     def test_only_current_background_registry_exists(self):
+        current_registry = MEDIA_LIBRARY / "backgrounds.json"
+        self.assertTrue(current_registry.is_file())
         background_registries = sorted(
             path.name for path in MEDIA_LIBRARY.glob("backgrounds*.json")
         )
