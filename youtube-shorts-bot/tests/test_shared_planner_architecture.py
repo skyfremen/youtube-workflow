@@ -13,6 +13,7 @@ from planning.planner_profiles import (
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BOT_ROOT.parent
 MANIFEST = BOT_ROOT / "planning" / "PLANNER_MATERIALIZATION.json"
 
 
@@ -99,13 +100,13 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertFalse(manifest["immutable_cache"]["correctness_dependency"])
 
     def test_shared_prompt_is_canonical_for_bootstrap(self):
-        shared = (BOT_ROOT / "planning" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        shared = (REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
         daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         self.assertIn("one planner", shared.lower())
         self.assertIn("planning.planner_precommit", shared)
-        self.assertIn("PLANNER_PROMPT.md", daily)
-        self.assertIn("PLANNER_PROMPT.md", adhoc)
+        self.assertIn("docs/private/PLANNER_PROMPT.md", daily)
+        self.assertIn("docs/private/PLANNER_PROMPT.md", adhoc)
         self.assertIn("--profile daily", daily)
         self.assertIn("--profile adhoc", adhoc)
 
