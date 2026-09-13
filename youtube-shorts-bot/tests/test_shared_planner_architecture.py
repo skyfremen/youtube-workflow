@@ -29,27 +29,15 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             profiles["daily"]["shared_contract_fingerprint"],
             contract["shared_contract_fingerprint"],
         )
-        self.assertEqual(
-            contract["shared_implementation"]["precommit"],
-            "planning.planner_precommit",
-        )
-        self.assertEqual(
-            contract["shared_implementation"]["drift_classification"],
-            "planning.planner_drift",
-        )
+        self.assertEqual(contract["shared_implementation"]["precommit"], "planning.planner_precommit")
+        self.assertEqual(contract["shared_implementation"]["drift_classification"], "planning.planner_drift")
 
     def test_profiles_cannot_own_shared_validation_contracts(self):
         self.assertTrue(assert_profiles_do_not_override_shared_contract())
         fields = set(PlannerProfile.__dataclass_fields__)
         for forbidden in (
-            "schema",
-            "semantic",
-            "background",
-            "voice",
-            "narration",
-            "punchline",
-            "media_readiness",
-            "request_validator",
+            "schema", "semantic", "background", "voice", "narration",
+            "punchline", "media_readiness", "request_validator",
         ):
             self.assertFalse(
                 any(forbidden in field for field in fields),
@@ -65,34 +53,23 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertEqual(DAILY.normal_target_count, 24)
 
     def test_legacy_precommit_modules_are_thin_shared_engine_wrappers(self):
-        self.assertEqual(
-            daily_precommit.SHARED_ENGINE_MODULE,
-            "planning.planner_precommit",
-        )
-        self.assertEqual(
-            adhoc_precommit.SHARED_ENGINE_MODULE,
-            "planning.planner_precommit",
-        )
+        self.assertEqual(daily_precommit.SHARED_ENGINE_MODULE, "planning.planner_precommit")
+        self.assertEqual(adhoc_precommit.SHARED_ENGINE_MODULE, "planning.planner_precommit")
         self.assertEqual(daily_precommit.PROFILE, "daily")
         self.assertEqual(adhoc_precommit.PROFILE, "adhoc")
 
     def test_connector_fallback_excludes_downstream_modules(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         shared = set(manifest["shared_required_python_files"])
-        self.assertEqual(
-            manifest["materialization_mode"], "shared_plus_selected_profile"
-        )
-        self.assertEqual(len(shared), 14)
-        self.assertNotIn(
-            "youtube-shorts-bot/planning/ranked_promotion.py", shared
-        )
+        self.assertEqual(manifest["materialization_mode"], "shared_plus_selected_profile")
+        self.assertEqual(len(shared), 18)
+        self.assertIn("youtube-shorts-bot/planning/planner_contract_base.py", shared)
+        self.assertIn("youtube-shorts-bot/media/continuous_background.py", shared)
+        self.assertIn("youtube-shorts-bot/validation/validate_content_v5.py", shared)
+        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
         self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
-        self.assertNotIn(
-            "youtube-shorts-bot/planning/daily_precommit.py", shared
-        )
-        self.assertNotIn(
-            "youtube-shorts-bot/planning/adhoc_precommit.py", shared
-        )
+        self.assertNotIn("youtube-shorts-bot/planning/daily_precommit.py", shared)
+        self.assertNotIn("youtube-shorts-bot/planning/adhoc_precommit.py", shared)
         self.assertFalse(any(path.endswith("/__init__.py") for path in shared))
         for profile in ("daily", "adhoc"):
             entry = manifest["profile_required_files"][profile]
@@ -102,35 +79,19 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
     def test_git_is_preferred_without_becoming_a_hard_dependency(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(manifest["planner_bootstrap"]["preferred"], "git")
-        self.assertEqual(
-            manifest["planner_bootstrap"]["fallback"],
-            "connector_materialization",
-        )
+        self.assertEqual(manifest["planner_bootstrap"]["fallback"], "connector_materialization")
         self.assertTrue(manifest["git_checkout"]["preferred"])
         self.assertFalse(manifest["git_required"])
         self.assertFalse(manifest["git_executable_required"])
         self.assertFalse(manifest["checkout_required"])
-        self.assertIn(
-            "GitHub Actions planner execution",
-            manifest["forbidden_bootstrap_requirements"],
-        )
-        self.assertIn(
-            "synthetic HEAD", manifest["forbidden_bootstrap_requirements"]
-        )
-        self.assertFalse(
-            manifest["immutable_cache"]["correctness_dependency"]
-        )
+        self.assertIn("GitHub Actions planner execution", manifest["forbidden_bootstrap_requirements"])
+        self.assertIn("synthetic HEAD", manifest["forbidden_bootstrap_requirements"])
+        self.assertFalse(manifest["immutable_cache"]["correctness_dependency"])
 
     def test_shared_prompt_is_canonical_for_bootstrap(self):
-        shared = (
-            REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
-        ).read_text(encoding="utf-8")
-        daily = (
-            BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md"
-        ).read_text(encoding="utf-8")
-        adhoc = (
-            BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md"
-        ).read_text(encoding="utf-8")
+        shared = (REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         self.assertIn("one planner", shared.lower())
         self.assertIn("planning.planner_precommit", shared)
         self.assertIn("planning.planner_drift", shared)
