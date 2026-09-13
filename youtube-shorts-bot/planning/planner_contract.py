@@ -62,16 +62,21 @@ def build_contract():
             "git_metadata_required": False,
             "repository_archive_required": False,
             "whole_directory_materialization_required": False,
+            "connector_filesystem_mount_required": False,
+            "special_connector_materialization_bridge_required": False,
             "github_actions_planner_execution_required": False,
             "repository_identity_source": "explicit_rules_source_sha",
             "description": (
                 "Run planner Python normally in the available Python environment. "
                 "The exact immutable GitHub source commit inspected by ChatGPT is passed "
                 "explicitly as --rules-source-sha. Fetch only the explicit files declared "
-                "by planning/PLANNER_MATERIALIZATION.json from that SHA. A .git directory, "
-                "authenticated clone, repository archive, whole-directory download, "
-                "snapshot manifest, synthetic Git HEAD and GitHub Actions planner job are "
-                "not required."
+                "by planning/PLANNER_MATERIALIZATION.json from that SHA. For each fetched "
+                "path, the decoded UTF-8 connector response content is the source bytes; "
+                "ChatGPT/Work writes those bytes directly to an ordinary local file at the "
+                "same repository-relative path. A connector filesystem mount, special "
+                "materialization bridge, .git directory, authenticated clone, repository "
+                "archive, whole-directory download, snapshot manifest, synthetic Git HEAD "
+                "and GitHub Actions planner job are not required."
             ),
             "adhoc_precommit_command": (
                 "python -m planning.adhoc_precommit --pool <pool> "
@@ -92,13 +97,15 @@ def build_contract():
             "rules": [
                 "Resolve one exact immutable GitHub source SHA before live contract discovery and planning.",
                 "Read planning/PLANNER_MATERIALIZATION.json from that exact SHA and fetch each declared required file directly through the GitHub API/connector.",
+                "Treat the decoded UTF-8 content returned for each fetched file as the canonical source bytes and write those bytes directly to a plain local/container file preserving the repository-relative path.",
+                "Do not require an automatic connector filesystem mount, connector file reference, Files/materialize call or special connector-to-filesystem bridge; the returned source content is sufficient for local materialization.",
                 "Do not enumerate or download whole source directories; preserve repository-relative paths in an ordinary temporary directory.",
-                "Failure to obtain a repository archive or checkout is not a blocker because neither is part of the canonical planner bootstrap.",
+                "Failure to obtain a repository archive, checkout, automatic connector mount or special materialization bridge is not a blocker because none is part of the canonical planner bootstrap.",
                 "Pass rules_source_sha explicitly as --rules-source-sha to Daily and Ad-hoc precommit validators.",
                 "planning_execution.rules_source_sha must exactly equal the supplied rules_source_sha.",
                 "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
                 "Do not require .git, an authenticated checkout, snapshot bootstrap, synthetic Git metadata or GitHub Actions for normal ChatGPT/Work planner execution.",
-                "If repository main changes before the immutable pool commit, refresh rules_source_sha, refetch the explicit manifest files and rerun all required live validation against the new source state.",
+                "If repository main changes before the immutable pool commit, refresh rules_source_sha, refetch the explicit manifest files, rewrite the temporary materialization from the refreshed connector contents and rerun all required live validation against the new source state.",
             ],
             "legacy_snapshot_mode": {
                 "supported": False,
