@@ -82,6 +82,7 @@ class ArchitectureContractTests(unittest.TestCase):
 
     def test_private_request_contract_is_schema_v6_with_v4_v5_compatibility(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
+        continuous = (BOT_ROOT / "media/continuous_background.py").read_text(encoding="utf-8")
         v5_validator = (BOT_ROOT / "validation/validate_content_v5.py").read_text(encoding="utf-8")
         legacy_validator = (BOT_ROOT / "validation/schema_v4.py").read_text(encoding="utf-8")
         semantic = (BOT_ROOT / "validation/semantic.py").read_text(encoding="utf-8")
@@ -91,14 +92,21 @@ class ArchitectureContractTests(unittest.TestCase):
 
         self.assertIn("SCHEMA_VERSION = 6", validator)
         self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4, 5, 6}", validator)
-        self.assertIn('FIT_TO_SHORT_MODE = "fit_to_short"', validator)
+        self.assertIn('FIT_TO_SHORT_MODE = "fit_to_short"', continuous)
+        self.assertIn("FIT_TO_SHORT_MODE", validator)
         self.assertIn('"background_primary_treatment"', validator)
         self.assertIn('"background_backup_treatment"', validator)
         self.assertIn('"segment_start_seconds"', validator)
         self.assertIn('"segment_duration_seconds"', validator)
-        self.assertNotIn('"playback_rate"', validator.split("def validate_background_treatment", 1)[1].split("def treatment_for_slot", 1)[0])
+        self.assertNotIn(
+            '"playback_rate"',
+            validator.split("def validate_background_treatment", 1)[1].split(
+                "def treatment_for_slot", 1
+            )[0],
+        )
         self.assertIn("validate_background_registry_contract", validator)
         self.assertIn("production-suitable rendition", validator)
+        self.assertIn("is_selectable", validator)
         self.assertIn("SCHEMA_VERSION = 5", v5_validator)
         self.assertIn('"playback_rate"', v5_validator)
         self.assertIn('"punchline"', legacy_validator)
@@ -198,7 +206,8 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("public `production-runtime` repository owns", readme)
         self.assertIn("Schema v6 is current", overview)
         self.assertIn("Schema v6 is current", recovery)
-        self.assertIn("Schema v5 remains executable", recovery)
+        self.assertIn("Schema v5 and schema v4 remain executable", recovery)
+        self.assertIn("historical immutable recovery", recovery)
         for text in (readme, overview, recovery, runtime_map):
             self.assertNotIn("720×1280", text)
             self.assertNotIn("720x1280", text)
