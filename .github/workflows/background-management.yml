@@ -124,6 +124,19 @@ jobs:
           set -euo pipefail
           test -n "${PEXELS_API_KEY}" || { echo '::error::PEXELS_API_KEY is required.'; exit 1; }
 
+      - name: Install ffmpeg for exact-source motion evidence
+        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v ffmpeg >/dev/null 2>&1; then
+            ffmpeg -version | head -n 1
+            exit 0
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | head -n 1
+
       - name: Discover long production-suitable Pexels candidates
         if: steps.action.outputs.action == 'discover'
         env:
