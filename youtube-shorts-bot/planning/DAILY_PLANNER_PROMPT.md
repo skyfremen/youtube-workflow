@@ -55,8 +55,8 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --verify-git-head
 ```
 
-In connector/API fallback omit `--verify-git-head`. The gate requires all candidates required by the live Daily profile PASS before immutable commit. The compatibility wrapper `planning.daily_precommit` remains available for existing callers but contains no independent validation logic.
+In connector/API fallback omit `--verify-git-head`. The gate requires **all 36 candidates PASS** before immutable commit. The compatibility wrapper `planning.daily_precommit` remains available for existing callers but contains no independent validation logic.
 
-The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion or GitHub Actions are not substitutes for planner-time precommit.
+The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion or GitHub Actions are not substitutes for planner-time pre-commit.
 
 ChatGPT/Work remains creative/editorial owner. Private workflows validate/promote mechanically; public runtime executes statelessly.

@@ -6,7 +6,15 @@ If older mode-specific rule text duplicates execution-environment/bootstrap, pla
 
 ## Repository-first identity
 
-The planner identity remains one explicit immutable 40-character `rules_source_sha`. Git is the preferred source-acquisition path, not the identity itself. Prefer an already-authorized local Git repository, fetch current `main`, resolve its exact SHA, and execute planner Python only from a clean detached exact-SHA snapshot. Reuse a clone/object database when available; persistence is an optimization, never a correctness dependency.
+The planner identity remains one explicit immutable 40-character `rules_source_sha`. Git is now the **preferred source-acquisition path**, not the identity itself. Prefer an already-authorized local Git repository and obtain a clean detached exact-SHA planner snapshot with the canonical sequence:
+
+```bash
+git fetch origin main --prune
+rules_source_sha="$(git rev-parse origin/main)"
+git worktree add --detach <temporary-planner-path> "$rules_source_sha"
+```
+
+Execute planner Python only from that exact clean snapshot. Reuse a clone/object database when available; persistence is an optimization, never a correctness dependency.
 
 ## Connector/API fallback
 
