@@ -9,6 +9,14 @@ PLANNER = BOT_ROOT / "planning"
 DOCS = BOT_ROOT / "docs"
 
 
+def canonical_planner_text(prefix):
+    return (
+        (PLANNER / f"{prefix}_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        + "\n"
+        + (PLANNER / f"{prefix}_PLANNER_RULES.md").read_text(encoding="utf-8")
+    )
+
+
 class WorkflowTopologyTests(unittest.TestCase):
     def test_planner_execution_bridge_is_retired(self):
         self.assertFalse((WORKFLOWS / "planner-execution.yml").exists())
@@ -21,33 +29,35 @@ class WorkflowTopologyTests(unittest.TestCase):
 
     def test_daily_uses_retryable_ranked_pool_entrypoint(self):
         daily = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        prompt = (PLANNER / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("DAILY")
 
         self.assertIn("content/planning-pools/daily/**/*.json", daily)
         self.assertIn("[daily pool]", daily)
+        self.assertIn("planning.pool_admission daily", daily)
         self.assertIn("planning.ranked_promotion daily", daily)
         self.assertIn("[daily production] ${plan_date}", daily)
         self.assertIn("validation.planning_audit", daily)
         self.assertIn("actions/workflows/run.yml/dispatches", daily)
-        self.assertIn("exactly 36", prompt)
-        self.assertIn("first `target_count` candidates", prompt)
-        self.assertIn("content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", prompt)
-        self.assertIn("new immutable attempt", prompt)
+        self.assertIn("exactly 36", planner)
+        self.assertIn("first `target_count` candidates", planner)
+        self.assertIn("content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", planner)
+        self.assertIn("new immutable attempt", planner)
 
     def test_adhoc_uses_ranked_pool_entrypoint_and_scheduled_idempotency(self):
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
-        prompt = (PLANNER / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        planner = canonical_planner_text("ADHOC")
 
         self.assertIn("content/planning-pools/adhoc/*.json", adhoc)
         self.assertIn("[adhoc pool]", adhoc)
+        self.assertIn("planning.pool_admission adhoc", adhoc)
         self.assertIn("planning.ranked_promotion adhoc", adhoc)
         self.assertIn("planning.ranked_promotion verify-adhoc", adhoc)
         self.assertIn("validation.validate_content --request", adhoc)
         self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
-        self.assertIn("exactly **5** candidates", prompt)
-        self.assertIn("first valid candidate", prompt)
-        self.assertIn("scheduled_daily", prompt)
-        self.assertIn("manual_on_demand", prompt)
+        self.assertIn("exactly **5** candidates", planner)
+        self.assertIn("first valid candidate", planner)
+        self.assertIn("scheduled_daily", planner)
+        self.assertIn("manual_on_demand", planner)
 
     def test_daily_and_adhoc_each_keep_manual_execution_path(self):
         daily = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
