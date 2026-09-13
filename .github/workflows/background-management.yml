@@ -5,11 +5,6 @@ env:
 
 on:
   workflow_dispatch:
-    inputs:
-      discovery_result:
-        description: 'Optional existing immutable discovery result path to regenerate exact-source review evidence'
-        required: false
-        type: string
   push:
     branches: [main]
     paths:
@@ -49,7 +44,6 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
-          REVIEW_DISCOVERY_RESULT: ${{ inputs.discovery_result }}
         run: |
           set -euo pipefail
           action=audit
@@ -57,21 +51,7 @@ jobs:
           discovery_request=''
           discovery_output=''
 
-          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ -n "${REVIEW_DISCOVERY_RESULT:-}" ]; then
-            case "${REVIEW_DISCOVERY_RESULT}" in
-              youtube-shorts-bot/content/background-sourcing/discovery-results/*.json) ;;
-              *)
-                echo '::error::discovery_result must be an immutable discovery-results/*.json repository path.'
-                exit 1
-                ;;
-            esac
-            test -f "${REVIEW_DISCOVERY_RESULT}" || {
-              echo '::error::Requested discovery result does not exist.'
-              exit 1
-            }
-            action=review
-            discovery_output="${REVIEW_DISCOVERY_RESULT}"
-          elif [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
             changed="$(git diff --name-status "${BEFORE_SHA}" "${GITHUB_SHA}")"
             mapfile -t readiness_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/readiness\/[A-Za-z0-9._-]+\.json$/ {print $2}')
             mapfile -t discovery_files < <(printf '%s\n' "${changed}" | awk '$1 == "A" && $2 ~ /^youtube-shorts-bot\/content\/background-sourcing\/discovery-requests\/[A-Za-z0-9._-]+\.json$/ {print $2}')
@@ -94,18 +74,6 @@ jobs:
             fi
           fi
 
-          # Operational/configuration changes are also a safe recovery surface for
-          # exact-source review evidence. Re-dispatch the latest immutable discovery
-          # result without changing provider/editorial state.
-          if [ "${action}" = "audit" ]; then
-            latest_result="$(find youtube-shorts-bot/content/background-sourcing/discovery-results \
-              -maxdepth 1 -type f -name 'dr-*.json' -printf '%f\n' 2>/dev/null | sort | tail -n 1 || true)"
-            if [ -n "${latest_result}" ]; then
-              action=review
-              discovery_output="youtube-shorts-bot/content/background-sourcing/discovery-results/${latest_result}"
-            fi
-          fi
-
           echo "action=${action}" >> "${GITHUB_OUTPUT}"
           echo "manifest=${manifest}" >> "${GITHUB_OUTPUT}"
           echo "discovery_request=${discovery_request}" >> "${GITHUB_OUTPUT}"
@@ -125,9 +93,9 @@ jobs:
           OUTPUT: ${{ steps.action.outputs.discovery_output }}
         run: python -m media.pexels_discovery --request "${REQUEST}" --output "${OUTPUT}"
 
-      # Persist provider discovery before visual-evidence dispatch. If the public
-      # evidence workflow later fails, a retry can regenerate evidence from this
-      # exact immutable result instead of repeating discovery or losing identity.
+      # Persist provider discovery as immutable state. ChatGPT/Work consumes the exact
+      # preview URLs from this result and performs visual review locally; Background
+      # Management does not generate or dispatch review evidence.
       - name: Commit discovery result
         if: steps.action.outputs.action == 'discover'
         shell: bash
@@ -142,63 +110,6 @@ jobs:
           git commit -m '[media discovery] add eligible long Pexels candidates'
           git pull --rebase origin main
           git push origin HEAD:main
-
-      - name: Dispatch stateless exact-source review evidence
-        id: review_dispatch
-        if: steps.action.outputs.action == 'discover' || steps.action.outputs.action == 'review'
-        continue-on-error: true
-        shell: bash
-        env:
-          PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
-          OUTPUT: ${{ steps.action.outputs.discovery_output }}
-        run: |
-          set -euo pipefail
-          test -n "${PUBLIC_PRODUCTION_TOKEN}" || {
-            echo '::error::PUBLIC_PRODUCTION_TOKEN is required for review evidence dispatch.'
-            exit 1
-          }
-          test -f "${OUTPUT}" || {
-            echo '::error::Immutable discovery result is missing before review dispatch.'
-            exit 1
-          }
-          request_id="$(basename "${OUTPUT}" .json)"
-          if [[ ! "${request_id}" =~ ^dr-[A-Za-z0-9._-]+$ ]]; then
-            echo '::error::Invalid immutable discovery request ID.'
-            exit 1
-          fi
-          source_sha="$(git rev-parse HEAD)"
-          payload="$(REQUEST_ID="${request_id}" SOURCE_SHA="${source_sha}" DISCOVERY_RESULT="${OUTPUT}" python - <<'PY'
-          import json, os
-          print(json.dumps({
-              'ref': 'main',
-              'inputs': {
-                  'request_id': os.environ['REQUEST_ID'],
-                  'source_sha': os.environ['SOURCE_SHA'],
-                  'discovery_result': os.environ['DISCOVERY_RESULT'],
-              },
-          }, separators=(',', ':')))
-          PY
-          )"
-          curl --fail --silent --show-error -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/review-evidence.yml/dispatches \
-            -d "${payload}"
-          echo "Dispatched stateless review evidence for ${request_id} at private source ${source_sha}."
-
-      - name: Report partial discovery review-evidence dispatch failure
-        if: steps.action.outputs.action == 'discover' && steps.review_dispatch.outcome != 'success'
-        shell: bash
-        run: |
-          echo '::warning::Discovery result was persisted, but public review-evidence dispatch failed. Retry Background Management with discovery_result set to the immutable result path.'
-
-      - name: Enforce explicit review-evidence dispatch
-        if: steps.action.outputs.action == 'review' && steps.review_dispatch.outcome != 'success'
-        shell: bash
-        run: |
-          echo '::error::Stateless public review-evidence dispatch failed for this explicit/recovery review attempt.'
-          exit 1
 
       - name: Ingest reviewed readiness manifest with reserve fallback
         if: steps.action.outputs.action == 'replenish'
