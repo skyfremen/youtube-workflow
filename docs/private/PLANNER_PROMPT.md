@@ -1,114 +1,41 @@
 # Wacky Dramas — Shared Planner Execution Contract
 
-Daily and Ad-hoc are profiles of one planner. This file is the canonical shared execution, background-continuation, evidence, validation and drift contract. Profile entry points add only genuine mode-specific rules.
-
-Repository code/configuration at the exact current `main` commit is authoritative. If older wording refers to ChatGPT/Work reconstructing a local repository tree, running `planning.materialization_verify`, or copying the full background registry locally, the current `planning/PLANNER_MATERIALIZATION.json` and this contract supersede that wording.
+Daily and Ad-hoc are profiles of one planner. Repository code/configuration at exact current `main` is authoritative. The authorized GitHub connector/API is the canonical ChatGPT/Work repository source; shell Git is neither attempted nor required.
 
 ## Repository-first identity
 
-Every planner invocation freezes one lowercase 40-character `rules_source_sha`.
-
-For ChatGPT/Work, the authorized GitHub connector/API is the canonical repository access path. Shell Git access to `github.com` is neither attempted nor required. Do not run `git fetch`, `git clone`, `git pull`, `git ls-remote`, Git worktrees, DNS/proxy repair, or any synthetic Git-HEAD workaround.
-
-The canonical bootstrap is:
-
-1. Resolve the exact current `main` SHA of `skyfremen/youtube-workflow` through the authorized GitHub connector/API.
-2. Freeze it as `rules_source_sha`.
-3. Fetch `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` from that exact SHA.
-4. Fetch `youtube-shorts-bot/planning/connector_checkpoint.py` from that exact SHA and record its connector-returned Git blob SHA/equivalent canonical blob identity.
-5. Read the selected profile prompt/rules, shared story/background rules and targeted repository state directly through exact-SHA connector reads. These reads remain connector evidence; they do **not** have to be reconstructed as a local repository tree.
-6. Write only the standalone `connector_checkpoint.py`, the authored pool JSON and a small connector-evidence JSON to a temporary local directory.
-7. Run `python connector_checkpoint.py contract` to inspect the live standalone checkpoint contract.
-
-`CHECKPOINT_STAGING_BLOCKED` is legal only after the exact-SHA checkpoint file itself cannot be fetched, its blob identity is unavailable/inconsistent, that one file cannot be written, or standard-library Python cannot execute it. A Git/DNS/checkout failure, missing `.git`, an unmaterialized repository tree, or an uncopied full `backgrounds.json` is not a valid blocker.
-
-## Connector evidence instead of repository reconstruction
-
-The standalone checkpoint consumes a small connector-evidence JSON. It must be assembled from current exact-SHA repository reads and contain:
-
-- `schema_version=1`
-- `repository=skyfremen/youtube-workflow`
-- exact `rules_source_sha`
-- connector-returned `checkpoint_blob_sha`
-- `drift.status=PASS` and `drift.current_main_sha=<rules_source_sha>` immediately before final validation/commit
-- `media_readiness.status=PASS`
-- `uniqueness.status=PASS`
-- `selected_backgrounds` containing only IDs referenced by the authored pool, each with connector-backed `eligible=true`, trusted `duration_seconds`, and source blob/path evidence
-
-Do not invent evidence. Do not mark readiness, uniqueness, background eligibility or drift `PASS` from memory.
-
-The full background registry is repository state, not a required local checkpoint input. Read only the repository evidence needed to establish readiness and the selected assets. Downstream private validation remains defense-in-depth, but it is not a substitute for planner-time evidence and checkpoint validation.
+Freeze one exact lowercase 40-character `rules_source_sha`. Fetch the current `PLANNER_MATERIALIZATION.json`, standalone `planning/connector_checkpoint.py`, selected profile rules, story/background rules and targeted state through exact-SHA connector reads. Stage locally only the standalone checkpoint, authored pool and small connector-evidence JSON. `CHECKPOINT_STAGING_BLOCKED` is legal only when that connector-native checkpoint cannot actually be fetched/staged/executed; Git/DNS/checkout failure is not a blocker.
 
 ## Shared automatic background replenishment and continuation
 
-`REPLENISH` is recoverable planner state, not a terminal planning failure. Daily and Ad-hoc use the same continuation procedure before final backgrounds are frozen.
+`REPLENISH` is a recoverable intermediate planner state. It is **not** a final result while bounded recovery remains possible. Daily and Ad-hoc must use the same procedure and preserve the original planner invocation throughout it.
 
-1. Consume the current readiness total/category/duration/sequence deficits from repository-owned state/evidence.
-2. Inspect immutable discovery requests/results/readiness manifests, matching review-evidence indexes and Background Management runs. Resume a compatible unfinished attempt instead of creating duplicates.
-3. If no compatible attempt exists, create exactly one immutable discovery request using the current repository schema/convention.
-4. Private Background Management may perform deterministic provider discovery, exact-source transport/download, FFmpeg contact-sheet generation, artifact upload and deterministic readiness persistence. It must never perform ChatGPT-owned creative approval, semantic classification or story planning.
-5. Poll/refresh the required run for the bounded continuation window already defined by the background-media strategy. Continue in the same planner invocation when the immutable result/evidence becomes available. Report `DEFERRED_REPLENISHMENT` only when a required bounded wait genuinely expires.
-6. Review actual exact-source visual evidence. Prefer the newest usable indexed artifact; verify its run/artifact identity and manifest digest. GitHub-generated frames are transport evidence only, not approval.
-7. Reject candidates with missing/unsuitable evidence individually and continue reserves. Never weaken `verified_preview`.
-8. Commit exactly one immutable readiness manifest from visually approved candidates, then allow Background Management to perform deterministic provider re-enrichment/persistence.
-9. Re-resolve current `main`, apply drift policy, refresh media evidence and repeat until readiness is `PASS`.
+1. Read current total/category/duration/sequence deficits from repository-owned readiness evidence.
+2. Resume a compatible unfinished replenishment session for this planner invocation; otherwise create one stable session identity. Never create a second Daily/Ad-hoc planning invocation merely because replenishment is needed.
+3. Use discovery-request schema v2 for automatic retries. Target only categories that remain deficient, carry `attempt` (1-5) and the stable `replenishment_session_id`, and include every provider asset already visually reviewed in this session in `exclude_provider_asset_ids`.
+4. Private Background Management performs deterministic provider discovery, exact-source transport/contact sheets/artifact upload and deterministic persistence only. It never performs ChatGPT-owned visual approval or creative planning.
+5. Review exact-source visual evidence. Persist every approve/reject decision as immutable repository evidence before continuing. The provider search category is provenance, not truth: an asset may satisfy a deficit only when ChatGPT's visual review confirms that category. Misleading search results are rejected and excluded from subsequent attempts.
+6. Ingest only approved candidates that retain all existing visual, safety, duration, rendition and caption-readability requirements. Never lower thresholds to obtain PASS.
+7. Re-run media readiness. If `PASS`, immediately resume the **same original planner invocation** at the phase that was waiting for media and continue candidate authorship/checkpoint/commit.
+8. If still `REPLENISH` and attempt < 5, rotate/broaden the category's canonical search vocabulary, increment the same session attempt, exclude all previously reviewed provider IDs and repeat automatically. An individual candidate rejection is never a reason to end the planner invocation.
+9. Only after attempt 5 remains unable to satisfy readiness may the planner stop with `E_MEDIA_REPLENISH_EXHAUSTED`, reporting exact remaining deficits, attempts and rejection reasons. A genuine bounded external wait may still report `DEFERRED_REPLENISHMENT` under the background-media strategy.
 
-GitHub Actions may continue to perform deterministic background transport/state work and downstream production. **GitHub Actions must not perform creative planning or generate/rank the Daily/Ad-hoc candidate pool.**
+This loop is event-oriented and resumable: if ChatGPT/Work is interrupted, the next execution inspects immutable discovery/review/readiness state and resumes the compatible unfinished session instead of starting duplicate work.
 
-## Creative ownership
+## Connector evidence and checkpoint
 
-ChatGPT/Work owns premise generation/rejection, duplicate reasoning, analytics/editorial judgment, complete story/title/metadata writing, voice and punchline semantics, exact logical background choices/ranges, visual review, fallback reasoning and final rank.
+Before final pool commit, assemble connector evidence with repository, exact `rules_source_sha`, checkpoint blob identity, current-main drift PASS, media-readiness PASS, uniqueness PASS and evidence only for selected background IDs. Never invent PASS evidence or copy the whole registry merely for checkpointing.
 
-Repository code/configuration and the standalone checkpoint own deterministic contract validation. Neither may creatively repair or rerank authored content.
-
-## Planner-time deterministic checkpoint
-
-After the complete ranked pool is authored, write a small connector-evidence JSON and run:
+Run the exact-SHA standalone checkpoint:
 
 ```bash
-python connector_checkpoint.py validate \
-  --profile <daily|adhoc> \
-  --pool <pool.json> \
-  --rules-source-sha <rules_source_sha> \
-  --evidence <connector-evidence.json>
+python connector_checkpoint.py validate --profile <daily|adhoc> --pool <pool.json> --rules-source-sha <rules_source_sha> --evidence <connector-evidence.json>
 ```
 
-The checkpoint is standard-library-only and intentionally has no repository imports. It validates the ranked-pool envelope, provenance, current request schema, profile publication contract, controlled metadata, voice mapping, title/scoring structure, punchline semantics, schema-v7 sequence ranges, selected-background evidence, readiness, uniqueness and pre-commit drift evidence.
+All expected candidates must PASS and `commit_allowed=true`; committed bytes must match `draft_sha256`. Re-query current `main` immediately before validation/commit and apply the repository drift policy if it moved.
 
-All expected candidates must return `PASS`; `commit_allowed` must be true. The immutable bytes committed to GitHub must exactly match the checkpoint's `draft_sha256`.
+## Ownership and production boundary
 
-Do not replace this planner-time checkpoint with manual inspection or a GitHub Actions run.
+ChatGPT/Work owns premise generation/rejection, duplicate reasoning, analytics/editorial judgment, complete story/title/metadata writing, voice/punchline semantics, exact logical background choices/ranges, visual review/fallback reasoning and final rank. Repository code and the standalone checkpoint own deterministic validation. GitHub Actions may perform deterministic media transport/state work and downstream production but must not creatively generate/rank the Daily/Ad-hoc pool.
 
-## Repository state / uniqueness
-
-Inspect identity state through the connector before allocating IDs.
-
-- Daily retains one canonical plan per plan date plus immutable pool-attempt IDs.
-- Ad-hoc `scheduled_daily` retains its once-per-Singapore-date namespace.
-- Ad-hoc `manual_on_demand` may coexist multiple times on the same Singapore date. A same-date `scheduled_daily` request is not itself a collision for a distinct manual invocation.
-
-The connector-evidence JSON may set `uniqueness.status=PASS` only after the required current namespace/state reads have completed.
-
-## Drift
-
-Immediately before immutable commit, query current `main` again through the authorized connector/API.
-
-If it still equals `rules_source_sha`, set connector evidence `drift.status=PASS` and run the final checkpoint. If it changed, obtain changed-path evidence when possible and apply the normal classifications:
-
-- `rules`: refresh exact-SHA rules/checkpoint and rerun the complete checkpoint.
-- `media`: refresh readiness/selected-background evidence and rerun the complete checkpoint.
-- `history`: refresh duplicate/analytics/recent-background reasoning and rerun the checkpoint whenever authored bytes change.
-- `operational`: do not restart creative planning solely because operational evidence moved.
-- unknown/untrusted changed-path set: full refresh.
-
-Never silently mix rules or state from different commits.
-
-## Commit and downstream production boundary
-
-Only after checkpoint `PASS` may ChatGPT/Work commit the immutable ranked pool through the authorized GitHub connector/API.
-
-After that, existing private workflows remain deterministic control-plane infrastructure: validate the committed pool, preserve frozen rank order, promote valid candidate(s), create canonical immutable request(s) and dispatch the public stateless runtime. The public runtime performs TTS/alignment/render/upload/verification. ChatGPT/Work does not directly render, TTS or upload unless repository architecture explicitly changes.
-
-## Developer/CI mode
-
-Developers/CI may still use the repository-native planner modules and full test suite from a genuine checkout. That mode is separate from canonical ChatGPT/Work execution. It does not justify shell Git attempts in ChatGPT/Work and does not make GitHub Actions a planner.
+Only after checkpoint PASS may ChatGPT/Work commit the immutable ranked pool through the authorized GitHub connector/API. Existing private workflows then validate/promote mechanically, create canonical immutable requests and dispatch the public stateless runtime. Developers/CI may separately use repository-native modules from a genuine checkout.
