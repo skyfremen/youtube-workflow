@@ -1,54 +1,82 @@
 # Wacky Dramas upload and recovery
 
-The canonical Shorts architecture is request-driven, immutable, and fail-closed around YouTube insertion.
+The canonical Shorts architecture is request-driven, immutable, recovery-first, and fail-closed around YouTube insertion.
 
-## Durable state
+## Durable private state
 
-- `content/requests/<content_id>.json` is the immutable production request.
-- `content/recovery/<content_id>/intent.json` is the create-only upload intent.
-- `content/recovery/<content_id>/upload.json` is create-only durable upload evidence.
-- `content/recovery/index/<content_id>.json` is the compact create-only content-to-video reconciliation mapping.
-- `content/recovery/index/bootstrap.json` certifies that trusted pre-cutover private evidence was indexed before the indexed runtime is allowed to authorize fresh uploads.
-- `content/results/<content_id>.json` is the immutable verified-success receipt.
+- `content/requests/<content_id>.json` — immutable production request.
+- `content/recovery/<content_id>/intent.json` — create-only upload intent.
+- `content/recovery/<content_id>/upload.json` — create-only durable upload evidence.
+- `content/recovery/index/<content_id>.json` — compact content-to-video reconciliation mapping.
+- `content/recovery/index/bootstrap.json` — cutover/index bootstrap certificate.
+- `content/results/<content_id>.json` — immutable verified-success receipt.
 
-The request bytes are bound to the exact commit that first added them. Production refuses to publish if the current request differs from those source bytes.
+Request bytes are bound to the exact source commit that first added them. Production refuses to publish if the request differs from those immutable bytes.
 
-The per-content reconciliation mapping is deliberately small and private. It contains immutable request identity, the YouTube video ID, and expected channel ID. It is an additional reconciliation source, not a replacement for the upload-intent fence or full durable upload evidence.
+## Current request/background contract
 
-## Publication and request contract
+**Schema v6 is current for new Daily and Ad-hoc production.** Schema v6 freezes the story/narration/publication contract, the logical primary/backup backgrounds, and one long continuous temporal range for each slot. It deliberately does **not** freeze playback rate because exact speed depends on actual post-TTS production timing.
 
-The current authoring/production contract is the **schema-v5 daily path** and matching schema-v5 Ad-hoc path. Schema v4 remains executable for staged migration/recovery of immutable requests that already exist. Older schema-v3 receipts are historical/analytics compatibility only where explicitly supported; new production must not author v3 or v4 requests.
+**Schema v5 and schema v4 remain executable only for historical immutable recovery.** Existing v5 requests continue to use their original fixed segment/playback treatment semantics; they are never rewritten into v6.
 
-A schema-v5 request freezes the same story, narration and publication contract as before plus the selected logical primary/backup backgrounds and their exact immutable temporal/playback treatments. Recovery may never substitute a different segment or speed after the request is committed.
+The active background registry used by new v6 planning is separate from historical recovery definitions. Old deleted backgrounds needed for legacy v4/v5 recovery may be resolved only through the isolated legacy recovery snapshot. That snapshot:
 
-Daily requests carry `publication.mode=scheduled`; the uploader requires `privacyStatus=private` plus the exact UTC `publishAt` from the request. YouTube owns the later public transition. Ad-hoc requests carry `publication.mode=immediate`, `publish_at=null`, and upload Public immediately.
+- does not participate in active media readiness;
+- cannot be selected for new Daily or Ad-hoc planning;
+- cannot act as an emergency fallback;
+- does not recreate the old `selection_enabled=false` active-registry model.
 
-The canonical private Daily entry point is `daily-production.yml` (**Daily Production**). It creates one opaque public-runtime dispatch; publication behavior is determined by the immutable request contract. Ad-hoc uses its dedicated private workflow and public single-item execution path.
+## Schema-v6 continuous background recovery
 
-## Background treatment recovery boundary
+For v6, recovery reuses the exact immutable logical slot and continuous source range from the original request. The runtime may resolve the same logical slot to an allowed physical rendition according to the normal rendition policy, but it may not select a different logical asset or temporal range.
 
-Persistent background asset/category/segment/playback history exists only in the private planning layer and is derived from immutable successful receipts. The public runtime remains stateless across independent runs.
+Execution order is:
 
-For schema v5, the public runtime must execute the exact frozen treatment for whichever frozen logical slot—primary or backup—actually resolves. Physical rendition fallback, normalized-cache reuse and one-time normalization remain execution details; they cannot change the immutable segment/playback treatment. The completion receipt records the executed treatment and fails closed if it differs from the request.
+```text
+immutable request
+  -> resolve requested primary/backup physical rendition
+  -> TTS + actual complete visible timeline
+  -> required moving-background duration
+  -> derived playback rate = selected unique range / required duration
+  -> validate configured speed bounds
+  -> prepare one continuous background
+  -> render once with normal loop count = 0
+```
 
-A rerun/recovery therefore reuses the same request treatment. It must never choose a fresh segment merely because the original run failed after dispatch.
+A rerun may derive the playback rate again from the actual deterministic timeline, but the underlying selected range remains immutable. Insufficient source coverage fails closed; recovery must never solve it by looping, freezing a final frame, restarting the source, or substituting an unrelated third asset.
+
+The v6 completion receipt proves the selected logical asset/rendition, immutable range, actual required duration, derived playback rate, treated duration, source/treated evidence where available, and zero normal loops.
+
+## Historical schema-v5/v4 recovery
+
+Historical v5 requests execute exactly their original frozen segment/playback treatment. Recovery may not choose a fresh segment or speed because a previous attempt failed. Historical v4 requests retain their established legacy execution contract.
+
+This compatibility path is isolated from current active-background planning. New production must not author v4 or v5 merely to recover access to deleted active-library definitions.
+
+## Publication contract
+
+Daily requests use `publication.mode=scheduled`; upload requires `privacyStatus=private` plus the exact UTC `publishAt` from the immutable request. YouTube owns the later public transition.
+
+Ad-hoc requests use `publication.mode=immediate`, `publish_at=null`, and upload Public immediately.
+
+The private Daily entry point is `daily-production.yml`. Ad-hoc uses its dedicated private workflow and the public single-item execution path. Publication behavior comes from the immutable request, not workflow-side creative repair.
 
 ## Retry and idempotency contract
 
-1. Resolve the original request-addition commit and verify the current request bytes against that Git blob.
-2. Validate the request, shared media registry and compatibility fingerprint.
-3. Before media download, TTS, rendering, or insertion, read any existing receipt, upload evidence, reconciliation mapping, and intent for the exact content ID.
-4. If durable upload evidence exists, require any mapping to agree with it, repair a missing mapping idempotently, restore that exact YouTube video ID, and do not create another upload.
-5. If a mapping exists but durable upload evidence is unexpectedly missing, perform a targeted lookup of that one mapped video ID. Whether it verifies or is unavailable, fresh insertion remains forbidden until the private evidence anomaly is reconciled.
-6. If an intent exists without upload evidence or a mapping, use only the bounded post-intent YouTube reconciliation path described below. Failure to establish certainty is never permission to insert again.
-7. For a genuinely new request, require the private index bootstrap certificate and confirm that intent, upload evidence, and the exact mapping are all absent. No channel-history scan is required on this normal path.
-8. After a verified render exists, create the upload intent exclusively **before** calling YouTube `videos.insert`.
-9. Persist durable upload evidence from the insert response or a reconciled recovery result.
-10. Create the compact per-content mapping from the durable upload record. If this write fails, the already-durable upload record remains authoritative and a later recovery repairs the mapping without another insertion.
-11. Verify the exact YouTube video, channel, publication state, and schedule/mode by the known video ID.
-12. Create the immutable result receipt only after verification passes. For schema v5 the receipt must also prove the executed background treatment equals the immutable selected-slot treatment. If the receipt already exists, verify its identity/evidence and reuse it unchanged.
+1. Resolve and verify the original immutable request identity/source bytes.
+2. Validate request schema, compatibility fingerprint, and the appropriate current-or-legacy background resolution boundary.
+3. Before media download, TTS, rendering, or insertion, read any existing receipt, upload evidence, reconciliation mapping, and upload intent for the exact content ID.
+4. If a verified receipt already exists, verify identity/evidence and reuse it unchanged.
+5. If durable upload evidence exists, require any mapping to agree, restore that exact YouTube video ID, and never create another upload.
+6. If a mapping exists but upload evidence is unexpectedly missing, perform only targeted known-video reconciliation; fresh insertion remains forbidden until the anomaly is reconciled.
+7. If intent exists without upload evidence/mapping, use the bounded post-intent YouTube reconciliation path. Uncertainty is never permission to insert again.
+8. For a genuinely new request, require the private index bootstrap certificate and confirm intent/upload/mapping are absent.
+9. After a verified render exists, create upload intent exclusively **before** calling YouTube `videos.insert`.
+10. Persist upload evidence and the compact per-content mapping.
+11. Verify exact YouTube video, channel, publication state, and schedule/mode.
+12. Create the immutable result receipt only after all verification passes.
 
-A lost or ambiguous GitHub write acknowledgement is treated as unsafe. The code does not infer ownership of an upload intent from a later matching read and does not retry insertion optimistically.
+A lost or ambiguous GitHub write acknowledgement is unsafe. The system never infers permission for another insertion from absence of a later record.
 
 ## Critical crash window
 
@@ -62,71 +90,50 @@ YouTube videos.insert succeeds
 runner dies before upload.json / index mapping is durable
 ```
 
-The index cannot close this window because it may not have been written yet. Recovery therefore keeps the immutable intent as an irreversible fence and performs a bounded exceptional reconciliation against the authenticated channel.
+The immutable intent becomes an irreversible duplicate-upload fence. Recovery performs bounded exceptional reconciliation against the authenticated channel. Multiple matches, conflicting metadata, or exhaustion of the bounded search fail closed.
 
-The exceptional lookup starts at the newest uploads and is bounded by the intent creation time (with a small clock-skew allowance) and a fixed maximum of 250 observed uploads. Matching requires the deterministic marker plus the immutable title, description, category, and authenticated channel. Multiple matches or conflicting metadata fail closed. If the fixed bound is exhausted before certainty is reached, recovery fails closed and the intent continues to prohibit `videos.insert`.
+## Reconciliation index
 
-This exceptional bounded lookup is not used for ordinary new uploads or ordinary recovery when private upload evidence/mapping already exists.
+`recovery/reconciliation_index.py` reconstructs per-content mappings from trusted upload evidence and verified receipts. It is idempotent:
 
-## Reconciliation index and bootstrap
-
-`recovery/reconciliation_index.py` reconstructs the private index from existing trusted `content/recovery/*/upload.json` records and verified `content/results/*.json` receipts. It cross-checks duplicate evidence for the same content ID and refuses conflicts.
-
-The migration is safe to rerun:
-
-- existing identical per-content mappings are reused;
-- missing mappings can be created;
+- identical mappings are reused;
+- missing mappings may be created;
 - conflicting mappings are never overwritten;
-- an existing valid bootstrap marker is retained;
-- newly accumulated trusted records can be indexed without rewriting the original cutover certificate.
+- a valid bootstrap marker is retained;
+- new trusted records may be indexed without rewriting the original cutover certificate.
 
-The initial bootstrap does not query YouTube when the trusted private evidence already contains the needed content/video relationships. The public runtime refuses fresh insertion if the bootstrap certificate is missing or invalid.
-
-Because mappings are one file per content ID rather than one shared JSON dictionary, concurrent different Shorts do not race by rewriting the same index object. GitHub create-only semantics continue to protect same-content conflicts.
+Because mappings are one file per content ID, concurrent different Shorts do not race by rewriting one shared dictionary.
 
 ## Reruns
 
-Manual Daily recovery uses `daily-production.yml` `workflow_dispatch` with one or more existing immutable content IDs. The private workflow writes an immutable recovery manifest and sends only its opaque batch ID, exact source SHA and compatibility fingerprint to the public runtime. The batch processes each content ID through the same recovery-first publisher. Per-video failures are isolated so the rest of a valid batch can continue, but an individual failed request never bypasses its durable intent, mapping, upload record, receipt, or frozen treatment rules.
+Manual Daily recovery uses `daily-production.yml` `workflow_dispatch` with existing immutable content IDs. Private recovery sends only the opaque batch identity, exact source SHA, and compatibility fingerprint to public runtime.
 
-GitHub partial reruns increment `GITHUB_RUN_ATTEMPT` and may rerun a failed unit or aggregate job without rerunning the original prepare job. For attempts greater than 1, the runtime progress layer may reconstruct the missing current-attempt `START` record only when it finds exactly one prior START for the same workflow run/batch/source/runtime identity and the immutable prepared dispatch intent still matches the same contract. It then creates a normal append-only START for the current attempt before recording progress. Concurrent matrix workers may race to create that one identical START and must converge idempotently. Attempt 1 still requires the explicit workflow Start step; an old START is never accepted directly as current-attempt evidence.
+Per-video failures remain isolated, but an individual failed request never bypasses its durable intent, mapping, upload record, receipt, or immutable background contract.
+
+GitHub partial reruns may reconstruct current-attempt START evidence only when prior attempt evidence and immutable dispatch identity agree exactly. Attempt 1 still requires the explicit workflow Start step; stale evidence is never accepted as current-attempt proof.
 
 ## Scheduled-slot guard
 
-For fresh scheduled generation, the public runtime's publication pipeline skips new expensive work when the immutable slot is already past or is within the configured generation buffer. Recovery is attempted before this guard, so an already-uploaded scheduled video can still be reconciled and verified.
+Fresh scheduled generation skips expensive work when the immutable publication slot is already past or inside the configured generation buffer. Recovery is attempted before this guard so an already-uploaded scheduled video can still be reconciled and verified.
 
-The planner additionally avoids creating same-day catch-up slots that are too close to the current time. These are separate protections: planning chooses viable slots; publication guards prevent stale immutable slots from causing late generation.
-
-## Duplicate recovery marker
-
-`workflow_common.marker_tag(content_id)` derives a deterministic non-viewer-facing YouTube tag. The shared upload contract creates it. Normal duplicate resolution uses the private per-content mapping and targeted known-video verification instead of enumerating channel history.
-
-The marker remains essential for the exceptional post-intent crash-window lookup. It must not be placed in the public description. Semantic YouTube tags and visible hashtags remain distinct from the hidden recovery marker.
+Planning separately avoids creating same-day catch-up slots that are too close to execution time.
 
 ## Verification and receipt requirements
 
-A receipt cannot be finalized unless all applicable evidence agrees with the immutable request and durable upload evidence:
+A receipt cannot finalize unless all applicable evidence agrees with the immutable request and durable upload evidence, including:
 
-- YouTube video ID and authenticated channel.
-- Scheduled publication state and exact `publishAt`, or immediate-public state for Ad-hoc.
-- Verified render identity and SHA.
-- **1080×1920** resolution, 30 fps, H.264 High video, yuv420p/BT.709, one AAC-LC narration stream at 48 kHz.
-- Kokoro narration using the request's frozen voice/speed contract.
-- Primary or backup background selected from the request and recorded with its rendition/provenance.
-- For schema v5, exact selected-slot `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate` execution evidence.
-- Workflow/source-commit provenance.
+- YouTube video ID and authenticated channel;
+- exact scheduled `publishAt` or immediate-public state;
+- verified render identity/evidence;
+- **1080×1920**, 30 fps, H.264 High, yuv420p/BT.709, one AAC-LC narration stream at 48 kHz;
+- Kokoro narration using the request voice/speed contract;
+- primary or backup logical background from the immutable request;
+- physical rendition/provenance;
+- v6 exact continuous range + derived timing + zero-loop evidence, or historical v5 exact fixed treatment evidence;
+- workflow/source-commit provenance.
 
-The receipt carries the same supported schema version as its immutable request. The receipt itself is create-only. A rerun may reuse an existing verified receipt but may not mutate it.
+Receipts are create-only. A rerun may reuse an existing verified receipt but may not mutate it.
 
-## Operator recovery
+## Recovery principle
 
-For a scheduled Daily content ID, manually run `daily-production.yml` using `workflow_dispatch` with the existing content ID or comma-separated content IDs. Do not create replacement requests merely to retry a failed workflow.
-
-If recovery reports conflicting videos, mismatched evidence, an indexed video that is unavailable, an intent whose bounded recovery window cannot establish certainty, treatment drift, or any other ambiguous state, stop automated insertion and reconcile the durable GitHub/YouTube evidence. Never delete an intent, edit an immutable request/receipt/mapping, or add a force-reupload path to clear ambiguity.
-
-## Complexity
-
-The normal recovery and duplicate-prevention path is O(1) private state lookup plus targeted verification of a known video ID when needed. Channel growth does not increase normal lookup work. Only the exceptional unresolved-intent crash window can enumerate uploads, and that path has the fixed 250-video bound described above.
-
-## Safe verification
-
-Private planning/state changes should use private `dry-run.yml`; runtime changes should use the public repository's `dry-run.yml`. The private dry run verifies the cross-repository compatibility fingerprint and dispatches the linked public dry run against one resolved public SHA. Scheduled observation is isolated in public `observe.yml`. A production YouTube upload is not part of cleanup verification.
+Recovery resumes **already-promoted immutable production**. It does not revisit unused ranked-pool candidates, rerank creative work, choose new backgrounds, or alter publication contracts after production has begun.
