@@ -30,7 +30,7 @@ BASE = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = BASE / "media-library" / "backgrounds.json"
 API_ROOT = "https://api.pexels.com/v1/videos"
 PEXELS_LICENSE = "Pexels License"
-SOURCE_MANIFEST_VERSION = 1
+SOURCE_MANIFEST_VERSION = 2
 SOURCE_MANIFEST_MAX_CANDIDATES = 48
 
 
@@ -273,6 +273,10 @@ def _build_asset(logical_id, video_id, metadata, video, retrieved_at):
         "content_verified_by": "chatgpt_planner_visual_review",
         "renditions": [],
     }
+    if metadata.get("reviewed_category"):
+        asset["retention_category"] = metadata["reviewed_category"]
+    if metadata.get("review_decision_id"):
+        asset["visual_review_decision_id"] = metadata["review_decision_id"]
     return enrich_asset(asset, video, retrieved_at=retrieved_at)
 
 
@@ -319,13 +323,20 @@ def validate_sourcing_manifest(data):
     errors = []
     if not isinstance(data, dict):
         return ["background sourcing manifest must be an object"]
-    expected = {"schema_version", "plan_date", "provider", "candidates"}
+    version = data.get("schema_version")
+    if version == 1:
+        expected = {"schema_version", "plan_date", "provider", "candidates"}
+    elif version == 2:
+        expected = {
+            "schema_version", "plan_date", "provider", "replenishment_session_id",
+            "planner_invocation", "attempt", "discovery_request_id",
+            "review_decision_ids", "candidates",
+        }
+    else:
+        expected = set()
+        errors.append("background sourcing schema_version must be 1 or 2")
     if set(data) != expected:
-        errors.append(
-            "background sourcing manifest must contain exactly schema_version, plan_date, provider, candidates"
-        )
-    if data.get("schema_version") != SOURCE_MANIFEST_VERSION:
-        errors.append(f"background sourcing schema_version must be {SOURCE_MANIFEST_VERSION}")
+        errors.append(f"background sourcing schema-v{version} manifest has invalid fields")
     if data.get("provider") != "Pexels":
         errors.append("automatic background sourcing provider must be Pexels")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(data.get("plan_date") or "")):
@@ -352,6 +363,8 @@ def validate_sourcing_manifest(data):
         "verified_preview",
         "required_by_content_ids",
     }
+    if version == 2:
+        expected_fields |= {"reviewed_category", "review_decision_id"}
     for index, candidate in enumerate(candidates):
         label = f"candidate {index}"
         if not isinstance(candidate, dict) or set(candidate) != expected_fields:
@@ -381,6 +394,15 @@ def validate_sourcing_manifest(data):
             not str(value or "").strip() for value in required_by
         ):
             errors.append(f"{label}: required_by_content_ids must be a non-empty list")
+        if version == 2:
+            category = candidate.get("reviewed_category")
+            if category not in {
+                "cooking", "baking", "food_prep", "satisfying_process", "crafting",
+                "cleaning", "assembly", "pov_movement", "city_motion",
+            }:
+                errors.append(f"{label}: reviewed_category is invalid")
+            if not re.fullmatch(r"rd-[A-Za-z0-9-]{8,96}", str(candidate.get("review_decision_id") or "")):
+                errors.append(f"{label}: review_decision_id is invalid")
     return errors
 
 

@@ -20,7 +20,7 @@ class PlannerMaterializationTests(unittest.TestCase):
         cls.data = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     def test_connector_native_checkpoint_is_canonical(self):
-        self.assertEqual(self.data["schema_version"], 8)
+        self.assertEqual(self.data["schema_version"], 9)
         self.assertEqual(self.data["contract"], "connector_native_planner_checkpoint")
         bootstrap = self.data["planner_bootstrap"]
         self.assertEqual(bootstrap["preferred"], "connector_native_checkpoint")
@@ -82,8 +82,11 @@ class PlannerMaterializationTests(unittest.TestCase):
     def test_bounded_replenishment_contract_is_machine_readable(self):
         continuation = self.data["background_replenishment_continuation"]
         self.assertEqual(continuation["state"], "recoverable_intermediate")
-        self.assertEqual(continuation["discovery_request_schema_version"], 2)
-        self.assertEqual(continuation["review_decision_schema_version"], 1)
+        self.assertEqual(continuation["discovery_request_schema_version"], 3)
+        self.assertEqual(continuation["review_decision_schema_version"], 2)
+        self.assertFalse(continuation["replenish_is_terminal"])
+        self.assertTrue(continuation["automatic_continuation_required"])
+        self.assertTrue(continuation["resume_same_planner_invocation"])
         self.assertEqual(
             continuation["session_identity_field"], "replenishment_session_id"
         )

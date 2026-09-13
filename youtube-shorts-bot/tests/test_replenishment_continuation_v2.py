@@ -43,8 +43,8 @@ class ReplenishmentContinuationV2Tests(unittest.TestCase):
         )
         continuation = manifest["background_replenishment_continuation"]
         self.assertEqual(continuation["state"], "recoverable_intermediate")
-        self.assertEqual(continuation["discovery_request_schema_version"], 2)
-        self.assertEqual(continuation["review_decision_schema_version"], 1)
+        self.assertEqual(continuation["discovery_request_schema_version"], 3)
+        self.assertEqual(continuation["review_decision_schema_version"], 2)
         self.assertEqual(
             continuation["session_identity_field"], "replenishment_session_id"
         )

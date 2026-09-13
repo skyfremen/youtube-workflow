@@ -20,7 +20,7 @@ Use `profile=daily` from the standalone checkpoint contract. The ranked pool con
 
 ## Background readiness and sequence contract
 
-An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared automatic resumable background procedure before final candidate backgrounds are frozen. Resume compatible unfinished attempts and continue until readiness is `PASS` or a genuine bounded continuation state must be reported.
+An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Daily invocation and its canonical candidate/ranking pipeline.
 
 New requests use schema v7 `concatenated_fit_to_short`:
 

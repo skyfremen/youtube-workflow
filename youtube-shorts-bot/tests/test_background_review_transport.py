@@ -25,6 +25,9 @@ class BackgroundReviewTransportContractTests(unittest.TestCase):
         self.assertIn('Write immutable review evidence index', workflow)
         self.assertIn('content/background-sourcing/review-evidence/', workflow)
         self.assertIn('Ingest reviewed readiness manifest', workflow)
+        self.assertIn('media.replenishment_state record-readiness-event', workflow)
+        self.assertIn('replenishment-events/', workflow)
+        self.assertIn('--review-decisions-root', Path('youtube-shorts-bot/media/pexels_resilient_ingest.py').read_text(encoding='utf-8'))
 
     def test_background_management_can_backfill_unindexed_discovery(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')

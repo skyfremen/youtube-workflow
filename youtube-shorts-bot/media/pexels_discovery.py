@@ -1,10 +1,10 @@
 """Deterministic Pexels discovery for long, production-suitable background clips.
 
-Provider/API eligibility only. Schema v2 adds bounded replenishment-session inputs so
-ChatGPT can target deficits and exclude already-reviewed provider assets. Schema v1
-remains accepted for existing immutable requests.
+Provider/API eligibility only. Schema v3 binds targeted attempts to one frozen
+planner invocation and readiness deficit snapshot. Schemas v1/v2 remain accepted
+for existing immutable requests.
 
-Review decisions are durable repository state. For schema-v2 requests, discovery
+Review decisions are durable repository state. For session requests, discovery
 automatically excludes every provider asset already reviewed in the same
 replenishment session, even if the caller omits it from exclude_provider_asset_ids.
 """
@@ -19,22 +19,28 @@ from urllib.parse import quote_plus
 from media.background_policy import rendition_is_production_suitable
 from media.continuous_background import MIN_SEQUENCE_CLIP_SECONDS
 from media.pexels_registry_base import api_get, renditions_from_video
+from media.replenishment_state import (
+    MAX_REPLENISH_ATTEMPTS,
+    validate_planner_invocation,
+    validate_review_decision,
+)
 
 DISCOVERY_SCHEMA_VERSION = 1
 LEGACY_REQUEST_SCHEMA_VERSION = 1
-REQUEST_SCHEMA_VERSION = 2
-REVIEW_DECISION_SCHEMA_VERSION = 1
+SESSION_REQUEST_SCHEMA_VERSION = 2
+REQUEST_SCHEMA_VERSION = 3
 DEFAULT_MAX_CANDIDATES = 48
 MAX_MAX_CANDIDATES = 80
 SEARCH_PER_PAGE = 80
 SEARCH_MAX_PAGES = 3
-MAX_REPLENISH_ATTEMPTS = 5
 REVIEW_DECISIONS_DIR = (
     Path(__file__).resolve().parents[1]
     / "content"
     / "background-sourcing"
     / "review-decisions"
 )
+DISCOVERY_RESULTS_DIR = REVIEW_DECISIONS_DIR.parent / "discovery-results"
+REGISTRY_PATH = Path(__file__).resolve().parents[1] / "media-library" / "backgrounds.json"
 
 CATEGORY_QUERIES = {
     "cooking": ("cooking process", "cooking food"),
@@ -88,13 +94,20 @@ CATEGORY_TARGETS_48 = {
     "city_motion": 5,
 }
 
+ATTEMPT_QUERY_SUFFIXES = (
+    "",
+    " close up",
+    " professional",
+    " detailed process",
+    " continuous action",
+)
+
 
 def _utc_now():
     return datetime.now(timezone.utc).isoformat()
 
 
-def _load_request(path):
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+def _load_request_dict(data):
     version = data.get("schema_version") if isinstance(data, dict) else None
     base = {"schema_version", "plan_date", "request_id", "max_candidates"}
 
@@ -108,7 +121,7 @@ def _load_request(path):
             "replenishment_session_id": None,
             "attempt": 1,
         }
-    elif version == REQUEST_SCHEMA_VERSION:
+    elif version == SESSION_REQUEST_SCHEMA_VERSION:
         expected = base | {
             "target_categories",
             "exclude_provider_asset_ids",
@@ -117,8 +130,20 @@ def _load_request(path):
         }
         if set(data) != expected:
             raise ValueError("schema-v2 discovery request has invalid fields")
+    elif version == REQUEST_SCHEMA_VERSION:
+        expected = base | {
+            "target_categories",
+            "category_deficits",
+            "required_new_assets_at_least",
+            "exclude_provider_asset_ids",
+            "replenishment_session_id",
+            "planner_invocation",
+            "attempt",
+        }
+        if set(data) != expected:
+            raise ValueError("schema-v3 discovery request has invalid fields")
     else:
-        raise ValueError("discovery request schema_version must be 1 or 2")
+        raise ValueError("discovery request schema_version must be 1, 2, or 3")
 
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(data["plan_date"])):
         raise ValueError("plan_date must be YYYY-MM-DD")
@@ -164,87 +189,40 @@ def _load_request(path):
         raise ValueError(f"attempt must be 1-{MAX_REPLENISH_ATTEMPTS}")
 
     session_id = data["replenishment_session_id"]
-    if version == REQUEST_SCHEMA_VERSION and not re.fullmatch(
+    if version in {SESSION_REQUEST_SCHEMA_VERSION, REQUEST_SCHEMA_VERSION} and not re.fullmatch(
         r"rs-[A-Za-z0-9-]{8,96}", str(session_id or "")
     ):
         raise ValueError(
             "replenishment_session_id must match rs-[A-Za-z0-9-]{8,96}"
         )
+    if version == REQUEST_SCHEMA_VERSION:
+        invocation_errors = validate_planner_invocation(data["planner_invocation"])
+        if invocation_errors:
+            raise ValueError("invalid planner_invocation: " + "; ".join(invocation_errors))
+        if data["plan_date"] != data["planner_invocation"]["singapore_date"]:
+            raise ValueError("plan_date must equal planner_invocation.singapore_date")
+        deficits = data["category_deficits"]
+        if not isinstance(deficits, dict) or set(deficits) != set(CATEGORY_QUERIES):
+            raise ValueError("category_deficits must contain every known category")
+        if any(isinstance(value, bool) or not isinstance(value, int) or value < 0 for value in deficits.values()):
+            raise ValueError("category deficits must be non-negative integers")
+        expected_targets = [category for category in CATEGORY_QUERIES if deficits[category] > 0]
+        if targets != expected_targets:
+            raise ValueError("target_categories must exactly match positive category deficits")
+        required = data["required_new_assets_at_least"]
+        if isinstance(required, bool) or not isinstance(required, int) or required < 1:
+            raise ValueError("required_new_assets_at_least must be a positive integer")
     return data
 
 
+def _load_request(path):
+    return _load_request_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+
+
 def _validate_review_decision_doc(data, path="<memory>"):
-    expected = {
-        "schema_version",
-        "replenishment_session_id",
-        "request_id",
-        "attempt",
-        "decisions",
-    }
-    if not isinstance(data, dict) or set(data) != expected:
-        raise ValueError(f"{path}: invalid review-decision fields")
-    if data["schema_version"] != REVIEW_DECISION_SCHEMA_VERSION:
-        raise ValueError(f"{path}: review-decision schema_version must be 1")
-    if not re.fullmatch(
-        r"rs-[A-Za-z0-9-]{8,96}", str(data.get("replenishment_session_id") or "")
-    ):
-        raise ValueError(f"{path}: invalid replenishment_session_id")
-    if not re.fullmatch(r"dr-[A-Za-z0-9-]{8,96}", str(data.get("request_id") or "")):
-        raise ValueError(f"{path}: invalid request_id")
-    attempt = data.get("attempt")
-    if (
-        isinstance(attempt, bool)
-        or not isinstance(attempt, int)
-        or not 1 <= attempt <= MAX_REPLENISH_ATTEMPTS
-    ):
-        raise ValueError(f"{path}: invalid attempt")
-
-    decisions = data.get("decisions")
-    if not isinstance(decisions, list) or not decisions:
-        raise ValueError(f"{path}: decisions must be a non-empty list")
-
-    expected_decision = {
-        "provider_asset_id",
-        "decision",
-        "discovery_category",
-        "reviewed_category",
-        "category_match",
-        "reason_code",
-    }
-    seen = set()
-    for index, decision in enumerate(decisions):
-        label = f"{path}: decision {index}"
-        if not isinstance(decision, dict) or set(decision) != expected_decision:
-            raise ValueError(f"{label}: invalid fields")
-        provider_id = str(decision.get("provider_asset_id") or "")
-        if not provider_id.isdigit():
-            raise ValueError(f"{label}: provider_asset_id must be numeric")
-        if provider_id in seen:
-            raise ValueError(f"{label}: duplicate provider_asset_id")
-        seen.add(provider_id)
-
-        if decision.get("decision") not in {"approve", "reject"}:
-            raise ValueError(f"{label}: decision must be approve or reject")
-        discovery_category = decision.get("discovery_category")
-        if discovery_category not in CATEGORY_QUERIES:
-            raise ValueError(f"{label}: invalid discovery_category")
-        reviewed_category = decision.get("reviewed_category")
-        if reviewed_category is not None and reviewed_category not in CATEGORY_QUERIES:
-            raise ValueError(f"{label}: invalid reviewed_category")
-        if not isinstance(decision.get("category_match"), bool):
-            raise ValueError(f"{label}: category_match must be boolean")
-        if not str(decision.get("reason_code") or "").strip():
-            raise ValueError(f"{label}: reason_code is required")
-
-        if decision["decision"] == "approve" and (
-            decision["category_match"] is not True
-            or reviewed_category != discovery_category
-            or decision["reason_code"] != "APPROVED"
-        ):
-            raise ValueError(
-                f"{label}: approved candidates must match their discovery category "
-                "and use reason_code=APPROVED"
-            )
+    state_errors = validate_review_decision(data)
+    if state_errors:
+        raise ValueError(f"{path}: " + "; ".join(state_errors))
     return data
 
 
@@ -268,6 +246,36 @@ def _load_reviewed_provider_ids(
             str(decision["provider_asset_id"]) for decision in data["decisions"]
         )
     return reviewed
+
+
+def _load_prior_discovered_provider_ids(replenishment_session_id, directory=DISCOVERY_RESULTS_DIR):
+    if not replenishment_session_id or not Path(directory).exists():
+        return set()
+    discovered = set()
+    for path in sorted(Path(directory).glob("*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("replenishment_session_id") != replenishment_session_id:
+            continue
+        discovered.update(
+            str(item.get("provider_asset_id"))
+            for item in data.get("candidates", [])
+            if str(item.get("provider_asset_id") or "").isdigit()
+        )
+    return discovered
+
+
+def _load_active_verified_provider_ids(path=REGISTRY_PATH):
+    path = Path(path)
+    if not path.exists():
+        return set()
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        str(item.get("provider_asset_id"))
+        for item in data.get("assets", [])
+        if item.get("status") == "active"
+        and item.get("verified") is True
+        and str(item.get("provider_asset_id") or "").isdigit()
+    }
 
 
 def _eligible_candidate(video, category, query):
@@ -336,12 +344,24 @@ def _category_targets(max_candidates, categories=None):
     }
 
 
+def queries_for_attempt(category, attempt, request_schema_version=REQUEST_SCHEMA_VERSION):
+    """Return a deterministic query strategy that changes across bounded retries."""
+    queries = CATEGORY_QUERIES[category]
+    offset = (attempt - 1) % len(queries)
+    rotated = queries[offset:] + queries[:offset]
+    if request_schema_version < REQUEST_SCHEMA_VERSION:
+        return tuple(rotated)
+    suffix = ATTEMPT_QUERY_SUFFIXES[attempt - 1]
+    return tuple(query + suffix for query in rotated)
+
+
 def discover(
     max_candidates=DEFAULT_MAX_CANDIDATES,
     key=None,
     target_categories=None,
     exclude_provider_asset_ids=None,
     attempt=1,
+    request_schema_version=LEGACY_REQUEST_SCHEMA_VERSION,
 ):
     categories = list(target_categories or CATEGORY_QUERIES)
     accepted = []
@@ -352,9 +372,7 @@ def discover(
     for category in categories:
         count = 0
         target = targets[category]
-        queries = CATEGORY_QUERIES[category]
-        offset = (attempt - 1) % len(queries)
-        queries = queries[offset:] + queries[:offset]
+        queries = queries_for_attempt(category, attempt, request_schema_version)
 
         for query in queries:
             for page in range(1, SEARCH_MAX_PAGES + 1):
@@ -403,7 +421,13 @@ def discover(
     return accepted, diagnostics
 
 
-def build_report(request, key=None, review_decisions_dir=REVIEW_DECISIONS_DIR):
+def build_report(
+    request,
+    key=None,
+    review_decisions_dir=REVIEW_DECISIONS_DIR,
+    discovery_results_dir=DISCOVERY_RESULTS_DIR,
+    registry_path=REGISTRY_PATH,
+):
     requested_exclusions = set(
         map(str, request.get("exclude_provider_asset_ids") or [])
     )
@@ -411,7 +435,11 @@ def build_report(request, key=None, review_decisions_dir=REVIEW_DECISIONS_DIR):
         request.get("replenishment_session_id"),
         directory=review_decisions_dir,
     )
-    effective_exclusions = requested_exclusions | durable_reviewed
+    prior_discovered = _load_prior_discovered_provider_ids(
+        request.get("replenishment_session_id"), discovery_results_dir
+    )
+    active_verified = _load_active_verified_provider_ids(registry_path)
+    effective_exclusions = requested_exclusions | durable_reviewed | prior_discovered | active_verified
 
     candidates, diagnostics = discover(
         request["max_candidates"],
@@ -419,6 +447,7 @@ def build_report(request, key=None, review_decisions_dir=REVIEW_DECISIONS_DIR):
         target_categories=request.get("target_categories"),
         exclude_provider_asset_ids=effective_exclusions,
         attempt=request.get("attempt", 1),
+        request_schema_version=request.get("schema_version", LEGACY_REQUEST_SCHEMA_VERSION),
     )
     categories = request.get("target_categories") or list(CATEGORY_QUERIES)
     return {
@@ -429,8 +458,13 @@ def build_report(request, key=None, review_decisions_dir=REVIEW_DECISIONS_DIR):
         "generated_at": _utc_now(),
         "replenishment_session_id": request.get("replenishment_session_id"),
         "attempt": request.get("attempt", 1),
+        "planner_invocation": request.get("planner_invocation"),
+        "category_deficits": request.get("category_deficits"),
+        "required_new_assets_at_least": request.get("required_new_assets_at_least"),
         "requested_excluded_provider_asset_ids": sorted(requested_exclusions),
         "durably_reviewed_provider_asset_ids": sorted(durable_reviewed),
+        "prior_discovered_provider_asset_ids": sorted(prior_discovered),
+        "active_verified_provider_asset_ids": sorted(active_verified),
         "effective_excluded_provider_asset_ids": sorted(effective_exclusions),
         "eligibility": {
             "minimum_duration_seconds": float(MIN_SEQUENCE_CLIP_SECONDS),
@@ -456,7 +490,8 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
-    report = build_report(_load_request(args.request))
+    request = _load_request(args.request)
+    report = build_report(request)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
@@ -466,7 +501,14 @@ def main():
             indent=2,
         )
     )
-    raise SystemExit(0 if report["candidate_count"] else 4)
+    # Empty bounded-session rounds are valid deterministic results: the planner
+    # advances the same session with a diversified next attempt. Historical
+    # one-shot schema-v1 callers retain their established no-candidate exit code.
+    raise SystemExit(
+        0
+        if report["candidate_count"] or request["schema_version"] >= SESSION_REQUEST_SCHEMA_VERSION
+        else 4
+    )
 
 
 if __name__ == "__main__":

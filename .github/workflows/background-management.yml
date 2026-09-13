@@ -20,6 +20,7 @@ on:
       - 'youtube-shorts-bot/media/pexels_discovery.py'
       - 'youtube-shorts-bot/media/pexels_registry.py'
       - 'youtube-shorts-bot/media/pexels_resilient_ingest.py'
+      - 'youtube-shorts-bot/media/replenishment_state.py'
       - 'youtube-shorts-bot/media/background_policy.py'
       - 'youtube-shorts-bot/media/continuous_background.py'
       - 'youtube-shorts-bot/media/preview_review_materializer.py'
@@ -60,6 +61,7 @@ jobs:
           review_output=''
           review_artifact=''
           review_index=''
+          readiness_event=''
           request_id=''
 
           set_review_fields() {
@@ -93,6 +95,20 @@ jobs:
             if [ "${#readiness_files[@]}" -eq 1 ]; then
               action=replenish
               manifest="${readiness_files[0]}"
+              read -r session_id attempt < <(python - "${manifest}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          data = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if data.get('schema_version') == 2:
+              print(data['replenishment_session_id'], data['attempt'])
+          else:
+              print('', '')
+          PY
+              )
+              if [ -n "${session_id}" ]; then
+                readiness_event="youtube-shorts-bot/content/background-sourcing/replenishment-events/${session_id}/a$(printf '%02d' "${attempt}")-readiness.json"
+              fi
             elif [ "${#discovery_files[@]}" -eq 1 ]; then
               action=discover
               discovery_request="${discovery_files[0]}"
@@ -126,6 +142,7 @@ jobs:
           echo "review_output=${review_output}" >> "${GITHUB_OUTPUT}"
           echo "review_artifact=${review_artifact}" >> "${GITHUB_OUTPUT}"
           echo "review_index=${review_index}" >> "${GITHUB_OUTPUT}"
+          echo "readiness_event=${readiness_event}" >> "${GITHUB_OUTPUT}"
 
       - name: Require Pexels API key
         if: steps.action.outputs.action == 'replenish' || steps.action.outputs.action == 'discover'
@@ -255,6 +272,9 @@ jobs:
           index = {
               'schema_version': 1,
               'request_id': os.environ['REQUEST_ID'],
+              'replenishment_session_id': evidence.get('replenishment_session_id'),
+              'planner_invocation': evidence.get('planner_invocation'),
+              'attempt': evidence.get('attempt'),
               'discovery_result': os.environ['DISCOVERY_RESULT'],
               'workflow': 'Background Management',
               'workflow_run_id': int(os.environ['GITHUB_RUN_ID']),
@@ -315,24 +335,43 @@ jobs:
         if: steps.action.outputs.action == 'replenish'
         env:
           MANIFEST: ${{ steps.action.outputs.manifest }}
-        run: python -m media.pexels_resilient_ingest --manifest "${MANIFEST}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m media.pexels_resilient_ingest --manifest "${MANIFEST}" \
+            | tee /tmp/background-ingest-result.json
 
       - name: Validate active registry structure
         run: python youtube-shorts-bot/media/validate_media_library.py
+
+      - name: Persist immutable post-ingestion readiness event
+        if: steps.action.outputs.action == 'replenish' && steps.action.outputs.readiness_event != ''
+        env:
+          MANIFEST: ${{ steps.action.outputs.manifest }}
+          READINESS_EVENT: ${{ steps.action.outputs.readiness_event }}
+        run: |
+          python -m media.replenishment_state record-readiness-event \
+            --manifest "${MANIFEST}" \
+            --ingest-result /tmp/background-ingest-result.json \
+            --registry youtube-shorts-bot/media-library/backgrounds.json \
+            --output "${READINESS_EVENT}"
 
       - name: Commit registry maintenance
         if: steps.action.outputs.action == 'replenish'
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- youtube-shorts-bot/media-library/backgrounds.json; then
-            echo 'Registry is already current.'
+          git add youtube-shorts-bot/media-library/backgrounds.json
+          if [ -n "${{ steps.action.outputs.readiness_event }}" ]; then
+            git add "${{ steps.action.outputs.readiness_event }}"
+          fi
+          if git diff --cached --quiet; then
+            echo 'Registry and readiness event are already current.'
             exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add youtube-shorts-bot/media-library/backgrounds.json
-          git commit -m '[media readiness] replenish continuous background registry'
+          git commit -m '[media readiness] persist replenishment result'
           git pull --rebase origin main
           git push origin HEAD:main
 

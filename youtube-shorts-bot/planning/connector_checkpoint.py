@@ -29,6 +29,7 @@ CHECKPOINT_SCHEMA_VERSION = 1
 POOL_SCHEMA_VERSION = 1
 REQUEST_SCHEMA_VERSION = 7
 EVIDENCE_SCHEMA_VERSION = 1
+MAX_REPLENISH_ATTEMPTS = 5
 REPOSITORY = "skyfremen/youtube-workflow"
 CANONICAL_TIMEZONE = "Asia/Singapore"
 SGT = timezone(timedelta(hours=8))
@@ -774,6 +775,15 @@ def contract_payload():
             "sequence_preferred_seconds": PREFERRED_SEQUENCE_SOURCE_SECONDS,
             "sequence_max_seconds": MAX_SEQUENCE_SOURCE_SECONDS,
             "primary_backup_disjoint": True,
+        },
+        "media_replenishment": {
+            "automatic_continuation_required": True,
+            "replenish_is_terminal": False,
+            "max_replenishment_attempts": MAX_REPLENISH_ATTEMPTS,
+            "rejected_candidates_are_excluded_from_retry": True,
+            "targeted_deficit_discovery": True,
+            "resume_same_planner_invocation": True,
+            "exhausted_error_code": "E_MEDIA_REPLENISH_EXHAUSTED",
         },
         "evidence": {
             "schema_version": EVIDENCE_SCHEMA_VERSION,

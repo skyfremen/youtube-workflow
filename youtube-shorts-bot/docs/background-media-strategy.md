@@ -7,17 +7,18 @@
 Daily and Ad-hoc share one readiness/replenishment path:
 
 ```text
-audit -> REPLENISH -> immutable schema-v2 discovery request
+audit -> REPLENISH -> resume/create stable planner-bound session
+      -> immutable schema-v3 deficit-targeted discovery request
       -> Background Management/Pexels API filters duration + rendition eligibility
       -> Background Management reads exact Pexels preview media
       -> FFmpeg generates small representative JPEG contact sheets
       -> private GitHub artifact + immutable review-evidence index
       -> ChatGPT/Work downloads that exact artifact through the GitHub connection
       -> ChatGPT inspects the JPEG pixels and assigns approval + semantic metadata
-      -> immutable review-decision state
-      -> approved candidates -> immutable readiness manifest
+      -> immutable evidence-bound review-decision state
+      -> approved category matches -> immutable schema-v2 readiness manifest
       -> Background Management re-enriches/persists
-      -> refresh main -> audit again
+      -> immutable post-ingestion readiness event
       -> PASS -> same original planner invocation continues
       -> still REPLENISH and attempt < 5 -> next targeted discovery attempt
 ```
@@ -26,35 +27,41 @@ Provider discovery is deliberately split from editorial review. `media.pexels_di
 
 A discovery request is immutable under `content/background-sourcing/discovery-requests/`. Background Management writes the matching provider result under `content/background-sourcing/discovery-results/` and one or more immutable transport indexes under `content/background-sourcing/review-evidence/<request_id>-run-<run_id>.json`. Each index records the exact Background Management run and artifact identity, digest, evidence-manifest hash and provider IDs with contact sheets. Multiple run-scoped indexes allow safe evidence regeneration after artifact expiry without editing history.
 
-### Schema-v2 replenishment request
+### Schema-v3 replenishment request
 
-New automatic replenishment attempts use discovery request schema v2. In addition to the existing plan date/request ID/candidate budget, each request freezes:
+New automatic replenishment attempts use discovery request schema v3. In addition to the existing plan date/request ID/candidate budget, each request freezes:
 
 - `target_categories` containing only currently deficient categories;
+- the complete `category_deficits` snapshot and minimum required new asset count;
 - `exclude_provider_asset_ids`;
 - one stable `replenishment_session_id`;
+- the original planner invocation ID, profile/mode, Singapore date and initial rules SHA;
 - `attempt` from 1 through 5.
 
 The replenishment session ID is durable recovery state for the original Daily/Ad-hoc planner invocation. The same session ID is reused across retries and after recoverable interruption. Query order rotates by attempt so later attempts start with different canonical search vocabulary.
 
-Legacy schema-v1 discovery requests remain readable for immutable history but must not be used for new automatic retries.
+Legacy schema-v1 and schema-v2 discovery requests remain readable for immutable history but must not be used for new automatic retries.
 
 ### Immutable review decisions
 
-After actual visual review, ChatGPT/Work writes one immutable review-decision JSON under `content/background-sourcing/review-decisions/<request_id>.json`. Review-decision schema v1 contains:
+After actual visual review, ChatGPT/Work writes one immutable review-decision JSON under `content/background-sourcing/review-decisions/<request_id>.json`. Review-decision schema v2 contains:
 
 - `replenishment_session_id`;
 - `request_id`;
 - `attempt`;
+- the frozen planner invocation and exact review-index/run/artifact/digest binding;
 - per-provider `decision`;
 - original `discovery_category`;
 - `reviewed_category` when confidently classifiable;
 - `category_match`;
 - stable `reason_code`.
+- the exact source page, concise reason, and immutable approved ingest metadata only for approvals.
 
 An approved candidate must visually match its discovery category. Search query/category metadata is provenance only and never sufficient to establish semantic category. A semantically mismatched clip is rejected for that attempt even if it might be useful elsewhere.
 
-For schema-v2 discovery, `media.pexels_discovery` automatically reads immutable review-decision state for the same `replenishment_session_id` and excludes every provider asset already reviewed in that session. Request-side `exclude_provider_asset_ids` is still retained as explicit evidence and defense in depth, but recovery correctness no longer depends on ChatGPT reconstructing the exclusion list perfectly after interruption.
+For session discovery, `media.pexels_discovery` automatically excludes active+verified registry assets, every provider already returned by an earlier same-session discovery result, and every provider already reviewed in that session. Request-side `exclude_provider_asset_ids` remains explicit evidence and defense in depth, but recovery correctness does not depend on ChatGPT reconstructing it perfectly after interruption.
+
+`media.replenishment_state` derives the current phase from immutable requests, results, evidence indexes, decisions, readiness manifests and post-ingestion readiness events. It detects duplicate attempts/decisions, validates exact evidence and invocation binding, reports resumable pending phases, and emits the complete `E_MEDIA_REPLENISH_EXHAUSTED` diagnostic at the bound.
 
 Readiness PASS requires the configured inventory/category minima and proof that two disjoint executable v7 sequences can actually be formed.
 

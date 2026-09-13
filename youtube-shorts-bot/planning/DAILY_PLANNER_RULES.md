@@ -66,31 +66,15 @@ There is no `planner-execution.yml`, no `content/planner-execution/*`, and no re
 
 ## Shared media readiness and replenishment prerequisite
 
-**Daily and Ad-hoc use this same prerequisite.** Before fully authoring a ranked pool, execute from `youtube-shorts-bot`:
+Daily and Ad-hoc use the single automatic, bounded, resumable procedure in
+`docs/private/PLANNER_PROMPT.md`, `media.replenishment_state`, and
+`docs/background-media-strategy.md`. This profile does not redefine that engine.
 
-```bash
-python -m media.media_readiness audit --allow-not-ready
-```
-
-Consume the actual JSON result.
-
-If `status` is `PASS`, continue planning using only selectable assets. Any registry asset with `selection_enabled=false` is recovery-only historical state and must never be selected for new production, including as an emergency default.
-
-If `status` is `REPLENISH`, do **not** author or commit a Daily ranked pool yet. Instead:
-
-1. Use the current `media_readiness` values returned by `planning.planner_contract` and the audit deficits as the authoritative inventory target.
-2. Search Pexels for production-appropriate continuous-motion footage, prioritizing the configured high-retention categories such as cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement and city/travel motion.
-3. Visually review every proposed source before setting `verified_preview=true`; reject watermarks, embedded text, unsafe material, static/weak footage and misleading metadata.
-4. Prefer portrait footage when quality is comparable, while allowing landscape/square only when current post-crop rendition policy can satisfy 1080x1920 output without prohibited upscaling.
-5. Use deterministic logical IDs `satisfying-px-<PexelsID>` and the exact sourcing-manifest schema implemented by `media/pexels_registry.py`.
-6. Create exactly one new immutable replenishment manifest under:
-   `content/background-sourcing/readiness/<stable-id>.json`
-   containing enough reviewed candidates to satisfy the returned total/category deficits. `required_by_content_ids` must contain stable upcoming Daily candidate content IDs that motivated the replenishment.
-7. Commit only that readiness manifest for the replenishment attempt. Background Management owns official Pexels API rendition enrichment, hard registry validation and persistence of the refreshed cache.
-8. Re-read current `main` after Background Management has persisted the registry, rerun `planning.planner_contract`, then rerun `python -m media.media_readiness audit --allow-not-ready`.
-9. Continue to ranked-pool authorship only when the new audit returns `status: PASS` and `ready: true`. If deficits remain, create a new immutable readiness-manifest attempt and repeat; never edit/delete an earlier manifest.
-
-Do not bypass readiness, keep using a retired old background because it remains resolvable for recovery, or create a ranked pool while the registry is `REPLENISH`. Repository validation independently rejects new production against a non-ready shared registry. Existing immutable requests remain recoverable against historical background IDs.
+Daily must preserve its original planner invocation, plan date, publication slots,
+and content-ID namespace across all replenishment attempts. After repository-backed
+readiness becomes `PASS`, resume that same invocation and author the canonical Daily
+ranked pool. Never select a recovery-only asset or commit a pool while readiness is
+`REPLENISH`.
 
 ## Planning date and schedule
 

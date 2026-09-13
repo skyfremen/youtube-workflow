@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 BASE = Path(__file__).resolve().parents[1]
 ROOT = BASE.parent
@@ -24,6 +25,11 @@ def canonical_planner_text(prefix):
 
 
 class PlanningRunnerTests(unittest.TestCase):
+    def setUp(self):
+        self.source_sha_patch = patch("planning.planning_runner.source_sha", return_value="1" * 40)
+        self.source_sha_patch.start()
+        self.addCleanup(self.source_sha_patch.stop)
+
     def _evaluation_payload(self):
         raw, semifinalists = build_acceptance_fixture("2026-09-10")
         return {

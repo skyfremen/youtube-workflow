@@ -98,24 +98,26 @@ def test_bootstrap_refuses_to_create_synthetic_git_metadata(
 def test_bootstrap_accepts_clean_real_checkout_at_exact_sha(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setattr(ranked_promotion, "REPO_ROOT", tmp_path)
-    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+    monkeypatch.setattr(ranked_promotion, "REPO_ROOT", checkout)
+    subprocess.run(["git", "init", "-q"], cwd=checkout, check=True)
     subprocess.run(
         ["git", "config", "user.email", "test@example.invalid"],
-        cwd=tmp_path,
+        cwd=checkout,
         check=True,
     )
     subprocess.run(
         ["git", "config", "user.name", "test"],
-        cwd=tmp_path,
+        cwd=checkout,
         check=True,
     )
-    path = tmp_path / "file.txt"
+    path = checkout / "file.txt"
     path.write_text("x\n", encoding="utf-8")
-    subprocess.run(["git", "add", "file.txt"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "commit", "-qm", "test"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "add", "file.txt"], cwd=checkout, check=True)
+    subprocess.run(["git", "commit", "-qm", "test"], cwd=checkout, check=True)
     source_sha = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
+        ["git", "rev-parse", "HEAD"], cwd=checkout, text=True
     ).strip()
     data = path.read_bytes()
     manifest = tmp_path / "snapshot.json"

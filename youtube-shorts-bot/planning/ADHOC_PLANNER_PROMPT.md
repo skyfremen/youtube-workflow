@@ -28,7 +28,7 @@ Every candidate uses the canonical immediate publication object:
 
 ## Background readiness and sequence contract
 
-An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared automatic resumable background procedure before final candidate backgrounds are frozen. Resume compatible unfinished attempts, visually review exact-source evidence, create readiness state only from approved candidates, and continue until readiness is `PASS` or a genuine bounded continuation state must be reported.
+An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Ad-hoc invocation and create its five-candidate ranked pool.
 
 New requests use schema v7 `concatenated_fit_to_short`:
 

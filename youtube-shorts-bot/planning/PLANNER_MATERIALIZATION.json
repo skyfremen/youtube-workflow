@@ -1,5 +1,5 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "contract": "connector_native_planner_checkpoint",
   "planner_bootstrap": {
     "preferred": "connector_native_checkpoint",
@@ -64,12 +64,23 @@
   },
   "background_replenishment_continuation": {
     "state": "recoverable_intermediate",
-    "discovery_request_schema_version": 2,
+    "automatic_continuation_required": true,
+    "replenish_is_terminal": false,
+    "implementation": "youtube-shorts-bot/media/replenishment_state.py",
+    "discovery_request_schema_version": 3,
+    "previous_discovery_request_schema_version": 2,
     "legacy_discovery_request_schema_version": 1,
-    "review_decision_schema_version": 1,
+    "review_decision_schema_version": 2,
+    "legacy_review_decision_schema_version": 1,
+    "readiness_manifest_schema_version": 2,
+    "readiness_event_schema_version": 1,
     "session_identity_field": "replenishment_session_id",
     "review_decision_prefix": "youtube-shorts-bot/content/background-sourcing/review-decisions/",
     "max_attempts": 5,
+    "max_replenishment_attempts": 5,
+    "resume_same_planner_invocation": true,
+    "targeted_deficit_discovery": true,
+    "rejected_candidates_are_excluded_from_retry": true,
     "terminal_exhausted_code": "E_MEDIA_REPLENISH_EXHAUSTED",
     "deferred_code": "DEFERRED_REPLENISHMENT",
     "new_request_required_fields": [
@@ -78,8 +89,11 @@
       "request_id",
       "max_candidates",
       "target_categories",
+      "category_deficits",
+      "required_new_assets_at_least",
       "exclude_provider_asset_ids",
       "replenishment_session_id",
+      "planner_invocation",
       "attempt"
     ],
     "durable_review_exclusion": {
@@ -89,10 +103,10 @@
     "rules": [
       "Keep one stable replenishment_session_id across all replenishment attempts for the original planner invocation.",
       "A rejected visual candidate is not a final planner result.",
-      "Persist one immutable review-decision document for each visually reviewed attempt before continuing.",
+      "Persist one immutable evidence-bound review-decision document for each visually reviewed attempt before continuing.",
       "Discovery automatically reloads same-session reviewed provider IDs so recovery does not depend on reconstructing exclusions from memory.",
       "Target only currently deficient categories and rotate or broaden query vocabulary on later attempts.",
-      "After approved candidates are deterministically ingested, rerun readiness from current repository state.",
+      "After approved candidates are deterministically ingested, persist an immutable readiness event from current repository state.",
       "On PASS, resume the same original Daily or Ad-hoc planner invocation immediately.",
       "On REPLENISH with attempt below 5, create the next immutable targeted attempt automatically.",
       "Only a genuine bounded infrastructure wait may return DEFERRED_REPLENISHMENT.",

@@ -371,7 +371,11 @@ def materialize(
     manifest = {
         "schema_version": 2,
         "request_id": data.get("request_id"),
+        "replenishment_session_id": data.get("replenishment_session_id"),
+        "planner_invocation": data.get("planner_invocation"),
+        "attempt": data.get("attempt"),
         "discovery_result": str(discovery_result),
+        "discovery_candidate_count": len(data.get("candidates", [])),
         "input_dir": str(local_input_root) if local_input_root is not None else None,
         "evidence_count": len(evidence),
         "failure_count": len(failures),
@@ -447,9 +451,13 @@ def main():
         contact_sheets_only=args.contact_sheets_only,
     )
     print(json.dumps(manifest, indent=2))
-    if manifest["evidence_count"] == 0:
+    if manifest["evidence_count"] == 0 and manifest["discovery_candidate_count"] > 0:
         raise SystemExit(4)
-    if motion_requested and manifest["motion_evidence_count"] == 0:
+    if (
+        motion_requested
+        and manifest["discovery_candidate_count"] > 0
+        and manifest["motion_evidence_count"] == 0
+    ):
         # Motion being unavailable everywhere is surfaced to the caller, but image
         # evidence remains materialized for ChatGPT/Work inspection and fallback.
         raise SystemExit(5)
