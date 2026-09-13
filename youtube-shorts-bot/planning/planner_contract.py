@@ -56,14 +56,22 @@ def build_contract():
         "daily_publication_template": DAILY_PUBLICATION,
         "execution_environment": {
             "canonical_mode": "explicit_rules_source_sha",
+            "materialization_manifest": "planning/PLANNER_MATERIALIZATION.json",
+            "materialization_mode": "explicit_file_list",
             "authenticated_checkout_required": False,
             "git_metadata_required": False,
+            "repository_archive_required": False,
+            "whole_directory_materialization_required": False,
+            "github_actions_planner_execution_required": False,
             "repository_identity_source": "explicit_rules_source_sha",
             "description": (
                 "Run planner Python normally in the available Python environment. "
                 "The exact immutable GitHub source commit inspected by ChatGPT is passed "
-                "explicitly as --rules-source-sha. A .git directory, authenticated clone, "
-                "snapshot manifest and synthetic Git HEAD are not required."
+                "explicitly as --rules-source-sha. Fetch only the explicit files declared "
+                "by planning/PLANNER_MATERIALIZATION.json from that SHA. A .git directory, "
+                "authenticated clone, repository archive, whole-directory download, "
+                "snapshot manifest, synthetic Git HEAD and GitHub Actions planner job are "
+                "not required."
             ),
             "adhoc_precommit_command": (
                 "python -m planning.adhoc_precommit --pool <pool> "
@@ -83,11 +91,14 @@ def build_contract():
             },
             "rules": [
                 "Resolve one exact immutable GitHub source SHA before live contract discovery and planning.",
-                "Pass that SHA explicitly as --rules-source-sha to Daily and Ad-hoc precommit validators.",
+                "Read planning/PLANNER_MATERIALIZATION.json from that exact SHA and fetch each declared required file directly through the GitHub API/connector.",
+                "Do not enumerate or download whole source directories; preserve repository-relative paths in an ordinary temporary directory.",
+                "Failure to obtain a repository archive or checkout is not a blocker because neither is part of the canonical planner bootstrap.",
+                "Pass rules_source_sha explicitly as --rules-source-sha to Daily and Ad-hoc precommit validators.",
                 "planning_execution.rules_source_sha must exactly equal the supplied rules_source_sha.",
                 "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
-                "Do not require .git, an authenticated checkout, snapshot bootstrap or synthetic Git metadata for normal ChatGPT/Work execution.",
-                "If repository main changes before the immutable pool commit, refresh rules_source_sha and rerun all required live validation against the new source state.",
+                "Do not require .git, an authenticated checkout, snapshot bootstrap, synthetic Git metadata or GitHub Actions for normal ChatGPT/Work planner execution.",
+                "If repository main changes before the immutable pool commit, refresh rules_source_sha, refetch the explicit manifest files and rerun all required live validation against the new source state.",
             ],
             "legacy_snapshot_mode": {
                 "supported": False,
