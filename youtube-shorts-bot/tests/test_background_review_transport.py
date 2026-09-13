@@ -5,36 +5,22 @@ from media.preview_review_materializer import _https_url, _representative_timest
 
 
 class BackgroundReviewTransportContractTests(unittest.TestCase):
-    def test_background_management_publishes_transport_only_review_artifact(self):
+    def test_background_management_dispatches_public_review_evidence(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
-        self.assertIn('media.preview_review_materializer', workflow)
-        self.assertIn('background-review-evidence-', workflow)
-        self.assertIn(
-            'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02',
-            workflow,
-        )
-        self.assertIn('discovery_result:', workflow)
-        self.assertIn('--include-motion-evidence', workflow)
-        self.assertIn('--representative-frames 5', workflow)
-        self.assertIn('--motion-sample-seconds 6', workflow)
+        self.assertIn('review-evidence.yml/dispatches', workflow)
+        self.assertIn('PUBLIC_PRODUCTION_TOKEN', workflow)
+        self.assertIn('discovery_result', workflow)
+        self.assertIn('source_sha', workflow)
         self.assertNotIn('verified_preview=true', workflow)
+        self.assertNotIn('ffmpeg', workflow.lower())
 
-    def test_review_transport_installs_ffmpeg_before_motion_materialization(self):
-        workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
-        install_index = workflow.index('- name: Install ffmpeg for exact-source motion evidence')
-        materialize_index = workflow.index(
-            '- name: Materialize exact preview evidence for ChatGPT review'
-        )
-        self.assertLess(install_index, materialize_index)
-        self.assertIn('sudo apt-get install -y --no-install-recommends ffmpeg', workflow)
-
-    def test_discovery_is_persisted_before_review_transport(self):
+    def test_discovery_is_persisted_before_review_dispatch(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
         commit_index = workflow.index('- name: Commit discovery result')
-        materialize_index = workflow.index(
-            '- name: Materialize exact preview evidence for ChatGPT review'
+        dispatch_index = workflow.index(
+            '- name: Dispatch stateless exact-source review evidence'
         )
-        self.assertLess(commit_index, materialize_index)
+        self.assertLess(commit_index, dispatch_index)
 
     def test_materializer_builds_evenly_distributed_review_points(self):
         self.assertEqual(
