@@ -71,7 +71,7 @@ class ScheduledRequestSchemaTests(unittest.TestCase):
 
     def test_upload_body_is_private_with_exact_publish_at(self):
         data = valid_request()
-        with patch("publishing.upload.datetime") as mocked_datetime:
+        with patch("validation.publication.datetime") as mocked_datetime:
             from datetime import datetime, timezone
 
             mocked_datetime.fromisoformat.side_effect = datetime.fromisoformat
