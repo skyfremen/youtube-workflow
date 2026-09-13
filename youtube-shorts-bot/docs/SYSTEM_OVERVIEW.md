@@ -60,29 +60,29 @@ The canonical rendered Short is **1080×1920** at 30 fps. The public runtime own
 
 **Schema v6 is current** for newly promoted Daily and Ad-hoc requests. It freezes story, narration, publication, logical primary/backup backgrounds and one continuous temporal range for each slot. Exact background playback rate is intentionally absent from the immutable request because it depends on actual post-TTS production timing.
 
-**Schema v5 remains executable for historical immutable recovery** using its original fixed segment/playback semantics. **Schema v4 remains executable** for older historical immutable recovery. Historical background definitions needed only by v4/v5 recovery are isolated from the active planning registry and never count toward new readiness, ranking, fallback or selection.
+**Schema v5 remains executable for historical immutable recovery** using its original fixed segment/playback semantics when its referenced logical background still exists in the current active registry. **Schema v4 remains executable** for older historical immutable recovery under the same fail-closed background-resolution rule. Deleted pre-reset background definitions are not preserved in a legacy registry and are never silently restored.
 
 The private/public compatibility fingerprint covers current request and treatment semantics. Public execution validates source revision and compatibility before expensive work.
 
 ## Active background library
 
-The active registry is intentionally separate from legacy recovery definitions. The one-time migration destructively removed all previous active entries; the valid post-reset state is an empty active registry.
+`media-library/backgrounds.json` is the **only background registry**. The hard reset destructively removed all previous background definitions rather than moving them into a legacy file. The valid post-reset state is an empty active registry.
 
 ```text
-old active library
-  -> DELETE from active registry
-active registry = empty
+old background library
+  -> DELETE definitions
+backgrounds.json = empty
   -> readiness REPLENISH
 next Daily or Ad-hoc planner invocation
   -> automatically source/review licensed long footage
   -> immutable replenishment manifest
   -> deterministic Pexels enrichment + validation
-  -> active registry populated
+  -> backgrounds.json populated
   -> readiness PASS
   -> ranked-pool authorship continues
 ```
 
-There is no `selection_enabled=false` retirement pool for new planning and no immortal `satisfying-001` / `satisfying-002` emergency-default dependency.
+There is no legacy background registry, no `selection_enabled=false` retirement pool, and no immortal `satisfying-001` / `satisfying-002` emergency-default dependency. A historical request that references a deleted background fails closed rather than resurrecting it.
 
 Readiness remains retention-first and diversity-aware, but a selectable new background must also have trustworthy duration and enough unique footage for continuous fit-to-short operation within configured runtime playback bounds.
 
@@ -142,4 +142,4 @@ For new ranked pools, ChatGPT / Work owns final editorial rank. Deterministic co
 
 Daily pool size remains 36 with target 24. Ad-hoc pool size remains 5 with target 1. Promotion validates committed candidates again as defense in depth. If a candidate later fails current deterministic validation, promotion moves to the next candidate in frozen order; it does not repair the failed candidate.
 
-Existing historical immutable requests are never mutated. Recovery of v4/v5 requests remains conceptually separate from current v6 planning and from the clean active background registry.
+Existing historical immutable requests are never mutated. Schema v4/v5 parsing and execution semantics remain available, but deleted old background assets do not: recovery resolves through the current active `backgrounds.json` only and fails closed when a referenced background is absent.

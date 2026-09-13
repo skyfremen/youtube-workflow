@@ -19,12 +19,7 @@ Request bytes are bound to the exact source commit that first added them. Produc
 
 **Schema v5 and schema v4 remain executable only for historical immutable recovery.** Existing v5 requests continue to use their original fixed segment/playback treatment semantics; they are never rewritten into v6.
 
-The active background registry used by new v6 planning is separate from historical recovery definitions. Old deleted backgrounds needed for legacy v4/v5 recovery may be resolved only through the isolated legacy recovery snapshot. That snapshot:
-
-- does not participate in active media readiness;
-- cannot be selected for new Daily or Ad-hoc planning;
-- cannot act as an emergency fallback;
-- does not recreate the old `selection_enabled=false` active-registry model.
+There is only one background registry: `media-library/backgrounds.json`. The old pre-reset background definitions were destructively removed and are not retained in a legacy recovery snapshot. Historical v4/v5 recovery therefore resolves logical background IDs against the current active registry only. If an old request names a deleted background, recovery fails closed instead of restoring, importing, or silently substituting the old asset.
 
 ## Schema-v6 continuous background recovery
 
@@ -49,9 +44,9 @@ The v6 completion receipt proves the selected logical asset/rendition, immutable
 
 ## Historical schema-v5/v4 recovery
 
-Historical v5 requests execute exactly their original frozen segment/playback treatment. Recovery may not choose a fresh segment or speed because a previous attempt failed. Historical v4 requests retain their established legacy execution contract.
+Historical v5 requests retain their original frozen segment/playback treatment semantics. Historical v4 requests retain their established execution semantics. These compatibility parsers do not provide a separate background library.
 
-This compatibility path is isolated from current active-background planning. New production must not author v4 or v5 merely to recover access to deleted active-library definitions.
+If the request's background ID is present in current `backgrounds.json`, normal validation/resolution may proceed. If that ID was part of the deleted pre-reset library and is absent now, recovery is intentionally terminal/fail-closed for that request. No recovery path may recreate the deleted library automatically.
 
 ## Publication contract
 
@@ -64,7 +59,7 @@ The private Daily entry point is `daily-production.yml`. Ad-hoc uses its dedicat
 ## Retry and idempotency contract
 
 1. Resolve and verify the original immutable request identity/source bytes.
-2. Validate request schema, compatibility fingerprint, and the appropriate current-or-legacy background resolution boundary.
+2. Validate request schema, compatibility fingerprint, and background resolution against the current active registry.
 3. Before media download, TTS, rendering, or insertion, read any existing receipt, upload evidence, reconciliation mapping, and upload intent for the exact content ID.
 4. If a verified receipt already exists, verify identity/evidence and reuse it unchanged.
 5. If durable upload evidence exists, require any mapping to agree, restore that exact YouTube video ID, and never create another upload.
@@ -129,11 +124,11 @@ A receipt cannot finalize unless all applicable evidence agrees with the immutab
 - Kokoro narration using the request voice/speed contract;
 - primary or backup logical background from the immutable request;
 - physical rendition/provenance;
-- v6 exact continuous range + derived timing + zero-loop evidence, or historical v5 exact fixed treatment evidence;
+- v6 exact continuous range + derived timing + zero-loop evidence, or historical v5 exact fixed treatment evidence when its background still exists;
 - workflow/source-commit provenance.
 
 Receipts are create-only. A rerun may reuse an existing verified receipt but may not mutate it.
 
 ## Recovery principle
 
-Recovery resumes **already-promoted immutable production**. It does not revisit unused ranked-pool candidates, rerank creative work, choose new backgrounds, or alter publication contracts after production has begun.
+Recovery resumes **already-promoted immutable production**. It does not revisit unused ranked-pool candidates, rerank creative work, choose new backgrounds, restore deleted old backgrounds, or alter publication contracts after production has begun.

@@ -2,11 +2,9 @@
 
 ## Active library lifecycle
 
-`media-library/backgrounds.json` is the **active new-planning registry only**. It may validly contain `"assets": []` after a hard reset. Empty or insufficient inventory audits as `REPLENISH`; it is not corruption.
+`media-library/backgrounds.json` is the **only background registry**. It may validly contain `"assets": []` after a hard reset. Empty or insufficient inventory audits as `REPLENISH`; it is not corruption.
 
-The pre-reset definitions are isolated in `media-library/backgrounds-legacy-v5.json` solely for immutable v5 recovery. That file is not an active registry, is never counted by readiness, and must never be ranked or selected for new Daily/Ad-hoc content.
-
-There is no soft-retirement pool and no `selection_enabled=false` state in the active registry.
+The pre-reset background definitions were destructively removed. There is no legacy background registry, no soft-retirement pool, and no `selection_enabled=false` state. Deleted old logical background IDs are not recoverable through a hidden fallback.
 
 Daily and Ad-hoc share one readiness/replenishment path:
 
@@ -62,9 +60,11 @@ Successful private receipts remain cross-run creative history. New planning avoi
 
 Both frozen slots must independently satisfy the continuous contract. There is no immortal `satisfying-001`/`satisfying-002` emergency pair and no unrelated third runtime fallback. If neither frozen slot can execute, the candidate fails closed.
 
-## Legacy compatibility
+## Historical request behavior after the hard reset
 
-Schema v4/v5 requests retain historical execution semantics and are not rewritten. New planning cannot use the legacy recovery registry. This keeps the active library genuinely clean while preserving practical recovery of existing immutable v5 requests.
+Schema v4/v5 request structure and execution semantics remain understood for compatibility, but old background definitions are not retained. A historical request whose logical background ID is absent from the current active registry fails closed rather than restoring, importing, or selecting a deleted pre-reset background.
+
+No recovery path may recreate a deleted background library automatically. If a background is needed again, it must enter `backgrounds.json` through the same current reviewed/licensed readiness path as any other active asset.
 
 ## Evidence
 

@@ -1,8 +1,12 @@
 """Current private request validator.
 
-Schema v4/v5 remain immutable recovery formats. New production uses schema v6,
+Schema v4/v5 remain immutable request formats. New production uses schema v6,
 which freezes a long continuous source range and derives playback rate only after
 the public runtime knows the actual post-TTS render duration.
+
+Old background definitions are intentionally not retained. Historical requests
+must resolve against the current active registry or fail closed; there is no
+legacy background registry or deleted-asset fallback.
 """
 from __future__ import annotations
 
@@ -21,7 +25,6 @@ from media.continuous_background import (
 )
 from media.media_readiness import audit_registry, is_selectable
 from media.validate_media_library import asset_map, load_registry
-from media import validate_media_library_v3 as legacy_registry
 from validation import validate_content_v5 as legacy5
 
 SCHEMA_VERSION = 6
@@ -58,12 +61,6 @@ PLAYBACK_RATE_MAX = FIT_PLAYBACK_RATE_MAX
 MAX_SEGMENT_START_SECONDS = legacy5.MAX_SEGMENT_START_SECONDS
 MIN_SEGMENT_DURATION_SECONDS = MIN_CONTINUOUS_SOURCE_SECONDS
 TREATMENT_DURATION_EPSILON_SECONDS = DURATION_EPSILON_SECONDS
-
-LEGACY_REGISTRY_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "media-library"
-    / "backgrounds-legacy-v5.json"
-)
 
 
 def _number(value, label, errors, *, minimum=None, maximum=None):
@@ -284,13 +281,6 @@ def validate_request_data(data, request_path=None, *, enforce_registry=False, re
         return ["request root must be an object"]
     version = data.get("schema_version")
     if version in {4, 5}:
-        if (
-            enforce_registry
-            and version == 5
-            and registry is None
-            and LEGACY_REGISTRY_PATH.is_file()
-        ):
-            registry = legacy_registry.load_registry(LEGACY_REGISTRY_PATH)
         return legacy5.validate_request_data(
             data,
             request_path=request_path,
