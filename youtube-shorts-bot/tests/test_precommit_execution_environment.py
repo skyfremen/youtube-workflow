@@ -7,6 +7,7 @@ from planning.planner_contract import build_contract
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BOT_ROOT.parent
 
 
 class PrecommitExecutionEnvironmentTests(unittest.TestCase):
@@ -27,22 +28,28 @@ class PrecommitExecutionEnvironmentTests(unittest.TestCase):
         self.assertEqual(execution["canonical_mode"], "explicit_rules_source_sha")
         self.assertFalse(execution["authenticated_checkout_required"])
         self.assertFalse(execution["git_metadata_required"])
+        self.assertFalse(execution["github_actions_planner_execution_required"])
         self.assertEqual(
             execution["repository_identity_source"], "explicit_rules_source_sha"
         )
-        self.assertTrue(execution["legacy_snapshot_mode"]["deprecated"])
-        self.assertFalse(execution["legacy_snapshot_mode"]["supported"])
+        self.assertEqual(execution["materialization_mode"], "shared_plus_selected_profile")
+        self.assertEqual(execution["cache"]["primary_key"], "rules_source_sha")
+        self.assertFalse(execution["cache"]["correctness_dependency"])
 
     def test_canonical_prompts_do_not_require_git_head(self):
+        shared = (REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md").read_text(
+            encoding="utf-8"
+        )
         for name in ("ADHOC_PLANNER_PROMPT.md", "DAILY_PLANNER_PROMPT.md"):
             prompt = (BOT_ROOT / "planning" / name).read_text(encoding="utf-8")
-            self.assertIn("--rules-source-sha", prompt)
-            self.assertIn("A Git checkout, Git executable, `.git` directory", prompt)
-            self.assertIn("is **not** a planner prerequisite", prompt)
-            self.assertIn("GitHub API/connector", prompt)
-            self.assertIn("--verify-git-head", prompt)
-            self.assertNotIn("$(git rev-parse HEAD)", prompt)
-            self.assertNotIn("git clone", prompt.lower())
+            combined = shared + "\n" + prompt
+            self.assertIn("--rules-source-sha", combined)
+            self.assertIn("A Git checkout, Git executable, `.git` directory", combined)
+            self.assertIn("is **not** a planner prerequisite", combined)
+            self.assertIn("GitHub API/connector", combined)
+            self.assertIn("--verify-git-head", combined)
+            self.assertNotIn("$(git rev-parse HEAD)", combined)
+            self.assertNotIn("git clone", combined.lower())
 
 
 if __name__ == "__main__":
