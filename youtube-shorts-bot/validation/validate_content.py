@@ -19,7 +19,7 @@ from media.continuous_background import (
     MIN_CONTINUOUS_SOURCE_SECONDS,
     DURATION_EPSILON_SECONDS,
 )
-from media.media_readiness import audit_registry
+from media.media_readiness import audit_registry, is_selectable
 from media.validate_media_library import asset_map, load_registry
 from media import validate_media_library_v3 as legacy_registry
 from validation import validate_content_v5 as legacy5
@@ -163,6 +163,11 @@ def _asset_errors(asset, asset_id, label, treatment):
         errors.append(f"{label} background {asset_id} must be watermark free")
     if asset.get("has_embedded_text") is not False:
         errors.append(f"{label} background {asset_id} must not contain embedded text")
+    if not is_selectable(asset):
+        errors.append(
+            f"{label} background {asset_id} must satisfy current media-readiness "
+            "quality, retention, continuous-duration and production-suitable rendition requirements"
+        )
     try:
         source_duration = float(asset.get("duration_seconds"))
     except (TypeError, ValueError):
