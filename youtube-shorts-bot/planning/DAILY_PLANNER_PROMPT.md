@@ -9,7 +9,9 @@ Read and follow, in order:
 3. `planning/STORY_RULES.md`.
 4. `docs/background-media-strategy.md` — canonical shared background policy.
 
-Repository code/configuration at current `main` is authoritative. Use `profile=daily` from the live `planning.planner_contract` output. For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy schema-v5, `selection_enabled`, emergency-default, short-window, or planner-frozen-playback wording; non-background Daily rules remain mandatory.
+Repository code/configuration at current `main` is authoritative. Prefer the shared **Git-first exact detached snapshot**. If Git cannot obtain the exact current-main snapshot, use the canonical **connector/API fallback**; Git metadata is not required to execute deterministic planner Python. Use `profile=daily` from the live `planning.planner_contract` output.
+
+For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy schema-v5, `selection_enabled`, emergency-default, short-window, or planner-frozen-playback wording; non-background Daily rules remain mandatory.
 
 ## Mandatory checkpoints
 
@@ -57,6 +59,8 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
   --verify-git-head
 ```
 
-In connector/gitless fallback omit `--verify-git-head`. The gate requires all 36 candidates PASS. Manual checks or GitHub Actions are not substitutes.
+In connector/API fallback omit `--verify-git-head`. The gate requires **all 36 candidates PASS** before immutable commit. The compatibility wrapper `planning.daily_precommit` remains available for existing callers but contains no independent validation logic.
+
+The final immutable pool bytes must exactly match the successful `draft_sha256`. Manual checks, downstream admission/promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
 
 ChatGPT/Work remains creative/editorial owner. Private workflows validate/promote mechanically; public runtime executes statelessly.
