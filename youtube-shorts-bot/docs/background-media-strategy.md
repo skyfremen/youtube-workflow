@@ -47,13 +47,32 @@ PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
   --include-motion-evidence
 ```
 
+When local Python networking is unavailable but another exact download/file-transfer surface exists, stage the exact immutable preview bytes using the provider-ID layout below, then rerun the same helper with `--input-dir`:
+
+```text
+<temporary-input-dir>/<provider_asset_id>/preview.jpg
+<temporary-input-dir>/<provider_asset_id>/preview.mp4
+```
+
+`preview.jpeg`, `preview.png`, `preview.webp`, `preview.mov`, and `preview.webm` are also accepted. The staged file must come from that candidate's exact immutable `preview_image_url` or `preview_video_url`; a visually similar substitute is never acceptable.
+
+```bash
+PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
+  --discovery-result <discovery-result.json> \
+  --input-dir <temporary-input-dir> \
+  --output-dir <temporary-review-evidence-dir> \
+  --include-motion-evidence
+```
+
+The helper prefers staged exact local bytes when present and records the immutable Pexels preview URL as source identity. For local video it derives the same representative contact sheet and motion sample using FFmpeg. This explicitly separates **transport** from **review**: another tool may move exact bytes into local storage, but only ChatGPT/Work may inspect the resulting pixels/motion and approve them.
+
 When local Python networking is unavailable but another exact download surface exists, that is still a valid canonical path: download the exact immutable `preview_video_url` or `preview_image_url`, preserve the exact-source identity, then inspect/extract representative evidence locally with available tooling. Local Python outbound HTTPS is **not** a correctness dependency.
 
 A public/runtime review-evidence workflow may remain as an optional transport fallback. It must never be required for planner continuation, and its absence, startup failure, expired artifact, or terminal failure is not a blocker when native or local exact-source review works. GitHub Actions must never set `verified_preview`, assign semantic metadata, approve/reject a source, create a readiness manifest, or otherwise perform ChatGPT-owned editorial judgment.
 
 Metadata, title, tags or duration alone are **not** enough to set `verified_preview=true`.
 
-The planner uses the preview only for semantic/visual screening: reject obvious watermarks, embedded text, unsafe material, static or weak footage, misleading metadata, or footage that is plainly unsuitable behind captions. If one visual transport cannot access a candidate, try the next available exact-source transport. If no actual visual evidence for that candidate remains accessible, reject that candidate and continue discovery/reserve sourcing. **Do not fail the whole replenishment attempt merely because local Python has no network, one provider URL is inaccessible, a public fallback failed, or full-length playback is unavailable.** If every trustworthy exact-source visual channel is unavailable for the discovery set, stop before readiness-manifest creation and report `EVIDENCE_ACCESS_BLOCKED`.
+The planner uses the preview only for semantic/visual screening: reject obvious watermarks, embedded text, unsafe material, static or weak footage, misleading metadata, or footage that is plainly unsuitable behind captions. If one visual transport cannot access a candidate, try the next available exact-source transport. If a generic file-download/file-transfer primitive can retrieve the exact immutable preview, the planner must stage it and run the `--input-dir` path before declaring evidence inaccessible. If no actual visual evidence for that candidate remains accessible, reject that candidate and continue discovery/reserve sourcing. **Do not fail the whole replenishment attempt merely because local Python has no network, one provider URL is inaccessible, a public fallback failed, or full-length playback is unavailable.** If every trustworthy exact-source visual channel is unavailable for the discovery set, stop before readiness-manifest creation and report `EVIDENCE_ACCESS_BLOCKED`.
 
 Once the matching immutable discovery result exists, provider discovery is complete for that attempt. The same planner invocation should proceed directly to visual review and readiness-manifest creation whenever an exact-source visual channel is available. `DEFERRED_REPLENISHMENT` is valid only while a **required** Background Management discovery or readiness-ingestion run is legitimately queued/in-progress after the bounded continuation window; it is not valid merely because local Python lacks networking/media tools, because an optional public evidence workflow failed, or because one candidate's evidence failed.
 
