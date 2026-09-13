@@ -26,7 +26,7 @@ An empty active background registry is a normal `REPLENISH` state, not a termina
 
 1. consume exact total/category/duration deficits;
 2. discover licensed Pexels footage, prioritizing visually satisfying atomic clips of at least the live minimum duration (currently 60 seconds);
-3. visually review every proposed source before `verified_preview=true`;
+3. review actual visual preview evidence for every proposed source before `verified_preview=true`, following the live `media_readiness.preview_review` contract and `docs/background-media-strategy.md`; **full-length/end-to-end playback is not required**, but metadata-only review is insufficient; if one candidate has no accessible visual preview evidence, reject that candidate and continue discovery/reserves rather than failing the whole replenishment attempt;
 4. create exactly one immutable readiness manifest;
 5. commit that manifest so Background Management performs official API enrichment/persistence;
 6. refresh current `main`;
