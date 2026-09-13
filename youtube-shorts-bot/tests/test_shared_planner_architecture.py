@@ -107,23 +107,23 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
 
         self.assertIn("tool-adaptive", shared)
+        self.assertIn("ChatGPT/Work-local exact-source review", shared)
+        self.assertIn("preview_review_materializer", shared)
+        self.assertIn("optional non-blocking fallback transport", shared)
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
         self.assertIn("`DEFERRED_REPLENISHMENT` is valid only", shared)
-        self.assertIn("public Review Evidence workflow", shared)
-        self.assertIn("background-review-evidence-<request_id>", shared)
-        self.assertIn("optional fallback", shared)
         self.assertIn("local Python outbound HTTP", shared)
-        self.assertNotIn(
-            "until the local preview materializer has actually been attempted",
-            shared,
-        )
+        self.assertNotIn("public Review Evidence workflow is still legitimately", shared)
         self.assertIn("tool-adaptive", strategy)
-        self.assertIn("outbound HTTPS", strategy)
+        self.assertIn("canonical planner-time path is local to ChatGPT/Work", strategy)
+        self.assertIn("Local Python outbound HTTPS is **not** a correctness dependency", strategy)
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
         for profile_prompt in (daily, adhoc):
             self.assertIn("matching immutable discovery result exists", profile_prompt)
+            self.assertIn("ChatGPT/Work-local exact-source review as the canonical path", profile_prompt)
             self.assertIn("local Python outbound HTTP", profile_prompt)
             self.assertIn("same planner invocation", profile_prompt)
+            self.assertIn("optional fallback only", profile_prompt)
 
 
 if __name__ == "__main__":
