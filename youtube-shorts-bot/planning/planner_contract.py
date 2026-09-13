@@ -28,6 +28,38 @@ def build_contract():
         "automatic_continuation_required": True,
         "atomic_clip_minimum_seconds": MIN_SEQUENCE_CLIP_SECONDS,
         "normal_looping_allowed": False,
+        "preview_review": {
+            "required_before_verified_preview": True,
+            "full_video_playback_required": False,
+            "metadata_only_sufficient": False,
+            "acceptable_visual_evidence": [
+                "provider_page_visual_preview",
+                "representative_preview_frames",
+                "short_preview_clip",
+            ],
+            "review_goal": (
+                "Confirm the source is visually suitable for background use and reject "
+                "obvious watermarks, embedded text, unsafe material, static/weak footage, "
+                "or misleading metadata using the strongest visual preview evidence "
+                "available in the current ChatGPT/Work execution surface."
+            ),
+            "verified_preview_semantics": (
+                "verified_preview=true means ChatGPT/Work reviewed actual visual preview "
+                "evidence for the exact provider source; it does not assert that the full "
+                "source video was played end-to-end."
+            ),
+            "downstream_verification": (
+                "Background Management remains responsible for official Pexels identity, "
+                "duration and rendition enrichment plus hard registry validation before "
+                "an asset becomes selectable."
+            ),
+            "failure_rule": (
+                "If no actual visual preview evidence for the exact source is accessible, "
+                "do not set verified_preview=true for that candidate; reject it and continue "
+                "discovery/reserve sourcing rather than failing replenishment merely because "
+                "full-length playback is unavailable."
+            ),
+        },
     })
     contract["media_readiness"] = readiness
     contract["background_treatment"] = {
