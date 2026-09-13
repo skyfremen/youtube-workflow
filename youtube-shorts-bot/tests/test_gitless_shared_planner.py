@@ -1,0 +1,161 @@
+import copy
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+BOT_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BOT_ROOT.parent
+MANIFEST_PATH = BOT_ROOT / "planning" / "PLANNER_MATERIALIZATION.json"
+SOURCE_ADHOC_POOL = (
+    BOT_ROOT
+    / "content"
+    / "planning-pools"
+    / "adhoc"
+    / "ap-20260913-manual-110400-a01.json"
+)
+RULES_SHA = "1" * 40
+
+
+def _run(root, *args):
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(root / "youtube-shorts-bot")
+    # The canonical path must not need Git. Keeping the normal PATH lets Python
+    # find its runtime but no command in these calls may invoke git.
+    return subprocess.run(
+        [sys.executable, *args],
+        cwd=root,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def _daily_pool_from_adhoc(adhoc_pool):
+    template = copy.deepcopy(adhoc_pool["ranked_candidates"][0]["request"])
+    plan_date = "2099-01-01"
+    slots = [f"2098-12-31T{16 + hour:02d}:00:00Z" for hour in range(8)]
+    slots += [f"2099-01-01T{hour:02d}:00:00Z" for hour in range(16)]
+    ranked = []
+    for index in range(1, 37):
+        request = copy.deepcopy(template)
+        request["content_id"] = f"wd-20990101T000000-daily-c{index:05d}"
+        request["publication"] = {
+            "mode": "scheduled",
+            "timezone": "Asia/Singapore",
+            "publish_at": None,
+        }
+        request["planning"]["plan_date"] = plan_date
+        ranked.append(
+            {
+                "rank": index,
+                "candidate_id": f"daily-c{index:02d}",
+                "request": request,
+            }
+        )
+    return {
+        "schema_version": 1,
+        "pool_type": "daily",
+        "pool_id": "dp-20990101-a01",
+        "plan_date": plan_date,
+        "planning_mode": "normal_next_day",
+        "target_count": 24,
+        "publication_slots": slots,
+        "planning_execution": {
+            "editorial_selection_owner": "chatgpt",
+            "planning_method": "chatgpt_ranked_pool",
+            "rules_source_sha": RULES_SHA,
+            "ranked_candidate_ids": [f"daily-c{index:02d}" for index in range(1, 37)],
+        },
+        "ranked_candidates": ranked,
+    }
+
+
+class GitlessSharedPlannerTests(unittest.TestCase):
+    def test_manifest_materialization_runs_both_profiles_without_repository_metadata(self):
+        manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            required = (
+                manifest["shared_required_python_files"]
+                + manifest["shared_required_data_files"]
+            )
+            for relative in required:
+                source = REPO_ROOT / relative
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, target)
+
+            self.assertFalse((root / ".git").exists())
+            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "ranked_promotion.py").exists())
+            self.assertFalse((root / "youtube-shorts-bot" / "publishing" / "upload.py").exists())
+            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "daily_precommit.py").exists())
+            self.assertFalse((root / "youtube-shorts-bot" / "planning" / "adhoc_precommit.py").exists())
+
+            contract = _run(root, "-m", "planning.planner_contract")
+            self.assertEqual(contract.returncode, 0, contract.stderr or contract.stdout)
+            contract_json = json.loads(contract.stdout)
+            self.assertEqual(
+                contract_json["profiles"]["daily"]["shared_contract_fingerprint"],
+                contract_json["profiles"]["adhoc"]["shared_contract_fingerprint"],
+            )
+
+            readiness = _run(
+                root,
+                "-m",
+                "media.media_readiness",
+                "audit",
+                "--allow-not-ready",
+            )
+            self.assertEqual(readiness.returncode, 0, readiness.stderr or readiness.stdout)
+
+            adhoc_pool = json.loads(SOURCE_ADHOC_POOL.read_text(encoding="utf-8"))
+            adhoc_pool["planning_execution"]["rules_source_sha"] = RULES_SHA
+            adhoc_path = root / "adhoc-pool.json"
+            adhoc_path.write_text(
+                json.dumps(adhoc_pool, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            adhoc = _run(
+                root,
+                "-m",
+                "planning.planner_precommit",
+                "--profile",
+                "adhoc",
+                "--pool",
+                str(adhoc_path),
+                "--rules-source-sha",
+                RULES_SHA,
+            )
+            self.assertEqual(adhoc.returncode, 0, adhoc.stderr or adhoc.stdout)
+            self.assertEqual(json.loads(adhoc.stdout)["valid_candidates"], 5)
+
+            daily_pool = _daily_pool_from_adhoc(adhoc_pool)
+            daily_path = root / "daily-pool.json"
+            daily_path.write_text(
+                json.dumps(daily_pool, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            daily = _run(
+                root,
+                "-m",
+                "planning.planner_precommit",
+                "--profile",
+                "daily",
+                "--pool",
+                str(daily_path),
+                "--rules-source-sha",
+                RULES_SHA,
+            )
+            self.assertEqual(daily.returncode, 0, daily.stderr or daily.stdout)
+            self.assertEqual(json.loads(daily.stdout)["valid_candidates"], 36)
+
+
+if __name__ == "__main__":
+    unittest.main()
