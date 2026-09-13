@@ -77,6 +77,7 @@
     "youtube-shorts-bot/planning/planner_profiles.py",
     "youtube-shorts-bot/planning/planner_core.py",
     "youtube-shorts-bot/planning/planner_precommit.py",
+    "youtube-shorts-bot/planning/planner_contract_base.py",
     "youtube-shorts-bot/planning/planner_contract.py",
     "youtube-shorts-bot/validation/semantic.py",
     "youtube-shorts-bot/validation/schema_v4.py",
@@ -166,7 +167,7 @@
   },
   "baseline": {
     "previous_schema_version": 5,
-    "connector_fallback_shared_python_files": 17,
+    "connector_fallback_shared_python_files": 18,
     "connector_fallback_shared_data_files": 1,
     "optimization": "Git-first exact repository snapshots avoid repeated per-file connector reconstruction when Git access is available; connector materialization remains the correctness-preserving fallback."
   },
