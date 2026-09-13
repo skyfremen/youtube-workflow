@@ -108,7 +108,9 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
 
         self.assertIn("tool-adaptive", shared)
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
-        self.assertIn("`DEFERRED_REPLENISHMENT` is not valid", shared)
+        self.assertIn("`DEFERRED_REPLENISHMENT` is valid only", shared)
+        self.assertIn("public Review Evidence workflow", shared)
+        self.assertIn("background-review-evidence-<request_id>", shared)
         self.assertIn("optional fallback", shared)
         self.assertIn("local Python outbound HTTP", shared)
         self.assertNotIn(
