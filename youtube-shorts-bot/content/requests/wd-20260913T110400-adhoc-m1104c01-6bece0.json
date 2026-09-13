@@ -1,0 +1,191 @@
+{
+  "channel": {
+    "handle": "@WACKYDRAMAS",
+    "name": "Wacky Dramas"
+  },
+  "content_id": "wd-20260913T110400-adhoc-m1104c01-6bece0",
+  "narration": {
+    "engine": "kokoro",
+    "speed": 1.75,
+    "voice": "af_bella"
+  },
+  "planning": {
+    "analytics_score": null,
+    "analytics_weight": 0.0,
+    "attributes": {
+      "antagonist_role": "MANAGER",
+      "conflict": "manager-bills-internal-work-as-vendor",
+      "ending_style": "JUSTICE",
+      "opening_style": "DISCOVERY",
+      "primary_emotion": "INJUSTICE",
+      "protagonist_role": "EMPLOYEE",
+      "subtype": "phantom-consulting-invoice",
+      "title_style": "DISCOVERY"
+    },
+    "editorial_components": {
+      "broad_relatability": 92,
+      "curiosity_gap": 96,
+      "emotional_stakes": 95,
+      "escalation_potential": 94,
+      "narration_suitability": 96,
+      "opening_hook_potential": 96,
+      "originality": 94,
+      "payoff_quality": 95,
+      "title_potential": 95
+    },
+    "editorial_score": 95,
+    "final_score": 95,
+    "hook_score": 95,
+    "plan_date": "2026-09-13",
+    "selected_title_score": 96,
+    "selection_class": "exploit",
+    "selection_reason": "Cold-start editorial rank: distinct premise, immediate first-person conflict, clear evidence-driven escalation, complete payoff, and production-safe narration; analytics are not yet mature enough to steer selection.",
+    "similarity": {
+      "max_recent_similarity": 0.1
+    },
+    "target_duration_seconds": 148,
+    "title_candidates": [
+      {
+        "score": 96,
+        "score_components": {
+          "conciseness": 94,
+          "curiosity_gap": 98,
+          "emotional_impact": 97,
+          "immediate_comprehension": 96,
+          "natural_phrasing": 95,
+          "specificity": 97,
+          "truthful_reflection": 97,
+          "unanswered_question": 98
+        },
+        "style": "DISCOVERY",
+        "title": "My Boss Billed 80 Hours for the Tool I Built in Six #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 95,
+        "score_components": {
+          "conciseness": 93,
+          "curiosity_gap": 97,
+          "emotional_impact": 96,
+          "immediate_comprehension": 95,
+          "natural_phrasing": 94,
+          "specificity": 96,
+          "truthful_reflection": 96,
+          "unanswered_question": 97
+        },
+        "style": "CONTRADICTION",
+        "title": "The Client Paid for a Vendor Who Never Touched My Code #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 94,
+        "score_components": {
+          "conciseness": 92,
+          "curiosity_gap": 96,
+          "emotional_impact": 95,
+          "immediate_comprehension": 94,
+          "natural_phrasing": 93,
+          "specificity": 95,
+          "truthful_reflection": 95,
+          "unanswered_question": 96
+        },
+        "style": "HIDDEN_REVELATION",
+        "title": "My Commit History Exposed an 80-Hour Invoice #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 93,
+        "score_components": {
+          "conciseness": 91,
+          "curiosity_gap": 95,
+          "emotional_impact": 94,
+          "immediate_comprehension": 93,
+          "natural_phrasing": 92,
+          "specificity": 94,
+          "truthful_reflection": 94,
+          "unanswered_question": 95
+        },
+        "style": "DECISION_CONSEQUENCE",
+        "title": "I Sent Finance One Screenshot and the Invoice Froze #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 92,
+        "score_components": {
+          "conciseness": 90,
+          "curiosity_gap": 94,
+          "emotional_impact": 93,
+          "immediate_comprehension": 92,
+          "natural_phrasing": 91,
+          "specificity": 93,
+          "truthful_reflection": 93,
+          "unanswered_question": 94
+        },
+        "style": "CONSEQUENCE_FIRST",
+        "title": "The Consulting Invoice That Collapsed Under Git History #Shorts",
+        "truthful": true
+      }
+    ]
+  },
+  "publication": {
+    "mode": "immediate",
+    "publish_at": null,
+    "timezone": "Asia/Singapore"
+  },
+  "schema_version": 5,
+  "story": {
+    "card_emojis": [
+      "\ud83d\udcbb",
+      "\ud83e\uddfe",
+      "\u23f1\ufe0f",
+      "\ud83d\ude33",
+      "\ud83d\udcc1"
+    ],
+    "category": "WORKPLACE",
+    "hook": "My boss billed eighty hours for my six-hour tool",
+    "lead_gender": "female",
+    "punchline": {
+      "emphasis_text": "six-hour timestamp",
+      "text": "The code history did not just prove who built the tool. It turned an eighty-hour consulting story into a six-hour timestamp.",
+      "type": "REVEAL"
+    },
+    "script": "The invoice arrived on a Friday afternoon, and the number made no sense. Our client had been billed for eighty hours of \u201cexternal automation consulting\u201d on a reporting process I had built myself in less than a day.\n\nI worked on a small operations team, and my manager had asked me to automate a weekly spreadsheet nobody enjoyed touching. I wrote a simple internal tool, tested it with the analysts, documented it, and pushed the code to our company repository. The whole thing took one quiet afternoon. My manager congratulated me, then told me he would present it to the client as a team improvement.\n\nTwo weeks later, the client emailed me directly because one of the generated reports had a formatting issue. Attached to the email was a statement of work I had never seen. It described my tool as a custom solution delivered by a specialist vendor. The invoice listed eighty consulting hours at a rate that was more than my weekly salary.\n\nAt first I assumed finance had reused the wrong template. Then I saw the vendor name. It belonged to a tiny consultancy owned by my manager\u2019s former business partner.\n\nI did not accuse anyone. I opened the repository history and checked the timestamps. My commits showed exactly when I created the tool, every change I made, and the internal ticket where my manager had assigned the work to me. There was no vendor account in the repository, no external pull request, and no handover document.\n\nOn Monday, my manager called me into a meeting and said the client was \u201cconfused about commercial packaging.\u201d He asked me to stop replying directly and route all questions through him. Then he asked whether I could remove my name from the tool\u2019s internal documentation because it was \u201cnot customer-facing information.\u201d\n\nThat request made the situation much clearer.\n\nI forwarded the original client email, the invoice, the internal ticket, and the repository history to our finance controller and compliance mailbox. I wrote exactly what I knew and nothing more: I had built the tool internally, I had not worked with the named vendor, and I could not explain why external hours had been billed.\n\nFinance froze the invoice before payment. The client\u2019s procurement team asked for delivery records. My manager produced a document saying the vendor had provided \u201carchitecture guidance,\u201d but the document had been created that same morning. The metadata was visible in the file properties.\n\nBy Wednesday, senior management had taken over the review. I was interviewed once, showed the commit history, and went back to my normal work. My manager spent the rest of the week in closed meetings.\n\nThe company eventually corrected the client invoice and confirmed that the automation was internal work. I was not told every detail of the disciplinary process, but my manager stopped supervising our team shortly afterward.\n\nThe strangest part came a month later. The client asked if I could demonstrate the tool to their audit group. At the end, one auditor asked how long the original build had taken.\n\nI said, \u201cAbout six hours, including lunch.\u201d\n\nThere was a long silence.\n\nThe invoice had claimed eighty.\n\nThe code history did not just prove who built the tool. It turned an eighty-hour consulting story into a six-hour timestamp.",
+    "story_tone": "dramatic",
+    "story_type": "billing-audit"
+  },
+  "visual": {
+    "background_backup_id": "satisfying-px-16100609",
+    "background_backup_treatment": {
+      "playback_rate": 1.33,
+      "segment_duration_seconds": null,
+      "segment_start_seconds": 0.0
+    },
+    "background_primary_id": "satisfying-px-8996302",
+    "background_primary_treatment": {
+      "playback_rate": 1.18,
+      "segment_duration_seconds": null,
+      "segment_start_seconds": 0.0
+    }
+  },
+  "youtube": {
+    "category_id": "24",
+    "description": "An internal automation became an 80-hour vendor invoice until repository history showed exactly who built it and when.",
+    "hashtags": [
+      "#Shorts",
+      "#WackyDramas",
+      "#WorkplaceDrama",
+      "#OfficeDrama",
+      "#PlotTwist"
+    ],
+    "made_for_kids": false,
+    "tags": [
+      "workplace drama",
+      "billing audit",
+      "automation",
+      "source control",
+      "client invoice",
+      "compliance"
+    ],
+    "title": "My Boss Billed 80 Hours for the Tool I Built in Six #Shorts"
+  }
+}
