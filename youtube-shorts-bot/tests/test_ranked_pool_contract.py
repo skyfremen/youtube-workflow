@@ -166,7 +166,10 @@ class RankedPoolContractTests(unittest.TestCase):
         self.assertEqual(errors, [])
 
     def test_new_production_requires_shared_media_readiness(self):
-        errors = validate_request_data(v5_request(), enforce_registry=True)
+        empty_registry = {"schema_version": 3, "assets": []}
+        errors = validate_request_data(
+            v5_request(), enforce_registry=True, registry=empty_registry
+        )
         self.assertTrue(any("media readiness requires replenishment" in error for error in errors))
 
     def test_v5_hard_registry_validation_rejects_unknown_asset(self):
