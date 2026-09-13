@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "replenishment_session_id": "rs-20260914-manual-0207",
+  "request_id": "dr-20260914-manual-0207-a03",
+  "attempt": 3,
+  "decisions": [
+    {
+      "provider_asset_id": "28557958",
+      "decision": "reject",
+      "discovery_category": "cleaning",
+      "reviewed_category": null,
+      "category_match": false,
+      "reason_code": "SEMANTIC_CATEGORY_MISMATCH"
+    },
+    {
+      "provider_asset_id": "19395380",
+      "decision": "reject",
+      "discovery_category": "cleaning",
+      "reviewed_category": null,
+      "category_match": false,
+      "reason_code": "SEMANTIC_CATEGORY_MISMATCH"
+    }
+  ]
+}
