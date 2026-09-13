@@ -1,4 +1,8 @@
 import json
+import shutil
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -15,15 +19,11 @@ class PlannerMaterializationTests(unittest.TestCase):
     def setUpClass(cls):
         cls.data = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
-    def test_connector_is_canonical_and_shell_git_is_not_chatgpt_bootstrap(self):
-        self.assertEqual(self.data["schema_version"], 7)
-        self.assertEqual(
-            self.data["contract"],
-            "connector_first_shared_planner_materialization",
-        )
-        self.assertEqual(self.data["materialization_mode"], "shared_plus_selected_profile")
+    def test_connector_native_checkpoint_is_canonical(self):
+        self.assertEqual(self.data["schema_version"], 8)
+        self.assertEqual(self.data["contract"], "connector_native_planner_checkpoint")
         bootstrap = self.data["planner_bootstrap"]
-        self.assertEqual(bootstrap["preferred"], "connector_materialization")
+        self.assertEqual(bootstrap["preferred"], "connector_native_checkpoint")
         self.assertEqual(bootstrap["fallback"], "none")
         self.assertEqual(
             bootstrap["chatgpt_work_source"], "authorized_github_connector_api"
@@ -31,139 +31,101 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertFalse(bootstrap["github_actions_planning"])
         self.assertTrue(bootstrap["exact_sha_required"])
         self.assertFalse(bootstrap["shell_git_attempted_in_chatgpt_work"])
-        self.assertFalse(bootstrap["persistence_is_correctness_dependency"])
 
-        git_checkout = self.data["git_checkout"]
-        self.assertTrue(git_checkout["allowed"])
-        self.assertFalse(git_checkout["preferred"])
-        self.assertFalse(git_checkout["chatgpt_work_allowed"])
-        self.assertIn("developer", git_checkout["scope"])
-        self.assertIn("git fetch origin main --prune", git_checkout["fetch_command"])
-        self.assertIn("git rev-parse origin/main", git_checkout["resolve_sha_command"])
-        self.assertIn("--detach", git_checkout["worktree_command"])
-
+        requirements = self.data["chatgpt_work_requirements"]
         for key in (
             "git_required",
             "git_executable_required",
             "checkout_required",
             "git_metadata_required",
+            "repository_archive_required",
+            "repository_tree_materialization_required",
+            "full_background_registry_local_copy_required",
+            "connector_filesystem_mount_required",
+            "materialization_verify_required",
         ):
-            self.assertFalse(self.data[key])
-        self.assertEqual(self.data["repository_identity"]["field"], "rules_source_sha")
-        self.assertIn("connector/API", self.data["repository_identity"]["source"])
-        self.assertFalse(self.data["immutable_cache"]["correctness_dependency"])
+            self.assertFalse(requirements[key], key)
 
-    def test_declared_connector_paths_exist(self):
-        required = list(self.data["shared_required_python_files"])
-        required += list(self.data["shared_required_data_files"])
-        for profile in ("daily", "adhoc"):
-            entry = self.data["profile_required_files"][profile]
-            required.extend(entry["python_files"])
-            required.extend(entry["data_files"])
-        for relative in required:
-            self.assertTrue((REPO_ROOT / relative).is_file(), relative)
+    def test_standalone_checkpoint_path_exists_and_runs_without_repository(self):
+        checkpoint = self.data["connector_native_checkpoint"]
+        relative = checkpoint["path"]
+        source = BOT_ROOT / relative.removeprefix("youtube-shorts-bot/")
+        self.assertTrue(source.is_file(), relative)
+        self.assertTrue(checkpoint["standard_library_only"])
+        self.assertFalse(checkpoint["repository_imports"])
 
-    def test_connector_completion_gate_is_machine_verified(self):
-        connector = self.data["connector_materialization"]
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "connector_checkpoint.py"
+            shutil.copyfile(source, target)
+            self.assertFalse((Path(temporary) / ".git").exists())
+            completed = subprocess.run(
+                [sys.executable, str(target), "contract"],
+                cwd=temporary,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["repository"], "skyfremen/youtube-workflow")
+        self.assertEqual(payload["checkpoint_schema_version"], 1)
+        self.assertEqual(payload["request_schema_version"], 7)
         self.assertEqual(
-            connector["role"], "canonical_chatgpt_work_repository_source_acquisition"
+            payload["execution_environment"]["canonical_mode"],
+            "connector_native_checkpoint",
         )
-        gate = connector["completion_gate"]
-        self.assertTrue(gate["required"])
-        self.assertEqual(gate["blocked_status"], "MATERIALIZATION_BLOCKED")
-        self.assertIn("planning.materialization_verify", gate["entrypoint"])
-        self.assertIn("Do not return merely because", gate["early_return_rule"])
-        self.assertIn("exact-SHA connector", gate["blocked_status_rule"])
-        self.assertIn("Git/DNS/checkout", gate["blocked_status_rule"])
-        self.assertEqual(connector["evidence_file"]["schema_version"], 1)
+        self.assertFalse(payload["execution_environment"]["shell_git_required"])
+        self.assertFalse(payload["execution_environment"]["git_checkout_required"])
+        self.assertEqual(payload["profiles"]["daily"]["pool_size"], 36)
+        self.assertEqual(payload["profiles"]["adhoc"]["pool_size"], 5)
+
+    def test_bounded_replenishment_contract_is_machine_readable(self):
+        continuation = self.data["background_replenishment_continuation"]
+        self.assertEqual(continuation["state"], "recoverable_intermediate")
+        self.assertEqual(continuation["discovery_request_schema_version"], 2)
+        self.assertEqual(continuation["review_decision_schema_version"], 1)
         self.assertEqual(
-            connector["manifest_path"],
-            "youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json",
+            continuation["session_identity_field"], "replenishment_session_id"
         )
+        self.assertEqual(continuation["max_attempts"], 5)
+        self.assertEqual(
+            continuation["terminal_exhausted_code"],
+            "E_MEDIA_REPLENISH_EXHAUSTED",
+        )
+        self.assertTrue(continuation["durable_review_exclusion"]["enabled"])
 
-    def test_local_validation_entrypoints_remain_shared(self):
-        entrypoints = self.data["entrypoints"]
-        for name in (
-            "materialization_verify",
-            "contract",
-            "media_readiness",
-            "precommit",
-            "connector_drift",
-        ):
-            self.assertNotIn("github actions", entrypoints[name].lower())
-        self.assertIn("planning.materialization_verify", entrypoints["materialization_verify"])
-        self.assertIn("planning.planner_precommit", entrypoints["precommit"])
-        self.assertNotIn("--verify-git-head", entrypoints["precommit"])
-        self.assertIn("--connector-current-main-sha", entrypoints["connector_drift"])
-        self.assertIn("--verify-git-head", entrypoints["git_precommit"])
-        self.assertIn("planning.planner_drift", entrypoints["git_drift"])
-
-    def test_profiles_share_the_same_connector_core(self):
-        shared = set(self.data["shared_required_python_files"])
-        self.assertEqual(len(shared), 19)
-        for path in (
-            "youtube-shorts-bot/planning/materialization_verify.py",
-            "youtube-shorts-bot/planning/planner_precommit.py",
-            "youtube-shorts-bot/planning/planner_core.py",
-            "youtube-shorts-bot/planning/planner_profiles.py",
-            "youtube-shorts-bot/planning/planner_contract_base.py",
-            "youtube-shorts-bot/media/continuous_background.py",
-            "youtube-shorts-bot/validation/validate_content_v5.py",
-        ):
-            self.assertIn(path, shared)
-        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
-        self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
-        self.assertEqual(self.data["profile_required_files"]["daily"]["python_files"], [])
-        self.assertEqual(self.data["profile_required_files"]["adhoc"]["python_files"], [])
-
-    def test_forbidden_requirements_keep_git_first_out_of_chatgpt(self):
+    def test_forbidden_bootstrap_keeps_shell_git_out_of_chatgpt(self):
         forbidden = self.data["forbidden_bootstrap_requirements"]
-        self.assertIn("GitHub Actions planner execution", forbidden)
-        self.assertIn("synthetic HEAD", forbidden)
-        self.assertIn("fake repository identity", forbidden)
         for expected in (
-            "ChatGPT/Work git fetch before connector/API acquisition",
-            "ChatGPT/Work git clone before connector/API acquisition",
-            "ChatGPT/Work git pull before connector/API acquisition",
-            "ChatGPT/Work git ls-remote before connector/API acquisition",
-            "ChatGPT/Work git rev-parse origin/main before connector/API acquisition",
+            "ChatGPT/Work git fetch",
+            "ChatGPT/Work git clone",
+            "ChatGPT/Work git pull",
+            "ChatGPT/Work git ls-remote",
             "ChatGPT/Work Git worktree creation",
-            "ChatGPT/Work github.com DNS/proxy/network repair",
-            "requiring .git metadata for ChatGPT/Work",
-            "returning a Git/DNS/checkout failure before connector/API materialization",
+            "ChatGPT/Work github.com DNS/proxy repair",
+            "requiring .git metadata",
         ):
             self.assertIn(expected, forbidden)
-        self.assertTrue(any("returning early" in item.lower() for item in forbidden))
-        self.assertTrue(any("MATERIALIZATION_BLOCKED" in item for item in forbidden))
+        self.assertTrue(any("GitHub Actions" in value for value in forbidden))
 
-    def test_prompts_bind_to_connector_first_shared_contract(self):
+    def test_prompts_bind_to_shared_connector_native_contract(self):
         shared = SHARED_PROMPT.read_text(encoding="utf-8")
-        self.assertIn(
-            "authorized GitHub connector/API is the canonical repository source-acquisition mechanism",
-            shared,
-        )
-        self.assertIn("Shell Git access to github.com is neither attempted nor required", shared)
-        self.assertIn("planning.materialization_verify", shared)
-        self.assertIn("MATERIALIZATION_BLOCKED", shared)
-        self.assertIn("connector-returned current-main SHA", shared)
-        self.assertIn("GitHub Actions planner execution remains prohibited", shared)
+        self.assertIn("authorized GitHub connector/API", shared)
+        self.assertIn("connector_checkpoint.py", shared)
+        self.assertIn("CHECKPOINT_STAGING_BLOCKED", shared)
+        self.assertIn("review-decisions/<request_id>.json", shared)
+        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
 
-        prohibited_profile_text = (
-            "git fetch origin main",
-            "git clone",
-            "git ls-remote",
-            "git rev-parse origin/main",
-            "git worktree",
-            "--verify-git-head",
-        )
-        for name in ("ADHOC_PLANNER_PROMPT.md", "DAILY_PLANNER_PROMPT.md"):
+        for name, profile in (
+            ("ADHOC_PLANNER_PROMPT.md", "adhoc"),
+            ("DAILY_PLANNER_PROMPT.md", "daily"),
+        ):
             prompt = (PLANNING / name).read_text(encoding="utf-8")
             self.assertIn("docs/private/PLANNER_PROMPT.md", prompt)
-            self.assertIn("canonical shared connector-first bootstrap", prompt)
-            self.assertIn("Shared materialization completion gate", prompt)
-            self.assertIn("MATERIALIZATION_BLOCKED", prompt)
-            for forbidden_text in prohibited_profile_text:
-                self.assertNotIn(forbidden_text, prompt)
+            self.assertIn("connector_checkpoint.py", prompt)
+            self.assertIn(f"--profile {profile}", prompt)
+            self.assertNotIn("--verify-git-head", prompt)
+            self.assertNotIn("git fetch origin main", prompt)
 
 
 if __name__ == "__main__":

@@ -28,11 +28,19 @@ def _upgrade_request_v7(request):
     request["visual"] = {
         "background_mode": "concatenated_fit_to_short",
         "background_primary_sequence": [
-            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            {
+                "background_id": f"satisfying-{index:03d}",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 80.0,
+            }
             for index in (1, 2, 3)
         ],
         "background_backup_sequence": [
-            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            {
+                "background_id": f"satisfying-{index:03d}",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 80.0,
+            }
             for index in (4, 5, 6)
         ],
     }
@@ -48,11 +56,13 @@ def valid_pool():
         request["publication"] = copy.deepcopy(DAILY_PUBLICATION)
         request["planning"]["plan_date"] = PLAN_DATE
         _upgrade_request_v7(request)
-        ranked.append({
-            "rank": index,
-            "candidate_id": f"daily-c{index:02d}",
-            "request": request,
-        })
+        ranked.append(
+            {
+                "rank": index,
+                "candidate_id": f"daily-c{index:02d}",
+                "request": request,
+            }
+        )
     return {
         "schema_version": ranked_promotion.POOL_SCHEMA_VERSION,
         "pool_type": "daily",
@@ -65,7 +75,9 @@ def valid_pool():
             "editorial_selection_owner": "chatgpt",
             "planning_method": "chatgpt_ranked_pool",
             "rules_source_sha": RULES_SHA,
-            "ranked_candidate_ids": [f"daily-c{index:02d}" for index in range(1, 37)],
+            "ranked_candidate_ids": [
+                f"daily-c{index:02d}" for index in range(1, 37)
+            ],
         },
         "ranked_candidates": ranked,
     }
@@ -87,14 +99,16 @@ def _ready_asset(asset_id, category, counter):
         "loopability_score": 100,
         "caption_readability_score": 100,
         "duration_seconds": 300.0,
-        "renditions": [{
-            "id": f"test-r-{counter:03d}",
-            "width": 1080,
-            "height": 1920,
-            "fps": 30.0,
-            "file_type": "video/mp4",
-            "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
-        }],
+        "renditions": [
+            {
+                "id": f"test-r-{counter:03d}",
+                "width": 1080,
+                "height": 1920,
+                "fps": 30.0,
+                "file_type": "video/mp4",
+                "direct_url": f"https://videos.pexels.com/test-{counter:03d}.mp4",
+            }
+        ],
     }
 
 
@@ -113,7 +127,11 @@ def ready_registry():
             assets.append(_ready_asset(asset_id, category, counter))
     while len(assets) < MIN_SELECTABLE_ASSETS:
         counter += 1
-        assets.append(_ready_asset(f"test-ready-{counter:03d}", "satisfying_process", counter))
+        assets.append(
+            _ready_asset(
+                f"test-ready-{counter:03d}", "satisfying_process", counter
+            )
+        )
     return {"schema_version": 3, "assets": assets}
 
 
@@ -135,7 +153,9 @@ class DailyPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["title_score_components"], list(TITLE_WEIGHTS))
         self.assertEqual(contract["content_id_pattern"], CONTENT_ID_RE.pattern)
         self.assertEqual(contract["daily_pool_size"], ranked_promotion.DAILY_POOL_SIZE)
-        self.assertEqual(contract["daily_normal_target"], ranked_promotion.NORMAL_DAILY_TARGET)
+        self.assertEqual(
+            contract["daily_normal_target"], ranked_promotion.NORMAL_DAILY_TARGET
+        )
         self.assertEqual(contract["daily_publication_template"], DAILY_PUBLICATION)
         self.assertTrue(contract["media_readiness"]["required_before_daily"])
         self.assertEqual(contract["request_schema_version"], SCHEMA_VERSION)
@@ -162,7 +182,9 @@ class DailyPrecommitTests(unittest.TestCase):
 
     def test_wrong_title_component_key_reports_exact_drift(self):
         pool = valid_pool()
-        titles = pool["ranked_candidates"][0]["request"]["planning"]["title_candidates"]
+        titles = pool["ranked_candidates"][0]["request"]["planning"][
+            "title_candidates"
+        ]
         for title in titles:
             components = title["score_components"]
             value = components.pop("truthful_reflection")
@@ -182,15 +204,20 @@ class DailyPrecommitTests(unittest.TestCase):
         validate(pool)
         self.assertEqual(pool, original)
 
-    def test_daily_prompt_requires_executable_precommit_gate(self):
-        prompt = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        self.assertIn("planning.daily_precommit", prompt)
-        self.assertIn("all 36 candidates PASS", prompt)
+    def test_daily_prompt_requires_connector_native_checkpoint(self):
+        prompt = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(
+            encoding="utf-8"
+        )
+        lower = prompt.lower()
+        self.assertIn("connector_checkpoint.py", prompt)
+        self.assertIn("--profile daily", prompt)
+        self.assertIn("all 36 candidates", lower)
         self.assertIn("draft_sha256", prompt)
-        self.assertIn("not substitutes for planner-time pre-commit", prompt)
-        self.assertIn("media.media_readiness", prompt)
         self.assertIn("rules_source_sha", prompt)
+        self.assertIn("REPLENISH", prompt)
+        self.assertIn("docs/private/PLANNER_PROMPT.md", prompt)
         self.assertNotIn("$(git rev-parse HEAD)", prompt)
+        self.assertNotIn("planning.daily_precommit", prompt)
 
 
 if __name__ == "__main__":

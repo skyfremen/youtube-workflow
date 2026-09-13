@@ -30,8 +30,12 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             contract["shared_contract_fingerprint"],
         )
         self.assertEqual(
-            contract["shared_implementation"]["precommit"],
+            contract["shared_implementation"]["developer_ci_precommit"],
             "planning.planner_precommit",
+        )
+        self.assertEqual(
+            contract["shared_implementation"]["chatgpt_work_checkpoint"],
+            "planning/connector_checkpoint.py",
         )
         self.assertEqual(
             contract["shared_implementation"]["drift_classification"],
@@ -74,46 +78,44 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertEqual(daily_precommit.PROFILE, "daily")
         self.assertEqual(adhoc_precommit.PROFILE, "adhoc")
 
-    def test_connector_materialization_excludes_downstream_modules(self):
+    def test_connector_checkpoint_excludes_repository_tree_dependency(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-        shared = set(manifest["shared_required_python_files"])
-        self.assertEqual(manifest["materialization_mode"], "shared_plus_selected_profile")
-        self.assertEqual(len(shared), 19)
-        self.assertIn("youtube-shorts-bot/planning/materialization_verify.py", shared)
-        self.assertIn("youtube-shorts-bot/planning/planner_contract_base.py", shared)
-        self.assertIn("youtube-shorts-bot/media/continuous_background.py", shared)
-        self.assertIn("youtube-shorts-bot/validation/validate_content_v5.py", shared)
-        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
-        self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
-        self.assertNotIn("youtube-shorts-bot/planning/daily_precommit.py", shared)
-        self.assertNotIn("youtube-shorts-bot/planning/adhoc_precommit.py", shared)
-        self.assertFalse(any(path.endswith("/__init__.py") for path in shared))
-        for profile in ("daily", "adhoc"):
-            entry = manifest["profile_required_files"][profile]
-            self.assertEqual(entry["python_files"], [])
-            self.assertEqual(entry["data_files"], [])
+        checkpoint = manifest["connector_native_checkpoint"]
+        self.assertEqual(
+            checkpoint["path"], "youtube-shorts-bot/planning/connector_checkpoint.py"
+        )
+        self.assertTrue(checkpoint["standard_library_only"])
+        self.assertFalse(checkpoint["repository_imports"])
+        self.assertIn("repository checkout", checkpoint["forbidden_local_dependencies"])
+        self.assertIn(".git metadata", checkpoint["forbidden_local_dependencies"])
+        self.assertIn(
+            "media-library/backgrounds.json local copy",
+            checkpoint["forbidden_local_dependencies"],
+        )
 
     def test_connector_is_canonical_without_git_dependency(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
-            manifest["planner_bootstrap"]["preferred"], "connector_materialization"
+            manifest["planner_bootstrap"]["preferred"],
+            "connector_native_checkpoint",
         )
         self.assertEqual(manifest["planner_bootstrap"]["fallback"], "none")
         self.assertFalse(
             manifest["planner_bootstrap"]["shell_git_attempted_in_chatgpt_work"]
         )
-        self.assertFalse(manifest["git_checkout"]["preferred"])
-        self.assertFalse(manifest["git_checkout"]["chatgpt_work_allowed"])
-        self.assertTrue(manifest["git_checkout"]["allowed"])
-        self.assertFalse(manifest["git_required"])
-        self.assertFalse(manifest["git_executable_required"])
-        self.assertFalse(manifest["checkout_required"])
-        self.assertIn(
-            "GitHub Actions planner execution",
-            manifest["forbidden_bootstrap_requirements"],
+        requirements = manifest["chatgpt_work_requirements"]
+        self.assertFalse(requirements["git_required"])
+        self.assertFalse(requirements["git_executable_required"])
+        self.assertFalse(requirements["checkout_required"])
+        self.assertFalse(requirements["git_metadata_required"])
+        self.assertFalse(requirements["repository_tree_materialization_required"])
+        self.assertFalse(requirements["materialization_verify_required"])
+        self.assertTrue(
+            any(
+                "GitHub Actions" in value
+                for value in manifest["forbidden_bootstrap_requirements"]
+            )
         )
-        self.assertIn("synthetic HEAD", manifest["forbidden_bootstrap_requirements"])
-        self.assertFalse(manifest["immutable_cache"]["correctness_dependency"])
 
     def test_shared_prompt_is_canonical_for_bootstrap(self):
         shared = (
@@ -127,9 +129,9 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         )
         self.assertIn("one planner", shared.lower())
         self.assertIn("authorized GitHub connector/API", shared)
-        self.assertIn("planning.materialization_verify", shared)
-        self.assertIn("planning.planner_precommit", shared)
-        self.assertIn("planning.planner_drift", shared)
+        self.assertIn("connector_checkpoint.py", shared)
+        self.assertIn("CHECKPOINT_STAGING_BLOCKED", shared)
+        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
         self.assertIn("docs/private/PLANNER_PROMPT.md", daily)
         self.assertIn("docs/private/PLANNER_PROMPT.md", adhoc)
         self.assertIn("--profile daily", daily)
@@ -137,30 +139,18 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertNotIn("--verify-git-head", daily)
         self.assertNotIn("--verify-git-head", adhoc)
 
-    def test_replenishment_visual_review_is_transport_adaptive(self):
+    def test_replenishment_visual_review_is_transport_adaptive_and_durable(self):
         shared = (
             REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
         ).read_text(encoding="utf-8")
         strategy = (BOT_ROOT / "docs" / "background-media-strategy.md").read_text(
             encoding="utf-8"
         )
-        daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(
-            encoding="utf-8"
-        )
-        adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(
-            encoding="utf-8"
-        )
 
-        # GitHub may transport exact Pexels pixels, but ChatGPT/Work still owns the
-        # visual/editorial decision. Local direct transport remains a fallback.
-        self.assertIn("private Background Management artifact", shared)
-        self.assertIn("Connector-delivered artifact files", shared)
-        self.assertIn(
-            "ChatGPT/Work remains the sole visual/editorial approval owner", shared
-        )
-        self.assertIn("preview_review_materializer --input-dir", shared)
-        self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
-        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", shared)
+        self.assertIn("Background Management", shared)
+        self.assertIn("review-decisions/<request_id>.json", shared)
+        self.assertIn("authoritative session memory", shared)
+        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
         self.assertIn("DEFERRED_REPLENISHMENT", shared)
 
         self.assertIn("private Background Management review-evidence artifact", strategy)
@@ -170,19 +160,9 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
         self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", strategy)
         self.assertIn("GitHub Actions must never set `verified_preview`", strategy)
-
-        for profile_prompt in (daily, adhoc):
-            self.assertIn("matching immutable discovery result exists", profile_prompt)
-            self.assertIn("run-scoped", profile_prompt)
-            self.assertIn("background-review-evidence-", profile_prompt)
-            self.assertIn("contact-sheet.jpg", profile_prompt)
-            self.assertIn("--input-dir", profile_prompt)
-            self.assertIn("same planner invocation", profile_prompt)
-            self.assertIn("EVIDENCE_ACCESS_BLOCKED", profile_prompt)
-            self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", profile_prompt)
-            self.assertIn(
-                "ChatGPT/Work owns approval and semantic metadata", profile_prompt
-            )
+        self.assertIn("replenishment_session_id", strategy)
+        self.assertIn("review-decisions/<request_id>.json", strategy)
+        self.assertIn("attempt < 5", strategy)
 
 
 if __name__ == "__main__":

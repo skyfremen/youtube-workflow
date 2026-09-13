@@ -1,6 +1,4 @@
-import hashlib
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -10,145 +8,52 @@ from pathlib import Path
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = BOT_ROOT.parent
-MANIFEST_PATH = BOT_ROOT / "planning" / "PLANNER_MATERIALIZATION.json"
-RULES_SHA = "1" * 40
-
-
-def _blob_sha(path: Path) -> str:
-    data = path.read_bytes()
-    return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
-
-
-def _materialize(root: Path):
-    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    required = [manifest["connector_materialization"]["manifest_path"]]
-    required += manifest["shared_required_python_files"]
-    required += manifest["shared_required_data_files"]
-    for profile in ("daily", "adhoc"):
-        entry = manifest["profile_required_files"][profile]
-        required += entry["python_files"]
-        required += entry["data_files"]
-    required = list(dict.fromkeys(required))
-
-    for relative in required:
-        source = REPO_ROOT / relative
-        target = root / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
-
-    evidence = {
-        "schema_version": 1,
-        "rules_source_sha": RULES_SHA,
-        "files": {
-            relative: {
-                "rules_source_sha": RULES_SHA,
-                "blob_sha": _blob_sha(root / relative),
-            }
-            for relative in required
-        },
-    }
-    evidence_path = root / "materialization-evidence.json"
-    evidence_path.write_text(
-        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    return manifest, evidence, evidence_path
-
-
-def _run(root: Path, profile: str, evidence_path: Path):
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(root / "youtube-shorts-bot")
-    return subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "planning.materialization_verify",
-            "--profile",
-            profile,
-            "--root",
-            str(root),
-            "--rules-source-sha",
-            RULES_SHA,
-            "--evidence",
-            str(evidence_path),
-        ],
-        cwd=root,
-        env=env,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
+MANIFEST = BOT_ROOT / "planning" / "PLANNER_MATERIALIZATION.json"
+CHECKPOINT = BOT_ROOT / "planning" / "connector_checkpoint.py"
+LEGACY_VERIFY = BOT_ROOT / "planning" / "materialization_verify.py"
 
 
 class MaterializationVerifyTests(unittest.TestCase):
-    def test_exact_connector_materialization_passes_without_git(self):
+    def test_legacy_materialization_verify_is_not_canonical_chatgpt_dependency(self):
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        requirements = manifest["chatgpt_work_requirements"]
+        self.assertFalse(requirements["repository_tree_materialization_required"])
+        self.assertFalse(requirements["materialization_verify_required"])
+        self.assertEqual(
+            manifest["connector_native_checkpoint"]["path"],
+            "youtube-shorts-bot/planning/connector_checkpoint.py",
+        )
+        # The old developer/CI helper may remain for historical compatibility, but
+        # ChatGPT/Work correctness no longer depends on invoking it.
+        self.assertTrue(LEGACY_VERIFY.is_file())
+
+    def test_exact_connector_checkpoint_runs_from_one_file_without_git(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            manifest, _evidence, evidence_path = _materialize(root)
-
+            target = root / "connector_checkpoint.py"
+            shutil.copyfile(CHECKPOINT, target)
             self.assertFalse((root / ".git").exists())
-            result = _run(root, "adhoc", evidence_path)
-
-            self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
-            payload = json.loads(result.stdout)
-            expected_required = 1 + len(manifest["shared_required_python_files"])
-            expected_required += len(manifest["shared_required_data_files"])
-            self.assertEqual(payload["status"], "PASS")
-            self.assertEqual(payload["required_files"], expected_required)
-            self.assertEqual(payload["verified_files"], expected_required)
-            self.assertEqual(
-                payload["compiled_python_files"],
-                len(manifest["shared_required_python_files"]),
+            completed = subprocess.run(
+                [sys.executable, str(target), "contract"],
+                cwd=root,
+                text=True,
+                capture_output=True,
+                check=False,
             )
-            self.assertEqual(
-                set(payload["critical_imports_verified"]),
-                set(manifest["connector_materialization"]["critical_imports"]),
-            )
-            self.assertEqual(payload["errors"], [])
-
-    def test_tampered_materialized_file_fails_with_exact_path(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            _manifest, _evidence, evidence_path = _materialize(root)
-            relative = "youtube-shorts-bot/planning/planner_profiles.py"
-            path = root / relative
-            path.write_text(path.read_text(encoding="utf-8") + "\n# tampered\n", encoding="utf-8")
-
-            result = _run(root, "adhoc", evidence_path)
-
-            self.assertEqual(result.returncode, 2, result.stderr or result.stdout)
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload["status"], "FAIL")
-            matches = [
-                error
-                for error in payload["errors"]
-                if error["code"] == "blob_sha_mismatch" and error.get("path") == relative
-            ]
-            self.assertEqual(len(matches), 1)
-
-    def test_mixed_source_sha_fails_closed(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            _manifest, evidence, evidence_path = _materialize(root)
-            relative = "youtube-shorts-bot/planning/planner_contract.py"
-            evidence["files"][relative]["rules_source_sha"] = "2" * 40
-            evidence_path.write_text(
-                json.dumps(evidence, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
-            )
-
-            result = _run(root, "daily", evidence_path)
-
-            self.assertEqual(result.returncode, 2, result.stderr or result.stdout)
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload["status"], "FAIL")
-            matches = [
-                error
-                for error in payload["errors"]
-                if error["code"] == "mixed_source_sha" and error.get("path") == relative
-            ]
-            self.assertEqual(len(matches), 1)
+        self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
+        payload = json.loads(completed.stdout)
+        execution = payload["execution_environment"]
+        self.assertEqual(execution["canonical_mode"], "connector_native_checkpoint")
+        self.assertFalse(execution["repository_tree_materialization_required"])
+        self.assertFalse(execution["full_background_registry_local_copy_required"])
+        self.assertEqual(
+            execution["local_files_required"],
+            [
+                "connector_checkpoint.py",
+                "authored pool JSON",
+                "small connector-evidence JSON",
+            ],
+        )
 
 
 if __name__ == "__main__":
