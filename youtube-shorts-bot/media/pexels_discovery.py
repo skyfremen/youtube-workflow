@@ -21,16 +21,30 @@ DEFAULT_MAX_CANDIDATES = 48
 MAX_MAX_CANDIDATES = 80
 SEARCH_PER_PAGE = 80
 
+# These labels intentionally match media_readiness.REQUIRED_CATEGORY_MINIMUMS.
 CATEGORY_QUERIES = {
+    "cooking": ("cooking process", "cooking food"),
+    "baking": ("baking process", "bread baking", "pastry making"),
+    "food_prep": ("food preparation", "meal prep", "cutting vegetables"),
     "satisfying_process": ("satisfying process", "oddly satisfying process"),
-    "crafting_making": ("craft making", "woodworking", "pottery making"),
-    "cleaning_restoration": ("cleaning restoration", "pressure washing", "restoration process"),
-    "cooking_food": ("cooking food preparation", "baking process", "food preparation"),
-    "industrial_assembly": ("industrial assembly", "factory process", "manufacturing process"),
-    "travel_motion": ("walking city pov", "train travel", "driving city"),
-    "kinetic_texture": ("kinetic texture", "fluid motion", "sand satisfying"),
-    "neutral_visual": ("calm process", "slow motion nature", "ambient motion"),
-    "gameplay": ("gameplay",),
+    "crafting": ("craft making", "woodworking", "pottery making"),
+    "cleaning": ("cleaning restoration", "pressure washing", "deep cleaning"),
+    "assembly": ("industrial assembly", "factory assembly", "manufacturing process"),
+    "pov_movement": ("walking pov", "driving pov", "train window travel"),
+    "city_motion": ("city traffic", "city walking", "urban motion"),
+}
+
+# 48 candidates with review headroom while protecting all readiness categories.
+CATEGORY_TARGETS_48 = {
+    "cooking": 6,
+    "baking": 5,
+    "food_prep": 5,
+    "satisfying_process": 6,
+    "crafting": 5,
+    "cleaning": 6,
+    "assembly": 5,
+    "pov_movement": 5,
+    "city_motion": 5,
 }
 
 
@@ -103,11 +117,28 @@ def _eligible_candidate(video, category, query):
     }
 
 
+def _category_targets(max_candidates):
+    categories = list(CATEGORY_QUERIES)
+    if max_candidates == DEFAULT_MAX_CANDIDATES:
+        return dict(CATEGORY_TARGETS_48)
+    base, remainder = divmod(max_candidates, len(categories))
+    return {
+        category: base + (1 if index < remainder else 0)
+        for index, category in enumerate(categories)
+    }
+
+
 def discover(max_candidates=DEFAULT_MAX_CANDIDATES, key=None):
     accepted = []
     seen = set()
     diagnostics = []
+    targets = _category_targets(max_candidates)
+
     for category, queries in CATEGORY_QUERIES.items():
+        accepted_for_category = 0
+        target = targets[category]
+        if target <= 0:
+            continue
         for query in queries:
             payload = api_get(
                 f"search?query={quote_plus(query)}&per_page={SEARCH_PER_PAGE}", key=key
@@ -123,11 +154,20 @@ def discover(max_candidates=DEFAULT_MAX_CANDIDATES, key=None):
                     continue
                 seen.add(provider_id)
                 accepted.append(candidate)
+                accepted_for_category += 1
                 eligible_for_query += 1
-                if len(accepted) >= max_candidates:
+                if accepted_for_category >= target or len(accepted) >= max_candidates:
                     break
-            diagnostics.append({"category": category, "query": query, "returned": len(videos), "new_eligible": eligible_for_query})
-            if len(accepted) >= max_candidates:
+            diagnostics.append(
+                {
+                    "category": category,
+                    "target": target,
+                    "query": query,
+                    "returned": len(videos),
+                    "new_eligible": eligible_for_query,
+                }
+            )
+            if accepted_for_category >= target or len(accepted) >= max_candidates:
                 break
         if len(accepted) >= max_candidates:
             break
@@ -149,6 +189,7 @@ def build_report(request, key=None):
             "rule": "API eligibility only; ChatGPT must review preview evidence before verified_preview=true.",
         },
         "candidate_count": len(candidates),
+        "category_targets": _category_targets(request["max_candidates"]),
         "candidates": candidates,
         "query_diagnostics": diagnostics,
     }
