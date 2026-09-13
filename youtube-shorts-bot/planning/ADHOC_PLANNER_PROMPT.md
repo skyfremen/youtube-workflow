@@ -28,7 +28,9 @@ Every candidate uses the canonical immediate publication object:
 
 ## Background readiness and sequence contract
 
-An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Ad-hoc invocation and create its five-candidate ranked pool.
+**Apply the shared readiness-first gate before interpreting replenishment history.** Audit the current registry first. If current readiness is `PASS`, continue this Ad-hoc invocation immediately; legacy, incompatible, unfinished or exhausted replenishment history cannot block or restart it. Only if current readiness is `REPLENISH` may session history control the next step. When `REPLENISH` has no compatible current-format session for this exact planner invocation, create a fresh stable schema-v3 attempt 1 instead of reporting a legacy/incompatible-state blocker. A legacy-only state or the absence of a resumable current session is never by itself a terminal result.
+
+An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, or create the fresh current-format session required by the readiness-first gate, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Ad-hoc invocation and create its five-candidate ranked pool.
 
 New requests use schema v7 `concatenated_fit_to_short`:
 
