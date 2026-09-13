@@ -1,14 +1,8 @@
 """Defensive admission gate for already-committed ranked pools.
 
-This module intentionally reuses the exact ChatGPT pre-commit validators. It does
-not generate, rank, repair or substitute creative content, and it does not invoke
-Git or inspect repository metadata. A plain materialized source/data directory is
-sufficient.
-
-The only semantic difference from planner-time pre-commit is state uniqueness:
-the pool itself is already committed when this gate runs, so pool-existence checks
-must not reject the just-created immutable pool. Candidate/request/media/schema
-validation remains identical.
+This reuses the exact shared planner precommit engine. The only semantic
+difference from planner-time precommit is uniqueness: the pool itself is already
+committed, so pool-existence checks must not reject the just-created immutable pool.
 """
 from __future__ import annotations
 
@@ -16,7 +10,7 @@ import argparse
 import json
 from pathlib import Path
 
-from planning import adhoc_precommit, daily_precommit
+from planning.planner_precommit import validate_draft
 
 
 def _failure(message):
@@ -41,28 +35,21 @@ def validate_committed_pool(pool_type, pool, raw_bytes=b""):
             "planning_execution.rules_source_sha is required for admission validation"
         )
 
-    if pool_type == "adhoc":
-        return adhoc_precommit.validate_draft(
-            pool,
-            rules_source_sha,
-            raw_bytes=raw_bytes,
-            check_checkout_head=False,
-            check_uniqueness=False,
-        )
-    if pool_type == "daily":
-        return daily_precommit.validate_draft(
-            pool,
-            rules_source_sha,
-            raw_bytes=raw_bytes,
-            check_checkout_head=False,
-            check_uniqueness=False,
-        )
-    return _failure(f"unsupported pool type: {pool_type}")
+    if pool_type not in {"adhoc", "daily"}:
+        return _failure(f"unsupported pool type: {pool_type}")
+    return validate_draft(
+        pool_type,
+        pool,
+        rules_source_sha,
+        raw_bytes=raw_bytes,
+        check_checkout_head=False,
+        check_uniqueness=False,
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run the canonical pre-commit validator as a committed-pool admission gate"
+        description="Run shared planner precommit as the committed-pool admission gate"
     )
     parser.add_argument("pool_type", choices=("adhoc", "daily"))
     parser.add_argument("--pool", required=True)
