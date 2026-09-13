@@ -107,29 +107,34 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
         adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
 
-        self.assertIn("ChatGPT/Work-local exact-source review", shared)
-        self.assertIn("preview_review_materializer", shared)
-        self.assertIn("--input-dir", shared)
-        self.assertIn("optional non-blocking fallback transport", shared)
+        # GitHub may transport exact Pexels pixels, but ChatGPT/Work still owns the
+        # visual/editorial decision. Local direct transport remains a fallback.
+        self.assertIn("private Background Management artifact", shared)
+        self.assertIn("Connector-delivered artifact files", shared)
+        self.assertIn("ChatGPT/Work remains the sole visual/editorial approval owner", shared)
+        self.assertIn("preview_review_materializer --input-dir", shared)
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
-        self.assertIn("`DEFERRED_REPLENISHMENT` is valid only", shared)
-        self.assertIn("outbound http", shared.lower())
-        self.assertNotIn("public Review Evidence workflow is still legitimately", shared)
-        self.assertIn("tool-adaptive", strategy)
-        self.assertIn("canonical planner-time path is local to ChatGPT/Work", strategy)
+        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", shared)
+        self.assertIn("DEFERRED_REPLENISHMENT", shared)
+
+        self.assertIn("private Background Management review-evidence artifact", strategy)
+        self.assertIn("GitHub connector delivery", strategy)
+        self.assertIn("contact-sheet.jpg", strategy)
         self.assertIn("--input-dir", strategy)
-        self.assertIn("Local Python outbound HTTPS is **not** a correctness dependency", strategy)
         self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
-        self.assertIn("--input-dir", adhoc)
+        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", strategy)
+        self.assertIn("GitHub Actions must never set `verified_preview`", strategy)
+
         for profile_prompt in (daily, adhoc):
             self.assertIn("matching immutable discovery result exists", profile_prompt)
-            self.assertIn("ChatGPT/Work-local exact-source review as the canonical path", profile_prompt)
-            self.assertTrue(
-                "outbound http" in profile_prompt.lower() or "--input-dir" in profile_prompt,
-                "profile prompt must explicitly preserve a non-Python-network visual fallback",
-            )
+            self.assertIn("run-scoped", profile_prompt)
+            self.assertIn("background-review-evidence-", profile_prompt)
+            self.assertIn("contact-sheet.jpg", profile_prompt)
+            self.assertIn("--input-dir", profile_prompt)
             self.assertIn("same planner invocation", profile_prompt)
-            self.assertIn("optional fallback only", profile_prompt)
+            self.assertIn("EVIDENCE_ACCESS_BLOCKED", profile_prompt)
+            self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", profile_prompt)
+            self.assertIn("ChatGPT/Work owns approval and semantic metadata", profile_prompt)
 
 
 if __name__ == "__main__":
