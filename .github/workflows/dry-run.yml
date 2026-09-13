@@ -300,16 +300,24 @@ jobs:
           assert 'media.media_readiness audit' in maintenance
           assert 'PEXELS_API_KEY' in maintenance
           assert 'content/background-sourcing/readiness/*.json' in maintenance
-          assert 'FAIL CLOSED if the exact precommit module cannot execute' in shared_prompt
-          assert 'GitHub Actions planner execution remains prohibited' in shared_prompt
-          assert 'authorized GitHub connector/API is the canonical repository source-acquisition mechanism' in shared_prompt
-          assert 'Shell Git access to github.com is neither attempted nor required' in shared_prompt
-          for prompt in (adhoc_prompt, daily_prompt):
+
+          # Canonical ChatGPT/Work planner bootstrap is the one-file connector-native
+          # checkpoint. Keep this workflow guard aligned with that live architecture,
+          # not the retired local materialization/precommit wording.
+          assert 'connector_checkpoint.py' in shared_prompt
+          assert 'CHECKPOINT_STAGING_BLOCKED' in shared_prompt
+          assert 'authorized GitHub connector/API' in shared_prompt
+          assert 'shell Git' in shared_prompt
+          assert 'review-decisions/<request_id>.json' in shared_prompt
+          assert 'E_MEDIA_REPLENISH_EXHAUSTED' in shared_prompt
+          assert 'replenishment_session_id' in shared_prompt
+          assert 'GitHub Actions' in shared_prompt
+          for prompt, profile in ((adhoc_prompt, 'adhoc'), (daily_prompt, 'daily')):
               assert 'docs/private/PLANNER_PROMPT.md' in prompt
-              assert 'canonical shared connector-first bootstrap' in prompt
-              assert 'Shared materialization completion gate' in prompt
+              assert 'connector_checkpoint.py' in prompt
+              assert f'--profile {profile}' in prompt
+              assert 'rules_source_sha' in prompt
               assert '--verify-git-head' not in prompt
-              assert 'not substitutes for planner-time pre-commit' in prompt
               for forbidden in (
                   'git fetch origin main',
                   'git clone',
@@ -318,7 +326,7 @@ jobs:
                   'git worktree',
               ):
                   assert forbidden not in prompt
-          print('Dry-run isolation, connector-first ChatGPT/Work planner bootstrap, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
+          print('Dry-run isolation, connector-native ChatGPT/Work checkpoint, durable media replenishment, linked public validation, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
