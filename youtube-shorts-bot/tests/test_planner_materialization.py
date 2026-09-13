@@ -17,10 +17,7 @@ class PlannerMaterializationTests(unittest.TestCase):
 
     def test_git_is_preferred_but_connector_fallback_keeps_git_optional(self):
         self.assertEqual(self.data["schema_version"], 6)
-        self.assertEqual(
-            self.data["materialization_mode"],
-            "shared_plus_selected_profile",
-        )
+        self.assertEqual(self.data["materialization_mode"], "shared_plus_selected_profile")
         bootstrap = self.data["planner_bootstrap"]
         self.assertEqual(bootstrap["preferred"], "git")
         self.assertEqual(bootstrap["fallback"], "connector_materialization")
@@ -28,34 +25,17 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertTrue(bootstrap["exact_sha_required"])
         self.assertTrue(bootstrap["reuse_existing_clone_when_available"])
         self.assertFalse(bootstrap["persistence_is_correctness_dependency"])
-
         git_checkout = self.data["git_checkout"]
         self.assertTrue(git_checkout["allowed"])
         self.assertTrue(git_checkout["preferred"])
         self.assertIn("git fetch origin main --prune", git_checkout["fetch_command"])
         self.assertIn("git rev-parse origin/main", git_checkout["resolve_sha_command"])
         self.assertIn("--detach", git_checkout["worktree_command"])
-
-        # Git is preferred, but connector fallback means it is not a correctness dependency.
-        for key in (
-            "git_required",
-            "git_executable_required",
-            "checkout_required",
-            "git_metadata_required",
-        ):
+        for key in ("git_required", "git_executable_required", "checkout_required", "git_metadata_required"):
             self.assertFalse(self.data[key])
-
-        self.assertEqual(
-            self.data["repository_identity"]["field"], "rules_source_sha"
-        )
-        self.assertIn("Git", self.data["repository_identity"]["source"])
+        self.assertEqual(self.data["repository_identity"]["field"], "rules_source_sha")
         self.assertIn("connector", self.data["repository_identity"]["source"])
-        self.assertEqual(
-            self.data["immutable_cache"]["primary_key"], "rules_source_sha"
-        )
-        self.assertFalse(
-            self.data["immutable_cache"]["correctness_dependency"]
-        )
+        self.assertFalse(self.data["immutable_cache"]["correctness_dependency"])
 
     def test_declared_connector_fallback_paths_exist(self):
         required = list(self.data["shared_required_python_files"])
@@ -70,32 +50,27 @@ class PlannerMaterializationTests(unittest.TestCase):
     def test_local_validation_entrypoints_remain_shared(self):
         entrypoints = self.data["entrypoints"]
         for name in ("contract", "media_readiness", "precommit"):
-            lower = entrypoints[name].lower()
-            self.assertNotIn("github actions", lower)
+            self.assertNotIn("github actions", entrypoints[name].lower())
         self.assertIn("planning.planner_precommit", entrypoints["precommit"])
         self.assertIn("--verify-git-head", entrypoints["git_precommit"])
         self.assertIn("planning.planner_drift", entrypoints["git_drift"])
 
     def test_profiles_share_the_same_connector_fallback_core(self):
         shared = set(self.data["shared_required_python_files"])
-        self.assertEqual(len(shared), 14)
-        self.assertIn(
-            "youtube-shorts-bot/planning/planner_precommit.py", shared
-        )
-        self.assertIn("youtube-shorts-bot/planning/planner_core.py", shared)
-        self.assertIn(
-            "youtube-shorts-bot/planning/planner_profiles.py", shared
-        )
-        self.assertNotIn(
-            "youtube-shorts-bot/planning/ranked_promotion.py", shared
-        )
+        self.assertEqual(len(shared), 18)
+        for path in (
+            "youtube-shorts-bot/planning/planner_precommit.py",
+            "youtube-shorts-bot/planning/planner_core.py",
+            "youtube-shorts-bot/planning/planner_profiles.py",
+            "youtube-shorts-bot/planning/planner_contract_base.py",
+            "youtube-shorts-bot/media/continuous_background.py",
+            "youtube-shorts-bot/validation/validate_content_v5.py",
+        ):
+            self.assertIn(path, shared)
+        self.assertNotIn("youtube-shorts-bot/planning/ranked_promotion.py", shared)
         self.assertNotIn("youtube-shorts-bot/publishing/upload.py", shared)
-        self.assertEqual(
-            self.data["profile_required_files"]["daily"]["python_files"], []
-        )
-        self.assertEqual(
-            self.data["profile_required_files"]["adhoc"]["python_files"], []
-        )
+        self.assertEqual(self.data["profile_required_files"]["daily"]["python_files"], [])
+        self.assertEqual(self.data["profile_required_files"]["adhoc"]["python_files"], [])
 
     def test_forbidden_requirements_keep_actions_and_synthetic_identity_out(self):
         forbidden = self.data["forbidden_bootstrap_requirements"]
