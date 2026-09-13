@@ -8,9 +8,12 @@ metadata, edits the registry, or performs editorial approval.
 The default evidence is the exact provider preview image. When
 ``--include-motion-evidence`` is supplied, ffmpeg also derives a compact
 representative contact sheet and a short low-resolution motion sample from the
-exact ``preview_video_url`` recorded in the immutable discovery result. Derived
-files are deliberately small enough to move through a GitHub Actions artifact
-without shipping the full source video.
+exact ``preview_video_url`` recorded in the immutable discovery result.
+
+Image and video transports are deliberately independent. Failure to acquire the
+preview image must not prevent exact preview-video review, and failure of either
+transport affects only that candidate. A candidate is materialized when at least
+one requested trustworthy exact-source visual transport succeeds.
 """
 from __future__ import annotations
 
@@ -144,47 +147,20 @@ def _materialize_motion_evidence(candidate, destination, frame_count, sample_sec
         f"scale={DEFAULT_SAMPLE_WIDTH}:-2,"
         f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:padding=4:margin=4"
     )
-    _run_ffmpeg(
-        [
-            "-i",
-            video_url,
-            "-vf",
-            contact_filter,
-            "-frames:v",
-            "1",
-            str(contact_sheet),
-        ]
-    )
+    _run_ffmpeg([
+        "-i", video_url, "-vf", contact_filter, "-frames:v", "1", str(contact_sheet)
+    ])
 
     sample_seconds = min(_positive_float(sample_seconds, "sample_seconds"), duration)
     sample_start = max(0.0, (duration - sample_seconds) / 2.0)
     motion_sample = destination / "motion-sample.mp4"
-    _run_ffmpeg(
-        [
-            "-ss",
-            f"{sample_start:.3f}",
-            "-i",
-            video_url,
-            "-t",
-            f"{sample_seconds:.3f}",
-            "-vf",
-            f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
-            "-r",
-            "12",
-            "-an",
-            "-c:v",
-            "libx264",
-            "-preset",
-            "veryfast",
-            "-crf",
-            "30",
-            "-pix_fmt",
-            "yuv420p",
-            "-movflags",
-            "+faststart",
-            str(motion_sample),
-        ]
-    )
+    _run_ffmpeg([
+        "-ss", f"{sample_start:.3f}", "-i", video_url,
+        "-t", f"{sample_seconds:.3f}", "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
+        "-r", "12", "-an", "-c:v", "libx264", "-preset", "veryfast",
+        "-crf", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+        str(motion_sample),
+    ])
 
     return {
         "source_url": video_url,
@@ -216,6 +192,7 @@ def materialize(
     output.mkdir(parents=True, exist_ok=True)
     evidence = []
     failures = []
+    image_failures = []
     motion_failures = []
     motion_evidence_count = 0
 
@@ -225,15 +202,21 @@ def materialize(
             "provider_asset_id": provider_id,
             "source_page": _https_url(candidate.get("source_page"), "source_page"),
         }
+        image_ok = False
+        motion_ok = False
+
+        # Image and video are independent exact-source transports. Never `continue`
+        # here: a broken/blocked still must fall through to motion evidence.
         try:
             image_url = _https_url(candidate.get("preview_image_url"), "preview_image_url")
             item["image"] = _download(
                 image_url, output / provider_id / "preview.jpg", MAX_IMAGE_BYTES
             )
             item["image"]["source_url"] = image_url
+            image_ok = True
         except Exception as exc:
-            failures.append({"provider_asset_id": provider_id, "error": str(exc)})
-            continue
+            item["image_error"] = str(exc)
+            image_failures.append({"provider_asset_id": provider_id, "error": str(exc)})
 
         if include_motion_evidence:
             try:
@@ -243,14 +226,24 @@ def materialize(
                     frame_count=frame_count,
                     sample_seconds=sample_seconds,
                 )
+                motion_ok = True
                 motion_evidence_count += 1
             except Exception as exc:
                 item["motion_error"] = str(exc)
-                motion_failures.append(
-                    {"provider_asset_id": provider_id, "error": str(exc)}
-                )
+                motion_failures.append({"provider_asset_id": provider_id, "error": str(exc)})
 
-        evidence.append(item)
+        if image_ok or motion_ok:
+            item["available_visual_transports"] = [
+                name for name, ok in (("image", image_ok), ("motion", motion_ok)) if ok
+            ]
+            evidence.append(item)
+        else:
+            failures.append({
+                "provider_asset_id": provider_id,
+                "error": "no requested exact-source visual transport succeeded",
+                "image_error": item.get("image_error"),
+                "motion_error": item.get("motion_error"),
+            })
 
     manifest = {
         "schema_version": 2,
@@ -258,6 +251,7 @@ def materialize(
         "discovery_result": str(discovery_result),
         "evidence_count": len(evidence),
         "failure_count": len(failures),
+        "image_failure_count": len(image_failures),
         "motion_evidence_requested": bool(include_motion_evidence),
         "motion_evidence_count": motion_evidence_count,
         "motion_failure_count": len(motion_failures),
@@ -265,11 +259,12 @@ def materialize(
         "motion_sample_seconds": sample_seconds if include_motion_evidence else 0,
         "evidence": evidence,
         "failures": failures,
+        "image_failures": image_failures,
         "motion_failures": motion_failures,
         "rule": (
             "Transport evidence only; ChatGPT/Work must inspect the actual pixels/"
-            "motion before verified_preview=true. Derived contact sheets and motion "
-            "samples remain tied to the exact immutable preview_video_url."
+            "motion before verified_preview=true. Image and motion transports are "
+            "independent; candidate-specific transport failure must not abort the set."
         ),
     }
     manifest_path = output / "evidence-manifest.json"
@@ -313,6 +308,8 @@ def main():
     if manifest["evidence_count"] == 0:
         raise SystemExit(4)
     if args.include_motion_evidence and manifest["motion_evidence_count"] == 0:
+        # Motion being unavailable everywhere is surfaced to the caller, but image
+        # evidence remains materialized for ChatGPT/Work inspection and fallback.
         raise SystemExit(5)
 
 
