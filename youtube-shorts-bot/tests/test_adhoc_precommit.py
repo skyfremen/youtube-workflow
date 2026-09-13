@@ -21,9 +21,21 @@ FIXTURE = (
 RULES_SHA = "1" * 40
 
 
+def _upgrade_request_v6(request):
+    request["schema_version"] = 6
+    for slot in ("primary", "backup"):
+        request["visual"][f"background_{slot}_treatment"] = {
+            "mode": "fit_to_short",
+            "segment_start_seconds": 0.0,
+            "segment_duration_seconds": 300.0,
+        }
+
+
 def valid_pool():
     pool = json.loads(FIXTURE.read_text(encoding="utf-8"))
     pool["planning_execution"]["rules_source_sha"] = RULES_SHA
+    for candidate in pool["ranked_candidates"]:
+        _upgrade_request_v6(candidate["request"])
     return pool
 
 
@@ -42,7 +54,7 @@ def _ready_asset(asset_id, category, counter):
         "visual_satisfaction_score": 100,
         "loopability_score": 100,
         "caption_readability_score": 100,
-        "duration_seconds": 16.0,
+        "duration_seconds": 300.0,
         "renditions": [{
             "id": f"test-r-{counter:03d}",
             "width": 1080,
@@ -91,10 +103,11 @@ class AdhocPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["title_score_components"], list(TITLE_WEIGHTS))
         self.assertEqual(contract["content_id_pattern"], CONTENT_ID_RE.pattern)
         self.assertTrue(contract["media_readiness"]["required_before_adhoc"])
+        self.assertEqual(contract["request_schema_version"], 6)
 
     def test_known_good_pool_requires_five_of_five(self):
         result = validate(valid_pool())
-        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["status"], "PASS", result)
         self.assertTrue(result["commit_allowed"])
         self.assertEqual(result["valid_candidates"], 5)
         self.assertEqual(result["failed_candidates"], 0)
