@@ -1,49 +1,51 @@
-# Wacky Dramas — Daily Planner (canonical entry point)
+# Wacky Dramas — Daily Planner
 
-This is the canonical Daily planner entry point. Read and follow `planning/DAILY_PLANNER_RULES.md` in full, together with `planning/STORY_RULES.md` and every analytics/background/schema/configuration file it references.
+This is the canonical **Daily profile** entry point for the shared Wacky Dramas planner.
 
-`DAILY_PLANNER_RULES.md` preserves the complete creative funnel, analytics, schedule, media-readiness, ranked-pool, publication, promotion and recovery rules. The execution-environment rules below supersede only any older wording in that file that requires `git rev-parse HEAD`, a local `.git` directory, an authenticated checkout, snapshot bootstrap, a snapshot manifest, synthetic Git metadata, an exact local checkout HEAD, a repository archive, whole-repository download, whole-directory source materialization, an automatic connector filesystem mount, a special connector-to-filesystem bridge, or GitHub Actions as the planner execution engine.
+Read and follow, in order:
 
-## Canonical Python execution rule
+1. `docs/private/PLANNER_PROMPT.md` — canonical shared execution/materialization/drift contract.
+2. `planning/DAILY_PLANNER_RULES.md` — Daily creative, schedule, diversity, analytics, promotion and recovery rules.
+3. `planning/STORY_RULES.md` and the current shared background/analytics rules referenced by the Daily rules.
 
-Daily and Ad-hoc planner Python must run from ordinary explicitly materialized source/config/data files. A Git checkout, Git executable, `.git` directory, authenticated clone, branch state, synthetic HEAD, repository archive, whole-repository download, automatic connector filesystem mount, special connector materialization bridge, or GitHub Actions planner job is **not** a planner prerequisite.
+Repository code/configuration at current `main` remains the source of truth. If older Daily rule text repeats Git/bootstrap/materialization instructions, `docs/private/PLANNER_PROMPT.md` supersedes only those duplicated execution-environment instructions; the Daily business/creative rules remain mandatory.
 
-1. Inspect current `main` through the GitHub API/connector and retain its exact immutable 40-character commit SHA as `rules_source_sha`. Treat that SHA only as explicit immutable repository identity; do not derive it with local Git.
-2. Read `planning/PLANNER_MATERIALIZATION.json` from that same immutable source SHA. It is the authoritative bootstrap contract.
-3. Fetch each path declared in `required_python_files` and `required_data_files` **directly from the exact `rules_source_sha`** through the GitHub API/connector.
-4. Prefer one complete `fetch_file` response when it returns the whole UTF-8 file. If the connector/UI truncates, clips or elides the response because the file is large, **do not fail and do not retype the visible excerpt**. Re-fetch that same path from the same `rules_source_sha` with explicit non-overlapping `start_line`/`end_line` ranges until the complete file has been obtained. Concatenate the decoded ranges in ascending line order with the repository's original newline boundaries. A truncated display is a transport/presentation condition, not evidence that the source file is unavailable.
-5. For each fetched path, retain the GitHub blob SHA returned by the connector. After writing the complete reconstructed UTF-8 bytes locally, verify the bytes using Git's blob-object hash algorithm locally **without invoking Git**: compute SHA-1 over `b"blob " + str(len(content_bytes)).encode("ascii") + b"\0" + content_bytes` and require the result to equal the connector-returned blob SHA. If a line-ranged response reports the same blob SHA for every chunk, use that SHA as the expected whole-file blob SHA. This byte-verification check is mandatory for any file reconstructed from multiple chunks and recommended for every materialized file.
-6. For every fetched path, treat the complete decoded UTF-8 content returned by the connector/API—whether obtained in one response or reconstructed from verified line ranges—as the exact source bytes. ChatGPT/Work itself must create the parent directories in a plain temporary working directory and write that content to the same repository-relative path. The connector does **not** need to mount files into the Python/container filesystem and no separate Files/materialize API, repository archive, authenticated checkout, or special bridge is required.
-7. If the GitHub connector can return the full file through one or more exact line-ranged reads and the reconstructed blob SHA matches, the file is considered available for materialization. Do **not** fail because a single response was truncated, because the connector response is represented as a tool/content resource, or because there is no connector filesystem mount. Fail closed only if a required source range cannot be fetched, reconstructed bytes fail blob-SHA verification, the bytes cannot be written locally, or a required canonical Python entrypoint fails after materialization.
-8. Materialize only the applicable existence/uniqueness state placeholders declared by the manifest. Do not enumerate or download whole source directories.
-9. The materialized directory is deliberately not a repository. Failure to obtain a repository archive, checkout or `.git` metadata is therefore **not a blocker**.
-10. Set `PYTHONPATH` to the materialized `youtube-shorts-bot` directory as needed and execute the live contract normally:
+Resolve the exact `rules_source_sha` through the GitHub API/connector and follow `planning/PLANNER_MATERIALIZATION.json`. Materialize its selected source into a plain temporary directory. A Git checkout, Git executable, `.git` directory, authenticated clone, repository archive, synthetic HEAD or GitHub Actions planner execution is **not** a planner prerequisite. Do not use `--verify-git-head` for the canonical planner path; normal planner execution must not need `.git` or a Git executable.
+
+## Profile
+
+Use `profile=daily` from the live `planning.planner_contract` output.
+
+Daily and Ad-hoc must use the same shared request/schema/semantic/background/media/narration/publication-validation implementation and the same shared-contract fingerprint. Daily-specific behavior may differ only where the `daily` profile declares it.
+
+Do not materialize Ad-hoc-only or downstream production modules merely to run planner-time Python.
+
+## Mandatory checkpoints
+
+After exact SHA-pinned shared materialization, run locally in ChatGPT/Work:
 
 ```bash
 PYTHONPATH=youtube-shorts-bot python -m planning.planner_contract
-```
-
-11. Execute shared media readiness normally:
-
-```bash
 PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-ready
 ```
 
-12. If readiness reports `REPLENISH`, source reviewed Pexels candidates with reserve capacity rather than only the exact deficit. Stay within the current manifest maximum (currently 48), preserve the required category coverage, and prefer enough reserves that one or more rendition-policy rejects do not require a new attempt. Background Management will try candidates in manifest order, report every rejected source/rendition candidate it encounters, skip those recoverable candidate failures, and then enforce the normal shared readiness threshold. Identity collisions remain hard failures.
-13. Do not freeze final background IDs until replenishment has completed successfully and current `main` contains the accepted registry update. Re-read the accepted registry and choose exact primary/backup backgrounds from that canonical state.
-14. After authoring and freezing the complete temporary Daily ranked pool, execute the exact canonical pre-commit validator:
+Consume the actual live contract, including Daily pool size, planning modes, target rules, publication template, content/candidate identity patterns, controlled values and media readiness thresholds.
+
+If readiness is `REPLENISH`, complete the canonical replenishment path and refresh `rules_source_sha` before candidate finalization.
+
+After authoring/final-ranking the complete Daily pool, run the single shared precommit engine:
 
 ```bash
-PYTHONPATH=youtube-shorts-bot python -m planning.daily_precommit \
+PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
+  --profile daily \
   --pool /tmp/wacky-daily-pool.json \
   --rules-source-sha <rules_source_sha>
 ```
 
-15. `planning_execution.rules_source_sha` in the draft must exactly equal the explicit `rules_source_sha` supplied to the validator.
-16. The normal validator must not require or infer any Git state. Do not use `--verify-git-head`, create synthetic Git metadata, clone the repository, require a repository archive, require an automatic connector filesystem mount, or substitute Git commands/GitHub Actions for the explicit SHA contract.
-17. **FAIL CLOSED if the exact pre-commit module cannot be executed after the connector-returned source has been written locally.** Manual schema checks, hand-written arithmetic, partial reimplementation, downstream promotion, or later GitHub Actions validation are not substitutes for planner-time pre-commit. Do not commit a pool unless all 36 candidates PASS the actual validator.
-18. Private Daily Production independently reruns the same pre-commit validation as a committed-pool admission gate before ranked promotion. This is defense in depth only; it does not waive step 17 and it is not the planner execution engine.
-19. Before the immutable pool commit, re-read current GitHub `main`. If its SHA differs from `rules_source_sha`—including because background replenishment committed a registry update—do not commit the stale draft. Refresh `rules_source_sha`, re-read the manifest from that SHA, refetch its explicit required files, rewrite the temporary materialization from those returned source contents, rerun live contract discovery, media readiness and complete pre-commit validation against the new canonical state.
-20. The final immutable pool bytes must exactly match the successful validator `draft_sha256`.
+The gate requires **all 36 candidates PASS** before immutable pool commit. `planning.daily_precommit` remains only a backward-compatible wrapper and is not required for canonical materialization.
 
-Everything else in `DAILY_PLANNER_RULES.md` remains mandatory unless current executable repository code/configuration has superseded it.
+**FAIL CLOSED if the exact pre-commit module cannot be executed** after exact materialization. Manual checks, downstream pool admission, ranked promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
+
+Before immutable commit, re-read current `main`; if its SHA changed, refresh and rerun the shared checkpoints. The final immutable pool bytes must exactly match the successful `draft_sha256`.
+
+ChatGPT/Work remains the creative/editorial owner and freezes Daily rank order. Private workflows validate/promote mechanically; public runtime executes statelessly.

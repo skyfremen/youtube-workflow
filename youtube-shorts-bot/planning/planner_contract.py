@@ -1,15 +1,28 @@
-"""Expose the live planner contract to ChatGPT/Work as machine-readable JSON.
+"""Expose the live shared planner contract to ChatGPT/Work as JSON.
 
-This module intentionally imports authoritative production constants instead of
-redeclaring them. It is a read-only discovery surface for planner authorship.
+Daily and Ad-hoc are profiles of one planner. Shared schema, semantic, media,
+background, narration and precommit behavior is imported once from authoritative
+modules; profiles may declare only mode-specific policy.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+from pathlib import Path
 
 from common.workflow_common import CONTENT_ID_RE
 from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
-from planning import ranked_promotion
+from planning.planner_core import (
+    CANDIDATE_ID_RE,
+    CATCH_UP_MIN_LEAD_MINUTES,
+    POOL_SCHEMA_VERSION,
+)
+from planning.planner_profiles import (
+    ADHOC,
+    DAILY,
+    PROFILES,
+    assert_profiles_do_not_override_shared_contract,
+)
 from planning.planning_config import (
     ANTAGONIST_ROLES,
     CATEGORIES,
@@ -25,39 +38,108 @@ from planning.planning_config import (
 from validation import schema_v4
 from validation.validate_content import SCHEMA_VERSION
 
-ADHOC_PUBLICATION = {
-    "mode": "immediate",
-    "timezone": "Asia/Singapore",
-    "publish_at": None,
-}
-DAILY_PUBLICATION = {
-    "mode": "scheduled",
-    "timezone": "Asia/Singapore",
-    "publish_at": None,
-}
+ADHOC_PUBLICATION = ADHOC.publication_template
+DAILY_PUBLICATION = DAILY.publication_template
+ARCHITECTURE_VERSION = 1
+SHARED_PRECOMMIT_MODULE = "planning.planner_precommit"
+SHARED_CANDIDATE_VALIDATOR = "planning.planner_core.candidate_errors"
+SHARED_REQUEST_VALIDATOR = "validation.validate_content.validate_request_data"
+SHARED_PUBLICATION_VALIDATOR = "validation.publication.validate_upload_contract"
+
+
+def _shared_contract_payload():
+    return {
+        "architecture_version": ARCHITECTURE_VERSION,
+        "request_schema_version": SCHEMA_VERSION,
+        "ranked_pool_schema_version": POOL_SCHEMA_VERSION,
+        "precommit_module": SHARED_PRECOMMIT_MODULE,
+        "candidate_validator": SHARED_CANDIDATE_VALIDATOR,
+        "request_validator": SHARED_REQUEST_VALIDATOR,
+        "publication_validator": SHARED_PUBLICATION_VALIDATOR,
+        "editorial_score_components": list(EDITORIAL_WEIGHTS),
+        "title_score_components": list(TITLE_WEIGHTS),
+        "hook_score_components": list(HOOK_WEIGHTS),
+        "voices": sorted(schema_v4.APPROVED_VOICES),
+        "story_tones": sorted(schema_v4.STORY_TONES),
+        "lead_genders": sorted(schema_v4.LEAD_GENDERS),
+        "narration_engine": "kokoro",
+        "narration_speed": 1.75,
+    }
+
+
+def _shared_fingerprint():
+    raw = json.dumps(
+        _shared_contract_payload(),
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _materialization_summary():
+    path = Path(__file__).with_name("PLANNER_MATERIALIZATION.json")
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    shared_python = manifest.get("shared_required_python_files") or []
+    shared_data = manifest.get("shared_required_data_files") or []
+    profile_files = manifest.get("profile_required_files") or {}
+    return {
+        "manifest_schema_version": manifest.get("schema_version"),
+        "shared_python_files": len(shared_python),
+        "shared_data_files": len(shared_data),
+        "profile_file_counts": {
+            name: len((profile_files.get(name) or {}).get("python_files") or [])
+            + len((profile_files.get(name) or {}).get("data_files") or [])
+            for name in sorted(PROFILES)
+        },
+    }
 
 
 def build_contract():
-    """Return the current canonical fields ChatGPT must author against."""
+    """Return the canonical machine-readable planner contract for both profiles."""
+    assert_profiles_do_not_override_shared_contract()
+    shared = _shared_contract_payload()
+    fingerprint = _shared_fingerprint()
+    profiles = {
+        name: {
+            **profile.contract_dict(),
+            "shared_contract_fingerprint": fingerprint,
+        }
+        for name, profile in sorted(PROFILES.items())
+    }
+    if len({item["shared_contract_fingerprint"] for item in profiles.values()}) != 1:
+        raise RuntimeError("Daily/Ad-hoc shared planner contract drift detected")
+
     return {
+        "architecture_version": ARCHITECTURE_VERSION,
+        "shared_contract_fingerprint": fingerprint,
+        "shared_implementation": {
+            "precommit": SHARED_PRECOMMIT_MODULE,
+            "candidate_validation": SHARED_CANDIDATE_VALIDATOR,
+            "request_validation": SHARED_REQUEST_VALIDATOR,
+            "publication_validation": SHARED_PUBLICATION_VALIDATOR,
+        },
+        "profiles": profiles,
         "request_schema_version": SCHEMA_VERSION,
-        "ranked_pool_schema_version": ranked_promotion.POOL_SCHEMA_VERSION,
-        "adhoc_pool_size": ranked_promotion.ADHOC_POOL_SIZE,
-        "adhoc_planning_modes": sorted(ranked_promotion.ADHOC_PLANNING_MODES),
-        "daily_pool_size": ranked_promotion.DAILY_POOL_SIZE,
-        "daily_planning_modes": sorted(ranked_promotion.PLANNING_MODES),
-        "daily_normal_target": ranked_promotion.NORMAL_DAILY_TARGET,
-        "daily_catch_up_min_lead_minutes": ranked_promotion.CATCH_UP_MIN_LEAD_MINUTES,
+        "ranked_pool_schema_version": POOL_SCHEMA_VERSION,
+        "adhoc_pool_size": ADHOC.pool_size,
+        "adhoc_planning_modes": sorted(ADHOC.planning_modes),
+        "daily_pool_size": DAILY.pool_size,
+        "daily_planning_modes": sorted(DAILY.planning_modes),
+        "daily_normal_target": DAILY.normal_target_count,
+        "daily_catch_up_min_lead_minutes": CATCH_UP_MIN_LEAD_MINUTES,
         "content_id_pattern": CONTENT_ID_RE.pattern,
-        "candidate_id_pattern": ranked_promotion.CANDIDATE_ID_RE.pattern,
-        # Backward-compatible Ad-hoc discovery key used by the existing planner.
+        "candidate_id_pattern": CANDIDATE_ID_RE.pattern,
         "publication": ADHOC_PUBLICATION,
         "adhoc_publication": ADHOC_PUBLICATION,
         "daily_publication_template": DAILY_PUBLICATION,
+        "materialization": _materialization_summary(),
         "execution_environment": {
             "canonical_mode": "explicit_rules_source_sha",
             "materialization_manifest": "planning/PLANNER_MATERIALIZATION.json",
-            "materialization_mode": "explicit_file_list",
+            "materialization_mode": "shared_plus_selected_profile",
             "authenticated_checkout_required": False,
             "git_metadata_required": False,
             "repository_archive_required": False,
@@ -66,55 +148,30 @@ def build_contract():
             "special_connector_materialization_bridge_required": False,
             "github_actions_planner_execution_required": False,
             "repository_identity_source": "explicit_rules_source_sha",
-            "description": (
-                "Run planner Python normally in the available Python environment. "
-                "The exact immutable GitHub source commit inspected by ChatGPT is passed "
-                "explicitly as --rules-source-sha. Fetch only the explicit files declared "
-                "by planning/PLANNER_MATERIALIZATION.json from that SHA. For each fetched "
-                "path, the decoded UTF-8 connector response content is the source bytes; "
-                "ChatGPT/Work writes those bytes directly to an ordinary local file at the "
-                "same repository-relative path. A connector filesystem mount, special "
-                "materialization bridge, .git directory, authenticated clone, repository "
-                "archive, whole-directory download, snapshot manifest, synthetic Git HEAD "
-                "and GitHub Actions planner job are not required."
+            "canonical_precommit_command": (
+                "python -m planning.planner_precommit --profile <daily|adhoc> "
+                "--pool <pool> --rules-source-sha <sha>"
             ),
-            "adhoc_precommit_command": (
-                "python -m planning.adhoc_precommit --pool <pool> "
-                "--rules-source-sha <sha>"
-            ),
-            "daily_precommit_command": (
-                "python -m planning.daily_precommit --pool <pool> "
-                "--rules-source-sha <sha>"
-            ),
-            "optional_checkout_verification": {
-                "description": (
-                    "For developer/CI execution inside a real checkout only. This is optional "
-                    "hardening and must not be required by ChatGPT/Work planner execution."
-                ),
-                "flag": "--verify-git-head",
-                "head_command": "git rev-parse HEAD",
+            "compatibility_wrappers": {
+                "daily": "python -m planning.daily_precommit",
+                "adhoc": "python -m planning.adhoc_precommit",
+            },
+            "cache": {
+                "optional": True,
+                "correctness_dependency": False,
+                "primary_key": "rules_source_sha",
+                "reuse_rule": "reuse only previously blob-verified files for the identical immutable SHA",
+                "cross_profile_shared_reuse": True,
             },
             "rules": [
-                "Resolve one exact immutable GitHub source SHA before live contract discovery and planning.",
-                "Read planning/PLANNER_MATERIALIZATION.json from that exact SHA and fetch each declared required file directly through the GitHub API/connector.",
-                "Treat the decoded UTF-8 content returned for each fetched file as the canonical source bytes and write those bytes directly to a plain local/container file preserving the repository-relative path.",
-                "Do not require an automatic connector filesystem mount, connector file reference, Files/materialize call or special connector-to-filesystem bridge; the returned source content is sufficient for local materialization.",
-                "Do not enumerate or download whole source directories; preserve repository-relative paths in an ordinary temporary directory.",
-                "Failure to obtain a repository archive, checkout, automatic connector mount or special materialization bridge is not a blocker because none is part of the canonical planner bootstrap.",
-                "Pass rules_source_sha explicitly as --rules-source-sha to Daily and Ad-hoc precommit validators.",
-                "planning_execution.rules_source_sha must exactly equal the supplied rules_source_sha.",
-                "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
-                "Do not require .git, an authenticated checkout, snapshot bootstrap, synthetic Git metadata or GitHub Actions for normal ChatGPT/Work planner execution.",
-                "If repository main changes before the immutable pool commit, refresh rules_source_sha, refetch the explicit manifest files, rewrite the temporary materialization from the refreshed connector contents and rerun all required live validation against the new source state.",
+                "Resolve one exact immutable GitHub main SHA before contract discovery and planning.",
+                "Read planning/PLANNER_MATERIALIZATION.json from that exact SHA.",
+                "Materialize shared_required_* plus only the selected profile additions.",
+                "Verify connector-returned source bytes with Git blob SHA semantics without invoking Git.",
+                "Pass rules_source_sha explicitly to the shared precommit engine.",
+                "Do not require .git, a Git executable, clone, checkout, archive, synthetic HEAD or GitHub Actions planner execution.",
+                "Re-read main before immutable commit and fully refresh/revalidate if the SHA changed.",
             ],
-            "legacy_snapshot_mode": {
-                "supported": False,
-                "deprecated": True,
-                "reason": (
-                    "Snapshot/bootstrap logic is no longer part of the canonical planner path; "
-                    "repository identity is explicit data rather than inferred from local Git metadata."
-                ),
-            },
         },
         "media_readiness": {
             "audit_command": "python -m media.media_readiness audit --allow-not-ready",
@@ -127,27 +184,6 @@ def build_contract():
             "required_before_adhoc": True,
             "replenish_is_terminal": False,
             "automatic_continuation_required": True,
-            "replenishment_manifest_is_allowed_prerequisite_commit": True,
-            "pool_only_commit_rule_applies_after_readiness_pass": True,
-            "replenishment_sequence": [
-                "audit returns REPLENISH",
-                "ChatGPT/Work discovers and visually reviews enough Pexels candidates to satisfy returned deficits",
-                "create exactly one new immutable readiness manifest for the replenishment attempt",
-                "commit the readiness manifest so Background Management runs automatically",
-                "observe Background Management to completion in the same planning invocation when tooling permits",
-                "re-read current main after registry persistence",
-                "rerun planning.planner_contract",
-                "rerun media.media_readiness audit --allow-not-ready",
-                "repeat with a new immutable readiness manifest if deficits remain",
-                "resume Daily or Ad-hoc ranked-pool authorship only after status PASS and ready true",
-            ],
-            "rules": [
-                "REPLENISH is a resumable prerequisite state, not a successful or terminal planner outcome.",
-                "Do not end a planning invocation merely because readiness returned REPLENISH when the required replenishment actions and repository writes are available.",
-                "A task instruction such as 'commit only the ranked-pool JSON' does not forbid prerequisite readiness-manifest commits; it governs the successful pool-authorship commit after readiness PASS.",
-                "Fail closed only when replenishment itself cannot be completed safely or mechanically, Background Management fails, the required external capability is unavailable, or readiness still cannot reach PASS after compliant attempts.",
-                "Never bypass readiness, invent local registry entries, or use retired assets for new planning.",
-            ],
         },
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
@@ -164,10 +200,7 @@ def build_contract():
             "story_tones": sorted(schema_v4.STORY_TONES),
             "lead_genders": sorted(schema_v4.LEAD_GENDERS),
         },
-        "narration": {
-            "engine": "kokoro",
-            "speed": 1.75,
-        },
+        "narration": {"engine": "kokoro", "speed": 1.75},
     }
 
 

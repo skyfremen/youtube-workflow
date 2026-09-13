@@ -1,7 +1,7 @@
 {
-  "schema_version": 4,
-  "contract": "gitless_planner_materialization",
-  "materialization_mode": "explicit_file_list",
+  "schema_version": 5,
+  "contract": "gitless_shared_planner_materialization",
+  "materialization_mode": "shared_plus_selected_profile",
   "git_required": false,
   "git_executable_required": false,
   "checkout_required": false,
@@ -35,40 +35,54 @@
       "git_executable_required": false,
       "failure_rule": "Fail closed if reconstructed bytes do not match the connector-returned Git blob SHA."
     },
-    "write_rule": "ChatGPT/Work must create parent directories and write the complete verified connector-returned content directly to an ordinary local/container file at the same repository-relative path under the temporary materialization root.",
-    "mount_not_required": true,
-    "files_materialize_tool_not_required": true,
-    "special_bridge_not_required": true,
-    "failure_rule": "Do not treat response truncation, absence of an automatic connector filesystem mount, connector file reference, repository archive, checkout or special materialization bridge as a blocker when exact line-ranged fetches remain available. Fail closed only when required source ranges cannot be fetched, reconstructed bytes fail blob verification, bytes cannot be written, or a required Python entrypoint fails after writing."
+    "write_rule": "ChatGPT/Work creates parent directories and writes verified connector-returned content directly to ordinary local files at repository-relative paths under a temporary materialization root.",
+    "failure_rule": "Fail closed only when required source ranges cannot be fetched, reconstructed bytes fail blob verification, bytes cannot be written, or a required canonical Python entrypoint fails after writing."
   },
   "pythonpath_root": "youtube-shorts-bot",
-  "required_python_files": [
-    "youtube-shorts-bot/common/__init__.py",
+  "shared_required_python_files": [
     "youtube-shorts-bot/common/workflow_common.py",
-    "youtube-shorts-bot/media/__init__.py",
     "youtube-shorts-bot/media/background_policy.py",
     "youtube-shorts-bot/media/validate_media_library.py",
     "youtube-shorts-bot/media/background_selector_base.py",
     "youtube-shorts-bot/media/media_readiness.py",
-    "youtube-shorts-bot/planning/__init__.py",
     "youtube-shorts-bot/planning/planning_config.py",
-    "youtube-shorts-bot/planning/ranked_promotion.py",
+    "youtube-shorts-bot/planning/planner_profiles.py",
+    "youtube-shorts-bot/planning/planner_core.py",
+    "youtube-shorts-bot/planning/planner_precommit.py",
     "youtube-shorts-bot/planning/planner_contract.py",
-    "youtube-shorts-bot/planning/adhoc_precommit.py",
-    "youtube-shorts-bot/planning/daily_precommit.py",
-    "youtube-shorts-bot/publishing/__init__.py",
-    "youtube-shorts-bot/publishing/upload.py",
-    "youtube-shorts-bot/validation/__init__.py",
     "youtube-shorts-bot/validation/semantic.py",
     "youtube-shorts-bot/validation/schema_v4.py",
-    "youtube-shorts-bot/validation/validate_content.py"
+    "youtube-shorts-bot/validation/validate_content.py",
+    "youtube-shorts-bot/validation/publication.py"
   ],
-  "required_data_files": [
+  "shared_required_data_files": [
     "youtube-shorts-bot/media-library/backgrounds.json"
   ],
-  "source_rule": "Fetch every required_python_files and required_data_files path directly from the exact rules_source_sha using the GitHub API/connector. Use a single complete response when possible; otherwise use verified line-ranged fetches from the same path/ref and reconstruct the file exactly. Treat the complete verified decoded UTF-8 content as the source bytes and write it to an ordinary local file preserving repository-relative paths. No automatic connector filesystem mount, special bridge, repository archive, checkout, .git directory, Git executable or GitHub Actions planner job is required.",
+  "profile_required_files": {
+    "daily": {
+      "python_files": [],
+      "data_files": [],
+      "profile_object": "planning.planner_profiles.DAILY"
+    },
+    "adhoc": {
+      "python_files": [],
+      "data_files": [],
+      "profile_object": "planning.planner_profiles.ADHOC"
+    }
+  },
+  "source_rule": "Fetch shared_required_python_files and shared_required_data_files plus only the selected profile's additions from the exact rules_source_sha. Daily and Ad-hoc profiles are declarative objects in the shared planner profile module, so the current profile additions are intentionally empty. No production promotion or publishing module is required for planner-time Python execution.",
+  "immutable_cache": {
+    "enabled_when_environment_supports_reuse": true,
+    "correctness_dependency": false,
+    "primary_key": "rules_source_sha",
+    "shared_cache_scope": "shared_required_python_files + shared_required_data_files",
+    "profile_cache_scope": "selected profile additions",
+    "cross_profile_shared_reuse": true,
+    "validation_rule": "Reuse a cached file only when its previously verified Git blob SHA belongs to the identical rules_source_sha manifest entry.",
+    "sha_change_rule": "A different current-main SHA is a cold source snapshot; never silently reuse source bytes from another SHA."
+  },
   "planner_state_placeholders": {
-    "rule": "For the explicit existence/uniqueness checks below, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks.",
+    "rule": "For explicit existence/uniqueness checks, materialize zero-byte placeholder files for matching canonical repository paths. Their contents are not read by those checks.",
     "adhoc_scheduled_uniqueness": [
       "youtube-shorts-bot/content/requests/wd-<YYYYMMDD>T010000-adhoc-*.json"
     ],
@@ -77,12 +91,29 @@
       "youtube-shorts-bot/content/planning-pools/daily/<plan_date>/<pool_id>.json"
     ]
   },
-  "entrypoints": [
-    "python -m planning.planner_contract",
-    "python -m media.media_readiness audit --allow-not-ready",
-    "python -m planning.adhoc_precommit --pool <pool> --rules-source-sha <sha>",
-    "python -m planning.daily_precommit --pool <pool> --rules-source-sha <sha>"
-  ],
+  "entrypoints": {
+    "contract": "python -m planning.planner_contract",
+    "media_readiness": "python -m media.media_readiness audit --allow-not-ready",
+    "precommit": "python -m planning.planner_precommit --profile <daily|adhoc> --pool <pool> --rules-source-sha <sha>"
+  },
+  "compatibility_wrappers_not_required_for_materialization": {
+    "daily": "python -m planning.daily_precommit --pool <pool> --rules-source-sha <sha>",
+    "adhoc": "python -m planning.adhoc_precommit --pool <pool> --rules-source-sha <sha>"
+  },
+  "baseline": {
+    "previous_schema_version": 4,
+    "previous_required_python_files": 19,
+    "current_shared_required_python_files": 14,
+    "python_file_count_reduction": 5,
+    "python_file_count_reduction_percent": 26.3,
+    "removed_from_planner_bootstrap": [
+      "package __init__ files",
+      "planning/ranked_promotion.py",
+      "publishing/upload.py",
+      "publishing/__init__.py",
+      "daily/adhoc compatibility wrappers"
+    ]
+  },
   "forbidden_bootstrap_requirements": [
     ".git",
     "git clone",

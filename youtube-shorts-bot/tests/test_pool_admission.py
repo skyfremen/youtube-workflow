@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from planning import adhoc_precommit, daily_precommit, pool_admission
+from planning import planner_precommit, pool_admission
 
 
 RULES_SHA = "1" * 40
@@ -9,12 +9,14 @@ POOL = {"planning_execution": {"rules_source_sha": RULES_SHA}}
 
 
 class PoolAdmissionTests(unittest.TestCase):
-    def test_adhoc_reuses_precommit_without_git_or_uniqueness(self):
+    def test_adhoc_reuses_shared_precommit_without_git_or_uniqueness(self):
         expected = {"status": "PASS"}
-        with patch.object(adhoc_precommit, "validate_draft", return_value=expected) as validate:
-            result = pool_admission.validate_committed_pool("adhoc", POOL, b"draft")
+        with patch.object(planner_precommit, "validate_draft", return_value=expected) as validate:
+            with patch.object(pool_admission, "validate_draft", validate):
+                result = pool_admission.validate_committed_pool("adhoc", POOL, b"draft")
         self.assertIs(result, expected)
         validate.assert_called_once_with(
+            "adhoc",
             POOL,
             RULES_SHA,
             raw_bytes=b"draft",
@@ -22,12 +24,14 @@ class PoolAdmissionTests(unittest.TestCase):
             check_uniqueness=False,
         )
 
-    def test_daily_reuses_precommit_without_git_or_uniqueness(self):
+    def test_daily_reuses_shared_precommit_without_git_or_uniqueness(self):
         expected = {"status": "PASS"}
-        with patch.object(daily_precommit, "validate_draft", return_value=expected) as validate:
-            result = pool_admission.validate_committed_pool("daily", POOL, b"draft")
+        with patch.object(planner_precommit, "validate_draft", return_value=expected) as validate:
+            with patch.object(pool_admission, "validate_draft", validate):
+                result = pool_admission.validate_committed_pool("daily", POOL, b"draft")
         self.assertIs(result, expected)
         validate.assert_called_once_with(
+            "daily",
             POOL,
             RULES_SHA,
             raw_bytes=b"draft",

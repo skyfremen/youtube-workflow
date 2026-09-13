@@ -1,49 +1,45 @@
 """Promote immutable ChatGPT-ranked planning pools into canonical production state.
 
-ChatGPT owns creative/editorial decisions, logical background choice, planning-time
-background audit reasoning, background treatment values and final rank. This module
-is a private fail-closed promotion gate: it validates facts, preserves the declared
-rank order, and materializes only the first required valid candidates.
+Creative/editorial ownership stays with ChatGPT. This downstream promotion gate
+imports shared planner contracts instead of redefining them, then adds the private
+Git/immutable-state checks that are inherently promotion-specific.
 """
 from __future__ import annotations
 
 import argparse
 import copy
 import json
-import re
 import subprocess
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath as PurePath
-from zoneinfo import ZoneInfo
 
 from media.validate_media_library import load_registry
-from publishing.upload import build_upload_body
-from validation.validate_content import SCHEMA_VERSION, validate_request_data
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
-DAILY_POOL_RE = re.compile(
-    r"^youtube-shorts-bot/content/planning-pools/daily/"
-    r"(\d{4}-\d{2}-\d{2})/(dp-[A-Za-z0-9-]{8,96})\.json$"
+from planning.planner_core import (
+    ADHOC_POOL_RE,
+    BOT_ROOT,
+    CANDIDATE_ID_RE,
+    CATCH_UP_MIN_LEAD_MINUTES,
+    DAILY_POOL_RE,
+    HEX40_RE,
+    POOL_SCHEMA_VERSION,
+    REPO_ROOT,
+    PlannerContractError,
+    candidate_errors as _shared_candidate_errors,
+    canonical_normal_slots as _canonical_normal_slots,
+    parse_date as _parse_date,
+    parse_slot as _parse_slot,
+    scheduled_adhoc_matches as _scheduled_adhoc_matches,
+    validate_ranked_candidates as _validate_ranked_candidates,
 )
-ADHOC_POOL_RE = re.compile(
-    r"^youtube-shorts-bot/content/planning-pools/adhoc/(ap-[A-Za-z0-9-]{8,96})\.json$"
-)
-CONTENT_ID_RE = re.compile(r"^wd-[A-Za-z0-9-]+$")
-CANDIDATE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
-HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
-DAILY_POOL_SIZE = 36
-ADHOC_POOL_SIZE = 5
-NORMAL_DAILY_TARGET = 24
-POOL_SCHEMA_VERSION = 1
-PLANNING_MODES = {"normal_next_day", "same_day_catch_up"}
-ADHOC_PLANNING_MODES = {"scheduled_daily", "manual_on_demand"}
-CATCH_UP_MIN_LEAD_MINUTES = 30
-SGT = ZoneInfo("Asia/Singapore")
+from planning.planner_profiles import ADHOC, DAILY
 
-
-class PromotionError(RuntimeError):
-    pass
+CONTENT_ID_RE = __import__("common.workflow_common", fromlist=["CONTENT_ID_RE"]).CONTENT_ID_RE
+DAILY_POOL_SIZE = DAILY.pool_size
+ADHOC_POOL_SIZE = ADHOC.pool_size
+NORMAL_DAILY_TARGET = DAILY.normal_target_count
+PLANNING_MODES = set(DAILY.planning_modes)
+ADHOC_PLANNING_MODES = set(ADHOC.planning_modes)
+PromotionError = PlannerContractError
 
 
 def _fail(message):
@@ -90,35 +86,6 @@ def _validate_exact_pool_commit(source_sha, expected_path):
         _fail("candidate-pool commit must add exactly one immutable pool file")
 
 
-def _validate_ranked_candidates(pool, expected_count):
-    candidates = pool.get("ranked_candidates")
-    if not isinstance(candidates, list) or len(candidates) != expected_count:
-        _fail(f"ranked_candidates must contain exactly {expected_count} candidates")
-    candidate_ids = []
-    content_ids = []
-    for index, item in enumerate(candidates, start=1):
-        if not isinstance(item, dict) or set(item) != {"rank", "candidate_id", "request"}:
-            _fail("each ranked candidate must contain exactly rank, candidate_id and request")
-        if item.get("rank") != index:
-            _fail("candidate ranks must be contiguous and start at 1")
-        candidate_id = item.get("candidate_id")
-        if not isinstance(candidate_id, str) or not CANDIDATE_ID_RE.fullmatch(candidate_id):
-            _fail(f"candidate rank {index} has invalid candidate_id")
-        request = item.get("request")
-        if not isinstance(request, dict):
-            _fail(f"candidate rank {index} request must be an object")
-        content_id = request.get("content_id")
-        if not isinstance(content_id, str) or not CONTENT_ID_RE.fullmatch(content_id):
-            _fail(f"candidate rank {index} request has invalid content_id")
-        candidate_ids.append(candidate_id)
-        content_ids.append(content_id)
-    if len(candidate_ids) != len(set(candidate_ids)):
-        _fail("ranked candidate IDs must be unique")
-    if len(content_ids) != len(set(content_ids)):
-        _fail("ranked candidate request content IDs must be unique")
-    return candidates, candidate_ids
-
-
 def _validate_execution(pool, candidate_ids, source_sha):
     execution = pool.get("planning_execution")
     expected_keys = {
@@ -139,36 +106,6 @@ def _validate_execution(pool, candidate_ids, source_sha):
         _fail("planning_execution.ranked_candidate_ids must exactly match rank order")
 
 
-def _parse_date(raw, label):
-    try:
-        return date.fromisoformat(str(raw))
-    except ValueError:
-        _fail(f"{label} must be YYYY-MM-DD")
-
-
-def _parse_slot(raw, plan_date):
-    try:
-        parsed = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
-    except ValueError:
-        _fail(f"invalid publication slot {raw!r}")
-    if parsed.tzinfo is None or parsed.utcoffset() != timezone.utc.utcoffset(parsed):
-        _fail("daily publication slots must be UTC timestamps")
-    local = parsed.astimezone(SGT)
-    if local.date().isoformat() != plan_date:
-        _fail("daily publication slot must fall on the plan date in Asia/Singapore")
-    if any((local.minute, local.second, local.microsecond)):
-        _fail("daily publication slots must be exact top-of-hour timestamps")
-    return parsed
-
-
-def _canonical_normal_slots(plan_date):
-    local_midnight = datetime.fromisoformat(plan_date).replace(tzinfo=SGT)
-    return [
-        local_midnight.replace(hour=hour).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        for hour in range(24)
-    ]
-
-
 def _validate_daily_pool(pool, pool_path, source_sha, *, now_utc=None):
     match = DAILY_POOL_RE.fullmatch(pool_path)
     if not match:
@@ -176,31 +113,24 @@ def _validate_daily_pool(pool, pool_path, source_sha, *, now_utc=None):
     plan_date, pool_id = match.groups()
     _parse_date(plan_date, "daily plan_date")
     expected_keys = {
-        "schema_version",
-        "pool_type",
-        "pool_id",
-        "plan_date",
-        "planning_mode",
-        "target_count",
-        "publication_slots",
-        "planning_execution",
-        "ranked_candidates",
+        "schema_version", "pool_type", "pool_id", "plan_date", "planning_mode",
+        "target_count", "publication_slots", "planning_execution", "ranked_candidates",
     }
     if not isinstance(pool, dict) or set(pool) != expected_keys:
         _fail("daily ranked pool contains missing or unexpected top-level fields")
-    if pool.get("schema_version") != POOL_SCHEMA_VERSION or pool.get("pool_type") != "daily":
+    if pool.get("schema_version") != POOL_SCHEMA_VERSION or pool.get("pool_type") != DAILY.pool_type:
         _fail("daily ranked pool schema/type mismatch")
     if pool.get("pool_id") != pool_id:
         _fail("daily pool_id must match its filename")
     if pool.get("plan_date") != plan_date:
         _fail("daily pool plan_date must match its directory")
     mode = pool.get("planning_mode")
-    if mode not in PLANNING_MODES:
+    if mode not in DAILY.planning_modes:
         _fail("daily planning_mode must be normal_next_day or same_day_catch_up")
     target = pool.get("target_count")
     if isinstance(target, bool) or not isinstance(target, int) or not 1 <= target <= 24:
         _fail("daily target_count must be an integer between 1 and 24")
-    if mode == "normal_next_day" and target != NORMAL_DAILY_TARGET:
+    if mode == DAILY.normal_mode and target != DAILY.normal_target_count:
         _fail("normal_next_day ranked pool target_count must be exactly 24")
     slots = pool.get("publication_slots")
     if not isinstance(slots, list) or len(slots) != target or len(slots) != len(set(slots)):
@@ -208,20 +138,19 @@ def _validate_daily_pool(pool, pool_path, source_sha, *, now_utc=None):
     parsed_slots = [_parse_slot(raw, plan_date) for raw in slots]
     if parsed_slots != sorted(parsed_slots):
         _fail("publication_slots must be chronological")
-    if mode == "normal_next_day" and slots != _canonical_normal_slots(plan_date):
+    if mode == DAILY.normal_mode and slots != _canonical_normal_slots(plan_date):
         _fail("normal_next_day publication_slots must be the canonical 24 hourly slots")
     if mode == "same_day_catch_up":
         now_utc = now_utc or datetime.now(timezone.utc)
         if now_utc.tzinfo is None:
             now_utc = now_utc.replace(tzinfo=timezone.utc)
-        now_utc = now_utc.astimezone(timezone.utc)
-        threshold = now_utc + timedelta(minutes=CATCH_UP_MIN_LEAD_MINUTES)
+        threshold = now_utc.astimezone(timezone.utc) + timedelta(minutes=CATCH_UP_MIN_LEAD_MINUTES)
         if any(slot < threshold for slot in parsed_slots):
             _fail(
                 f"same_day_catch_up slots must remain at least {CATCH_UP_MIN_LEAD_MINUTES} "
                 "minutes in the future at promotion time"
             )
-    candidates, candidate_ids = _validate_ranked_candidates(pool, DAILY_POOL_SIZE)
+    candidates, candidate_ids = _validate_ranked_candidates(pool, DAILY.pool_size)
     _validate_execution(pool, candidate_ids, source_sha)
     _validate_exact_pool_commit(source_sha, pool_path)
     return plan_date, pool_id, mode, target, slots, candidates, candidate_ids
@@ -233,29 +162,23 @@ def _validate_adhoc_pool(pool, pool_path, source_sha):
         _fail("Ad-hoc pool path must be content/planning-pools/adhoc/ap-<id>.json")
     pool_id = match.group(1)
     expected_keys = {
-        "schema_version",
-        "pool_type",
-        "pool_id",
-        "planning_mode",
-        "singapore_date",
-        "target_count",
-        "planning_execution",
-        "ranked_candidates",
+        "schema_version", "pool_type", "pool_id", "planning_mode", "singapore_date",
+        "target_count", "planning_execution", "ranked_candidates",
     }
     if not isinstance(pool, dict) or set(pool) != expected_keys:
         _fail("Ad-hoc ranked pool contains missing or unexpected top-level fields")
-    if pool.get("schema_version") != POOL_SCHEMA_VERSION or pool.get("pool_type") != "adhoc":
+    if pool.get("schema_version") != POOL_SCHEMA_VERSION or pool.get("pool_type") != ADHOC.pool_type:
         _fail("Ad-hoc ranked pool schema/type mismatch")
     if pool.get("pool_id") != pool_id:
         _fail("Ad-hoc pool_id must match its filename")
     planning_mode = pool.get("planning_mode")
-    if planning_mode not in ADHOC_PLANNING_MODES:
+    if planning_mode not in ADHOC.planning_modes:
         _fail("Ad-hoc planning_mode must be scheduled_daily or manual_on_demand")
     singapore_date = str(pool.get("singapore_date", ""))
     _parse_date(singapore_date, "Ad-hoc singapore_date")
-    if pool.get("target_count") != 1:
+    if pool.get("target_count") != ADHOC.fixed_target_count:
         _fail("Ad-hoc ranked pool target_count must be exactly 1")
-    candidates, candidate_ids = _validate_ranked_candidates(pool, ADHOC_POOL_SIZE)
+    candidates, candidate_ids = _validate_ranked_candidates(pool, ADHOC.pool_size)
     if planning_mode == "scheduled_daily":
         prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
         for item in candidates:
@@ -267,20 +190,22 @@ def _validate_adhoc_pool(pool, pool_path, source_sha):
 
 
 def _candidate_errors(request, *, registry, request_path):
-    errors = validate_request_data(
-        request,
-        request_path=request_path,
-        enforce_registry=True,
+    mode = (request.get("publication") or {}).get("mode")
+    profile = ADHOC if mode == "immediate" else DAILY
+    publish_at = None
+    if profile is DAILY:
+        publish_at = (request.get("publication") or {}).get("publish_at")
+        authored = copy.deepcopy(request)
+        authored["publication"] = copy.deepcopy(DAILY.publication_template)
+    else:
+        authored = request
+    return _shared_candidate_errors(
+        authored,
         registry=registry,
+        request_path=request_path,
+        profile=profile,
+        publish_at_override=publish_at,
     )
-    if request.get("schema_version") != SCHEMA_VERSION:
-        errors.append(f"new production request must use schema-v{SCHEMA_VERSION}")
-    if not errors:
-        try:
-            build_upload_body(request, require_future=False)
-        except (KeyError, TypeError, ValueError) as exc:
-            errors.append(f"final publication payload is invalid: {exc}")
-    return errors
 
 
 def _ensure_targets_absent(paths):
@@ -289,27 +214,12 @@ def _ensure_targets_absent(paths):
         _fail("immutable production target already exists: " + ", ".join(existing))
 
 
-def _scheduled_adhoc_matches(singapore_date, *, exclude_content_id=None):
-    prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
-    request_dir = BOT_ROOT / "content" / "requests"
-    matches = []
-    if request_dir.is_dir():
-        for path in request_dir.glob(f"{prefix}*.json"):
-            if exclude_content_id and path.stem == exclude_content_id:
-                continue
-            matches.append(path)
-    return sorted(matches)
-
-
 def verify_scheduled_adhoc_uniqueness(singapore_date, content_id):
-    """Fail if another scheduled Ad-hoc request already exists for the SG date."""
     _parse_date(singapore_date, "Ad-hoc singapore_date")
     prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
     if not content_id.startswith(prefix):
         _fail("promoted scheduled Ad-hoc content ID does not match the Singapore-date namespace")
-    conflicts = _scheduled_adhoc_matches(
-        singapore_date, exclude_content_id=content_id
-    )
+    conflicts = _scheduled_adhoc_matches(singapore_date, exclude_content_id=content_id)
     if conflicts:
         _fail(
             "scheduled Ad-hoc production already exists for this Singapore date: "
@@ -330,17 +240,12 @@ def promote_daily(pool_path, source_sha, summary_path, *, now_utc=None):
 
     selected = []
     rejected = []
-    expected_template = {
-        "mode": "scheduled",
-        "timezone": "Asia/Singapore",
-        "publish_at": None,
-    }
     for item in candidates:
         if len(selected) >= target:
             break
         request = copy.deepcopy(item["request"])
         content_id = request["content_id"]
-        if request.get("publication") != expected_template:
+        if request.get("publication") != DAILY.publication_template:
             rejected.append({
                 "rank": item["rank"],
                 "candidate_id": item["candidate_id"],
@@ -383,7 +288,7 @@ def promote_daily(pool_path, source_sha, summary_path, *, now_utc=None):
         "content_ids": selected_content_ids,
         "candidate_pool_id": pool_id,
         "candidate_pool_source_sha": source_sha,
-        "candidate_pool_size": DAILY_POOL_SIZE,
+        "candidate_pool_size": DAILY.pool_size,
         "rejected_candidate_ids": [item["candidate_id"] for item in rejected],
         "planning_execution": {
             "editorial_selection_owner": "chatgpt",
@@ -433,15 +338,12 @@ def promote_adhoc(pool_path, source_sha, summary_path):
     for item in candidates:
         request = copy.deepcopy(item["request"])
         content_id = request["content_id"]
-        if "-adhoc-" not in content_id.lower():
-            rejected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "errors": ["Ad-hoc content_id must contain -adhoc-"]})
-            continue
-        if request.get("publication") != {
-            "mode": "immediate",
-            "timezone": "Asia/Singapore",
-            "publish_at": None,
-        }:
-            rejected.append({"rank": item["rank"], "candidate_id": item["candidate_id"], "errors": ["Ad-hoc publication must be immediate public"]})
+        if request.get("publication") != ADHOC.publication_template:
+            rejected.append({
+                "rank": item["rank"],
+                "candidate_id": item["candidate_id"],
+                "errors": ["Ad-hoc publication must be immediate public"],
+            })
             continue
         request_path = BOT_ROOT / "content" / "requests" / f"{content_id}.json"
         errors = _candidate_errors(request, registry=registry, request_path=request_path)
@@ -497,7 +399,11 @@ def main():
             result = promote_adhoc(args.pool, args.source_sha, args.summary)
         else:
             verify_scheduled_adhoc_uniqueness(args.singapore_date, args.content_id)
-            result = {"singapore_date": args.singapore_date, "content_id": args.content_id, "unique": True}
+            result = {
+                "singapore_date": args.singapore_date,
+                "content_id": args.content_id,
+                "unique": True,
+            }
     except PromotionError as exc:
         raise SystemExit(f"ranked promotion failed closed: {exc}") from exc
     print(json.dumps(result, sort_keys=True))
