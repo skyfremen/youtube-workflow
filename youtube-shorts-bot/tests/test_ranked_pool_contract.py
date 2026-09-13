@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest import mock
 
 from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIMUMS
-from planning import ranked_promotion
+from planning import planner_core, ranked_promotion
 from test_request_schema import valid_request
 from validation.validate_content import (
     validate_background_registry_contract,
@@ -148,7 +148,7 @@ class RankedPoolContractTests(unittest.TestCase):
         pool = daily_pool(
             mode="same_day_catch_up",
             target=1,
-            slots=["2099-09-09T17:00:00Z"],  # 01:00 SGT on plan date
+            slots=["2099-09-09T17:00:00Z"],
         )
         with mock.patch.object(ranked_promotion, "_validate_execution"), mock.patch.object(
             ranked_promotion, "_validate_exact_pool_commit"
@@ -223,7 +223,7 @@ class RankedPoolContractTests(unittest.TestCase):
             request_dir.mkdir(parents=True)
             existing = request_dir / "wd-20260912T010000-adhoc-existing.json"
             existing.write_text("{}\n", encoding="utf-8")
-            with mock.patch.object(ranked_promotion, "BOT_ROOT", bot_root):
+            with mock.patch.object(planner_core, "BOT_ROOT", bot_root):
                 with self.assertRaisesRegex(
                     ranked_promotion.PromotionError, "already exists"
                 ):
