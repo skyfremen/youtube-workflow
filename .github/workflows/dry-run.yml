@@ -300,10 +300,12 @@ jobs:
           assert 'PEXELS_API_KEY' in maintenance
           assert 'content/background-sourcing/readiness/*.json' in maintenance
           for prompt in (adhoc_prompt, daily_prompt):
-              assert 'A Git checkout, Git executable, `.git` directory' in prompt
-              assert 'FAIL CLOSED if the exact pre-commit module cannot be executed' in prompt
-              assert 'Do not use `--verify-git-head`' in prompt
-          print('Dry-run isolation, gitless planner admission, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
+              assert 'Git-first exact detached snapshot' in prompt
+              assert 'connector/API fallback' in prompt
+              assert 'FAIL CLOSED if the exact precommit module cannot execute' in prompt
+              assert '--verify-git-head' in prompt
+              assert 'GitHub Actions planner execution is prohibited' in prompt
+          print('Dry-run isolation, Git-first planner bootstrap with connector fallback, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
           PY
 
       - name: Confirm zero private execution side effects
