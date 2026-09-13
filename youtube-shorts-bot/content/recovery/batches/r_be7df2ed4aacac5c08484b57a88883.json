@@ -1,0 +1,27 @@
+{
+  "batch_id": "r_be7df2ed4aacac5c08484b57a88883",
+  "items": [
+    {
+      "automatic_attempt": 1,
+      "content_id": "wd-20260914T041900-adhoc-m0419c01-ba83ae",
+      "reason": "retryable_runtime_failure",
+      "source_commit_sha": "19272ad61448a65e43077bc83110db65bba34087"
+    }
+  ],
+  "recovery_control": {
+    "created_at": "2026-09-13T20:39:01.300109Z",
+    "kind": "automatic",
+    "policy": {
+      "active_grace_minutes": 240,
+      "max_automatic_attempts": 3,
+      "retry_backoff_minutes": [
+        0,
+        120,
+        240
+      ],
+      "schedule_buffer_minutes": 10,
+      "startup_grace_minutes": 25
+    }
+  },
+  "schema_version": 1
+}
