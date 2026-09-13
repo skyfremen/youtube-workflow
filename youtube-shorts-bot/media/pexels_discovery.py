@@ -20,8 +20,8 @@ REQUEST_SCHEMA_VERSION = 1
 DEFAULT_MAX_CANDIDATES = 48
 MAX_MAX_CANDIDATES = 80
 SEARCH_PER_PAGE = 80
+SEARCH_MAX_PAGES = 3
 
-# These labels intentionally match media_readiness.REQUIRED_CATEGORY_MINIMUMS.
 CATEGORY_QUERIES = {
     "cooking": ("cooking process", "cooking food"),
     "baking": ("baking process", "bread baking", "pastry making"),
@@ -34,7 +34,6 @@ CATEGORY_QUERIES = {
     "city_motion": ("city traffic", "city walking", "urban motion"),
 }
 
-# 48 candidates with review headroom while protecting all readiness categories.
 CATEGORY_TARGETS_48 = {
     "cooking": 6,
     "baking": 5,
@@ -56,9 +55,7 @@ def _load_request(path):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     expected = {"schema_version", "plan_date", "request_id", "max_candidates"}
     if not isinstance(data, dict) or set(data) != expected:
-        raise ValueError(
-            "discovery request must contain exactly schema_version, plan_date, request_id, max_candidates"
-        )
+        raise ValueError("discovery request must contain exactly schema_version, plan_date, request_id, max_candidates")
     if data["schema_version"] != REQUEST_SCHEMA_VERSION:
         raise ValueError(f"discovery request schema_version must be {REQUEST_SCHEMA_VERSION}")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(data["plan_date"])):
@@ -80,25 +77,17 @@ def _eligible_candidate(video, category, query):
         return None
     if duration < MIN_SEQUENCE_CLIP_SECONDS:
         return None
-
     renditions = renditions_from_video(video)
     suitable = [item for item in renditions if rendition_is_production_suitable(item)]
     if not suitable:
         return None
-    suitable.sort(
-        key=lambda item: (
-            int(item["width"]) * int(item["height"]),
-            float(item.get("fps") or 999),
-            str(item.get("id") or ""),
-        )
-    )
+    suitable.sort(key=lambda item: (int(item["width"]) * int(item["height"]), float(item.get("fps") or 999), str(item.get("id") or "")))
     preview_rendition = suitable[0]
     provider_id = str(video.get("id") or "").strip()
     source_page = str(video.get("url") or "").strip()
     preview_image = str(video.get("image") or "").strip()
     if not provider_id.isdigit() or not source_page or not preview_image:
         return None
-
     return {
         "provider_asset_id": provider_id,
         "source_page": source_page,
@@ -122,51 +111,38 @@ def _category_targets(max_candidates):
     if max_candidates == DEFAULT_MAX_CANDIDATES:
         return dict(CATEGORY_TARGETS_48)
     base, remainder = divmod(max_candidates, len(categories))
-    return {
-        category: base + (1 if index < remainder else 0)
-        for index, category in enumerate(categories)
-    }
+    return {category: base + (1 if index < remainder else 0) for index, category in enumerate(categories)}
 
 
 def discover(max_candidates=DEFAULT_MAX_CANDIDATES, key=None):
-    accepted = []
-    seen = set()
-    diagnostics = []
+    accepted, seen, diagnostics = [], set(), []
     targets = _category_targets(max_candidates)
-
     for category, queries in CATEGORY_QUERIES.items():
         accepted_for_category = 0
         target = targets[category]
         if target <= 0:
             continue
         for query in queries:
-            payload = api_get(
-                f"search?query={quote_plus(query)}&per_page={SEARCH_PER_PAGE}", key=key
-            )
-            videos = payload.get("videos", []) if isinstance(payload, dict) else []
-            eligible_for_query = 0
-            for video in videos:
-                provider_id = str(video.get("id") or "").strip()
-                if not provider_id or provider_id in seen:
-                    continue
-                candidate = _eligible_candidate(video, category, query)
-                if not candidate:
-                    continue
-                seen.add(provider_id)
-                accepted.append(candidate)
-                accepted_for_category += 1
-                eligible_for_query += 1
-                if accepted_for_category >= target or len(accepted) >= max_candidates:
+            for page in range(1, SEARCH_MAX_PAGES + 1):
+                payload = api_get(f"search?query={quote_plus(query)}&per_page={SEARCH_PER_PAGE}&page={page}", key=key)
+                videos = payload.get("videos", []) if isinstance(payload, dict) else []
+                eligible_for_page = 0
+                for video in videos:
+                    provider_id = str(video.get("id") or "").strip()
+                    if not provider_id or provider_id in seen:
+                        continue
+                    candidate = _eligible_candidate(video, category, query)
+                    if not candidate:
+                        continue
+                    seen.add(provider_id)
+                    accepted.append(candidate)
+                    accepted_for_category += 1
+                    eligible_for_page += 1
+                    if accepted_for_category >= target or len(accepted) >= max_candidates:
+                        break
+                diagnostics.append({"category": category, "target": target, "query": query, "page": page, "returned": len(videos), "new_eligible": eligible_for_page})
+                if accepted_for_category >= target or len(accepted) >= max_candidates or not videos:
                     break
-            diagnostics.append(
-                {
-                    "category": category,
-                    "target": target,
-                    "query": query,
-                    "returned": len(videos),
-                    "new_eligible": eligible_for_query,
-                }
-            )
             if accepted_for_category >= target or len(accepted) >= max_candidates:
                 break
         if len(accepted) >= max_candidates:
