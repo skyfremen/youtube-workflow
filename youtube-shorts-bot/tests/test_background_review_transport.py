@@ -19,6 +19,15 @@ class BackgroundReviewTransportContractTests(unittest.TestCase):
         self.assertIn('--motion-sample-seconds 6', workflow)
         self.assertNotIn('verified_preview=true', workflow)
 
+    def test_review_transport_installs_ffmpeg_before_motion_materialization(self):
+        workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
+        install_index = workflow.index('- name: Install ffmpeg for exact-source motion evidence')
+        materialize_index = workflow.index(
+            '- name: Materialize exact preview evidence for ChatGPT review'
+        )
+        self.assertLess(install_index, materialize_index)
+        self.assertIn('sudo apt-get install -y --no-install-recommends ffmpeg', workflow)
+
     def test_discovery_is_persisted_before_review_transport(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
         commit_index = workflow.index('- name: Commit discovery result')
