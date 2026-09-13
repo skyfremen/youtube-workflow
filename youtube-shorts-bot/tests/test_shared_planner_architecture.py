@@ -137,7 +137,7 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertNotIn("--verify-git-head", daily)
         self.assertNotIn("--verify-git-head", adhoc)
 
-    def test_replenishment_visual_review_preserves_current_artifact_first_contract(self):
+    def test_replenishment_visual_review_is_transport_adaptive(self):
         shared = (
             REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
         ).read_text(encoding="utf-8")
@@ -151,22 +151,38 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        for text in (shared, strategy, daily, adhoc):
-            self.assertIn("review-evidence", text)
-            self.assertIn("EVIDENCE_ACCESS_BLOCKED", text)
-            self.assertIn("DEFERRED_REPLENISHMENT", text)
-        self.assertIn("private short-lived GitHub artifact", shared)
-        self.assertIn("authorized GitHub connection", shared)
-        self.assertIn("contact-sheet.jpg", shared)
-        self.assertIn("media.preview_review_materializer --input-dir", shared)
+        # GitHub may transport exact Pexels pixels, but ChatGPT/Work still owns the
+        # visual/editorial decision. Local direct transport remains a fallback.
+        self.assertIn("private Background Management artifact", shared)
+        self.assertIn("Connector-delivered artifact files", shared)
+        self.assertIn(
+            "ChatGPT/Work remains the sole visual/editorial approval owner", shared
+        )
+        self.assertIn("preview_review_materializer --input-dir", shared)
+        self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
+        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", shared)
+        self.assertIn("DEFERRED_REPLENISHMENT", shared)
+
         self.assertIn("private Background Management review-evidence artifact", strategy)
         self.assertIn("GitHub connector delivery", strategy)
-        self.assertIn("transport-only", strategy)
-        self.assertIn("artifact-first evidence contract", daily)
-        self.assertIn("artifact-first evidence contract", adhoc)
+        self.assertIn("contact-sheet.jpg", strategy)
+        self.assertIn("--input-dir", strategy)
+        self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
+        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", strategy)
+        self.assertIn("GitHub Actions must never set `verified_preview`", strategy)
+
         for profile_prompt in (daily, adhoc):
+            self.assertIn("matching immutable discovery result exists", profile_prompt)
+            self.assertIn("run-scoped", profile_prompt)
+            self.assertIn("background-review-evidence-", profile_prompt)
+            self.assertIn("contact-sheet.jpg", profile_prompt)
+            self.assertIn("--input-dir", profile_prompt)
             self.assertIn("same planner invocation", profile_prompt)
-            self.assertIn("ChatGPT/Work owns approval", profile_prompt)
+            self.assertIn("EVIDENCE_ACCESS_BLOCKED", profile_prompt)
+            self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", profile_prompt)
+            self.assertIn(
+                "ChatGPT/Work owns approval and semantic metadata", profile_prompt
+            )
 
 
 if __name__ == "__main__":
