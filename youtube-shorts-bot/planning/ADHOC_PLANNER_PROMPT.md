@@ -13,6 +13,10 @@ Repository code/configuration at current `main` is authoritative. Prefer the sha
 
 For any background-specific or replenishment-continuation conflict with older profile-rule wording, the live planner contract, `docs/private/PLANNER_PROMPT.md` and `docs/background-media-strategy.md` supersede legacy wording; non-background Ad-hoc rules remain mandatory.
 
+### Connector materialization completion gate
+
+If connector/API fallback is selected, follow the shared **Connector materialization completion gate** in `docs/private/PLANNER_PROMPT.md` before any planner checkpoint. Materialize the exact-SHA `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` and every manifest-required file, write the connector-returned per-file source/blob evidence, and run `planning.materialization_verify --profile adhoc`. Do not return merely because materialization work has not yet been performed. `MATERIALIZATION_BLOCKED` is valid only for a named exact-SHA fetch/reconstruction/write failure or verifier `FAIL`, with the exact path/operation and error reported.
+
 ## Mandatory checkpoints
 
 After exact SHA-pinned planner bootstrap, run locally in ChatGPT/Work:

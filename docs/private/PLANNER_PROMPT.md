@@ -20,6 +20,29 @@ Execute planner Python only from that exact clean snapshot. Reuse a clone/object
 
 Git authentication or Git availability is **not** a hard architectural dependency. If current `main` cannot be fetched and verified through Git, use the exact-SHA connector/API materialization described by `planning/PLANNER_MATERIALIZATION.json`. Pin one exact `rules_source_sha`, fetch every required path from that SHA, verify reconstructed/chunked bytes with Git blob-SHA semantics, and never mix commits. Connector mode runs in an ordinary temporary directory and does not require `.git` or a Git executable.
 
+### Connector materialization completion gate
+
+Selecting connector/API fallback is an execution path, not a return condition. When connector/API access and local file execution are available, the current planner invocation must perform the materialization work instead of reporting that it has not yet been done.
+
+For the selected profile:
+
+1. Materialize `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` itself from the pinned `rules_source_sha`.
+2. Materialize every path required by that exact manifest from the same exact SHA.
+3. For every materialized path, record the connector-returned `rules_source_sha` and Git blob SHA in `materialization-evidence.json`; never invent either value.
+4. Run:
+
+```bash
+PYTHONPATH=<temporary-planner-path>/youtube-shorts-bot python -m planning.materialization_verify \
+  --profile <daily|adhoc> \
+  --root <temporary-planner-path> \
+  --rules-source-sha <rules_source_sha> \
+  --evidence <materialization-evidence.json>
+```
+
+5. Connector materialization is complete only when the verifier returns `status=PASS`. Continue immediately to `planner_contract` and `media_readiness`.
+
+`MATERIALIZATION_BLOCKED` is legal only when an exact named connector fetch/reconstruction/write operation actually fails, or the verifier returns `FAIL`. Report the exact path/operation and verifier error code. A generic statement such as “could not complete materialization” or “materialization is unavailable” is not a valid terminal result while connector/API reads and local file execution remain available. Do not return merely because connector files are not yet materialized; materialization is work the current invocation must perform.
+
 If neither an exact Git snapshot nor exact-SHA connector materialization can be obtained, fail closed. Never use stale local source and never manufacture synthetic Git metadata. Never manufacture a synthetic HEAD or fake repository identity.
 
 GitHub Actions planner execution remains prohibited. GitHub Actions is deterministic downstream/credentialed infrastructure only.

@@ -16,7 +16,7 @@ class PlannerMaterializationTests(unittest.TestCase):
         cls.data = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     def test_git_is_preferred_but_connector_fallback_keeps_git_optional(self):
-        self.assertEqual(self.data["schema_version"], 6)
+        self.assertEqual(self.data["schema_version"], 7)
         self.assertEqual(self.data["materialization_mode"], "shared_plus_selected_profile")
         bootstrap = self.data["planner_bootstrap"]
         self.assertEqual(bootstrap["preferred"], "git")
@@ -47,18 +47,34 @@ class PlannerMaterializationTests(unittest.TestCase):
         for relative in required:
             self.assertTrue((REPO_ROOT / relative).is_file(), relative)
 
+    def test_connector_completion_gate_is_machine_verified(self):
+        connector = self.data["connector_materialization"]
+        gate = connector["completion_gate"]
+        self.assertTrue(gate["required"])
+        self.assertEqual(gate["blocked_status"], "MATERIALIZATION_BLOCKED")
+        self.assertIn("planning.materialization_verify", gate["entrypoint"])
+        self.assertIn("Do not return merely because", gate["early_return_rule"])
+        self.assertIn("exact path/operation", gate["blocked_status_rule"])
+        self.assertEqual(connector["evidence_file"]["schema_version"], 1)
+        self.assertEqual(
+            connector["manifest_path"],
+            "youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json",
+        )
+
     def test_local_validation_entrypoints_remain_shared(self):
         entrypoints = self.data["entrypoints"]
-        for name in ("contract", "media_readiness", "precommit"):
+        for name in ("materialization_verify", "contract", "media_readiness", "precommit"):
             self.assertNotIn("github actions", entrypoints[name].lower())
+        self.assertIn("planning.materialization_verify", entrypoints["materialization_verify"])
         self.assertIn("planning.planner_precommit", entrypoints["precommit"])
         self.assertIn("--verify-git-head", entrypoints["git_precommit"])
         self.assertIn("planning.planner_drift", entrypoints["git_drift"])
 
     def test_profiles_share_the_same_connector_fallback_core(self):
         shared = set(self.data["shared_required_python_files"])
-        self.assertEqual(len(shared), 18)
+        self.assertEqual(len(shared), 19)
         for path in (
+            "youtube-shorts-bot/planning/materialization_verify.py",
             "youtube-shorts-bot/planning/planner_precommit.py",
             "youtube-shorts-bot/planning/planner_core.py",
             "youtube-shorts-bot/planning/planner_profiles.py",
@@ -77,6 +93,14 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertIn("GitHub Actions planner execution", forbidden)
         self.assertIn("synthetic HEAD", forbidden)
         self.assertIn("fake repository identity", forbidden)
+        self.assertTrue(
+            any("returning early" in item.lower() for item in forbidden),
+            forbidden,
+        )
+        self.assertTrue(
+            any("MATERIALIZATION_BLOCKED" in item for item in forbidden),
+            forbidden,
+        )
         self.assertNotIn("git clone", forbidden)
         self.assertNotIn("git rev-parse", forbidden)
         self.assertNotIn(".git", forbidden)
@@ -87,6 +111,9 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertIn("git fetch origin main --prune", shared)
         self.assertIn("git worktree add --detach", shared)
         self.assertIn("Connector/API fallback", shared)
+        self.assertIn("Connector materialization completion gate", shared)
+        self.assertIn("planning.materialization_verify", shared)
+        self.assertIn("MATERIALIZATION_BLOCKED", shared)
         self.assertIn("planning.planner_drift", shared)
         self.assertIn("GitHub Actions planner execution remains prohibited", shared)
         for name in ("ADHOC_PLANNER_PROMPT.md", "DAILY_PLANNER_PROMPT.md"):
@@ -94,6 +121,9 @@ class PlannerMaterializationTests(unittest.TestCase):
             self.assertIn("docs/private/PLANNER_PROMPT.md", prompt)
             self.assertIn("Git-first exact detached snapshot", prompt)
             self.assertIn("connector/API fallback", prompt)
+            self.assertIn("Connector materialization completion gate", prompt)
+            self.assertIn("planning.materialization_verify", prompt)
+            self.assertIn("MATERIALIZATION_BLOCKED", prompt)
             self.assertIn("--verify-git-head", prompt)
 
 
