@@ -27,13 +27,19 @@ Readiness PASS requires the configured inventory/category minima and proof that 
 
 Acceptable evidence includes the strongest exact-source visual surface available in the current execution environment, such as:
 
-- the provider page's visual preview;
+- the exact provider page's visual preview;
+- the exact `preview_image_url` from the immutable discovery result;
 - representative preview frames from the exact source;
-- a short preview clip from the exact source.
+- a short preview clip from the exact source;
+- web/browser/image-search evidence that is unambiguously tied to the same Pexels provider asset ID.
+
+Evidence retrieval is **tool-adaptive**. Native ChatGPT/Work web, browser and image-capable surfaces are canonical visual-review paths when available. The credential-free `media.preview_review_materializer` is an optional fallback for execution runtimes that actually provide outbound HTTPS; local Python networking is not a correctness dependency and must never be assumed. When search rather than a direct URL is used, the planner must prove the evidence belongs to the exact `provider_asset_id` or exact source page and must reject lookalike or substituted footage.
 
 Metadata, title, tags or duration alone are **not** enough to set `verified_preview=true`.
 
-The planner uses the preview only for semantic/visual screening: reject obvious watermarks, embedded text, unsafe material, static or weak footage, misleading metadata, or footage that is plainly unsuitable behind captions. If no actual visual evidence for a candidate is accessible, reject that candidate and continue discovery/reserve sourcing. **Do not fail the whole replenishment attempt merely because full-length playback is unavailable.**
+The planner uses the preview only for semantic/visual screening: reject obvious watermarks, embedded text, unsafe material, static or weak footage, misleading metadata, or footage that is plainly unsuitable behind captions. If one visual transport cannot access a candidate, try the next available exact-source transport. If no actual visual evidence for that candidate remains accessible, reject that candidate and continue discovery/reserve sourcing. **Do not fail the whole replenishment attempt merely because local Python has no network, one provider URL is inaccessible, or full-length playback is unavailable.** If every trustworthy exact-source visual channel is unavailable for the discovery set, stop before readiness-manifest creation and report `EVIDENCE_ACCESS_BLOCKED`; this is distinct from `DEFERRED_REPLENISHMENT`, which is reserved for a genuinely pending Background Management workflow after the bounded continuation wait.
+
+Once the matching immutable discovery result exists, provider discovery is complete for that attempt. The same planner invocation should proceed directly to visual review and readiness-manifest creation whenever an exact-source visual channel is available; it must not wait for a second planner invocation merely to perform review.
 
 Background Management remains the hard technical admission boundary. It uses the official Pexels API to verify provider identity, trusted duration and production rendition metadata, then applies registry validation before the asset becomes selectable. A planner preview review never substitutes for those downstream checks.
 

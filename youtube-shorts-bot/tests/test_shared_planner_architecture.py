@@ -100,6 +100,29 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertIn("--profile daily", daily)
         self.assertIn("--profile adhoc", adhoc)
 
+    def test_replenishment_visual_review_is_transport_adaptive(self):
+        shared = (REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        strategy = (BOT_ROOT / "docs" / "background-media-strategy.md").read_text(encoding="utf-8")
+        daily = (BOT_ROOT / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        adhoc = (BOT_ROOT / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+
+        self.assertIn("tool-adaptive", shared)
+        self.assertIn("EVIDENCE_ACCESS_BLOCKED", shared)
+        self.assertIn("`DEFERRED_REPLENISHMENT` is not valid", shared)
+        self.assertIn("optional fallback", shared)
+        self.assertIn("local Python outbound HTTP", shared)
+        self.assertNotIn(
+            "until the local preview materializer has actually been attempted",
+            shared,
+        )
+        self.assertIn("tool-adaptive", strategy)
+        self.assertIn("outbound HTTPS", strategy)
+        self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
+        for profile_prompt in (daily, adhoc):
+            self.assertIn("matching immutable discovery result exists", profile_prompt)
+            self.assertIn("local Python outbound HTTP", profile_prompt)
+            self.assertIn("same planner invocation", profile_prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

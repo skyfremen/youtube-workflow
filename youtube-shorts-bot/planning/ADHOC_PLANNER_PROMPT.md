@@ -24,6 +24,8 @@ PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-
 
 An empty or insufficient active background registry is a normal `REPLENISH` state, not a terminal failure. If readiness is `REPLENISH`, execute the **shared automatic resumable replenishment procedure in `docs/private/PLANNER_PROMPT.md` exactly** before candidate finalization. In particular: resume compatible unfinished attempts; do not create duplicates; do not return merely because Background Management is queued/in-progress; use the shared bounded continuation polling window; continue through visual review, readiness-manifest ingestion and the second Background Management run when they complete in-window; and report `DEFERRED_REPLENISHMENT` rather than failure only when the bounded window genuinely expires. A later manual/on-demand retry must resume that immutable attempt from its exact continuation point.
 
+Once a matching immutable discovery result exists, continue through visual review and readiness-manifest creation in the **same planner invocation** whenever an exact-source visual channel is available. At that point `DEFERRED_REPLENISHMENT` is not a valid visual-review status. Follow the shared tool-adaptive evidence ladder: web/browser/image-capable exact-source review is canonical when available, while local Python outbound HTTP and `media.preview_review_materializer` are optional fallbacks rather than prerequisites.
+
 Do not bypass discovery results by guessing provider metadata. Do not move creative/editorial review into GitHub Actions. No separate manual seed/populate step is required.
 
 ## Sequence background contract
