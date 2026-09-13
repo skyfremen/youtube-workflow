@@ -53,3 +53,18 @@ def test_request_validation_rejects_oversized_pool(tmp_path):
         assert "max_candidates must be 1-80" in str(exc)
     else:
         raise AssertionError("expected invalid max_candidates to fail")
+
+
+def test_review_preview_prefers_small_exact_rendition():
+    video = _video(201, 90, width=3840, height=2160, file_width=3840, file_height=2160)
+    video["video_files"].insert(0, {
+        "id": 2011, "width": 640, "height": 360, "fps": 30,
+        "file_type": "video/mp4", "quality": "sd",
+        "link": "https://videos.pexels.com/video-files/201/review-640.mp4",
+    })
+    candidate = discovery._eligible_candidate(video, "city_motion", "city traffic")
+    assert candidate is not None
+    assert candidate["production_suitable_rendition_count"] == 1
+    assert candidate["preview_video_width"] == 640
+    assert candidate["preview_video_height"] == 360
+    assert candidate["preview_video_url"].endswith("review-640.mp4")

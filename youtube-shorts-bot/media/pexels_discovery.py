@@ -82,7 +82,22 @@ def _eligible_candidate(video, category, query):
     if not suitable:
         return None
     suitable.sort(key=lambda item: (int(item["width"]) * int(item["height"]), float(item.get("fps") or 999), str(item.get("id") or "")))
-    preview_rendition = suitable[0]
+
+    # Review transport only needs exact asset identity and enough pixels for a contact
+    # sheet. Prefer a small provider rendition while independently requiring at least
+    # one production-suitable rendition above.
+    review_renditions = [
+        item for item in renditions
+        if int(item.get("width") or 0) >= 360 and int(item.get("height") or 0) >= 360
+    ] or list(renditions)
+    review_renditions.sort(
+        key=lambda item: (
+            int(item.get("width") or 0) * int(item.get("height") or 0),
+            float(item.get("fps") or 999),
+            str(item.get("id") or ""),
+        )
+    )
+    preview_rendition = review_renditions[0]
     provider_id = str(video.get("id") or "").strip()
     source_page = str(video.get("url") or "").strip()
     preview_image = str(video.get("image") or "").strip()

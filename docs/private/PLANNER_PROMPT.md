@@ -67,57 +67,26 @@ Consume actual output. `planner_contract` exposes both profiles and a shared-con
 `REPLENISH` is a recoverable planner state, not a terminal planner failure. Daily and Ad-hoc use this exact shared procedure before freezing final backgrounds or committing a ranked pool.
 
 1. Consume the exact readiness total/category/duration deficits.
-2. Before creating anything, inspect immutable discovery requests/results/readiness manifests and Background Management runs for a compatible unfinished replenishment attempt. **Resume it instead of creating duplicate requests.** A planner retry or later scheduled invocation must be able to continue an earlier attempt idempotently.
-3. If no compatible unfinished attempt exists, create exactly one immutable discovery request under `youtube-shorts-bot/content/background-sourcing/discovery-requests/` using the live schema and commit it with the canonical `[media discovery]` convention.
-4. Background Management may use repository code and GitHub-held provider credentials for deterministic provider discovery and readiness persistence. It must not perform ChatGPT-owned visual/editorial approval or video processing. Its discovery responsibility ends when it persists the immutable discovery result containing exact-source preview URLs.
-5. After triggering or finding the matching Background Management discovery run, **do not return merely because the run is queued or in progress**. Poll/refresh its status and current `main` for a bounded continuation window of up to 10 minutes, using short checks rather than one long blocking sleep. As soon as the matching immutable discovery result appears, continue immediately. If the run reaches a terminal failure, report infrastructure/authentication failure with its evidence. If the 10-minute continuation window expires while that required discovery run is still legitimately pending, return `DEFERRED_REPLENISHMENT` rather than `FAILED`; preserve the immutable attempt identity so the next invocation resumes it.
-6. Consume the matching discovery result only; never fabricate provider IDs, durations, renditions or preview URLs. Once the matching immutable discovery result exists, provider discovery is complete and the planner must continue into visual review in the **same planner invocation** whenever a trustworthy exact-source visual path exists.
+2. Inspect immutable discovery requests/results/readiness manifests, matching `content/background-sourcing/review-evidence/<request_id>-run-*.json` indexes, and Background Management runs. **Resume a compatible unfinished attempt instead of creating duplicates.**
+3. If no compatible attempt exists, create exactly one immutable discovery request with the live schema and canonical `[media discovery]` convention.
+4. Private Background Management owns deterministic provider discovery, exact-source **transport-only** review evidence generation and readiness persistence. It may read/download exact Pexels preview media, run FFmpeg to derive representative JPEG contact sheets, upload a private short-lived GitHub artifact, and commit an immutable run-scoped review-evidence index. It must never perform ChatGPT-owned approval, set `verified_preview`, assign semantic metadata/scores, or create the reviewed readiness manifest.
+5. After triggering/finding the matching Background Management discovery/evidence run, poll/refresh for up to 10 minutes rather than returning merely because it is queued/in progress. Normal continuation requires the matching immutable discovery result and at least one matching run-scoped review-evidence index with an available artifact. Terminal workflow failure is infrastructure/authentication failure. A still-running required run at the bounded deadline is `DEFERRED_REPLENISHMENT`.
+6. Review actual exact-source pixels. Prefer the newest usable indexed private Background Management artifact:
+   - Read exact `workflow_run_id`, `artifact_id`, `artifact_name`, `artifact_digest`, and `evidence_manifest_sha256`; never guess a run/artifact.
+   - Through the authorized GitHub connection, list the indexed run artifacts, verify identity/digest, download the exact ZIP and extract it locally. Connector-delivered artifact files are the canonical binary bridge and do not require local outbound internet.
+   - Verify the extracted evidence-manifest hash and provider/source identity against the immutable discovery result.
+   - Inspect actual `*/contact-sheet.jpg` pixels (and exact stills where useful). Artifact creation is transport evidence only; ChatGPT/Work remains the sole visual/editorial approval owner.
+   - Reject candidate-specific missing/unsuitable evidence and continue remaining candidates/reserves.
 
-   The canonical review path is ChatGPT/Work-local exact-source review:
-   - Use the exact immutable `preview_video_url`, `preview_image_url`, and/or Pexels `source_page` from the discovery result. Never substitute a visually similar asset.
-   - Prefer native web/browser/image-capable exact-source inspection when it can prove the same provider asset identity.
-   - When the execution environment can place the exact discovered media into local working storage, use that exact downloaded source and inspect representative frames and/or a short motion sample locally with available media tooling. A generic authenticated Git checkout is not required for this visual step.
-   - When local Python has outbound HTTPS and FFmpeg/media tooling, the canonical repository helper may be used directly:
+   If an indexed artifact expired, regenerate a new run-scoped evidence artifact/index for the same immutable discovery result when possible. Native exact Pexels inspection, exact preview-image download, and exact preview-video staging remain fallbacks; `media.preview_review_materializer --input-dir` remains available for trustworthy staged bytes.
 
-```bash
-PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
-  --discovery-result <discovery-result.json> \
-  --output-dir <temporary-review-evidence-dir> \
-  --include-motion-evidence
-```
-
-   - If local Python networking is unavailable but another exact download/file-transfer primitive is available, use that transport to obtain the exact immutable `preview_image_url` and/or `preview_video_url`. Stage the bytes under the deterministic provider-ID layout:
-
-```text
-<temporary-input-dir>/<provider_asset_id>/preview.jpg
-<temporary-input-dir>/<provider_asset_id>/preview.mp4
-```
-
-   Then feed the staged exact bytes back through the same canonical helper:
-
-```bash
-PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
-  --discovery-result <discovery-result.json> \
-  --input-dir <temporary-input-dir> \
-  --output-dir <temporary-review-evidence-dir> \
-  --include-motion-evidence
-```
-
-   The helper prefers staged local bytes when present, preserves the immutable preview URL as source identity in the evidence manifest, and derives representative contact sheets/motion samples from local video with FFmpeg. `preview.jpeg`, `preview.png`, `preview.webp`, `preview.mov`, and `preview.webm` are also accepted. Staged bytes must come from that exact candidate's immutable preview URL; a similar-looking substitute is prohibited. Local Python outbound HTTP is therefore **not** a correctness dependency.
-   - A public/runtime review-evidence workflow may exist as an optional non-blocking fallback transport, but it is never required for canonical planner continuation. Its absence, startup failure, expired artifact, or terminal failure must not block the planner when local or native exact-source evidence is available.
-   - Failure of one evidence transport must cause the planner to try the next available exact-source transport rather than terminate the replenishment attempt.
-
-   Inspect actual pixels for every proposed source. If a still image is genuinely insufficient to judge a candidate and an exact-source video/representative-frame surface is available, inspect representative frames or short playback; full-length/end-to-end playback is unnecessary. A successful fetch/extraction is **not** approval: ChatGPT/Work must still make the semantic/visual decision. Metadata-only approval remains prohibited. Reject candidates whose exact-source evidence remains inaccessible or is visually unsuitable and continue through the remaining discovery set. If too few candidates survive, continue with the next immutable discovery attempt under the same readiness deficits rather than weakening review.
-
-   If any generic download/file-transfer primitive can retrieve exact preview bytes, the staged `--input-dir` path above is mandatory before `EVIDENCE_ACCESS_BLOCKED` is legal. Only when **all available exact-source visual channels** are genuinely unusable for the discovery set may the planner stop before a readiness manifest. Report this as `EVIDENCE_ACCESS_BLOCKED`, include the attempted evidence channels and affected discovery-result path, and do not mislabel it `DEFERRED_REPLENISHMENT`.
-7. Create exactly one immutable readiness manifest from visually approved candidates only. Before writing it, re-check whether that attempt already has a manifest or accepted registry update; reuse existing state on retry.
+   `EVIDENCE_ACCESS_BLOCKED` is legal only after usable indexed private artifacts and all other trustworthy exact-source visual transports available to the run are unusable for the remaining candidates needed for readiness. A successful required Background Management evidence run with a missing/mismatched index/artifact is `REVIEW_EVIDENCE_TRANSPORT_FAILED`, not a creative/content failure.
+7. Create exactly one immutable readiness manifest from visually approved candidates only. Never overwrite prior immutable state.
 8. Commit the readiness manifest so Background Management performs canonical provider re-enrichment/persistence and reserve fallback.
-9. Again, **do not stop merely because this second Background Management run is queued/in progress**. Poll/refresh for up to 10 minutes. Continue as soon as the registry commit appears. A terminal workflow failure is an infrastructure/authentication failure; a still-running job at the bounded deadline is `DEFERRED_REPLENISHMENT`, not planner failure.
-10. Refresh current `main`, repin planner-relevant state as required by drift policy, rerun `planner_contract` and `media_readiness`. If readiness is still `REPLENISH`, resume/create the next immutable replenishment attempt and repeat. Candidate finalization may begin only after `PASS`.
+9. Poll/refresh that required ingestion run for up to 10 minutes. Continue when the registry commit appears; terminal failure is infrastructure/authentication failure and a still-running job at the deadline is `DEFERRED_REPLENISHMENT`.
+10. Refresh current `main`, apply drift policy, rerun `planner_contract` and `media_readiness`, and repeat replenishment if required. Candidate finalization begins only after `PASS`.
 
-`DEFERRED_REPLENISHMENT` is valid only when a **required** matching Background Management discovery or readiness-ingestion workflow is still legitimately queued/in-progress after its bounded wait. It is **not** valid merely because visual review remains, because local Python lacks outbound HTTP, because a browser/connector cannot render one provider URL, because an optional public evidence workflow failed, or because one candidate's preview/extraction failed. A `DEFERRED_REPLENISHMENT` report must include profile, plan date, rules/source SHA used before drift refresh, discovery request ID/path, matching required workflow run ID/status, matching discovery-result/readiness-manifest paths if present, current readiness deficits, and the exact continuation point. It must explicitly say that no ranked pool/request was created. This state is resumable and must never be described as a creative/content failure.
-
-Do not bypass provider discovery by guessing metadata from public pages. Do not move creative/editorial review into GitHub Actions. Do not create a second discovery request simply because an existing required workflow is still running. Do not make Git, local Python outbound HTTP, or any public review-evidence workflow a prerequisite for visual review: exhaust the available exact-source native/local surfaces according to step 6, including the staged `--input-dir` path whenever another exact file-transfer mechanism works, reject candidate-specific evidence failures individually, and use `EVIDENCE_ACCESS_BLOCKED` only when no trustworthy exact-source visual channel remains usable.
+Do not bypass provider discovery, fabricate metadata, or move creative/editorial approval into GitHub Actions. Private GitHub Actions may perform deterministic provider/media **transport** work; ChatGPT/Work performs the visual decision.
 
 ## Shared precommit engine
 

@@ -5,10 +5,7 @@ immutable discovery result and materializes exact-source visual evidence into an
 ordinary local directory. It never sets verified_preview, assigns semantic
 metadata, edits the registry, or performs editorial approval.
 
-The default evidence is the exact provider preview image. When
-``--include-motion-evidence`` is supplied, ffmpeg also derives a compact
-representative contact sheet and a short low-resolution motion sample from the
-exact ``preview_video_url`` recorded in the immutable discovery result.
+The default evidence is the exact provider preview image. When ``--contact-sheets-only`` is supplied, FFmpeg derives compact JPEG contact sheets from the exact ``preview_video_url`` without creating motion-sample MP4 files. When ``--include-motion-evidence`` is supplied, the short motion sample is also produced.
 
 Python HTTP is not a correctness dependency. If another trustworthy transport has
 already downloaded the exact immutable preview bytes, ``--input-dir`` may point at
@@ -169,6 +166,7 @@ def _materialize_motion_evidence(
     frame_count,
     sample_seconds,
     video_input=None,
+    include_motion_sample=True,
 ):
     video_url = _https_url(candidate.get("preview_video_url"), "preview_video_url")
     duration = _positive_float(candidate.get("duration_seconds"), "duration_seconds")
@@ -200,18 +198,8 @@ def _materialize_motion_evidence(
         f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:padding=4:margin=4"
     )
     _run_ffmpeg([
-        "-i", ffmpeg_input, "-vf", contact_filter, "-frames:v", "1", str(contact_sheet)
-    ])
-
-    sample_seconds = min(_positive_float(sample_seconds, "sample_seconds"), duration)
-    sample_start = max(0.0, (duration - sample_seconds) / 2.0)
-    motion_sample = destination / "motion-sample.mp4"
-    _run_ffmpeg([
-        "-ss", f"{sample_start:.3f}", "-i", ffmpeg_input,
-        "-t", f"{sample_seconds:.3f}", "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
-        "-r", "12", "-an", "-c:v", "libx264", "-preset", "veryfast",
-        "-crf", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
-        str(motion_sample),
+        "-i", ffmpeg_input, "-vf", contact_filter, "-frames:v", "1", "-q:v", "5",
+        str(contact_sheet)
     ])
 
     result = {
@@ -221,16 +209,27 @@ def _materialize_motion_evidence(
         "source_fps": fps,
         "representative_timestamps_seconds": timestamps,
         "contact_sheet": _file_evidence(contact_sheet),
-        "motion_sample": {
-            **_file_evidence(motion_sample),
-            "start_seconds": round(sample_start, 3),
-            "duration_seconds": round(sample_seconds, 3),
-        },
     }
     if local_video is not None:
         result["source_input"] = source_file
-    return result
 
+    if include_motion_sample:
+        sample_seconds = min(_positive_float(sample_seconds, "sample_seconds"), duration)
+        sample_start = max(0.0, (duration - sample_seconds) / 2.0)
+        motion_sample = destination / "motion-sample.mp4"
+        _run_ffmpeg([
+            "-ss", f"{sample_start:.3f}", "-i", ffmpeg_input,
+            "-t", f"{sample_seconds:.3f}", "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
+            "-r", "12", "-an", "-c:v", "libx264", "-preset", "veryfast",
+            "-crf", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+            str(motion_sample),
+        ])
+        result["motion_sample"] = {
+            **_file_evidence(motion_sample),
+            "start_seconds": round(sample_start, 3),
+            "duration_seconds": round(sample_seconds, 3),
+        }
+    return result
 
 def materialize(
     discovery_result,
@@ -239,6 +238,7 @@ def materialize(
     frame_count=DEFAULT_FRAME_COUNT,
     sample_seconds=DEFAULT_SAMPLE_SECONDS,
     input_dir=None,
+    contact_sheets_only=False,
 ):
     data = json.loads(Path(discovery_result).read_text(encoding="utf-8"))
     candidates = data.get("candidates")
@@ -307,6 +307,7 @@ def materialize(
                     frame_count=frame_count,
                     sample_seconds=sample_seconds,
                     video_input=local_video,
+                    include_motion_sample=not contact_sheets_only,
                 )
                 motion_ok = True
                 motion_evidence_count += 1
@@ -338,6 +339,8 @@ def materialize(
         "failure_count": len(failures),
         "image_failure_count": len(image_failures),
         "motion_evidence_requested": bool(include_motion_evidence),
+        "contact_sheets_only": bool(contact_sheets_only),
+        "motion_sample_requested": bool(include_motion_evidence and not contact_sheets_only),
         "motion_evidence_count": motion_evidence_count,
         "motion_failure_count": len(motion_failures),
         "local_file_evidence_count": local_file_evidence_count,
@@ -370,6 +373,11 @@ def main():
         ),
     )
     parser.add_argument(
+        "--contact-sheets-only",
+        action="store_true",
+        help="Derive representative JPEG contact sheets without motion-sample MP4 files.",
+    )
+    parser.add_argument(
         "--include-motion-evidence",
         action="store_true",
         help=(
@@ -390,18 +398,20 @@ def main():
         help="Duration of the compact midpoint motion sample.",
     )
     args = parser.parse_args()
+    motion_requested = bool(args.include_motion_evidence or args.contact_sheets_only)
     manifest = materialize(
         args.discovery_result,
         args.output_dir,
-        include_motion_evidence=args.include_motion_evidence,
+        include_motion_evidence=motion_requested,
         frame_count=args.representative_frames,
         sample_seconds=args.motion_sample_seconds,
         input_dir=args.input_dir,
+        contact_sheets_only=args.contact_sheets_only,
     )
     print(json.dumps(manifest, indent=2))
     if manifest["evidence_count"] == 0:
         raise SystemExit(4)
-    if args.include_motion_evidence and manifest["motion_evidence_count"] == 0:
+    if motion_requested and manifest["motion_evidence_count"] == 0:
         # Motion being unavailable everywhere is surfaced to the caller, but image
         # evidence remains materialized for ChatGPT/Work inspection and fallback.
         raise SystemExit(5)
