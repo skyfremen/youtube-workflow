@@ -75,6 +75,21 @@ class PexelsResilientIngestTests(unittest.TestCase):
         finally:
             path.unlink(missing_ok=True)
 
+    def test_unexpected_programming_error_is_not_swallowed(self):
+        path = manifest_file()
+        try:
+            with patch(
+                "media.pexels_resilient_ingest.pexels_registry.validate_sourcing_manifest",
+                return_value=[],
+            ), patch(
+                "media.pexels_resilient_ingest.pexels_registry.ingest_manifest",
+                side_effect=KeyError("unexpected bug"),
+            ):
+                with self.assertRaises(KeyError):
+                    pexels_resilient_ingest.ingest_resilient(path, "/tmp/test-registry.json")
+        finally:
+            path.unlink(missing_ok=True)
+
 
 if __name__ == "__main__":
     unittest.main()
