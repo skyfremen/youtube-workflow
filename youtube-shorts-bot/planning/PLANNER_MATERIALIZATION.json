@@ -68,6 +68,8 @@
   "shared_required_python_files": [
     "youtube-shorts-bot/common/workflow_common.py",
     "youtube-shorts-bot/media/background_policy.py",
+    "youtube-shorts-bot/media/continuous_background.py",
+    "youtube-shorts-bot/media/validate_media_library_v3.py",
     "youtube-shorts-bot/media/validate_media_library.py",
     "youtube-shorts-bot/media/background_selector_base.py",
     "youtube-shorts-bot/media/media_readiness.py",
@@ -78,6 +80,7 @@
     "youtube-shorts-bot/planning/planner_contract.py",
     "youtube-shorts-bot/validation/semantic.py",
     "youtube-shorts-bot/validation/schema_v4.py",
+    "youtube-shorts-bot/validation/validate_content_v5.py",
     "youtube-shorts-bot/validation/validate_content.py",
     "youtube-shorts-bot/validation/publication.py"
   ],
@@ -163,7 +166,7 @@
   },
   "baseline": {
     "previous_schema_version": 5,
-    "connector_fallback_shared_python_files": 14,
+    "connector_fallback_shared_python_files": 17,
     "connector_fallback_shared_data_files": 1,
     "optimization": "Git-first exact repository snapshots avoid repeated per-file connector reconstruction when Git access is available; connector materialization remains the correctness-preserving fallback."
   },
