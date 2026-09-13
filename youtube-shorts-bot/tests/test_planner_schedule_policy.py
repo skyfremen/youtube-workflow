@@ -2,13 +2,19 @@ import unittest
 from pathlib import Path
 
 
-PROMPT = Path("youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md")
+PLANNER = Path("youtube-shorts-bot/planning")
+PROMPT = PLANNER / "DAILY_PLANNER_PROMPT.md"
+RULES = PLANNER / "DAILY_PLANNER_RULES.md"
 
 
 class PlannerSchedulePolicyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.text = PROMPT.read_text(encoding="utf-8")
+        cls.text = (
+            PROMPT.read_text(encoding="utf-8")
+            + "\n"
+            + RULES.read_text(encoding="utf-8")
+        )
 
     def test_normal_8pm_mode_still_plans_next_day(self):
         self.assertIn("at/after 20:00 Asia/Singapore", self.text)
