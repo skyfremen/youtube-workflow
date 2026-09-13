@@ -5,7 +5,12 @@ immutable discovery result and materializes exact-source visual evidence into an
 ordinary local directory. It never sets verified_preview, assigns semantic
 metadata, edits the registry, or performs editorial approval.
 
-The default evidence is the exact provider preview image. When ``--contact-sheets-only`` is supplied, FFmpeg derives compact JPEG contact sheets from the exact ``preview_video_url`` without creating motion-sample MP4 files. When ``--include-motion-evidence`` is supplied, the short motion sample is also produced.
+The default evidence is the exact provider preview image. When
+``--contact-sheets-only`` is supplied, FFmpeg derives compact JPEG contact sheets
+from the exact ``preview_video_url`` without creating motion-sample MP4 files.
+Representative frames are extracted with timestamp seeking so remote high-resolution
+previews do not need to be decoded sequentially from the beginning. When
+``--include-motion-evidence`` is supplied, the short motion sample is also produced.
 
 Python HTTP is not a correctness dependency. If another trustworthy transport has
 already downloaded the exact immutable preview bytes, ``--input-dir`` may point at
@@ -160,6 +165,49 @@ def _representative_timestamps(duration_seconds, frame_count):
     ]
 
 
+def _materialize_contact_sheet(ffmpeg_input, destination, timestamps):
+    """Seek directly to representative timestamps and tile the resulting JPEGs.
+
+    Input-side ``-ss`` allows HTTP-capable FFmpeg builds to use provider range
+    requests/keyframe seeking instead of decoding a long remote preview from frame
+    zero to the last sample. The extracted small JPEGs are then tiled locally.
+    """
+    frame_dir = destination / ".contact-frames"
+    frame_dir.mkdir(parents=True, exist_ok=True)
+    contact_sheet = destination / "contact-sheet.jpg"
+    try:
+        for index, timestamp in enumerate(timestamps):
+            frame_path = frame_dir / f"frame-{index:03d}.jpg"
+            _run_ffmpeg([
+                "-ss", f"{timestamp:.3f}",
+                "-i", ffmpeg_input,
+                "-frames:v", "1",
+                "-vf", f"scale={DEFAULT_SAMPLE_WIDTH}:-2",
+                "-q:v", "5",
+                str(frame_path),
+            ])
+            _file_evidence(frame_path)
+
+        frame_count = len(timestamps)
+        grid_columns = 3 if frame_count > 4 else 2
+        grid_rows = (frame_count + grid_columns - 1) // grid_columns
+        _run_ffmpeg([
+            "-framerate", "1",
+            "-start_number", "0",
+            "-i", str(frame_dir / "frame-%03d.jpg"),
+            "-vf", (
+                f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:"
+                "padding=4:margin=4"
+            ),
+            "-frames:v", "1",
+            "-q:v", "5",
+            str(contact_sheet),
+        ])
+    finally:
+        shutil.rmtree(frame_dir, ignore_errors=True)
+    return _file_evidence(contact_sheet)
+
+
 def _materialize_motion_evidence(
     candidate,
     destination,
@@ -172,9 +220,6 @@ def _materialize_motion_evidence(
     duration = _positive_float(candidate.get("duration_seconds"), "duration_seconds")
     fps = _positive_float(candidate.get("preview_video_fps") or 30.0, "preview_video_fps")
     timestamps = _representative_timestamps(duration, frame_count)
-    frame_indices = sorted({max(0, int(round(timestamp * fps))) for timestamp in timestamps})
-    if len(frame_indices) != frame_count:
-        raise ValueError("representative frame timestamps did not map to unique frames")
 
     local_video = Path(video_input) if video_input is not None else None
     if local_video is not None:
@@ -187,20 +232,11 @@ def _materialize_motion_evidence(
         transport = "direct_url"
 
     destination.mkdir(parents=True, exist_ok=True)
-    select = "+".join(f"eq(n\\,{frame})" for frame in frame_indices)
-    grid_columns = 3 if frame_count > 4 else 2
-    grid_rows = (frame_count + grid_columns - 1) // grid_columns
-    contact_sheet = destination / "contact-sheet.jpg"
-    contact_filter = (
-        f"select={select},"
-        "setpts=N/FRAME_RATE/TB,"
-        f"scale={DEFAULT_SAMPLE_WIDTH}:-2,"
-        f"tile={grid_columns}x{grid_rows}:nb_frames={frame_count}:padding=4:margin=4"
+    contact_sheet_evidence = _materialize_contact_sheet(
+        ffmpeg_input,
+        destination,
+        timestamps,
     )
-    _run_ffmpeg([
-        "-i", ffmpeg_input, "-vf", contact_filter, "-frames:v", "1", "-q:v", "5",
-        str(contact_sheet)
-    ])
 
     result = {
         "source_url": video_url,
@@ -208,7 +244,8 @@ def _materialize_motion_evidence(
         "source_duration_seconds": duration,
         "source_fps": fps,
         "representative_timestamps_seconds": timestamps,
-        "contact_sheet": _file_evidence(contact_sheet),
+        "contact_sheet_strategy": "timestamp_seek",
+        "contact_sheet": contact_sheet_evidence,
     }
     if local_video is not None:
         result["source_input"] = source_file
@@ -230,6 +267,7 @@ def _materialize_motion_evidence(
             "duration_seconds": round(sample_seconds, 3),
         }
     return result
+
 
 def materialize(
     discovery_result,
