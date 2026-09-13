@@ -250,6 +250,7 @@ jobs:
           adhoc = Path('.github/workflows/adhoc-production.yml').read_text()
           recovery = Path('.github/workflows/automatic-recovery.yml').read_text()
           maintenance = Path('.github/workflows/background-management.yml').read_text()
+          shared_prompt = Path('docs/private/PLANNER_PROMPT.md').read_text()
           adhoc_prompt = Path('youtube-shorts-bot/planning/ADHOC_PLANNER_PROMPT.md').read_text()
           daily_prompt = Path('youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md').read_text()
           secret_names = (
@@ -299,12 +300,14 @@ jobs:
           assert 'media.media_readiness audit' in maintenance
           assert 'PEXELS_API_KEY' in maintenance
           assert 'content/background-sourcing/readiness/*.json' in maintenance
+          assert 'FAIL CLOSED if the exact precommit module cannot execute' in shared_prompt
+          assert 'GitHub Actions planner execution remains prohibited' in shared_prompt
           for prompt in (adhoc_prompt, daily_prompt):
+              assert 'docs/private/PLANNER_PROMPT.md' in prompt
               assert 'Git-first exact detached snapshot' in prompt
               assert 'connector/API fallback' in prompt
-              assert 'FAIL CLOSED if the exact precommit module cannot execute' in prompt
               assert '--verify-git-head' in prompt
-              assert 'GitHub Actions planner execution is prohibited' in prompt
+              assert 'not substitutes for planner-time pre-commit' in prompt
           print('Dry-run isolation, Git-first planner bootstrap with connector fallback, linked public validation, shared media readiness, automatic recovery, and opaque public routing verified.')
           PY
 
