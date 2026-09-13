@@ -54,6 +54,9 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertFalse((PLANNER / "execution_bridge.py").exists())
         self.assertTrue((PLANNER / "ranked_promotion.py").is_file())
         self.assertTrue((PLANNER / "pool_admission.py").is_file())
+        self.assertTrue((PLANNER / "planner_core.py").is_file())
+        self.assertTrue((PLANNER / "planner_precommit.py").is_file())
+        self.assertTrue((PLANNER / "planner_profiles.py").is_file())
         self.assertFalse((BOT_ROOT / "docs/DAILY_PLANNER_V4_BASE.md").exists())
         self.assertFalse((BOT_ROOT / "docs/ADHOC_PLANNER_V4_BASE.md").exists())
 
@@ -99,6 +102,9 @@ class ArchitectureContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         semantic = (BOT_ROOT / "validation/semantic.py").read_text(encoding="utf-8")
+        publication = (BOT_ROOT / "validation/publication.py").read_text(
+            encoding="utf-8"
+        )
         upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(
             encoding="utf-8"
@@ -127,8 +133,8 @@ class ArchitectureContractTests(unittest.TestCase):
             upload,
         )
         self.assertIn('status["publishAt"] = publish_at', upload)
-        self.assertIn("Publication contract is required", upload)
-        self.assertIn("Immediate publication requires publish_at=null", upload)
+        self.assertIn("Publication contract is required", publication)
+        self.assertIn("Immediate publication requires publish_at=null", publication)
         self.assertNotIn('\"mode\": \"public\"', upload)
         self.assertIn("Schema v5", overview)
         self.assertIn("current", overview.lower())
@@ -204,6 +210,8 @@ class ArchitectureContractTests(unittest.TestCase):
         planner = canonical_planner_text("DAILY")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
         promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
+        profiles = (PLANNER / "planner_profiles.py").read_text(encoding="utf-8")
+        core = (PLANNER / "planner_core.py").read_text(encoding="utf-8")
 
         for token in (
             "planning/planning_engine.py",
@@ -234,9 +242,11 @@ class ArchitectureContractTests(unittest.TestCase):
         )
         self.assertIn("actions/workflows/run.yml/dispatches", batch)
         self.assertIn("python -m common.runtime_contract", batch)
-        self.assertIn("DAILY_POOL_SIZE = 36", promotion)
-        self.assertIn("NORMAL_DAILY_TARGET = 24", promotion)
-        self.assertIn("CATCH_UP_MIN_LEAD_MINUTES = 30", promotion)
+        self.assertIn("pool_size=36", profiles)
+        self.assertIn("normal_target_count=24", profiles)
+        self.assertIn("CATCH_UP_MIN_LEAD_MINUTES = 30", core)
+        self.assertIn("from planning.planner_profiles import ADHOC, DAILY", promotion)
+        self.assertIn("from planning.planner_core import (", promotion)
         self.assertIn("'batch_id': os.environ['BATCH_ID']", batch)
         self.assertIn("'source_sha': os.environ['SOURCE_SHA']", batch)
         self.assertIn("'contract_hash': os.environ['CONTRACT_HASH']", batch)
