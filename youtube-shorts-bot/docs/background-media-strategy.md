@@ -7,22 +7,70 @@
 Daily and Ad-hoc share one readiness/replenishment path:
 
 ```text
-audit -> REPLENISH -> immutable discovery request
+audit -> REPLENISH -> immutable schema-v2 discovery request
       -> Background Management/Pexels API filters duration + rendition eligibility
       -> Background Management reads exact Pexels preview media
       -> FFmpeg generates small representative JPEG contact sheets
       -> private GitHub artifact + immutable review-evidence index
       -> ChatGPT/Work downloads that exact artifact through the GitHub connection
       -> ChatGPT inspects the JPEG pixels and assigns approval + semantic metadata
-      -> immutable readiness manifest -> Background Management re-enriches/persists
-      -> refresh main -> audit again -> PASS -> planning continues
+      -> immutable review-decision state
+      -> approved candidates -> immutable readiness manifest
+      -> Background Management re-enriches/persists
+      -> refresh main -> audit again
+      -> PASS -> same original planner invocation continues
+      -> still REPLENISH and attempt < 5 -> next targeted discovery attempt
 ```
 
 Provider discovery is deliberately split from editorial review. `media.pexels_discovery` may use the GitHub-held `PEXELS_API_KEY` to fetch exact provider metadata and discard clips below the live atomic-duration minimum or without a production-suitable rendition. For review transport it records the smallest useful exact provider rendition, while production suitability remains independently required. Background Management may perform **transport-only** media work: read/download those exact URLs, derive JPEG contact sheets, upload a private artifact and persist an immutable artifact index. It must not set `verified_preview=true`, invent semantic tags/scores, approve/reject a source, or write reviewed assets directly to the registry. ChatGPT/Work remains the sole visual/editorial approval owner.
 
 A discovery request is immutable under `content/background-sourcing/discovery-requests/`. Background Management writes the matching provider result under `content/background-sourcing/discovery-results/` and one or more immutable transport indexes under `content/background-sourcing/review-evidence/<request_id>-run-<run_id>.json`. Each index records the exact Background Management run and artifact identity, digest, evidence-manifest hash and provider IDs with contact sheets. Multiple run-scoped indexes allow safe evidence regeneration after artifact expiry without editing history.
 
+### Schema-v2 replenishment request
+
+New automatic replenishment attempts use discovery request schema v2. In addition to the existing plan date/request ID/candidate budget, each request freezes:
+
+- `target_categories` containing only currently deficient categories;
+- `exclude_provider_asset_ids`;
+- one stable `replenishment_session_id`;
+- `attempt` from 1 through 5.
+
+The replenishment session ID is durable recovery state for the original Daily/Ad-hoc planner invocation. The same session ID is reused across retries and after recoverable interruption. Query order rotates by attempt so later attempts start with different canonical search vocabulary.
+
+Legacy schema-v1 discovery requests remain readable for immutable history but must not be used for new automatic retries.
+
+### Immutable review decisions
+
+After actual visual review, ChatGPT/Work writes one immutable review-decision JSON under `content/background-sourcing/review-decisions/<request_id>.json`. Review-decision schema v1 contains:
+
+- `replenishment_session_id`;
+- `request_id`;
+- `attempt`;
+- per-provider `decision`;
+- original `discovery_category`;
+- `reviewed_category` when confidently classifiable;
+- `category_match`;
+- stable `reason_code`.
+
+An approved candidate must visually match its discovery category. Search query/category metadata is provenance only and never sufficient to establish semantic category. A semantically mismatched clip is rejected for that attempt even if it might be useful elsewhere.
+
+For schema-v2 discovery, `media.pexels_discovery` automatically reads immutable review-decision state for the same `replenishment_session_id` and excludes every provider asset already reviewed in that session. Request-side `exclude_provider_asset_ids` is still retained as explicit evidence and defense in depth, but recovery correctness no longer depends on ChatGPT reconstructing the exclusion list perfectly after interruption.
+
 Readiness PASS requires the configured inventory/category minima and proof that two disjoint executable v7 sequences can actually be formed.
+
+### Bounded continuation and terminal semantics
+
+`REPLENISH` and individual candidate rejection are recoverable states. They are not final planner results.
+
+After each reviewed/ingested attempt, re-resolve `main`, rerun readiness, and:
+
+- on `PASS`, resume the same original Daily/Ad-hoc planner invocation immediately;
+- on `REPLENISH` with `attempt < 5`, create the next targeted immutable attempt automatically;
+- after attempt 5, fail closed with `E_MEDIA_REPLENISH_EXHAUSTED` and report exact remaining deficits, attempts and rejection diagnostics.
+
+`DEFERRED_REPLENISHMENT` is reserved for a genuine bounded infrastructure wait expiration. It is not the correct response merely because a visual candidate was rejected.
+
+Never reduce quality, duration, licensing, rendition, watermark/text, semantic-review, or caption-readability thresholds to force readiness.
 
 ## Preview-review evidence
 
@@ -36,7 +84,9 @@ Planner review order:
 2. Through the authorized GitHub connection, list artifacts for the indexed `workflow_run_id`, require the indexed artifact ID/name/digest to match, and download that exact ZIP. GitHub connector delivery into ChatGPT/Work local storage is the canonical binary transfer bridge.
 3. Extract the ZIP locally. Verify `evidence-manifest.json` against the index SHA-256 and confirm provider IDs/source URLs correspond to the immutable discovery result.
 4. Inspect the actual `*/contact-sheet.jpg` pixels (and exact `*/preview.jpg` when useful). ChatGPT/Work alone decides approval, semantic tags, motion/readability judgment and scores.
-5. Reject candidate-specific missing/unsuitable evidence and continue through reserves. Never convert transport success directly into `verified_preview=true`.
+5. Persist the immutable review-decision document before continuing.
+6. Reject candidate-specific missing/unsuitable evidence and continue through reserves. Never convert transport success directly into `verified_preview=true`.
+7. If readiness is still short after reserves, continue with the next targeted attempt instead of ending the planner invocation.
 
 The workflow excludes provider IDs that are already active+verified in the registry from repeated artifact generation; this is transport optimization only. Future discovery uses a smaller exact provider rendition for contact-sheet generation while independently requiring a production-quality rendition for eventual production.
 
