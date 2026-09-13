@@ -14,6 +14,22 @@ audit -> REPLENISH -> ChatGPT reviews licensed Pexels atomic clips
 
 Readiness PASS requires the configured inventory/category minima and proof that two disjoint executable v7 sequences can actually be formed.
 
+## Preview-review evidence
+
+`verified_preview=true` means ChatGPT/Work reviewed **actual visual evidence for the exact Pexels source** before proposing it. Full-length or end-to-end video playback is **not required**.
+
+Acceptable evidence includes the strongest exact-source visual surface available in the current execution environment, such as:
+
+- the provider page's visual preview;
+- representative preview frames from the exact source;
+- a short preview clip from the exact source.
+
+Metadata, title, tags or duration alone are **not** enough to set `verified_preview=true`.
+
+The planner uses the preview only for semantic/visual screening: reject obvious watermarks, embedded text, unsafe material, static or weak footage, misleading metadata, or footage that is plainly unsuitable behind captions. If no actual visual evidence for a candidate is accessible, reject that candidate and continue discovery/reserve sourcing. **Do not fail the whole replenishment attempt merely because full-length playback is unavailable.**
+
+Background Management remains the hard technical admission boundary. It uses the official Pexels API to verify provider identity, trusted duration and production rendition metadata, then applies registry validation before the asset becomes selectable. A planner preview review never substitutes for those downstream checks.
+
 ## New-production visual model
 
 New requests use schema v7 `concatenated_fit_to_short`. For each candidate ChatGPT freezes a primary and backup ordered sequence of 2-3 distinct atomic clips, exact logical IDs, exact start/duration ranges, and sequence order. Primary and backup are disjoint. Playback rate is never frozen.
@@ -28,7 +44,7 @@ Atomic clips require trusted provider duration and at least **60 seconds**. Each
 
 Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified atomic sources are selectable. Preferred categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel motion and explicitly commercially licensed gameplay.
 
-Pexels remains the canonical automatic provider. ChatGPT visually reviews candidates before `verified_preview=true`; Background Management uses the official Pexels API to verify identity, duration and rendition metadata. Automatic sourcing should prioritize useful 60-120 second clips. A single source no longer needs to be 180 seconds because coverage comes from the frozen multi-clip sequence.
+Pexels remains the canonical automatic provider. ChatGPT visually screens candidates before `verified_preview=true` using the preview-evidence contract above; Background Management uses the official Pexels API to verify identity, duration and rendition metadata. Automatic sourcing should prioritize useful 60-120 second clips. A single source no longer needs to be 180 seconds because coverage comes from the frozen multi-clip sequence.
 
 ## Primary/backup failure semantics
 
