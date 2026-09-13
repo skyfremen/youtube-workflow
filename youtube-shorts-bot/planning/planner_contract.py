@@ -54,6 +54,57 @@ def build_contract():
         "publication": ADHOC_PUBLICATION,
         "adhoc_publication": ADHOC_PUBLICATION,
         "daily_publication_template": DAILY_PUBLICATION,
+        "execution_environment": {
+            "checkout_mode": {
+                "description": "Use the repository checkout directly when .git is available.",
+                "head_command": "git rev-parse HEAD",
+                "adhoc_precommit_command": (
+                    "python -m planning.adhoc_precommit --pool <pool> "
+                    "--rules-source-sha <sha>"
+                ),
+                "daily_precommit_command": (
+                    "python -m planning.daily_precommit --pool <pool> "
+                    "--rules-source-sha <sha>"
+                ),
+            },
+            "chatgpt_snapshot_mode": {
+                "description": (
+                    "For isolated ChatGPT/Work Python environments without an authenticated "
+                    "clone. Materialize all planner inputs from one immutable GitHub commit, "
+                    "record repository-relative paths plus Git blob SHAs in a snapshot manifest, "
+                    "verify/bootstrap temporary Git HEAD metadata, then run the normal canonical "
+                    "precommit validator unchanged."
+                ),
+                "snapshot_manifest_schema_version": 1,
+                "snapshot_manifest_fields": {
+                    "schema_version": 1,
+                    "source_sha": "<exact immutable GitHub commit SHA>",
+                    "files": [
+                        {"path": "<repository-relative path>", "blob_sha": "<Git blob SHA>"}
+                    ],
+                },
+                "bootstrap_command": (
+                    "python -m planning.snapshot_checkout --rules-source-sha <sha> "
+                    "--snapshot-manifest <manifest>"
+                ),
+                "head_command_after_bootstrap": "git rev-parse HEAD",
+                "adhoc_precommit_command": (
+                    "python -m planning.adhoc_precommit --pool <pool> "
+                    "--rules-source-sha <sha>"
+                ),
+                "daily_precommit_command": (
+                    "python -m planning.daily_precommit --pool <pool> "
+                    "--rules-source-sha <sha>"
+                ),
+                "rules": [
+                    "Do not mix files from different source SHAs.",
+                    "Every materialized repository file used for planning or validation must be listed in the manifest with its Git blob SHA.",
+                    "Bootstrap must PASS before treating git rev-parse HEAD as authoritative in a snapshot.",
+                    "The exact source SHA must remain the planning_execution.rules_source_sha.",
+                    "Normal schema, media, uniqueness, publication and candidate validation remains mandatory.",
+                ],
+            },
+        },
         "media_readiness": {
             "audit_command": "python -m media.media_readiness audit --allow-not-ready",
             "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,
