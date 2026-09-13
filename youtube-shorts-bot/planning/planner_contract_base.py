@@ -1,8 +1,8 @@
-"""Expose the live shared planner contract to ChatGPT/Work as JSON.
+"""Expose the live shared planner contract to developers/CI as JSON.
 
-Daily and Ad-hoc are profiles of one planner. Shared schema, semantic, media,
-background, narration and precommit behavior is imported once from authoritative
-modules; profiles may declare only mode-specific policy.
+ChatGPT/Work uses the standalone connector-native checkpoint declared by
+PLANNER_MATERIALIZATION.json. This repository-native module remains useful in a
+real checkout for tests, diagnostics and downstream validation introspection.
 """
 from __future__ import annotations
 
@@ -40,11 +40,12 @@ from validation.validate_content import SCHEMA_VERSION
 
 ADHOC_PUBLICATION = ADHOC.publication_template
 DAILY_PUBLICATION = DAILY.publication_template
-ARCHITECTURE_VERSION = 1
+ARCHITECTURE_VERSION = 2
 SHARED_PRECOMMIT_MODULE = "planning.planner_precommit"
 SHARED_CANDIDATE_VALIDATOR = "planning.planner_core.candidate_errors"
 SHARED_REQUEST_VALIDATOR = "validation.validate_content.validate_request_data"
 SHARED_PUBLICATION_VALIDATOR = "validation.publication.validate_upload_contract"
+CONNECTOR_CHECKPOINT = "planning/connector_checkpoint.py"
 
 
 def _shared_contract_payload():
@@ -56,6 +57,7 @@ def _shared_contract_payload():
         "candidate_validator": SHARED_CANDIDATE_VALIDATOR,
         "request_validator": SHARED_REQUEST_VALIDATOR,
         "publication_validator": SHARED_PUBLICATION_VALIDATOR,
+        "connector_checkpoint": CONNECTOR_CHECKPOINT,
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
         "hook_score_components": list(HOOK_WEIGHTS),
@@ -82,21 +84,25 @@ def _materialization_summary():
         manifest = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
-    shared_python = manifest.get("shared_required_python_files") or []
-    shared_data = manifest.get("shared_required_data_files") or []
-    profile_files = manifest.get("profile_required_files") or {}
     bootstrap = manifest.get("planner_bootstrap") or {}
+    checkpoint = manifest.get("connector_native_checkpoint") or {}
+    requirements = manifest.get("chatgpt_work_requirements") or {}
     return {
         "manifest_schema_version": manifest.get("schema_version"),
+        "contract": manifest.get("contract"),
         "preferred_bootstrap": bootstrap.get("preferred"),
         "fallback_bootstrap": bootstrap.get("fallback"),
-        "shared_python_files": len(shared_python),
-        "shared_data_files": len(shared_data),
-        "profile_file_counts": {
-            name: len((profile_files.get(name) or {}).get("python_files") or [])
-            + len((profile_files.get(name) or {}).get("data_files") or [])
-            for name in sorted(PROFILES)
-        },
+        "checkpoint_path": checkpoint.get("path"),
+        "standard_library_only": checkpoint.get("standard_library_only"),
+        "repository_tree_materialization_required": requirements.get(
+            "repository_tree_materialization_required"
+        ),
+        "full_background_registry_local_copy_required": requirements.get(
+            "full_background_registry_local_copy_required"
+        ),
+        "materialization_verify_required": requirements.get(
+            "materialization_verify_required"
+        ),
     }
 
 
@@ -118,7 +124,8 @@ def build_contract():
         "architecture_version": ARCHITECTURE_VERSION,
         "shared_contract_fingerprint": fingerprint,
         "shared_implementation": {
-            "precommit": SHARED_PRECOMMIT_MODULE,
+            "developer_ci_precommit": SHARED_PRECOMMIT_MODULE,
+            "chatgpt_work_checkpoint": CONNECTOR_CHECKPOINT,
             "candidate_validation": SHARED_CANDIDATE_VALIDATOR,
             "request_validation": SHARED_REQUEST_VALIDATOR,
             "publication_validation": SHARED_PUBLICATION_VALIDATOR,
@@ -140,30 +147,29 @@ def build_contract():
         "daily_publication_template": DAILY_PUBLICATION,
         "materialization": _materialization_summary(),
         "execution_environment": {
-            "canonical_mode": "connector_exact_sha_materialization",
-            "preferred_bootstrap": "connector_materialization",
+            "canonical_chatgpt_work_mode": "connector_native_checkpoint",
+            "preferred_bootstrap": "connector_native_checkpoint",
             "fallback_bootstrap": "none",
             "chatgpt_work_repository_source": "authorized_github_connector_api",
-            "materialization_manifest": "planning/PLANNER_MATERIALIZATION.json",
-            "materialization_mode": "shared_plus_selected_profile",
+            "checkpoint_path": CONNECTOR_CHECKPOINT,
             "git_preferred": False,
             "git_reuse_preferred": False,
             "chatgpt_work_shell_git_allowed": False,
             "developer_git_checkout_supported": True,
-            "exact_detached_snapshot_required_in_git_mode": True,
             "authenticated_checkout_required": False,
             "git_metadata_required": False,
             "repository_archive_required": False,
-            "whole_directory_materialization_required": False,
+            "repository_tree_materialization_required": False,
+            "full_background_registry_local_copy_required": False,
             "connector_filesystem_mount_required": False,
-            "special_connector_materialization_bridge_required": False,
+            "materialization_verify_required": False,
             "github_actions_planner_execution_required": False,
             "repository_identity_source": "connector_resolved_current_main_sha",
-            "canonical_precommit_command": (
-                "python -m planning.planner_precommit --profile <daily|adhoc> "
-                "--pool <pool> --rules-source-sha <sha>"
+            "canonical_chatgpt_work_command": (
+                "python connector_checkpoint.py validate --profile <daily|adhoc> "
+                "--pool <pool> --rules-source-sha <sha> --evidence <connector-evidence.json>"
             ),
-            "git_precommit_command": (
+            "developer_ci_precommit_command": (
                 "python -m planning.planner_precommit --profile <daily|adhoc> "
                 "--pool <pool> --rules-source-sha <sha> --verify-git-head"
             ),
@@ -172,27 +178,6 @@ def build_contract():
                 "--connector-current-main-sha <latest_main_sha> "
                 "[--changed-path <path> ...]"
             ),
-            "developer_git_drift_command": (
-                "python -m planning.planner_drift "
-                "--base-sha <rules_source_sha> --head-sha <latest_main_sha>"
-            ),
-            "compatibility_wrappers": {
-                "daily": "python -m planning.daily_precommit",
-                "adhoc": "python -m planning.adhoc_precommit",
-            },
-            "cache": {
-                "optional": True,
-                "correctness_dependency": False,
-                "primary_key": "rules_source_sha",
-                "connector_reuse_rule": (
-                    "reuse only previously blob-verified files for the identical immutable SHA"
-                ),
-                "developer_git_reuse_rule": (
-                    "real Git checkout reuse is allowed only outside ChatGPT/Work and must "
-                    "verify the exact intended commit"
-                ),
-                "cross_profile_shared_reuse": True,
-            },
             "drift_policy": {
                 "rules": "full_refresh",
                 "media": "media_refresh",
@@ -200,39 +185,27 @@ def build_contract():
                 "operational": "continue_without_planner_restart",
                 "unknown": "full_refresh",
             },
-            "performance_diagnostics": [
-                "materialization_mode",
-                "bootstrap_ms",
-                "connector_resolve_ms",
-                "materialization_ms",
-                "contract_ms",
-                "media_readiness_ms",
-                "state_load_ms",
-                "precommit_ms",
-                "commit_ms",
-            ],
             "rules": [
-                "For ChatGPT/Work, begin directly with the authorized GitHub connector/API; shell Git access to github.com is neither attempted nor required.",
-                "Resolve one exact immutable current-main SHA through the connector/API and use it as explicit rules_source_sha.",
-                "Materialize the exact manifest and every required file from that same SHA, record connector-returned source/blob evidence, and require planning.materialization_verify PASS.",
-                "Pass rules_source_sha explicitly to the shared precommit engine without --verify-git-head in connector-materialized ChatGPT/Work execution.",
-                "Never manufacture synthetic Git metadata or a fake HEAD for connector-materialized source.",
-                "Real Git checkout verification remains available only for developer/CI contexts that genuinely use Git metadata.",
+                "ChatGPT/Work begins directly with the authorized GitHub connector/API; shell Git access to github.com is neither attempted nor required.",
+                "Resolve one exact immutable current-main SHA and use it as rules_source_sha.",
+                "Fetch only the exact-SHA standalone connector checkpoint for local execution; do not reconstruct the repository planner tree.",
+                "Use a small connector-evidence JSON for drift, readiness, uniqueness and selected-background facts; do not copy the full background registry locally merely to validate the pool.",
+                "Require standalone checkpoint PASS and commit_allowed=true before immutable pool commit.",
                 "GitHub Actions must not execute creative planning.",
-                "Before immutable commit, re-query current main through the connector/API; if it advanced, apply planning.planner_drift with connector-supplied changed paths or conservatively full-refresh when path evidence is unavailable.",
+                "Developers/CI may still use repository-native modules from a genuine checkout as a separate mode.",
             ],
         },
         "media_readiness": {
-            "audit_command": "python -m media.media_readiness audit --allow-not-ready",
+            "developer_ci_audit_command": "python -m media.media_readiness audit --allow-not-ready",
             "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,
             "required_category_minimums": REQUIRED_CATEGORY_MINIMUMS,
             "readiness_manifest_prefix": "content/background-sourcing/readiness/",
             "background_management_workflow": ".github/workflows/background-management.yml",
-            "retired_asset_flag": "selection_enabled=false",
             "required_before_daily": True,
             "required_before_adhoc": True,
             "replenish_is_terminal": False,
             "automatic_continuation_required": True,
+            "chatgpt_work_local_full_registry_required": False,
         },
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
