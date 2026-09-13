@@ -4,11 +4,13 @@ This is the canonical **Ad-hoc profile** entry point for the shared Wacky Dramas
 
 Read and follow, in order:
 
-1. `planning/PLANNER_PROMPT.md` — canonical shared execution/materialization/drift contract.
+1. `docs/private/PLANNER_PROMPT.md` — canonical shared execution/materialization/drift contract.
 2. `planning/ADHOC_PLANNER_RULES.md` — Ad-hoc ranked-pool, identity, immediate-public, promotion and recovery rules.
 3. `planning/STORY_RULES.md` and current shared background/analytics rules referenced by the Ad-hoc rules.
 
-Repository code/configuration at current `main` remains the source of truth. If older Ad-hoc rule text repeats Git/bootstrap/materialization instructions, `PLANNER_PROMPT.md` supersedes only those duplicated execution-environment instructions; Ad-hoc business/creative rules remain mandatory.
+Repository code/configuration at current `main` remains the source of truth. If older Ad-hoc rule text repeats Git/bootstrap/materialization instructions, `docs/private/PLANNER_PROMPT.md` supersedes only those duplicated execution-environment instructions; Ad-hoc business/creative rules remain mandatory.
+
+A Git checkout, Git executable, `.git` directory, authenticated clone, repository archive, synthetic HEAD or GitHub Actions planner execution is not required for normal ChatGPT/Work planning. Do not use `--verify-git-head` for the canonical planner path.
 
 ## Profile
 
@@ -42,7 +44,7 @@ PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
 
 All **five candidates must PASS** the actual validator before immutable pool commit. `planning.adhoc_precommit` remains only a backward-compatible wrapper and is not required for canonical materialization.
 
-Manual checks, downstream pool admission, ranked promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
+**FAIL CLOSED if the exact pre-commit module cannot be executed** after exact materialization. Manual checks, downstream pool admission, ranked promotion, or GitHub Actions are **not substitutes for planner-time pre-commit**.
 
 For `manual_on_demand`, multiple same-date manual runs remain allowed under distinct stable immutable invocation identities. Existing `scheduled_daily` state is not a reuse/stop condition for a distinct manual invocation. Scheduled-daily uniqueness remains fail closed.
 
