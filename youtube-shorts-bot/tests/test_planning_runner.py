@@ -14,6 +14,15 @@ from planning.planning_engine import build_acceptance_fixture, evaluate, filter_
 from planning.planning_runner import execute
 
 
+def canonical_planner_text(prefix):
+    planning = BASE / "planning"
+    return (
+        (planning / f"{prefix}_PLANNER_PROMPT.md").read_text(encoding="utf-8")
+        + "\n"
+        + (planning / f"{prefix}_PLANNER_RULES.md").read_text(encoding="utf-8")
+    )
+
+
 class PlanningRunnerTests(unittest.TestCase):
     def _evaluation_payload(self):
         raw, semifinalists = build_acceptance_fixture("2026-09-10")
@@ -125,9 +134,7 @@ class PlanningRunnerTests(unittest.TestCase):
             self.assertIn("failed closed", proc.stderr + proc.stdout)
 
     def test_prompts_make_chatgpt_rank_and_author_complete_candidates(self):
-        daily = (BASE / "planning" / "DAILY_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        adhoc = (BASE / "planning" / "ADHOC_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        for prompt in (daily, adhoc):
+        for prompt in (canonical_planner_text("DAILY"), canonical_planner_text("ADHOC")):
             lower = prompt.lower()
             self.assertIn("chatgpt", lower)
             self.assertIn("rank", lower)
