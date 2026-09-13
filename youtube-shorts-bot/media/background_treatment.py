@@ -1,132 +1,78 @@
-"""Private immutable background segment/playback allocation.
+"""Private continuous-range allocation for schema-v6 background planning.
 
-Logical asset selection happens first. This module then reserves a deterministic
-segment and playback rate using only private immutable success receipts plus
-optional in-progress Daily-plan context. The public runtime receives the frozen
-result and remains stateless across independent runs.
+ChatGPT freezes one long continuous source range for each primary/backup logical
+asset. The exact playback rate is deliberately NOT frozen here; public execution
+derives it later from the actual post-TTS render duration.
 """
+from __future__ import annotations
 
 import argparse
 import json
-from collections import Counter
-from datetime import datetime, timezone
 from pathlib import Path
 
-from media.background_selector import (
-    is_successful_receipt,
-    load_successful_receipts,
-    retention_category,
+from media.background_selector import is_successful_receipt, load_successful_receipts
+from media.continuous_background import (
+    FIT_TO_SHORT_MODE,
+    MIN_CONTINUOUS_SOURCE_SECONDS,
+    preferred_range_duration,
+    trusted_duration_seconds,
 )
 from media.validate_media_library import REGISTRY_PATH, asset_map, load_registry
-from validation.validate_content import PLAYBACK_RATE_MAX, PLAYBACK_RATE_MIN
 
 BASE = Path(__file__).resolve().parents[1]
 RESULTS_DIR = BASE / "content" / "results"
-SEGMENT_WINDOW_SECONDS = 12.0
-SHORT_CLIP_FULL_USE_SECONDS = 18.0
-RECENT_TREATMENT_LIMIT = 16
 MEANINGFUL_OVERLAP_RATIO = 0.25
-
-CATEGORY_SPEED_RANGES = {
-    "cooking": (1.25, 1.55),
-    "baking": (1.20, 1.50),
-    "food_prep": (1.30, 1.65),
-    "satisfying_process": (1.20, 1.70),
-    "crafting": (1.20, 1.50),
-    "cleaning": (1.30, 1.80),
-    "assembly": (1.25, 1.60),
-    "pov_movement": (1.10, 1.35),
-    "city_motion": (1.15, 1.50),
-    "licensed_gameplay": (1.00, 1.25),
-    "generic": (1.00, 1.25),
-}
+RECENT_TREATMENT_LIMIT = 24
 
 
-def _timestamp(record):
-    raw = record.get("receipt_created_at") or record.get("youtube_verified_at") or ""
-    try:
-        return datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
-    except (TypeError, ValueError):
-        return datetime.min.replace(tzinfo=timezone.utc)
-
-
-def _normalized_treatment(value):
-    if not isinstance(value, dict):
+def _normalized_range(value):
+    if not isinstance(value, dict) or value.get("mode") != FIT_TO_SHORT_MODE:
         return None
     try:
         start = float(value.get("segment_start_seconds"))
-        duration = value.get("segment_duration_seconds")
-        duration = None if duration is None else float(duration)
-        rate = float(value.get("playback_rate"))
+        duration = float(value.get("segment_duration_seconds"))
     except (TypeError, ValueError):
         return None
-    if start < 0 or duration is not None and duration <= 0:
-        return None
-    if not PLAYBACK_RATE_MIN <= rate <= PLAYBACK_RATE_MAX:
+    if start < 0 or duration < MIN_CONTINUOUS_SOURCE_SECONDS:
         return None
     return {
+        "mode": FIT_TO_SHORT_MODE,
         "segment_start_seconds": round(start, 3),
-        "segment_duration_seconds": None if duration is None else round(duration, 3),
-        "playback_rate": round(rate, 3),
+        "segment_duration_seconds": round(duration, 3),
     }
 
 
 def treatment_from_receipt(record):
-    direct = _normalized_treatment(record.get("background_treatment"))
-    if direct:
-        return direct
-    usage = record.get("background_usage") or {}
-    if all(
-        key in usage
-        for key in (
-            "segment_start_seconds",
-            "segment_duration_seconds",
-            "playback_rate",
-        )
-    ):
-        return _normalized_treatment(usage)
-    return None
+    return _normalized_range(record.get("background_treatment")) or _normalized_range(record.get("background_usage"))
 
 
 def derive_treatment_history(receipts, asset_id, limit=RECENT_TREATMENT_LIMIT):
-    records = sorted(
-        (
-            record
-            for record in receipts
-            if is_successful_receipt(record)
-            and record.get("background_asset_id") == asset_id
-            and treatment_from_receipt(record) is not None
-        ),
-        key=lambda record: (_timestamp(record), record.get("content_id", "")),
-        reverse=True,
-    )
-    return [
-        {
-            "content_id": record.get("content_id"),
-            "receipt_created_at": record.get("receipt_created_at"),
-            "treatment": treatment_from_receipt(record),
-        }
-        for record in records[: max(0, int(limit))]
-    ]
+    output = []
+    for record in receipts:
+        if not is_successful_receipt(record) or record.get("background_asset_id") != asset_id:
+            continue
+        treatment = treatment_from_receipt(record)
+        if treatment:
+            output.append(treatment)
+        if len(output) >= max(0, int(limit)):
+            break
+    return output
 
 
 def _planned_for_asset(planned_treatments, asset_id):
-    values = []
+    output = []
     for item in planned_treatments or ():
         if not isinstance(item, dict):
             continue
-        planned_asset = item.get("asset_id") or item.get("logical_asset_id")
-        if planned_asset != asset_id:
+        if (item.get("asset_id") or item.get("logical_asset_id")) != asset_id:
             continue
-        treatment = _normalized_treatment(item.get("treatment") or item)
+        treatment = _normalized_range(item.get("treatment") or item)
         if treatment:
-            values.append(treatment)
-    return values
+            output.append(treatment)
+    return output
 
 
 def _overlap_ratio(left, right):
-    if left.get("segment_duration_seconds") is None or right.get("segment_duration_seconds") is None:
-        return 1.0
     l0 = float(left["segment_start_seconds"])
     l1 = l0 + float(left["segment_duration_seconds"])
     r0 = float(right["segment_start_seconds"])
@@ -136,155 +82,49 @@ def _overlap_ratio(left, right):
     return 0.0 if denominator <= 0 else overlap / denominator
 
 
-def _segment_candidates(duration_seconds):
-    if duration_seconds is None:
-        return [{
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": None,
-        }]
-    try:
-        duration = float(duration_seconds)
-    except (TypeError, ValueError):
-        return [{
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": None,
-        }]
-    if duration < 1.0:
-        return [{
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": None,
-        }]
-    if duration <= SHORT_CLIP_FULL_USE_SECONDS:
-        return [{
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": round(duration, 3),
-        }]
-
-    window = min(SEGMENT_WINDOW_SECONDS, duration)
-    last_start = max(0.0, duration - window)
+def _candidate_starts(source_duration, window):
+    last = max(0.0, source_duration - window)
     starts = [0.0]
     cursor = window
-    while cursor < last_start - 0.05:
+    while cursor < last - 0.05:
         starts.append(cursor)
         cursor += window
-    starts.append(last_start)
-    unique = []
-    for start in starts:
-        rounded = round(start, 3)
-        if rounded not in unique:
-            unique.append(rounded)
-    return [
-        {
-            "segment_start_seconds": start,
-            "segment_duration_seconds": round(window, 3),
-        }
-        for start in unique
-    ]
-
-
-def _segment_score(candidate, previous):
-    overlaps = [_overlap_ratio(candidate, item) for item in previous]
-    meaningful = sum(value >= MEANINGFUL_OVERLAP_RATIO for value in overlaps)
-    weighted = sum(value / (index + 1) for index, value in enumerate(overlaps))
-    max_overlap = max(overlaps, default=0.0)
-    return meaningful, round(weighted, 6), round(max_overlap, 6), candidate["segment_start_seconds"]
-
-
-def select_segment(asset, receipts, planned_treatments=()):
-    candidates = _segment_candidates(asset.get("duration_seconds"))
-    historical = [
-        item["treatment"]
-        for item in derive_treatment_history(receipts, asset["id"])
-    ]
-    planned = _planned_for_asset(planned_treatments, asset["id"])
-    previous = [*planned, *historical]
-    return min(candidates, key=lambda candidate: _segment_score(candidate, previous))
-
-
-def speed_range(asset):
-    category = retention_category(asset)
-    default_min, default_max = CATEGORY_SPEED_RANGES.get(
-        category, CATEGORY_SPEED_RANGES["generic"]
-    )
-    raw_min = asset.get("recommended_speed_min", default_min)
-    raw_max = asset.get("recommended_speed_max", default_max)
-    try:
-        minimum = max(PLAYBACK_RATE_MIN, float(raw_min))
-        maximum = min(PLAYBACK_RATE_MAX, float(raw_max))
-    except (TypeError, ValueError):
-        minimum, maximum = default_min, default_max
-    if minimum > maximum:
-        minimum, maximum = default_min, default_max
-    return round(minimum, 3), round(maximum, 3)
-
-
-def _speed_candidates(asset):
-    minimum, maximum = speed_range(asset)
-    midpoint = round((minimum + maximum) / 2.0, 3)
-    return tuple(dict.fromkeys((minimum, midpoint, maximum)))
-
-
-def select_playback_rate(asset, receipts, planned_treatments=()):
-    candidates = _speed_candidates(asset)
-    historical = [
-        item["treatment"]["playback_rate"]
-        for item in derive_treatment_history(receipts, asset["id"])
-    ]
-    planned = [
-        item["playback_rate"]
-        for item in _planned_for_asset(planned_treatments, asset["id"])
-    ]
-    recent = [*planned, *historical]
-    counts = Counter(round(float(value), 3) for value in recent)
-    last = round(float(recent[0]), 3) if recent else None
-    return min(
-        candidates,
-        key=lambda rate: (
-            counts[round(rate, 3)],
-            int(last is not None and abs(rate - last) <= 1e-6),
-            abs(rate - sum(candidates) / len(candidates)),
-            rate,
-        ),
-    )
+    starts.append(last)
+    return tuple(dict.fromkeys(round(value, 3) for value in starts))
 
 
 def select_background_treatment(asset, receipts, planned_treatments=()):
-    segment = select_segment(asset, receipts, planned_treatments)
-    return {
-        **segment,
-        "playback_rate": select_playback_rate(
-            asset, receipts, planned_treatments
-        ),
-    }
+    source_duration = trusted_duration_seconds(asset)
+    if source_duration is None or source_duration < MIN_CONTINUOUS_SOURCE_SECONDS:
+        raise ValueError(f"background {asset.get('id')} lacks sufficient trusted continuous duration")
+    window = preferred_range_duration(asset)
+    previous = [*_planned_for_asset(planned_treatments, asset["id"]), *derive_treatment_history(receipts, asset["id"])]
+    candidates = [{
+        "mode": FIT_TO_SHORT_MODE,
+        "segment_start_seconds": start,
+        "segment_duration_seconds": window,
+    } for start in _candidate_starts(source_duration, window)]
+
+    def score(candidate):
+        overlaps = [_overlap_ratio(candidate, prior) for prior in previous]
+        meaningful = sum(value >= MEANINGFUL_OVERLAP_RATIO for value in overlaps)
+        weighted = sum(value / (index + 1) for index, value in enumerate(overlaps))
+        return meaningful, round(weighted, 6), candidate["segment_start_seconds"]
+
+    return min(candidates, key=score)
 
 
-def select_pair_treatments(
-    registry,
-    primary_id,
-    backup_id,
-    receipts,
-    planned_treatments=(),
-):
+def select_pair_treatments(registry, primary_id, backup_id, receipts, planned_treatments=()):
     mapping = asset_map(registry)
     if primary_id == backup_id:
         raise ValueError("primary and backup background IDs must differ")
     missing = [value for value in (primary_id, backup_id) if value not in mapping]
     if missing:
         raise ValueError("unknown logical background IDs: " + ", ".join(missing))
-    primary = select_background_treatment(
-        mapping[primary_id], receipts, planned_treatments
-    )
-    local_planned = [
-        *(planned_treatments or ()),
-        {"asset_id": primary_id, "treatment": primary},
-    ]
-    backup = select_background_treatment(
-        mapping[backup_id], receipts, local_planned
-    )
-    return {
-        "background_primary_treatment": primary,
-        "background_backup_treatment": backup,
-    }
+    primary = select_background_treatment(mapping[primary_id], receipts, planned_treatments)
+    local_planned = [*(planned_treatments or ()), {"asset_id": primary_id, "treatment": primary}]
+    backup = select_background_treatment(mapping[backup_id], receipts, local_planned)
+    return {"background_primary_treatment": primary, "background_backup_treatment": backup}
 
 
 def main():
@@ -302,18 +142,7 @@ def main():
         planned = json.loads(Path(args.planned_json).read_text(encoding="utf-8"))
         if not isinstance(planned, list):
             raise SystemExit("--planned-json must contain a list")
-    print(json.dumps(
-        select_pair_treatments(
-            registry,
-            args.primary_id,
-            args.backup_id,
-            receipts,
-            planned_treatments=planned,
-        ),
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-    ))
+    print(json.dumps(select_pair_treatments(registry, args.primary_id, args.backup_id, receipts, planned), ensure_ascii=False, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

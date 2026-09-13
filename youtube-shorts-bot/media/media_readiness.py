@@ -1,8 +1,9 @@
 """Shared planning-time media readiness gate for Daily and Ad-hoc.
 
-The checked-in registry is the shared background cache. Both planners must
-obtain a PASS from this module before authoring an immutable ranked pool. An
-empty or insufficient registry is a normal REPLENISH state.
+The checked-in active registry may legitimately be empty after a hard reset. Both
+planners treat that state as REPLENISH, automatically source reviewed long-form
+licensed footage, wait for Background Management to persist the refreshed registry,
+then continue only after PASS.
 """
 from __future__ import annotations
 
@@ -18,6 +19,11 @@ from media.background_selector_base import (
     retention_category,
     retention_score,
     _has_production_rendition,
+)
+from media.continuous_background import (
+    MIN_CONTINUOUS_SOURCE_SECONDS,
+    PREFERRED_CONTINUOUS_RANGE_SECONDS,
+    continuous_source_eligible,
 )
 from media.validate_media_library import REGISTRY_PATH, load_registry
 
@@ -35,13 +41,7 @@ REQUIRED_CATEGORY_MINIMUMS = {
 }
 
 
-def is_selection_enabled(asset):
-    return asset.get("selection_enabled") is not False
-
-
 def is_selectable(asset):
-    if not is_selection_enabled(asset):
-        return False
     if asset.get("status") != "active" or asset.get("verified") is not True:
         return False
     if asset.get("commercial_use") is not True:
@@ -54,7 +54,9 @@ def is_selectable(asset):
         return False
     if retention_score(asset) < MIN_RETENTION_SCORE:
         return False
-    return _has_production_rendition(asset)
+    if not _has_production_rendition(asset):
+        return False
+    return continuous_source_eligible(asset)
 
 
 def audit_registry(registry):
@@ -68,20 +70,28 @@ def audit_registry(registry):
     total_deficit = max(0, MIN_SELECTABLE_ASSETS - len(selectable))
     required_new_assets = max(total_deficit, sum(category_deficits.values()))
     ready = total_deficit == 0 and not any(category_deficits.values())
+    duration_ineligible = sum(
+        1
+        for asset in assets
+        if asset.get("status") == "active"
+        and asset.get("verified") is True
+        and not continuous_source_eligible(asset)
+    )
     return {
         "status": "PASS" if ready else "REPLENISH",
         "ready": ready,
         "registry_assets": len(assets),
         "selectable_assets": len(selectable),
-        "retired_from_selection": sum(
-            1 for asset in assets if asset.get("selection_enabled") is False
-        ),
         "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,
+        "minimum_continuous_source_seconds": MIN_CONTINUOUS_SOURCE_SECONDS,
+        "preferred_continuous_range_seconds": PREFERRED_CONTINUOUS_RANGE_SECONDS,
+        "duration_ineligible_assets": duration_ineligible,
         "category_counts": dict(sorted(counts.items())),
         "required_category_minimums": REQUIRED_CATEGORY_MINIMUMS,
         "category_deficits": category_deficits,
         "required_new_assets_at_least": required_new_assets,
         "replenishment_required": not ready,
+        "automatic_continuation_required": not ready,
     }
 
 
