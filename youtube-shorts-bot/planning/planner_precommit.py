@@ -20,9 +20,9 @@ from planning.planner_core import (
     BOT_ROOT,
     DAILY_POOL_RE,
     HEX40_RE,
+    POOL_SCHEMA_VERSION,
     PlannerContractError,
     candidate_errors,
-    canonical_normal_slots,
     parse_date,
     scheduled_adhoc_matches,
     validate_daily_slots,
@@ -112,8 +112,10 @@ def _validate_structure(pool, profile, rules_source_sha, *, now_utc=None):
             "errors": errors,
         }
 
-    if pool.get("schema_version") != 1:
-        errors.append(f"{profile.name} ranked pool schema_version must be 1")
+    if pool.get("schema_version") != POOL_SCHEMA_VERSION:
+        errors.append(
+            f"{profile.name} ranked pool schema_version must be {POOL_SCHEMA_VERSION}"
+        )
     if pool.get("pool_type") != profile.pool_type:
         errors.append(f"{profile.name} ranked pool pool_type must be {profile.pool_type}")
 
@@ -312,7 +314,7 @@ def validate_draft(
     if pool != original:
         raise AssertionError("pre-commit validation mutated the ChatGPT-authored draft")
 
-    result = {
+    return {
         "status": status,
         "commit_allowed": status == "PASS",
         "profile": profile.name,
@@ -330,7 +332,6 @@ def validate_draft(
         "candidate_results": candidate_results,
         "validation_elapsed_ms": round((time.perf_counter() - started) * 1000.0, 3),
     }
-    return result
 
 
 def _read_pool(path, profile_name):
