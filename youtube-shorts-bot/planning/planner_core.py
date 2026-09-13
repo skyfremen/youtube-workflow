@@ -22,6 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
 POOL_SCHEMA_VERSION = 1
 CANDIDATE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+POOL_CONTENT_ID_RE = re.compile(r"^wd-[A-Za-z0-9-]+$")
 HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 DAILY_POOL_RE = re.compile(
     r"^youtube-shorts-bot/content/planning-pools/daily/"
@@ -76,6 +77,14 @@ def canonical_normal_slots(plan_date):
 
 
 def validate_ranked_candidates(pool, expected_count):
+    """Validate ranked-pool envelope while leaving request details candidate-scoped.
+
+    The envelope deliberately accepts a loose production-shaped content ID. Exact
+    canonical content-ID validation happens inside candidate_errors so one malformed
+    candidate reports as one failed candidate rather than hiding the other 4/35
+    valid candidates. This preserves the existing fail-closed 5/5 and 36/36 gates
+    while keeping diagnostics useful.
+    """
     candidates = pool.get("ranked_candidates")
     if not isinstance(candidates, list) or len(candidates) != expected_count:
         fail(f"ranked_candidates must contain exactly {expected_count} candidates")
@@ -93,8 +102,8 @@ def validate_ranked_candidates(pool, expected_count):
         if not isinstance(request, dict):
             fail(f"candidate rank {index} request must be an object")
         content_id = request.get("content_id")
-        if not isinstance(content_id, str) or not CONTENT_ID_RE.fullmatch(content_id):
-            fail(f"candidate rank {index} request has invalid content_id")
+        if not isinstance(content_id, str) or not POOL_CONTENT_ID_RE.fullmatch(content_id):
+            fail(f"candidate rank {index} request has invalid content_id envelope")
         candidate_ids.append(candidate_id)
         content_ids.append(content_id)
     if len(candidate_ids) != len(set(candidate_ids)):
@@ -196,9 +205,15 @@ def candidate_errors(
     return list(dict.fromkeys(errors))
 
 
-def scheduled_adhoc_matches(singapore_date, *, exclude_content_id=None):
+def scheduled_adhoc_matches(
+    singapore_date,
+    *,
+    exclude_content_id=None,
+    bot_root=None,
+):
     prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
-    request_dir = BOT_ROOT / "content" / "requests"
+    root = BOT_ROOT if bot_root is None else Path(bot_root)
+    request_dir = root / "content" / "requests"
     matches = []
     if request_dir.is_dir():
         for path in request_dir.glob(f"{prefix}*.json"):
