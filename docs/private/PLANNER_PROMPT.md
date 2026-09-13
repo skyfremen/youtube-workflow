@@ -40,7 +40,15 @@ Consume actual output. `planner_contract` exposes both profiles and a shared-con
 3. If no compatible unfinished attempt exists, create exactly one immutable discovery request under `youtube-shorts-bot/content/background-sourcing/discovery-requests/` using the live schema and commit it with the canonical `[media discovery]` convention.
 4. Background Management may use repository code and GitHub-held provider credentials for deterministic provider discovery. It must not perform ChatGPT-owned visual/editorial approval.
 5. After triggering or finding the matching Background Management run, **do not return merely because the run is queued or in progress**. Poll/refresh its status and current `main` for a bounded continuation window of up to 10 minutes, using short checks rather than one long blocking sleep. As soon as the matching immutable discovery result appears, continue immediately. If the run reaches a terminal failure, report infrastructure/authentication failure with its evidence. If the 10-minute continuation window expires while the run is still legitimately pending, return `DEFERRED_REPLENISHMENT` rather than `FAILED`; preserve the immutable attempt identity so the next invocation resumes it.
-6. Consume the matching discovery result only; never fabricate provider IDs, durations, renditions or preview URLs. Review actual accessible visual preview evidence for proposed sources according to the live preview-review contract and background strategy. Metadata-only approval is prohibited, but full-length/end-to-end playback is not required. Reject unsuitable/inaccessible candidates individually and continue through the result set.
+6. Consume the matching discovery result only; never fabricate provider IDs, durations, renditions or preview URLs. **Do not assume provider preview URLs must be visually opened through the GitHub connector or browser.** Materialize `youtube-shorts-bot/media/preview_review_materializer.py` at the same exact rules/source SHA when using connector fallback, then run it locally against the immutable discovery result:
+
+```bash
+PYTHONPATH=youtube-shorts-bot python -m media.preview_review_materializer \
+  --discovery-result <discovery-result.json> \
+  --output-dir <temporary-review-evidence-dir>
+```
+
+Inspect the downloaded local preview image pixels for every proposed source. If a still image is genuinely insufficient to judge a candidate, rerun for that review set with `--include-video` and inspect representative frames/short playback from the exact downloaded preview rendition. Local review evidence is ephemeral planner input and must not be committed to the repository. A successful download is **not** approval: ChatGPT/Work must still make the semantic/visual decision. Metadata-only approval remains prohibited, full-length/end-to-end playback remains unnecessary, and candidates whose evidence cannot be materialized or is visually unsuitable are rejected individually while review continues through the remaining result set. Failure of one external preview URL must not fail the whole replenishment attempt.
 7. Create exactly one immutable readiness manifest from visually approved candidates only. Before writing it, re-check whether that attempt already has a manifest or accepted registry update; reuse existing state on retry.
 8. Commit the readiness manifest so Background Management performs canonical provider re-enrichment/persistence and reserve fallback.
 9. Again, **do not stop merely because this second Background Management run is queued/in progress**. Poll/refresh for up to 10 minutes. Continue as soon as the registry commit appears. A terminal workflow failure is an infrastructure/authentication failure; a still-running job at the bounded deadline is `DEFERRED_REPLENISHMENT`, not planner failure.
@@ -48,7 +56,7 @@ Consume actual output. `planner_contract` exposes both profiles and a shared-con
 
 A `DEFERRED_REPLENISHMENT` report must include profile, plan date, rules/source SHA used before drift refresh, discovery request ID/path, matching workflow run ID/status, matching discovery-result/readiness-manifest paths if present, current readiness deficits, and the exact continuation point. It must explicitly say that no ranked pool/request was created. This state is resumable and must never be described as a creative/content failure.
 
-Do not bypass provider discovery by guessing metadata from public pages. Do not move creative/editorial review into GitHub Actions. Do not create a second discovery request simply because an existing matching workflow is still running.
+Do not bypass provider discovery by guessing metadata from public pages. Do not move creative/editorial review into GitHub Actions. Do not create a second discovery request simply because an existing matching workflow is still running. Do not treat inability to render a provider URL inside a connector as evidence unavailability until the local preview materializer has actually been attempted.
 
 ## Shared precommit engine
 
