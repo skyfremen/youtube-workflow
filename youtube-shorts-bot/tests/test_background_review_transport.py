@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
 
+from media.preview_review_materializer import _https_url, _representative_timestamps
+
 
 class BackgroundReviewTransportContractTests(unittest.TestCase):
     def test_background_management_publishes_transport_only_review_artifact(self):
@@ -12,7 +14,28 @@ class BackgroundReviewTransportContractTests(unittest.TestCase):
             workflow,
         )
         self.assertIn('discovery_result:', workflow)
+        self.assertIn('--include-motion-evidence', workflow)
+        self.assertIn('--representative-frames 5', workflow)
+        self.assertIn('--motion-sample-seconds 6', workflow)
         self.assertNotIn('verified_preview=true', workflow)
+
+    def test_discovery_is_persisted_before_review_transport(self):
+        workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
+        commit_index = workflow.index('- name: Commit discovery result')
+        materialize_index = workflow.index(
+            '- name: Materialize exact preview evidence for ChatGPT review'
+        )
+        self.assertLess(commit_index, materialize_index)
+
+    def test_materializer_builds_evenly_distributed_review_points(self):
+        self.assertEqual(
+            _representative_timestamps(60.0, 5),
+            [10.0, 20.0, 30.0, 40.0, 50.0],
+        )
+
+    def test_materializer_rejects_non_pexels_visual_transport(self):
+        with self.assertRaises(ValueError):
+            _https_url('https://example.com/video.mp4', 'preview_video_url')
 
     def test_shared_background_policy_keeps_editorial_ownership_in_chatgpt(self):
         policy = Path('youtube-shorts-bot/docs/background-media-strategy.md').read_text(
