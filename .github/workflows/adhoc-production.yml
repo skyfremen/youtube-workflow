@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Private promotion preflight and promote first valid candidate
+      - name: Private pool admission and promote first valid candidate
         if: ${{ github.event_name == 'push' }}
         id: promotion
         shell: bash
@@ -41,6 +41,14 @@ jobs:
             exit 1
           fi
           pool="${pools[0]}"
+
+          # Defense in depth: rerun the exact planner-time validator across all five
+          # committed candidates before ranked promotion. This gate intentionally
+          # uses explicit rules_source_sha from the pool and does not inspect Git.
+          PYTHONPATH=youtube-shorts-bot python -m planning.pool_admission adhoc \
+            --pool "${pool}" \
+            --summary /tmp/pool-admission.json
+
           PYTHONPATH=youtube-shorts-bot python -m planning.ranked_promotion adhoc \
             --pool "${pool}" \
             --source-sha "${GITHUB_SHA}" \
