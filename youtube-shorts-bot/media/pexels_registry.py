@@ -1,9 +1,9 @@
-"""Pexels registry facade enforcing long continuous-source eligibility."""
+"""Pexels registry facade enforcing schema-v7 atomic clip eligibility."""
 from media import pexels_registry_base as base
 from media.pexels_registry_base import *
 from media.continuous_background import (
-    MIN_CONTINUOUS_SOURCE_SECONDS,
-    continuous_source_eligible,
+    MIN_SEQUENCE_CLIP_SECONDS,
+    sequence_clip_eligible,
 )
 
 _original_build_asset = base._build_asset
@@ -15,17 +15,17 @@ _original_search = base.search
 
 def _build_asset(logical_id, video_id, metadata, video, retrieved_at):
     asset = _original_build_asset(logical_id, video_id, metadata, video, retrieved_at)
-    if not continuous_source_eligible(asset):
+    if not sequence_clip_eligible(asset):
         raise ValueError(
             f"Pexels video {video_id} duration {asset.get('duration_seconds')}s is below "
-            f"the continuous-source minimum {MIN_CONTINUOUS_SOURCE_SECONDS:.0f}s"
+            f"the atomic sequence-clip minimum {MIN_SEQUENCE_CLIP_SECONDS:.0f}s"
         )
     return asset
 
 
 def _sync_base_overrides():
     # Preserve the established patchable facade used by tests and callers while
-    # retaining the long-source gate in the shared builder.
+    # enforcing the current atomic-source gate in the shared builder.
     base.api_get = globals()["api_get"]
     base._build_asset = _build_asset
 

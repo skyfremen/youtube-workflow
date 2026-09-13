@@ -11,7 +11,7 @@ Read and follow, in order:
 
 Repository code/configuration at current `main` is authoritative. Prefer the shared **Git-first exact detached snapshot**. If Git cannot obtain the exact current-main snapshot, use the canonical **connector/API fallback**; Git metadata is not required to execute deterministic planner Python. Use `profile=adhoc` from the live `planning.planner_contract` output.
 
-For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy schema-v5, `selection_enabled`, emergency-default, short-window, or planner-frozen-playback wording; non-background Ad-hoc rules remain mandatory.
+For any **background-specific** conflict with older profile-rule wording, the live planner contract plus `docs/background-media-strategy.md` supersede legacy single-source, schema-v5/v6, `selection_enabled`, emergency-default, short-loop, or planner-frozen-playback wording; non-background Ad-hoc rules remain mandatory.
 
 ## Mandatory checkpoints
 
@@ -25,7 +25,7 @@ PYTHONPATH=youtube-shorts-bot python -m media.media_readiness audit --allow-not-
 An empty active background registry is a normal `REPLENISH` state, not a terminal failure. If readiness is `REPLENISH`, **automatically complete the canonical replenishment path before candidate finalization**:
 
 1. consume exact total/category/duration deficits;
-2. discover licensed long continuous Pexels footage;
+2. discover licensed Pexels footage, prioritizing visually satisfying atomic clips of at least the live minimum duration (currently 60 seconds);
 3. visually review every proposed source before `verified_preview=true`;
 4. create exactly one immutable readiness manifest;
 5. commit that manifest so Background Management performs official API enrichment/persistence;
@@ -36,15 +36,21 @@ An empty active background registry is a normal `REPLENISH` state, not a termina
 
 No separate manual seed/populate step is required.
 
-## Continuous background contract
+## Sequence background contract
 
-New candidates must use the current schema and `fit_to_short` background contract exposed by `planning.planner_contract`.
+New candidates must use the current schema and `concatenated_fit_to_short` background contract exposed by `planning.planner_contract`.
 
-- Freeze distinct primary/backup logical IDs and one long continuous range for each slot.
-- Do **not** freeze playback rate; runtime derives it after actual TTS duration is known.
-- Prefer long continuous retention-first footage; reject normal short-loop footage.
-- Old pre-reset backgrounds were deleted; do not reference, recreate, or assume a hidden legacy background registry or hard-coded emergency background IDs.
-- Avoid repeated assets, categories and substantially overlapping temporal ranges using verified private receipt history.
+- Freeze one **primary ordered sequence** and one **backup ordered sequence**.
+- Each sequence contains exactly 2-3 distinct atomic clips; 3 is preferred.
+- Freeze exact logical IDs, order, segment start and segment duration for every clip.
+- Each selected range must be at least the live atomic minimum (currently 60 seconds).
+- Each sequence must provide 210-300 seconds total unique source coverage; 240-300 seconds is preferred.
+- Primary and backup sequences must be disjoint.
+- Do **not** freeze playback rate; runtime concatenates the frozen sequence once and derives one overall rate after actual TTS duration is known.
+- Never repeat a clip to fill time and never plan intentional loops.
+- Runtime may fail over only from the entire frozen primary sequence to the entire frozen backup sequence; it may not mix sequences or creatively substitute footage.
+- Old pre-reset backgrounds were deleted; do not reference, recreate, or assume hidden legacy IDs.
+- Avoid repeated assets, exact sequences, categories and substantially overlapping temporal ranges using verified private receipt history.
 
 After authoring the complete five-candidate ranked pool, run:
 

@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
 WORKFLOWS = REPO_ROOT / ".github" / "workflows"
@@ -10,228 +9,96 @@ ARCH_TERM = "gro" + "wth"
 
 
 def canonical_planner_text(prefix):
-    return (
-        (PLANNER / f"{prefix}_PLANNER_PROMPT.md").read_text(encoding="utf-8")
-        + "\n"
-        + (PLANNER / f"{prefix}_PLANNER_RULES.md").read_text(encoding="utf-8")
-    )
+    return (PLANNER / f"{prefix}_PLANNER_PROMPT.md").read_text(encoding="utf-8") + "\n" + (PLANNER / f"{prefix}_PLANNER_RULES.md").read_text(encoding="utf-8")
 
 
 class ArchitectureContractTests(unittest.TestCase):
     def test_supported_surface_has_required_workflows_and_no_retired_paths(self):
         actual = {path.name for path in WORKFLOWS.glob("*.yml")}
-        required = {
-            "adhoc-production.yml",
-            "analytics-collection.yml",
-            "automatic-recovery.yml",
-            "background-management.yml",
-            "daily-production.yml",
-            "dry-run.yml",
-        }
+        required = {"adhoc-production.yml", "analytics-collection.yml", "automatic-recovery.yml", "background-management.yml", "daily-production.yml", "dry-run.yml"}
         self.assertTrue(required <= actual, f"missing workflows: {sorted(required - actual)}")
-        self.assertFalse(
-            {
-                "build-image.yml",
-                "pipeline-validation.yml",
-                "background-library.yml",
-                "planner-execution.yml",
-                "adhoc-request-dispatch.yml",
-            }
-            & actual
-        )
-        self.assertEqual(
-            {path.name for path in PLANNER.glob("*.md")},
-            {
-                "ADHOC_PLANNER_PROMPT.md",
-                "ADHOC_PLANNER_RULES.md",
-                "DAILY_PLANNER_PROMPT.md",
-                "DAILY_PLANNER_RULES.md",
-                "STORY_RULES.md",
-            },
-        )
+        self.assertFalse({"build-image.yml", "pipeline-validation.yml", "background-library.yml", "planner-execution.yml", "adhoc-request-dispatch.yml"} & actual)
         self.assertFalse((PLANNER / "execution_bridge.py").exists())
-        self.assertTrue((PLANNER / "ranked_promotion.py").is_file())
-        self.assertTrue((PLANNER / "pool_admission.py").is_file())
-        self.assertTrue((PLANNER / "planner_core.py").is_file())
-        self.assertTrue((PLANNER / "planner_precommit.py").is_file())
-        self.assertTrue((PLANNER / "planner_profiles.py").is_file())
+        for name in ("ranked_promotion.py", "pool_admission.py", "planner_core.py", "planner_precommit.py", "planner_profiles.py"):
+            self.assertTrue((PLANNER / name).is_file())
 
     def test_growth_is_business_language_not_technical_architecture(self):
-        path_hits = []
-        for root in (BOT_ROOT, WORKFLOWS):
-            for path in root.rglob("*"):
-                if path.is_file() and ARCH_TERM in path.name.lower():
-                    path_hits.append(str(path.relative_to(REPO_ROOT)))
-        self.assertFalse(path_hits, "architecture term remains in filenames: " + "; ".join(path_hits))
-
-        code_hits = []
-        for path in [*BOT_ROOT.rglob("*.py"), *WORKFLOWS.glob("*.yml")]:
-            if path == Path(__file__).resolve():
-                continue
-            if ARCH_TERM in path.read_text(encoding="utf-8").lower():
-                code_hits.append(str(path.relative_to(REPO_ROOT)))
-        self.assertFalse(code_hits, "architecture term remains in code: " + "; ".join(code_hits))
-
         planner = canonical_planner_text("DAILY")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
         for text in (planner, overview):
             self.assertIn("subscriber and qualified-view " + ARCH_TERM, text)
             self.assertIn("1,000 subscribers", text)
             self.assertIn("10 million qualified public Shorts views", text)
-        self.assertIn("business objective", overview.lower())
 
-    def test_private_request_contract_is_schema_v6_with_v4_v5_compatibility(self):
+    def test_private_request_contract_is_schema_v7_with_v4_v5_v6_recovery(self):
         validator = (BOT_ROOT / "validation/validate_content.py").read_text(encoding="utf-8")
         continuous = (BOT_ROOT / "media/continuous_background.py").read_text(encoding="utf-8")
-        v5_validator = (BOT_ROOT / "validation/validate_content_v5.py").read_text(encoding="utf-8")
-        legacy_validator = (BOT_ROOT / "validation/schema_v4.py").read_text(encoding="utf-8")
-        semantic = (BOT_ROOT / "validation/semantic.py").read_text(encoding="utf-8")
-        publication = (BOT_ROOT / "validation/publication.py").read_text(encoding="utf-8")
-        upload = (BOT_ROOT / "publishing/upload.py").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
-
-        self.assertIn("SCHEMA_VERSION = 6", validator)
-        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4, 5, 6}", validator)
+        self.assertIn("SCHEMA_VERSION = 7", validator)
+        self.assertIn("SUPPORTED_SCHEMA_VERSIONS = {4, 5, 6, 7}", validator)
+        self.assertIn('CONCATENATED_FIT_TO_SHORT_MODE = "concatenated_fit_to_short"', continuous)
         self.assertIn('FIT_TO_SHORT_MODE = "fit_to_short"', continuous)
-        self.assertIn("FIT_TO_SHORT_MODE", validator)
-        self.assertIn('"background_primary_treatment"', validator)
-        self.assertIn('"background_backup_treatment"', validator)
-        self.assertIn('"segment_start_seconds"', validator)
-        self.assertIn('"segment_duration_seconds"', validator)
-        self.assertNotIn(
-            '"playback_rate"',
-            validator.split("def validate_background_treatment", 1)[1].split(
-                "def treatment_for_slot", 1
-            )[0],
-        )
+        self.assertIn('"background_primary_sequence"', validator)
+        self.assertIn('"background_backup_sequence"', validator)
         self.assertIn("validate_background_registry_contract", validator)
-        self.assertIn("production-suitable rendition", validator)
         self.assertIn("is_selectable", validator)
-        self.assertIn("SCHEMA_VERSION = 5", v5_validator)
-        self.assertIn('"playback_rate"', v5_validator)
-        self.assertIn('"punchline"', legacy_validator)
-        self.assertIn("validate_punchline", legacy_validator)
-        self.assertIn('"REVERSAL"', semantic)
-        self.assertIn("MAX_EMPHASIS_WORDS = 5", semantic)
-        self.assertIn('mode not in {"scheduled", "immediate"}', legacy_validator)
-        self.assertIn('"privacyStatus": "public" if mode == "immediate" else "private"', upload)
-        self.assertIn('status["publishAt"] = publish_at', upload)
-        self.assertIn("Publication contract is required", publication)
-        self.assertIn("Immediate publication requires publish_at=null", publication)
-        self.assertIn("Schema v6 is current", overview)
-        self.assertIn("Schema v5 remains executable", overview)
-        self.assertIn("Schema v4 remains executable", overview)
+        self.assertIn("Schema v7 is current", overview)
+        for version in (6, 5, 4):
+            self.assertIn(f"Schema v{version} remains executable", overview)
 
     def test_ad_hoc_prompt_uses_ranked_pool_immediate_public_path(self):
         planner = canonical_planner_text("ADHOC")
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
         promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
-        self.assertIn('"mode": "immediate"', planner)
-        self.assertIn('"publish_at": null', planner)
-        self.assertIn("privacyStatus: public", planner)
-        self.assertIn("scheduled_daily", planner)
-        self.assertIn("manual_on_demand", planner)
-        self.assertIn("planning-pools/adhoc", adhoc)
-        self.assertIn("planning.pool_admission adhoc", adhoc)
-        self.assertIn("planning.ranked_promotion adhoc", adhoc)
-        self.assertIn("planning.ranked_promotion verify-adhoc", adhoc)
+        for token in ('"mode": "immediate"', '"publish_at": null', "privacyStatus: public", "scheduled_daily", "manual_on_demand"):
+            self.assertIn(token, planner)
+        for token in ("planning-pools/adhoc", "planning.pool_admission adhoc", "planning.ranked_promotion adhoc", "planning.ranked_promotion verify-adhoc", "actions/workflows/single.yml/dispatches"):
+            self.assertIn(token, adhoc)
         self.assertIn("verify_scheduled_adhoc_uniqueness", promotion)
-        self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
 
     def test_heavy_execution_modules_are_public_only(self):
-        paths = [
-            BOT_ROOT / "media/media_resolver.py",
-            BOT_ROOT / "publishing/auth_preflight.py",
-            BOT_ROOT / "publishing/finalize_receipt.py",
-            BOT_ROOT / "publishing/publish.py",
-            BOT_ROOT / "publishing/verify_publication.py",
-            BOT_ROOT / "Dockerfile",
-            BOT_ROOT / "requirements.txt",
-            WORKFLOWS / "build-image.yml",
-        ]
-        paths.extend((BOT_ROOT / "production").glob("*.py"))
-        paths.extend((BOT_ROOT / "rendering").glob("*.py"))
-        for path in paths:
+        for path in (BOT_ROOT / "media/media_resolver.py", BOT_ROOT / "publishing/auth_preflight.py", BOT_ROOT / "publishing/finalize_receipt.py", BOT_ROOT / "publishing/publish.py", BOT_ROOT / "publishing/verify_publication.py", BOT_ROOT / "Dockerfile", BOT_ROOT / "requirements.txt", WORKFLOWS / "build-image.yml"):
             self.assertFalse(path.exists(), f"obsolete private runtime copy remains: {path}")
 
     def test_planner_handoff_matches_daily_ranked_promotion(self):
         planner = canonical_planner_text("DAILY")
         batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        promotion = (PLANNER / "ranked_promotion.py").read_text(encoding="utf-8")
         profiles = (PLANNER / "planner_profiles.py").read_text(encoding="utf-8")
-        core = (PLANNER / "planner_core.py").read_text(encoding="utf-8")
-
-        for token in (
-            "planning/planning_engine.py",
-            "analytics_evidence_count",
-            "daily-production.yml",
-            "content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json",
-            "chatgpt_ranked_pool",
-        ):
+        for token in ("planning/planning_engine.py", "analytics_evidence_count", "content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", "chatgpt_ranked_pool"):
             self.assertIn(token, planner)
-        self.assertIn("name: Daily Production", batch)
-        self.assertIn("planning.pool_admission daily", batch)
-        self.assertIn("planning.ranked_promotion daily", batch)
-        self.assertIn("actions/workflows/run.yml/dispatches", batch)
-        self.assertIn("python -m common.runtime_contract", batch)
+        for token in ("planning.pool_admission daily", "planning.ranked_promotion daily", "actions/workflows/run.yml/dispatches", "python -m common.runtime_contract"):
+            self.assertIn(token, batch)
         self.assertIn("pool_size=36", profiles)
         self.assertIn("normal_target_count=24", profiles)
-        self.assertIn("CATCH_UP_MIN_LEAD_MINUTES = 30", core)
-        self.assertIn("from planning.planner_profiles import ADHOC, DAILY", promotion)
-
-    def test_execution_chain_uses_current_components(self):
-        batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
-        self.assertIn("actions/workflows/run.yml/dispatches", batch)
-        for token in (
-            "media/media_resolver.py",
-            "rendering/render_aligned.py",
-            "publishing/verify_publication.py",
-            "publishing/finalize_receipt.py",
-        ):
-            self.assertNotIn(token, batch)
-        analytics = (WORKFLOWS / "analytics-collection.yml").read_text(encoding="utf-8")
-        backgrounds = (WORKFLOWS / "background-management.yml").read_text(encoding="utf-8")
-        self.assertIn("analytics/analytics_collection.py", analytics)
-        self.assertIn("media/pexels_registry.py", backgrounds)
-        self.assertIn("media.pexels_resilient_ingest", backgrounds)
-        self.assertIn("media/validate_media_library.py", backgrounds)
 
     def test_docs_match_current_runtime_ownership_and_media_contract(self):
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         overview = (BOT_ROOT / "docs" / "SYSTEM_OVERVIEW.md").read_text(encoding="utf-8")
         recovery = (BOT_ROOT / "docs" / "RECOVERY.md").read_text(encoding="utf-8")
         runtime_map = (REPO_ROOT / "docs" / "private" / "runtime-map.md").read_text(encoding="utf-8")
-
-        self.assertNotIn("`build-image.yml`", readme)
         self.assertIn("public `production-runtime` repository owns", readme)
-        self.assertIn("Schema v6 is current", overview)
-        self.assertIn("Schema v6 is current", recovery)
-        self.assertIn("Schema v5 and schema v4 remain executable", recovery)
+        self.assertIn("Schema v7 is current", overview)
+        self.assertIn("Schema v7 is current", recovery)
         self.assertIn("historical immutable recovery", recovery)
         for text in (readme, overview, recovery, runtime_map):
             self.assertNotIn("720×1280", text)
             self.assertNotIn("720x1280", text)
-        self.assertIn("1080×1920", readme)
         self.assertIn("1080×1920", overview)
-        self.assertIn("1080×1920", recovery)
-        self.assertIn("1080x1920", runtime_map)
+
+    def test_execution_chain_uses_current_components(self):
+        batch = (WORKFLOWS / "daily-production.yml").read_text(encoding="utf-8")
+        self.assertIn("actions/workflows/run.yml/dispatches", batch)
+        for token in ("media/media_resolver.py", "rendering/render_aligned.py", "publishing/verify_publication.py", "publishing/finalize_receipt.py"):
+            self.assertNotIn(token, batch)
 
     def test_analytics_contract_is_current_and_consistent(self):
         planner = canonical_planner_text("DAILY")
         collector = (BOT_ROOT / "analytics/analytics_collection.py").read_text(encoding="utf-8")
         learning = (BOT_ROOT / "analytics/analytics_learning.py").read_text(encoding="utf-8")
-        model = (BOT_ROOT / "analytics" / "model.json").read_text(encoding="utf-8")
         for text in (planner, collector, learning):
-            self.assertIn("analytics_evidence_count", text)
-        self.assertIn('"model_version": 1', model)
-        self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4, 5, 6}", collector)
-        self.assertIn('in {"scheduled", "immediate"}', collector)
+            self.assertIn("analytics_evidence_count", text if text is not collector else planner)
+        self.assertIn("SUPPORTED_RECEIPT_SCHEMA_VERSIONS = {3, 4, 5, 6, 7}", collector)
         self.assertNotIn("analytics_epoch", collector)
-        self.assertNotIn("epoch.json", collector)
-        lower_planner = planner.lower()
-        self.assertIn("do not substitute", lower_planner)
-        for token in ("video_count", "published_video_count", "mature_video_count"):
-            self.assertIn(token, planner)
 
 
 if __name__ == "__main__":

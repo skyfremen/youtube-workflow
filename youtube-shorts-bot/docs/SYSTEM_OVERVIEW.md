@@ -14,39 +14,30 @@ A normal Daily plan publishes exactly **24 Shorts**, one per hour in **Asia/Sing
 ChatGPT / Work
   -> inspect current private repo rules/config/analytics/history
   -> run live planner contract + shared media-readiness audit
-  -> if background readiness is REPLENISH:
-       -> discover/review licensed long continuous Pexels footage
-       -> commit immutable replenishment manifest
-       -> Background Management enriches and persists active registry
-       -> refresh current main and rerun readiness until PASS
-  -> generate/reject/score complete creative candidates
-  -> choose exact primary/backup logical backgrounds
-  -> freeze one long continuous range for each background slot
+  -> REPLENISH when inventory/category/sequence-pair feasibility is insufficient
+  -> review licensed 60-120s Pexels atomic clips and commit immutable sourcing manifest
+  -> Background Management verifies/persists atomic registry
+  -> refresh main and repeat until PASS
+  -> author complete candidates
+  -> freeze primary and backup ordered 2-3 clip sequences and exact ranges
   -> do NOT freeze playback rate
   -> freeze final AI rank order
 
-Daily:
-  -> shared planner_precommit requires 36/36 valid
-  -> commit immutable ranked-pool attempt
-  -> private mechanical promotion of first target_count valid candidates
-  -> dispatch public run.yml
+Private planner
+  -> 36/36 Daily or 5/5 Ad-hoc planner precommit validation
+  -> immutable ranked pool
+  -> deterministic promotion in frozen rank order
+  -> immutable request
+  -> opaque dispatch to public runtime
 
-Ad-hoc:
-  -> shared planner_precommit requires 5/5 valid
-  -> commit immutable ranked-pool attempt
-  -> private mechanical promotion of first valid candidate
-  -> dispatch public single-item execution
-
-Public runtime:
-  -> fetch exact promoted private state
-  -> resolve/cache/normalize physical background rendition
-  -> synthesize TTS and determine actual complete visible timeline
-  -> derive playback rate = selected unique source duration / required background duration
-  -> prepare one continuous fit-to-short background
-  -> consume prepared background once; normal loop count = 0
-  -> compose card + branding + captions + audio
-  -> upload according to immutable publication mode
-  -> verify exact YouTube state
+Public runtime
+  -> fetch exact immutable request
+  -> resolve/cache/normalize every clip in selected sequence
+  -> TTS + exact visible duration
+  -> trim and concatenate frozen ranges once
+  -> derive one playback rate from total unique source duration / required duration
+  -> render with loop_mode=none and loop_count=0
+  -> upload/verify YouTube state
   -> persist private immutable evidence/receipt
 ```
 
@@ -54,92 +45,32 @@ Private code remains the source-of-truth planner/validator/control plane. Public
 
 ## Production output contract
 
-The canonical rendered Short is **1080×1920** at 30 fps. The public runtime owns the exact video/audio encoding and verifies the final output before publication; private planning owns content and immutable production intent rather than rendering implementation.
+The canonical rendered Short is **1080×1920** at 30 fps. Public execution owns exact video/audio encoding; private planning owns content and immutable production intent.
 
 ## Schema and compatibility
 
-**Schema v6 is current** for newly promoted Daily and Ad-hoc requests. It freezes story, narration, publication, logical primary/backup backgrounds and one continuous temporal range for each slot. Exact background playback rate is intentionally absent from the immutable request because it depends on actual post-TTS production timing.
+**Schema v7 is current** for newly promoted Daily and Ad-hoc requests. It freezes story, narration, publication, `concatenated_fit_to_short`, and two ordered disjoint background sequences. Each sequence has 2-3 distinct atomic clips and exact start/duration ranges. Exact playback rate remains runtime-derived after TTS.
 
-**Schema v5 remains executable for historical immutable recovery** using its original fixed segment/playback semantics when its referenced logical background still exists in the current active registry. **Schema v4 remains executable** for older historical immutable recovery under the same fail-closed background-resolution rule. Deleted pre-reset background definitions are not preserved in a legacy registry and are never silently restored.
+**Schema v6 remains executable** for historical immutable recovery with its one-long-source `fit_to_short` contract. **Schema v5 remains executable** for historical fixed treatment recovery. **Schema v4 remains executable** for older immutable recovery. Historical requests are never rewritten into v7.
 
-The private/public compatibility fingerprint covers current request and treatment semantics. Public execution validates source revision and compatibility before expensive work.
+The private/public compatibility fingerprint covers current v7 request/sequence semantics while the public runtime retains accepted legacy fingerprints for immutable recovery.
 
 ## Active background library
 
-`media-library/backgrounds.json` is the **only background registry**. The hard reset destructively removed all previous background definitions rather than moving them into a legacy file. The valid post-reset state is an empty active registry.
+`media-library/backgrounds.json` is the **only background registry**. The hard reset destructively removed the previous definitions; an empty registry is valid and audits as `REPLENISH`.
 
-```text
-old background library
-  -> DELETE definitions
-backgrounds.json = empty
-  -> readiness REPLENISH
-next Daily or Ad-hoc planner invocation
-  -> automatically source/review licensed long footage
-  -> immutable replenishment manifest
-  -> deterministic Pexels enrichment + validation
-  -> backgrounds.json populated
-  -> readiness PASS
-  -> ranked-pool authorship continues
-```
+Selectable atomic clips must be active, verified, commercial-use, watermark/text free, retention/quality qualified, production-rendition ready, and at least 60 seconds long. Readiness requires the configured 32-asset/category inventory **and** proof that two disjoint executable sequences can be formed. Thus a registry of only 60-second clips cannot incorrectly PASS when no 210-second sequence is possible.
 
-There is no legacy background registry, no `selection_enabled=false` retirement pool, and no immortal `satisfying-001` / `satisfying-002` emergency-default dependency. A historical request that references a deleted background fails closed rather than resurrecting it.
+Pexels remains the automatic provider. Coverage comes from combining unique reviewed clips rather than requiring one source longer than Pexels normally provides.
 
-Readiness remains retention-first and diversity-aware, but a selectable new background must also have trustworthy duration and enough unique footage for continuous fit-to-short operation within configured runtime playback bounds.
+## Schema-v7 background execution
 
-## Continuous background execution
+Each primary/backup sequence contains 2-3 unique clips and freezes 210-300 seconds of unique source coverage; 240-300 seconds and 3 clips are preferred. Primary and backup share no logical asset.
 
-Old current-production behavior was approximately:
+Runtime attempts the complete frozen primary sequence. If it cannot resolve/execute it, runtime may attempt the complete frozen backup sequence. It never mixes the two, invents a third fallback, loops a clip, restarts a sequence, or freezes a final frame to manufacture coverage.
 
-```text
-short source/range
-  -> planner-frozen speed
-  -> FFmpeg infinite-loop input
-  -> same few seconds repeat for full Short
-```
+Successful receipts record the chosen slot, ordered IDs/ranges, physical renditions, hashes, total source duration, derived rate, output duration and explicit zero-loop evidence. Schema-v7 receipts are eligible for the normal analytics-learning pipeline.
 
-New schema-v6 production is:
+## Planning and recovery
 
-```text
-long licensed source
-  -> planner freezes useful continuous range
-  -> TTS determines actual complete visible timeline
-  -> runtime derives exact speed
-  -> trim + speed one continuous range
-  -> duration coverage validation
-  -> compositor consumes prepared background once
-  -> intentional normal loops = 0
-```
-
-Insufficient unique footage fails closed. Runtime does not repeat, freeze the last frame, restart the opening or substitute an unrelated third logical asset.
-
-Persistent cache identity is based on the logical/physical normalized source rather than one Short's creative speed treatment. Range selection and derived rate are job-local outputs.
-
-## Background ownership
-
-Planner owns:
-
-- logical primary and backup;
-- selected continuous range for each;
-- creative/category and retention suitability;
-- crop/readability suitability;
-- anti-repetition reasoning across successful private receipts;
-- duration suitability.
-
-Runtime owns:
-
-- exact post-TTS required background duration;
-- derived playback rate;
-- physical rendition resolution/cache/normalization;
-- deterministic trim/speed execution;
-- fail-closed duration coverage validation;
-- zero-loop execution evidence.
-
-The background remains narration-first and retention-first rather than literal story reenactment. Preferred categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel movement and explicitly licensed gameplay.
-
-## Ranked planning and recovery
-
-For new ranked pools, ChatGPT / Work owns final editorial rank. Deterministic code validates but never creatively repairs, reranks or substitutes backgrounds.
-
-Daily pool size remains 36 with target 24. Ad-hoc pool size remains 5 with target 1. Promotion validates committed candidates again as defense in depth. If a candidate later fails current deterministic validation, promotion moves to the next candidate in frozen order; it does not repair the failed candidate.
-
-Existing historical immutable requests are never mutated. Schema v4/v5 parsing and execution semantics remain available, but deleted old background assets do not: recovery resolves through the current active `backgrounds.json` only and fails closed when a referenced background is absent.
+Daily and Ad-hoc share the same media readiness and planner validation contract. Existing immutable requests keep their original content identity during retries. Recovery reuses exact request bytes and never creates a replacement request merely because rendering, upload, verification or evidence persistence failed.
