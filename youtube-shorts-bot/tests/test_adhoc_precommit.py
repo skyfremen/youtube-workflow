@@ -8,6 +8,7 @@ from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIM
 from planning import adhoc_precommit
 from planning.planner_contract import build_contract
 from planning.planning_config import TITLE_WEIGHTS
+from validation.validate_content import SCHEMA_VERSION
 
 
 BOT_ROOT = Path(__file__).resolve().parents[1]
@@ -21,21 +22,26 @@ FIXTURE = (
 RULES_SHA = "1" * 40
 
 
-def _upgrade_request_v6(request):
-    request["schema_version"] = 6
-    for slot in ("primary", "backup"):
-        request["visual"][f"background_{slot}_treatment"] = {
-            "mode": "fit_to_short",
-            "segment_start_seconds": 0.0,
-            "segment_duration_seconds": 300.0,
-        }
+def _upgrade_request_v7(request):
+    request["schema_version"] = SCHEMA_VERSION
+    request["visual"] = {
+        "background_mode": "concatenated_fit_to_short",
+        "background_primary_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (1, 2, 3)
+        ],
+        "background_backup_sequence": [
+            {"background_id": f"satisfying-{index:03d}", "segment_start_seconds": 0.0, "segment_duration_seconds": 80.0}
+            for index in (4, 5, 6)
+        ],
+    }
 
 
 def valid_pool():
     pool = json.loads(FIXTURE.read_text(encoding="utf-8"))
     pool["planning_execution"]["rules_source_sha"] = RULES_SHA
     for candidate in pool["ranked_candidates"]:
-        _upgrade_request_v6(candidate["request"])
+        _upgrade_request_v7(candidate["request"])
     return pool
 
 
@@ -103,7 +109,7 @@ class AdhocPrecommitTests(unittest.TestCase):
         self.assertEqual(contract["title_score_components"], list(TITLE_WEIGHTS))
         self.assertEqual(contract["content_id_pattern"], CONTENT_ID_RE.pattern)
         self.assertTrue(contract["media_readiness"]["required_before_adhoc"])
-        self.assertEqual(contract["request_schema_version"], 6)
+        self.assertEqual(contract["request_schema_version"], SCHEMA_VERSION)
 
     def test_known_good_pool_requires_five_of_five(self):
         result = validate(valid_pool())
