@@ -43,7 +43,7 @@ New candidates must use the current schema and `fit_to_short` background contrac
 - Freeze distinct primary/backup logical IDs and one long continuous range for each slot.
 - Do **not** freeze playback rate; runtime derives it after actual TTS duration is known.
 - Prefer long continuous retention-first footage; reject normal short-loop footage.
-- Do not use the legacy recovery registry or hard-coded emergency background IDs for new planning.
+- Old pre-reset backgrounds were deleted; do not reference, recreate, or assume a hidden legacy background registry or hard-coded emergency background IDs.
 - Avoid repeated assets, categories and substantially overlapping temporal ranges using verified private receipt history.
 
 After authoring the complete five-candidate ranked pool, run:
