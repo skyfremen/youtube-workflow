@@ -5,22 +5,23 @@ from media.preview_review_materializer import _https_url, _representative_timest
 
 
 class BackgroundReviewTransportContractTests(unittest.TestCase):
-    def test_background_management_dispatches_public_review_evidence(self):
+    def test_background_management_does_not_require_public_review_evidence(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
-        self.assertIn('review-evidence.yml/dispatches', workflow)
-        self.assertIn('PUBLIC_PRODUCTION_TOKEN', workflow)
-        self.assertIn('discovery_result', workflow)
-        self.assertIn('source_sha', workflow)
+        self.assertNotIn('review-evidence.yml/dispatches', workflow)
+        self.assertNotIn('PUBLIC_PRODUCTION_TOKEN', workflow)
+        self.assertNotIn('Dispatch stateless exact-source review evidence', workflow)
         self.assertNotIn('verified_preview=true', workflow)
         self.assertNotIn('ffmpeg', workflow.lower())
+        self.assertIn('Commit discovery result', workflow)
+        self.assertIn('Ingest reviewed readiness manifest', workflow)
 
-    def test_discovery_is_persisted_before_review_dispatch(self):
+    def test_discovery_is_persisted_for_chatgpt_local_review(self):
         workflow = Path('.github/workflows/background-management.yml').read_text(encoding='utf-8')
-        commit_index = workflow.index('- name: Commit discovery result')
-        dispatch_index = workflow.index(
-            '- name: Dispatch stateless exact-source review evidence'
+        self.assertIn(
+            'ChatGPT/Work consumes the exact\n      # preview URLs from this result and performs visual review locally',
+            workflow,
         )
-        self.assertLess(commit_index, dispatch_index)
+        self.assertNotIn('action=review', workflow)
 
     def test_materializer_builds_evenly_distributed_review_points(self):
         self.assertEqual(
@@ -36,10 +37,11 @@ class BackgroundReviewTransportContractTests(unittest.TestCase):
         policy = Path('youtube-shorts-bot/docs/background-media-strategy.md').read_text(
             encoding='utf-8'
         )
-        self.assertIn('background-review-evidence-<request_id>', policy)
-        self.assertIn('transport only', policy)
-        self.assertIn('ChatGPT/Work must download the artifact', policy)
+        self.assertIn('canonical planner-time path is local to ChatGPT/Work', policy)
+        self.assertIn('preview_review_materializer', policy)
+        self.assertIn('optional transport fallback', policy)
         self.assertIn('GitHub Actions must never set `verified_preview`', policy)
+        self.assertIn('Local Python outbound HTTPS is **not** a correctness dependency', policy)
 
 
 if __name__ == '__main__':
