@@ -253,7 +253,7 @@ def self_test():
         checks.append(name)
     r=registry(); ok("1 registry parses"); c=build_context(); ok("2 context builds")
     ok("3 context compact",len(pretty(c))<=40000); ok("4 shortlist small",5<=len(c["background_choices"])<=BG_LIMIT)
-    src=Path(__file__).read_text(); bad=["minimum 32 assets","PASS / "+"RE"+"PLENISH","category minimum","inventory readiness threshold","RE"+"PLENISH"]
+    src=Path(__file__).read_text(); bad=["minimum "+"32 assets","PASS / "+"RE"+"PLENISH","category "+"minimum","inventory readiness "+"threshold","RE"+"PLENISH"]
     ok("5 no inventory gate",not any(x in src for x in bad))
     ids=[x["id"] for x in c["background_choices"][:3]]
     filler=" ".join(["Then everything changed when the truth finally came out."]*47); payoff="I had the receipts"
