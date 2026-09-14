@@ -146,6 +146,12 @@ def validate_request(data) -> dict:
     return data
 
 
+def validate_media_tools() -> None:
+    missing = [tool for tool in ("ffmpeg", "ffprobe") if shutil.which(tool) is None]
+    if missing:
+        raise SeedError(f"Required media tools are unavailable: {', '.join(missing)}")
+
+
 def crop_geometry(width: int, height: int):
     width, height = int(width), int(height)
     if width <= 0 or height <= 0:
@@ -563,6 +569,7 @@ def rebuild_review_artifact(manifest: dict, output_dir: Path) -> None:
 
 
 def discover(request_path: Path, api_key: str, output_dir: Path, registry_path: Path = REGISTRY, reviews_root: Path = REVIEWS) -> Path:
+    validate_media_tools()
     request_path = Path(request_path)
     review_id = request_id_from_path(request_path)
     request = validate_request(read_json(request_path))
