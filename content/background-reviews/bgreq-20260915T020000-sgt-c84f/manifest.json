@@ -1,0 +1,29 @@
+{
+  "candidates": [
+    {
+      "category": "pov_movement",
+      "download_url": "https://videos.pexels.com/video-files/5960054/5960054-uhd_3840_2160_25fps.mp4",
+      "duration_seconds": 319.978,
+      "fps": 25.0,
+      "height": 2160,
+      "id": "px-5960054",
+      "source_url": "https://www.pexels.com/video/traveling-on-a-forest-road-5960054/",
+      "width": 3840
+    },
+    {
+      "category": "pov_movement",
+      "download_url": "https://videos.pexels.com/video-files/35066724/14853924_1080_1920_30fps.mp4",
+      "duration_seconds": 84.633,
+      "fps": 30.0,
+      "height": 1920,
+      "id": "px-35066724",
+      "source_url": "https://www.pexels.com/video/modern-melbourne-escalator-station-tour-35066724/",
+      "width": 1080
+    }
+  ],
+  "request": {
+    "max_candidates": 48,
+    "target_per_category": 6
+  },
+  "review_id": "bgreq-20260915T020000-sgt-c84f"
+}
