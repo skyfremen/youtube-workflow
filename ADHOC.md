@@ -5,11 +5,11 @@ You are the creative planner. Deterministic code owns everything mechanical afte
 ## Normal run
 
 1. Read `content/context.json`.
-2. Generate about 10-15 lightweight premises.
+2. Generate about 10-15 lightweight premises internally.
 3. Compare them with `recent_story_cards`; reject semantic duplicates.
-4. Rank the best five ideas.
-5. Keep all five only as lightweight idea cards.
-6. Fully author **only Rank #1**.
+4. Rank the strongest candidates internally and choose one winner.
+5. Fully author only that winner; persist only the winner, not runner-up ideas.
+6. Choose exactly **4 semantic emoji cues** for the winner.
 7. Choose exactly **3 distinct** background IDs from `background_choices`.
 8. Write exactly one new immutable file under `content/drafts/`.
 9. Check the **Finalize Ad-hoc Draft** workflow run triggered by the exact commit that created that draft.
@@ -51,6 +51,16 @@ During repair, do not inspect `adhoc.py`, workflow YAML, repository history, the
 - No background music.
 - Pick backgrounds only from the supplied shortlist. Choose for semantic fit; code decides renditions, timing, cropping, speed, and other media details.
 
+## Emoji cues
+
+Choose exactly four semantic cues that match four meaningful beats of the winning story. Use cue words, not raw emoji characters.
+
+Supported cues are:
+
+`shock`, `surprise`, `argument`, `anger`, `betrayal`, `suspicion`, `secret`, `evidence`, `money`, `revenge`, `embarrassment`, `victory`, `funny`, `romance`, `panic`, `confusion`, `disbelief`, `warning`, `celebration`, `awkward`.
+
+Deterministic code maps the cues to exactly four production emojis. Emoji selection is non-blocking: if `emoji_cues` is missing, malformed, duplicated after mapping, or contains an unsupported cue, production uses the safe default set `😳`, `💬`, `🔥`, `👀` instead of failing the draft.
+
 ## Draft contract
 
 Write JSON with this shape:
@@ -58,19 +68,11 @@ Write JSON with this shape:
 ```json
 {
   "draft_version": 1,
-  "ideas": [
-    {
-      "rank": 1,
-      "premise": "...",
-      "category": "...",
-      "conflict": "...",
-      "twist": "...",
-      "payoff": "...",
-      "why_it_works": "..."
-    }
-  ],
   "winner": {
-    "rank": 1,
+    "premise": "...",
+    "category": "...",
+    "conflict": "...",
+    "twist": "...",
     "hook": "...",
     "narration": "...",
     "title": "...",
@@ -78,12 +80,15 @@ Write JSON with this shape:
     "lead_gender": "female",
     "story_tone": "dramatic",
     "payoff": "...",
+    "emoji_cues": ["shock", "evidence", "panic", "victory"],
     "background_ids": ["...", "...", "..."]
   }
 }
 ```
 
-`ideas` must contain exactly ranks 1-5. Ranks 2-5 stay lightweight: no narration, title, description, background plan, voice plan, or production fields.
+Do not persist rejected or runner-up ideas. The brainstorming, duplicate comparison, ranking, and selection process stays inside the planning invocation; GitHub receives only the production winner.
+
+`emoji_cues` is optional at the deterministic contract level so a cue problem can never block production, but normal creative planning should provide exactly four supported cues.
 
 For a repair/revision, the root may additionally contain:
 
@@ -91,4 +96,4 @@ For a repair/revision, the root may additionally contain:
 "supersedes_draft_id": "draft-..."
 ```
 
-Do not invent IDs, timestamps, TTS voices, media URLs, render settings, execution state, or publication schedules inside the draft.
+Do not invent IDs, timestamps, TTS voices, raw emojis, media URLs, render settings, execution state, or publication schedules inside the draft.
