@@ -1,0 +1,35 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5c0c2536a8623156d5780b7a",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-14T12:35:55.625383Z",
+  "request_blob_sha": "cc63286ec366e92524946508a50124f608c029d3",
+  "request_path": "content/requests/wd-5c0c2536a8623156d5780b7a.json",
+  "source_commit_sha": "320fdbe00ec7b6a660f809335f1676d06c8ba661",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden jewelry receipt, secret phone calls, and a velvet box made her certain a proposal was coming. The real reason for the surprise was something completely different.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-04bf7f151064062af9c5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Thought He Was About to Propose"
+    },
+    "status": {
+      "privacyStatus": "public",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "1b7b1724156b0d88ef430ec94998306b99b67e6e",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34843577630"
+  },
+  "youtube_video_id": "9E11y2rCm5w"
+}
