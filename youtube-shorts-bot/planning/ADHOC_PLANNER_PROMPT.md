@@ -1,54 +1,83 @@
 # Wacky Dramas — Ad-hoc Planner
 
-This is the canonical **Ad-hoc profile** entry point for the shared Wacky Dramas planner.
+This is the canonical **new Ad-hoc planning** entry point.
 
-Read and follow, in order:
+Repository code/configuration at exact current `main` is authoritative. Use the authorized GitHub connector/API. Do not use shell Git, clone/fetch/pull, DNS/proxy repair, a full checkout, or reconstruction of the planner tree.
 
-1. `docs/private/PLANNER_PROMPT.md` — shared connector-native execution/replenishment/drift contract.
-2. `planning/PLANNER_MATERIALIZATION.json` — machine-readable ChatGPT/Work checkpoint contract.
-3. `planning/ADHOC_PLANNER_RULES.md` — Ad-hoc creative/identity/promotion rules.
-4. `planning/STORY_RULES.md`.
-5. `docs/background-media-strategy.md` — canonical shared background policy.
+Read only the current exact-SHA files needed for this invocation:
 
-Repository code/configuration at exact current `main` is authoritative. Resolve current `main` through the authorized GitHub connector/API and freeze `rules_source_sha`. **Do not shell-Git the repository and do not reconstruct the planner module tree locally.** Fetch the exact-SHA self-contained `planning/connector_checkpoint.py`; only that checkpoint file plus the authored pool/evidence JSON need local staging.
+1. `docs/private/PLANNER_PROMPT.md` — shared four-pass execution contract.
+2. `planning/PLANNER_MATERIALIZATION.json` — connector-native materialization/checkpoint contract.
+3. `planning/ADHOC_PLANNER_RULES.md` — Ad-hoc semantic/identity rules.
+4. `planning/STORY_RULES.md` — shared story/metadata rules.
+5. `docs/background-media-strategy.md` — selected-background policy.
+6. Exact-SHA `planning/connector_checkpoint.py` — single mechanical planning authority.
 
-For execution/bootstrap conflicts with older wording, the current `planning/PLANNER_MATERIALIZATION.json` and `docs/private/PLANNER_PROMPT.md` win. GitHub Actions must not perform Ad-hoc creative planning.
+Historical immutable pools/requests keep their historical recovery behavior. The rules below apply to **new planning**.
 
-## Ad-hoc contract
+## Current Ad-hoc contract
 
-Use `profile=adhoc` from the standalone checkpoint contract. The ranked pool contains exactly **5** candidates in frozen rank order. `target_count=1`.
-
-For `manual_on_demand`, allocate a distinct stable immutable invocation namespace after current state inspection; multiple manual invocations may coexist on the same Singapore date. An existing same-date `scheduled_daily` request is not a manual collision. For `scheduled_daily`, preserve the canonical once-per-date 01:00 SGT namespace and recover existing canonical state rather than replanning it.
-
-Every candidate uses the canonical immediate publication object:
+- `planning_mode = manual_on_demand` only.
+- `target_count = 1`.
+- `candidate_count = 1`.
+- `reserve_candidate_count = 0`.
+- Publication is immediate/public using the canonical object:
 
 ```json
 {"mode":"immediate","timezone":"Asia/Singapore","publish_at":null}
 ```
 
-## Background readiness and sequence contract
+- Global background readiness is **not** a planner prerequisite.
+- Automatic planner replenishment is **disabled**.
+- Selected-background hard validation is mandatory.
+- After successful immutable pool commit, ChatGPT/Work planning ends.
 
-**Apply the shared readiness-first gate before interpreting replenishment history.** Audit the current registry first. If current readiness is `PASS`, continue this Ad-hoc invocation immediately; legacy, incompatible, unfinished or exhausted replenishment history cannot block or restart it. Only if current readiness is `REPLENISH` may session history control the next step. When `REPLENISH` has no compatible current-format session for this exact planner invocation, create a fresh stable schema-v3 attempt 1 instead of reporting a legacy/incompatible-state blocker. A legacy-only state or the absence of a resumable current session is never by itself a terminal result.
+The single candidate may retain `rank = 1` for structural compatibility. There is no creative rank competition and no first-valid-of-five fallback.
 
-An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, or create the fresh current-format session required by the readiness-first gate, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Ad-hoc invocation and create its five-candidate ranked pool.
+## Exactly four passes
 
-New requests use schema v7 `concatenated_fit_to_short`:
+### PASS 1 — contract discovery and minimal preflight
 
-- one primary ordered sequence and one backup ordered sequence;
-- each sequence has 2-3 distinct atomic clips; 3 preferred;
-- every chosen range is at least 60 seconds;
-- each sequence totals 210-300 seconds; 240 seconds preferred;
+1. Resolve current `main` through the connector and freeze `rules_source_sha`.
+2. Fetch the exact-SHA standalone checkpoint and resolve its `contract` output.
+3. Resolve the current pool/request schema, manual identity rules, immediate publication representation, voice rules, selected-background rules, canonical fallback background category, and checkpoint/evidence schema.
+4. Inspect only targeted recent story history, analytics/editorial evidence, recent background use, identity allocation, and the registry entries needed to select actual candidate backgrounds.
+5. Do **not** run global media readiness, inspect replenishment sessions, create discovery/replenishment state, or manually reproduce checkpoint validation.
+
+### PASS 2 — creative authorship and semantic review
+
+Create exactly **one** production-quality candidate. ChatGPT owns semantic/editorial judgment: originality, near-duplicate avoidance, hook, conflict/stakes, escalation, payoff, truthful title, spoken flow, lead gender/tone, voice suitability, punchline semantics, background suitability, visual continuity/readability, and undesirable recent reuse.
+
+Author the complete story/title/metadata/voice/punchline request plus:
+
+- one `background_category` on the pool candidate;
+- one primary ordered sequence;
+- one backup ordered sequence;
+- exact logical clip IDs, order, segment starts and segment durations.
+
+For schema-v7 `concatenated_fit_to_short`:
+
+- both sequences use the candidate's **same** background category;
+- 2–3 distinct clips per sequence, 3 preferred;
 - primary and backup are disjoint;
-- freeze exact logical IDs, order, segment start and duration;
-- do not freeze playback rate; runtime derives one overall rate after actual TTS duration;
-- never repeat a clip to fill time and never intentionally loop;
-- avoid recent/repeated assets, exact sequences, categories and substantially overlapping ranges using private receipt history.
+- no intentional looping;
+- do not author or freeze playback rate; runtime derives it after actual narration/timeline duration.
 
-The connector-evidence JSON must include only the selected IDs and current exact-SHA evidence showing each is eligible with trusted duration. Do not copy the full registry locally merely to validate the pool.
+Choose the category that best fits the story. If it cannot form hard-valid primary and backup sequences, try another suitable eligible category. If needed, use the **canonical fallback category reported by the current checkpoint contract**. Fallback never relaxes hard validity.
 
-## Mandatory checkpoint
+If the story/title/voice/background is weak or invalid, repair or regenerate the affected part automatically. Do not terminate for a normal recoverable authoring problem.
 
-After creative/adversarial review and complete five-candidate authorship, stage the exact-SHA standalone checkpoint and run:
+### PASS 3 — one canonical deterministic checkpoint
+
+Stage only:
+
+- exact-SHA `connector_checkpoint.py`;
+- the authored one-candidate pool JSON;
+- small connector evidence JSON for drift, uniqueness, and the exact selected background IDs.
+
+Selected-background evidence must satisfy the current checkpoint's hard requirements. Do not copy the full registry locally and do not include global readiness/replenishment state.
+
+Run:
 
 ```bash
 python connector_checkpoint.py validate \
@@ -58,6 +87,32 @@ python connector_checkpoint.py validate \
   --evidence /tmp/wacky-adhoc-connector-evidence.json
 ```
 
-All 5 candidates must `PASS` and `commit_allowed` must be true. Re-query current `main` immediately before the final run; evidence `drift.status=PASS` is valid only when `current_main_sha == rules_source_sha` after any required refresh. Final pool bytes must exactly match `draft_sha256`.
+Success requires:
 
-Commit only the allowed immutable pool artifact through the authorized GitHub connector/API. Then the existing private Ad-hoc Production workflow mechanically preserves rank order, promotes the first valid candidate, creates the canonical immutable request, validates it and dispatches the public single-item runtime. ChatGPT/Work does not directly render/TTS/upload.
+```text
+expected_candidates = 1
+valid_candidates = 1
+failed_candidates = 0
+commit_allowed = true
+```
+
+A checkpoint failure is a repair instruction. Read the exact diagnostic, repair only the affected authored field/candidate/selected asset, rebuild the draft bytes if changed, refresh evidence if needed, and rerun the **same** checkpoint. Never weaken validation to obtain PASS.
+
+### PASS 4 — drift check, immutable commit, end
+
+Immediately before commit:
+
+1. Re-query current `main`.
+2. If `current_main_sha != rules_source_sha`, classify the drift, refresh only affected rules/evidence, repair only if required, and rerun the checkpoint.
+3. Require the latest checkpoint to be `PASS` with `commit_allowed=true` and 1/1 valid.
+4. Require final pool bytes to match the checkpoint `draft_sha256` exactly.
+5. Commit exactly one immutable Ad-hoc planning-pool artifact using the authorized connector/API and repository commit convention.
+6. Confirm only that the commit succeeded.
+
+Then **CHATGPT / WORK PLANNING ENDS**.
+
+Do not poll private Production, public runtime, rendering, TTS, alignment, YouTube upload, or YouTube verification after the pool commit. Those are downstream automation responsibilities and may be checked only in a separate explicit task.
+
+## Genuine terminal blockers before commit
+
+Terminate only after safe recovery is exhausted and one of these is genuinely true: the authoritative contract cannot be accessed; the canonical checkpoint cannot be staged/executed; no hard-valid selected background configuration exists after suitable alternatives and the canonical fallback are exhausted; the repository cannot accept the immutable commit after safe drift/conflict retry; or a current invariant makes production impossible.
