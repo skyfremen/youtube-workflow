@@ -37,5 +37,5 @@ jobs:
             tests/test_planning_runner.py \
             tests/test_workflow_boundary.py \
             tests/test_request_schema.py \
-            tests/test_background_sequence_policy.py \
+            tests/test_background_sequence_v7.py \
             tests/test_media_readiness.py
