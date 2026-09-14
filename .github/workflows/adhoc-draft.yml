@@ -16,6 +16,8 @@ concurrency:
 jobs:
   finalize:
     runs-on: ubuntu-latest
+    outputs:
+      request_source_sha: ${{ steps.request_commit.outputs.source_sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -47,19 +49,30 @@ jobs:
           echo "request_path=${request_path}" >> "${GITHUB_OUTPUT}"
 
       - name: Commit immutable request
+        id: request_commit
         shell: bash
         run: |
           set -euo pipefail
+          request_path="${{ steps.finalize.outputs.request_path }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${{ steps.finalize.outputs.request_path }}"
+          git add "${request_path}"
           if git diff --cached --quiet; then
             echo "Request already exists identically."
-            exit 0
+          else
+            git commit -m "[request] finalize immutable production request"
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
-          git commit -m "[request] finalize immutable production request"
-          git pull --rebase origin main
-          git push origin HEAD:main
+
+          git fetch origin main
+          git reset --hard origin/main
+          source_sha="$(git log --diff-filter=A --format=%H -- "${request_path}" | head -1)"
+          if [[ ! "${source_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::REQUEST_SOURCE_UNRESOLVED"
+            exit 1
+          fi
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
 
       - name: Persist precise draft failure
         if: ${{ failure() && steps.draft.outputs.id != '' }}
@@ -79,3 +92,11 @@ jobs:
           git commit -m "[failure] record draft validation failure"
           git pull --rebase origin main
           git push origin HEAD:main
+
+  dispatch:
+    needs: finalize
+    uses: ./.github/workflows/dispatch.yml
+    with:
+      request_source_sha: ${{ needs.finalize.outputs.request_source_sha }}
+    secrets:
+      PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
