@@ -2,133 +2,132 @@
 
 ## Active library lifecycle
 
-`media-library/backgrounds.json` is the **only background registry**. Pre-reset background definitions were **destructively removed**; they are not retained in a hidden fallback registry. The current registry stores reusable **atomic clips**, not Short-specific composites, and may validly contain `"assets": []` after a hard reset. Empty or insufficient inventory audits as `REPLENISH` rather than corruption.
+`media-library/backgrounds.json` is the canonical background registry. It stores reusable atomic clips, not Short-specific composites, and may legitimately be below the media-library maintenance thresholds.
 
-Daily and Ad-hoc share one readiness/replenishment path:
+Global inventory readiness is a **maintenance signal**, not a Daily/Ad-hoc planner admission gate. New planning does not stop merely because repository-wide readiness is `REPLENISH`, does not create/resume planner-bound replenishment sessions, and does not wait for discovery/readiness events before authoring a pool.
+
+Background discovery, provider transport, visual review, deterministic ingestion, readiness auditing and replenishment-state tooling may continue to exist for separate media-library maintenance. Those tools must not be interpreted as prerequisites for a normal Daily or Ad-hoc planning invocation.
+
+## Selected-background rule for new planning
+
+A new planner invocation cares only about the exact assets selected by its actual production candidates.
+
+For every selected asset, the current hard requirements remain mandatory, including where applicable:
+
+- registered in the active registry;
+- active and selectable;
+- verified and visually reviewed;
+- commercial use allowed;
+- watermark free;
+- no embedded text;
+- trusted provider duration;
+- production-suitable rendition;
+- quality/retention thresholds;
+- valid segment range;
+- schema compatibility.
+
+Global minimum asset counts, per-category inventory minimums, global sequence-capacity calculations and reserve-media targets do not invalidate an otherwise hard-valid selected sequence.
+
+## Category model
+
+Current logical categories are normalized by the repository background selector. New planning uses one `background_category` per pool candidate.
+
+Every clip in both the candidate's primary and backup sequences must belong to that same category.
+
+Correct:
 
 ```text
-audit -> REPLENISH -> resume/create stable planner-bound session
-      -> immutable schema-v3 deficit-targeted discovery request
-      -> Background Management/Pexels API filters duration + rendition eligibility
-      -> Background Management reads exact Pexels preview media
-      -> FFmpeg generates small representative JPEG contact sheets
-      -> private GitHub artifact + immutable review-evidence index
-      -> ChatGPT/Work downloads that exact artifact through the GitHub connection
-      -> ChatGPT inspects the JPEG pixels and assigns approval + semantic metadata
-      -> immutable evidence-bound review-decision state
-      -> approved category matches -> immutable schema-v2 readiness manifest
-      -> Background Management re-enriches/persists
-      -> immutable post-ingestion readiness event
-      -> PASS -> same original planner invocation continues
-      -> still REPLENISH and attempt < 5 -> next targeted discovery attempt
+background_category = cooking
+PRIMARY = cooking A, cooking B, cooking C
+BACKUP  = cooking D, cooking E, cooking F
 ```
 
-Provider discovery is deliberately split from editorial review. `media.pexels_discovery` may use the GitHub-held `PEXELS_API_KEY` to fetch exact provider metadata and discard clips below the live atomic-duration minimum or without a production-suitable rendition. For review transport it records the smallest useful exact provider rendition, while production suitability remains independently required. Background Management may perform **transport-only** media work: read/download those exact URLs, derive JPEG contact sheets, upload a private artifact and persist an immutable artifact index. It must not set `verified_preview=true`, invent semantic tags/scores, approve/reject a source, or write reviewed assets directly to the registry. ChatGPT/Work remains the sole visual/editorial approval owner.
+Incorrect:
 
-A discovery request is immutable under `content/background-sourcing/discovery-requests/`. Background Management writes the matching provider result under `content/background-sourcing/discovery-results/` and one or more immutable transport indexes under `content/background-sourcing/review-evidence/<request_id>-run-<run_id>.json`. Each index records the exact Background Management run and artifact identity, digest, evidence-manifest hash and provider IDs with contact sheets. Multiple run-scoped indexes allow safe evidence regeneration after artifact expiry without editing history.
+```text
+background_category = cooking
+PRIMARY = cooking A, cleaning B, city C
+```
 
-### Schema-v3 replenishment request
+Different Daily candidates may use different categories, and semantic/editorial diversity remains useful across the batch.
 
-New automatic replenishment attempts use discovery request schema v3. In addition to the existing plan date/request ID/candidate budget, each request freezes:
+## Preferred category and canonical fallback
 
-- `target_categories` containing only currently deficient categories;
-- the complete `category_deficits` snapshot and minimum required new asset count;
-- `exclude_provider_asset_ids`;
-- one stable `replenishment_session_id`;
-- the original planner invocation ID, profile/mode, Singapore date and initial rules SHA;
-- `attempt` from 1 through 5.
+ChatGPT/Work chooses the category that best suits the story first.
 
-The replenishment session ID is durable recovery state for the original Daily/Ad-hoc planner invocation. The same session ID is reused across retries and after recoverable interruption. Query order rotates by attempt so later attempts start with different canonical search vocabulary.
+If the preferred category cannot form hard-valid primary and backup sequences:
 
-Legacy schema-v1 and schema-v2 discovery requests remain readable for immutable history but must not be used for new automatic retries.
+```text
+preferred suitable category unavailable
+→ try another suitable eligible category
+→ if still needed, use the canonical fallback category exposed by the exact-SHA connector checkpoint contract
+```
 
-### Immutable review decisions
+There is one canonical fallback configuration; prompts must not duplicate a different fallback constant.
 
-After actual visual review, ChatGPT/Work writes one immutable review-decision JSON under `content/background-sourcing/review-decisions/<request_id>.json`. Review-decision schema v2 contains:
-
-- `replenishment_session_id`;
-- `request_id`;
-- `attempt`;
-- the frozen planner invocation and exact review-index/run/artifact/digest binding;
-- per-provider `decision`;
-- original `discovery_category`;
-- `reviewed_category` when confidently classifiable;
-- `category_match`;
-- stable `reason_code`.
-- the exact source page, concise reason, and immutable approved ingest metadata only for approvals.
-
-An approved candidate must visually match its discovery category. Search query/category metadata is provenance only and never sufficient to establish semantic category. A semantically mismatched clip is rejected for that attempt even if it might be useful elsewhere.
-
-For session discovery, `media.pexels_discovery` automatically excludes active+verified registry assets, every provider already returned by an earlier same-session discovery result, and every provider already reviewed in that session. Request-side `exclude_provider_asset_ids` remains explicit evidence and defense in depth, but recovery correctness does not depend on ChatGPT reconstructing it perfectly after interruption.
-
-`media.replenishment_state` derives the current phase from immutable requests, results, evidence indexes, decisions, readiness manifests and post-ingestion readiness events. It detects duplicate attempts/decisions, validates exact evidence and invocation binding, reports resumable pending phases, and emits the complete `E_MEDIA_REPLENISH_EXHAUSTED` diagnostic at the bound.
-
-Readiness PASS requires the configured inventory/category minima and proof that two disjoint executable v7 sequences can actually be formed.
-
-### Bounded continuation and terminal semantics
-
-`REPLENISH` and individual candidate rejection are recoverable states. They are not final planner results.
-
-After each reviewed/ingested attempt, re-resolve `main`, rerun readiness, and:
-
-- on `PASS`, resume the same original Daily/Ad-hoc planner invocation immediately;
-- on `REPLENISH` with `attempt < 5`, create the next targeted immutable attempt automatically;
-- after attempt 5, fail closed with `E_MEDIA_REPLENISH_EXHAUSTED` and report exact remaining deficits, attempts and rejection diagnostics.
-
-`DEFERRED_REPLENISHMENT` is reserved for a genuine bounded infrastructure wait expiration. It is not the correct response merely because a visual candidate was rejected.
-
-Never reduce quality, duration, licensing, rendition, watermark/text, semantic-review, or caption-readability thresholds to force readiness.
-
-## Preview-review evidence
-
-`verified_preview=true` means ChatGPT/Work reviewed **actual visual evidence for the exact Pexels source** before proposing it. GitHub transport success alone is never approval.
-
-The preferred transport is the **private Background Management review-evidence artifact**. For each new discovery result, Background Management runs `media.preview_review_materializer --contact-sheets-only` against exact Pexels preview URLs and creates compact JPEG contact sheets. It uploads lightweight review evidence, not source video, as `background-review-evidence-<request_id>-<run_id>` with a short retention window, then commits `content/background-sourcing/review-evidence/<request_id>-run-<run_id>.json` containing exact workflow-run/artifact identity and evidence hashes.
-
-Planner review order:
-
-1. Read the immutable discovery result and newest matching run-scoped review-evidence index whose artifact is still available.
-2. Through the authorized GitHub connection, list artifacts for the indexed `workflow_run_id`, require the indexed artifact ID/name/digest to match, and download that exact ZIP. GitHub connector delivery into ChatGPT/Work local storage is the canonical binary transfer bridge.
-3. Extract the ZIP locally. Verify `evidence-manifest.json` against the index SHA-256 and confirm provider IDs/source URLs correspond to the immutable discovery result.
-4. Inspect the actual `*/contact-sheet.jpg` pixels (and exact `*/preview.jpg` when useful). ChatGPT/Work alone decides approval, semantic tags, motion/readability judgment and scores.
-5. Persist the immutable review-decision document before continuing.
-6. Reject candidate-specific missing/unsuitable evidence and continue through reserves. Never convert transport success directly into `verified_preview=true`.
-7. If readiness is still short after reserves, continue with the next targeted attempt instead of ending the planner invocation.
-
-The workflow excludes provider IDs that are already active+verified in the registry from repeated artifact generation; this is transport optimization only. Future discovery uses a smaller exact provider rendition for contact-sheet generation while independently requiring a production-quality rendition for eventual production.
-
-If an artifact is unavailable/expired, a new run-scoped artifact/index may be generated for the same immutable discovery result. Native exact-source provider inspection and ChatGPT-local exact download remain valid fallbacks, including `media.preview_review_materializer --input-dir` when another trustworthy transport stages exact bytes.
-
-GitHub Actions may download/read exact provider media and derive contact sheets because that is **transport-only** processing. GitHub Actions must never set `verified_preview`, assign semantic metadata, approve/reject a source, create a readiness manifest, or otherwise perform ChatGPT-owned editorial judgment. Metadata, title, tags, duration, or artifact creation alone are not enough to approve a clip.
-
-`EVIDENCE_ACCESS_BLOCKED` is valid only after available indexed private artifacts and every other trustworthy exact-source transport are unusable for the candidates still needed for readiness. A successful required Background Management evidence run with a missing/mismatched index or artifact is `REVIEW_EVIDENCE_TRANSPORT_FAILED`, an infrastructure/contract failure, not a creative rejection. If the matching evidence run is still legitimately pending beyond the shared bounded continuation window, use `DEFERRED_REPLENISHMENT`.
-
-Background Management remains the hard technical admission boundary after ChatGPT review: it re-fetches official Pexels metadata/renditions and validates the reviewed readiness manifest before any asset becomes selectable.
+The fallback category is intended to favor broad story compatibility, continuous visual motion, subtitle readability, reliable production renditions and sufficient usable inventory. Fallback never relaxes hard selected-asset validation or same-category requirements.
 
 ## New-production visual model
 
-New requests use schema v7 `concatenated_fit_to_short`. For each candidate ChatGPT freezes a primary and backup ordered sequence of 2-3 distinct atomic clips, exact logical IDs, exact start/duration ranges, and sequence order. Primary and backup are disjoint. Playback rate is never frozen.
+New requests use schema v7 `concatenated_fit_to_short`.
 
-Runtime normalizes and trims each selected clip, concatenates the frozen sequence once, then derives `playback_rate = total_unique_sequence_source_seconds / required_background_output_duration` from the exact final timeline. Normal schema-v7 production has `loop_mode=none` and `loop_count=0`.
+For each candidate ChatGPT freezes:
+
+- one primary ordered sequence;
+- one backup ordered sequence;
+- 2–3 distinct clips per sequence, with 3 preferred;
+- exact logical background IDs;
+- exact sequence order;
+- exact segment start seconds;
+- exact segment duration seconds.
+
+Primary and backup are disjoint. Every chosen segment satisfies the current minimum source-duration rule and each sequence satisfies the current allowed total unique-source-duration range. No clip is intentionally repeated to fill time and normal schema-v7 production does not intentionally loop.
+
+ChatGPT does **not** choose, calculate or freeze playback rate. Runtime normalizes/trims the selected clips, concatenates the frozen sequence once, then derives the overall playback rate from total unique selected source duration and the final actual narration/timeline duration. Runtime still enforces its supported rate bounds and fails closed if the frozen request cannot execute.
 
 ## Duration policy
 
-Atomic clips require trusted provider duration and at least **60 seconds**. Each sequence freezes **210-300 seconds** total unique source coverage; **240-300 seconds** and 3 clips are preferred. Derived speed must stay within **1.0x-2.5x**. No clip repeats within a sequence and primary/backup may not share an asset.
+The current repository contract remains authoritative for numeric constants. At this version:
+
+- atomic clips require trusted duration and at least 60 seconds;
+- each sequence uses 2–3 clips;
+- each sequence freezes 210–300 seconds of total unique source coverage;
+- 240 seconds and 3 clips are preferred;
+- primary and backup may not share an asset;
+- no duplicate clip is permitted within one sequence.
+
+Do not copy numeric constants into additional planner prompts when the machine-readable checkpoint contract can supply them.
 
 ## Retention and provider policy
 
-Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified atomic sources are selectable. Preferred categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel motion and explicitly commercially licensed gameplay.
+Only active, verified, commercial-use, watermark-free, embedded-text-free, production-rendition-ready, quality/retention-qualified atomic sources are selectable. Preferred high-retention categories include cooking, baking, food preparation, satisfying processes, crafting, cleaning, assembly, POV movement, city/travel motion and explicitly commercially licensed gameplay.
 
-Pexels remains the canonical automatic provider. Deterministic provider discovery first removes clips that fail trusted duration/rendition eligibility. ChatGPT then visually screens the remaining exact sources before `verified_preview=true` using the preview-evidence contract above; Background Management rechecks the official Pexels API before registry persistence. Automatic sourcing should prioritize useful 60-120 second clips. A single source no longer needs to be 180 seconds because coverage comes from the frozen multi-clip sequence.
+Pexels remains the canonical automatic discovery provider for media-library maintenance. Provider metadata or search category is provenance, not visual truth. ChatGPT/Work visual review is still required before a discovered clip becomes verified/selectable; deterministic background-management tooling rechecks provider/licensing/rendition facts before registry persistence.
 
-## Primary/backup failure semantics
+## Separate media-library maintenance
 
-Runtime attempts the complete frozen primary sequence. If any required primary segment cannot execute, it may attempt the **entire frozen backup sequence**. It never partially mixes primary and backup or invents another fallback. If neither sequence executes, the candidate fails closed.
+The existing discovery/review/readiness tooling may continue to support deliberate library maintenance, including immutable discovery requests/results, review evidence, review decisions, ingestion manifests and readiness events. These artifacts are not deleted and remain useful for maintenance/history.
+
+A media-maintenance operation may still use `media.media_readiness` to identify inventory/category deficits and may refill the registry according to its own bounded workflow. That maintenance workflow must remain separate from normal Daily/Ad-hoc planner execution and must not turn a repository-wide inventory deficit into a planner-terminal result.
+
+GitHub Actions may perform deterministic provider discovery, transport, contact-sheet generation, registry ingestion and technical validation where already authorized. It must never make ChatGPT-owned visual/editorial approval decisions.
+
+## Preview-review evidence for maintenance
+
+When new media is deliberately sourced, `verified_preview=true` means ChatGPT/Work reviewed actual visual evidence for the exact source before approval. Transport success, metadata, duration, title/tags or artifact generation alone are not approval.
+
+The private Background Management review-evidence artifact remains a valid transport mechanism for exact-source contact sheets. Review decisions should continue to bind to immutable source/evidence identities, and deterministic ingestion should continue to revalidate provider facts before an asset becomes selectable.
+
+## Primary/backup runtime failure semantics
+
+Runtime attempts the complete frozen primary sequence. If a required primary segment cannot execute, it may attempt the **entire frozen backup sequence**. It never partially mixes primary and backup or invents another background. If neither frozen sequence executes, the candidate fails closed.
 
 ## Historical request behavior
 
-Schema v4/v5/v6 remain understood for immutable recovery. Schema v6 retains its historical one-long-source `fit_to_short` behavior and 180-second minimum; it is not used for new planning. A historical request whose deleted logical background ID is absent from the active registry fails closed.
+Schema v4/v5/v6 remain understood for immutable recovery. Schema v6 retains its historical one-long-source `fit_to_short` behavior and its historical readiness semantics; it is not used for new planning.
 
-## Evidence
+Historical replenishment/discovery/review/readiness artifacts remain immutable history. They must not be destructively migrated, and their existence does not block a new schema-v7 Daily/Ad-hoc planner invocation.
 
-Schema-v7 receipts record chosen slot, ordered segment IDs/ranges, resolved renditions, per-clip hashes, total unique source duration, derived overall playback rate, concatenated output evidence and explicit zero loops. Dry-run retains opening card, branding, handle/subscribe UI, captions, word highlighting and semantic punchline emphasis while exercising the no-loop sequence path.
+## Evidence and receipts
+
+Schema-v7 production receipts continue to record the chosen slot, ordered segment IDs/ranges, resolved renditions, per-clip hashes, total unique source duration, runtime-derived overall playback rate, concatenated output evidence and explicit no-loop behavior. This refactor changes planner admission/cardinality, not the public runtime request or receipt contract.
