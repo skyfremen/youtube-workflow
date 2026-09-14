@@ -2,11 +2,16 @@
 
 Keep strategy knobs here so planner behavior is auditable and tests can assert the
 production policy without scattering magic numbers across the codebase.
+
+Raw premise exploration may remain larger than the final production set, but new
+Daily planning must not require fully authoring reserve candidates. The historical
+``SEMIFINALIST_TARGET`` symbol is retained as a compatibility name and now equals
+the production slot count.
 """
 
 DAILY_PUBLISH_COUNT = 24
 RAW_CANDIDATE_COUNT = 120
-SEMIFINALIST_TARGET = 36
+SEMIFINALIST_TARGET = DAILY_PUBLISH_COUNT
 TITLES_PER_SEMIFINALIST = 5
 EXPLORATION_FRACTION = 0.20
 CANONICAL_TIMEZONE = "Asia/Singapore"
