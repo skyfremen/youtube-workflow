@@ -243,8 +243,8 @@ def validate_request(data) -> dict:
         raise SeedError("background request must contain exactly target_per_category and max_candidates")
     target = data["target_per_category"]
     limit = data["max_candidates"]
-    if isinstance(target, bool) or not isinstance(target, int) or not 3 <= target <= 12:
-        raise SeedError("target_per_category must be an integer from 3 to 12")
+    if isinstance(target, bool) or not isinstance(target, int) or not 3 <= target <= 100:
+        raise SeedError("target_per_category must be an integer from 3 to 100")
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= MAX_REVIEW_CANDIDATES:
         raise SeedError(f"max_candidates must be an integer from 1 to {MAX_REVIEW_CANDIDATES}")
     return data
