@@ -152,7 +152,7 @@ TARGET_FPS = 30.0
 MAX_UPSCALE = 1.05
 MAX_SOURCE_PIXELS = 4096 * 2160
 MIN_DURATION = 60.0
-MAX_REVIEW_CANDIDATES = 12
+MAX_REVIEW_CANDIDATES = 100
 PEXELS_SEARCH = "https://api.pexels.com/v1/videos/search"
 REQUEST_ID_RE = re.compile(r"^bgreq-[A-Za-z0-9-]{8,96}$")
 ASSET_ID_RE = re.compile(r"^px-[0-9]+$")
@@ -457,7 +457,7 @@ def collect_metadata_candidates(
 
     ordered = []
     indexes = {category: 0 for category in categories}
-    attempt_limit = min(request["max_candidates"] * 2, 24)
+    attempt_limit = min(request["max_candidates"] * 2, MAX_REVIEW_CANDIDATES * 2)
     while len(ordered) < attempt_limit:
         progressed = False
         category_counts = {category: 0 for category in categories}
