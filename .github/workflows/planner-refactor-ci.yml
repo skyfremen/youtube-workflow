@@ -1,0 +1,39 @@
+name: Planner Refactor CI
+
+on:
+  push:
+    branches:
+      - planner-simplification-20260914
+
+permissions:
+  contents: read
+
+jobs:
+  planner-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Compile planner code
+        working-directory: youtube-shorts-bot
+        run: python -m compileall -q planning validation media tests
+      - name: Run planner regression tests
+        working-directory: youtube-shorts-bot
+        run: |
+          python -m pytest -q \
+            tests/test_adhoc_precommit.py \
+            tests/test_daily_precommit.py \
+            tests/test_ranked_pool_contract.py \
+            tests/test_planner_contract_replenishment.py \
+            tests/test_shared_planner_architecture.py \
+            tests/test_planner_schedule_policy.py \
+            tests/test_planner_materialization.py \
+            tests/test_precommit_execution_environment.py \
+            tests/test_gitless_shared_planner.py \
+            tests/test_pool_admission.py \
+            tests/test_planning_engine.py \
+            tests/test_planning_runner.py \
+            tests/test_workflow_boundary.py \
+            tests/test_request_schema.py \
+            tests/test_background_sequence_policy.py \
+            tests/test_media_readiness.py
