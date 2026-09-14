@@ -349,7 +349,7 @@ def self_test():
     fake={"result_version":1,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
     validate_result(fake); ok("22 result validates")
     wdir=ROOT/".github/workflows"; names={p.name for p in wdir.glob("*.yml")}
-    ok("23 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})
+    ok("23 workflow set",names=={"adhoc-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
     ok("24 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
     legacy="youtube-"+"shorts-"+"bot/"
     live="\n".join(p.read_text(errors="ignore") for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts and p.suffix in {".py",".yml",".md",".json"})
