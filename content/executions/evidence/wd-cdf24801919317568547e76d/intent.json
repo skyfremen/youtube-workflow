@@ -1,0 +1,33 @@
+{
+  "content_id": "wd-cdf24801919317568547e76d",
+  "created_at": "2026-09-14T08:38:39.007000Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "ee8fab453a50af2967a7e4fc4238093680facad5",
+  "request_path": "content/requests/wd-cdf24801919317568547e76d.json",
+  "source_commit_sha": "4932333227aa659965e92c9795c844d6506ca4a5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My office lunch thief accidentally exposed herself when she complained to HR about the food she took. The meeting did not go the way she expected. #shorts #workplace #drama #storytime\n\n#WackyDramas",
+      "tags": [
+        "wd-id-c2032a4834432511b0d8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Stole My Lunch, Then Reported Me to HR"
+    },
+    "status": {
+      "privacyStatus": "public",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "1b7b1724156b0d88ef430ec94998306b99b67e6e",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34823207069"
+  }
+}
