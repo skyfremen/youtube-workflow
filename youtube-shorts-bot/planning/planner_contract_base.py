@@ -1,8 +1,8 @@
 """Expose the live shared planner contract to developers/CI as JSON.
 
 ChatGPT/Work uses the standalone connector-native checkpoint declared by
-PLANNER_MATERIALIZATION.json. This repository-native module remains useful in a
-real checkout for tests, diagnostics and downstream validation introspection.
+PLANNER_MATERIALIZATION.json. Global media inventory readiness remains available
+for separate maintenance, but is not a prerequisite for new Daily/Ad-hoc planning.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from media.media_readiness import MIN_SELECTABLE_ASSETS, REQUIRED_CATEGORY_MINIM
 from planning.planner_core import (
     CANDIDATE_ID_RE,
     CATCH_UP_MIN_LEAD_MINUTES,
+    LEGACY_POOL_SCHEMA_VERSION,
     POOL_SCHEMA_VERSION,
 )
 from planning.planner_profiles import (
@@ -40,7 +41,7 @@ from validation.validate_content import SCHEMA_VERSION
 
 ADHOC_PUBLICATION = ADHOC.publication_template
 DAILY_PUBLICATION = DAILY.publication_template
-ARCHITECTURE_VERSION = 2
+ARCHITECTURE_VERSION = 3
 SHARED_PRECOMMIT_MODULE = "planning.planner_precommit"
 SHARED_CANDIDATE_VALIDATOR = "planning.planner_core.candidate_errors"
 SHARED_REQUEST_VALIDATOR = "validation.validate_content.validate_request_data"
@@ -52,7 +53,7 @@ def _shared_contract_payload():
     return {
         "architecture_version": ARCHITECTURE_VERSION,
         "request_schema_version": SCHEMA_VERSION,
-        "ranked_pool_schema_version": POOL_SCHEMA_VERSION,
+        "planning_pool_schema_version": POOL_SCHEMA_VERSION,
         "precommit_module": SHARED_PRECOMMIT_MODULE,
         "candidate_validator": SHARED_CANDIDATE_VALIDATOR,
         "request_validator": SHARED_REQUEST_VALIDATOR,
@@ -107,7 +108,7 @@ def _materialization_summary():
 
 
 def build_contract():
-    """Return the canonical machine-readable planner contract for both profiles."""
+    """Return the canonical machine-readable planner contract for new planning."""
     assert_profiles_do_not_override_shared_contract()
     fingerprint = _shared_fingerprint()
     profiles = {
@@ -133,6 +134,8 @@ def build_contract():
         },
         "profiles": profiles,
         "request_schema_version": SCHEMA_VERSION,
+        "planning_pool_schema_version": POOL_SCHEMA_VERSION,
+        "historical_pool_schema_version": LEGACY_POOL_SCHEMA_VERSION,
         "ranked_pool_schema_version": POOL_SCHEMA_VERSION,
         "adhoc_pool_size": ADHOC.pool_size,
         "adhoc_planning_modes": sorted(ADHOC.planning_modes),
@@ -179,33 +182,42 @@ def build_contract():
                 "[--changed-path <path> ...]"
             ),
             "drift_policy": {
-                "rules": "full_refresh",
-                "media": "media_refresh",
-                "history": "history_refresh",
+                "rules": "refresh_affected_contract_and_revalidate",
+                "media": "refresh_selected_media_evidence_and_revalidate",
+                "history": "refresh_semantic_history_if_relevant",
                 "operational": "continue_without_planner_restart",
-                "unknown": "full_refresh",
+                "unknown": "refresh_affected_contract_and_revalidate",
             },
+            "planning_passes": 4,
+            "post_commit_monitoring": False,
             "rules": [
-                "ChatGPT/Work begins directly with the authorized GitHub connector/API; shell Git access to github.com is neither attempted nor required.",
+                "Use the authorized GitHub connector/API; shell Git access is neither attempted nor required by ChatGPT/Work.",
                 "Resolve one exact immutable current-main SHA and use it as rules_source_sha.",
-                "Fetch only the exact-SHA standalone connector checkpoint for local execution; do not reconstruct the repository planner tree.",
-                "Use a small connector-evidence JSON for drift, readiness, uniqueness and selected-background facts; do not copy the full background registry locally merely to validate the pool.",
-                "Require standalone checkpoint PASS and commit_allowed=true before immutable pool commit.",
-                "GitHub Actions must not execute creative planning.",
-                "Developers/CI may still use repository-native modules from a genuine checkout as a separate mode.",
+                "Fetch only the exact-SHA standalone connector checkpoint plus targeted evidence; do not reconstruct the repository tree.",
+                "Validate only selected background assets; global media readiness is not a planning prerequisite.",
+                "Require one canonical checkpoint PASS and commit_allowed=true before immutable pool commit.",
+                "Treat checkpoint failures as repair instructions until a genuine unrecoverable external blocker is reached.",
+                "After successful immutable pool commit, ChatGPT/Work planning ends; downstream production is automation-owned.",
+                "GitHub Actions must never perform creative planning or creative repair.",
             ],
         },
         "media_readiness": {
+            "planner_uses_global_readiness": False,
+            "required_before_daily": False,
+            "required_before_adhoc": False,
+            "automatic_continuation_required": False,
+            "automatic_replenishment_enabled": False,
+            "maintenance_only": True,
             "developer_ci_audit_command": "python -m media.media_readiness audit --allow-not-ready",
             "minimum_selectable_assets": MIN_SELECTABLE_ASSETS,
             "required_category_minimums": REQUIRED_CATEGORY_MINIMUMS,
-            "readiness_manifest_prefix": "content/background-sourcing/readiness/",
             "background_management_workflow": ".github/workflows/background-management.yml",
-            "required_before_daily": True,
-            "required_before_adhoc": True,
-            "replenish_is_terminal": False,
-            "automatic_continuation_required": True,
-            "chatgpt_work_local_full_registry_required": False,
+        },
+        "selected_background_validation": {
+            "required": True,
+            "same_category_primary_backup": True,
+            "global_registry_readiness_required": False,
+            "validate_only_referenced_assets": True,
         },
         "editorial_score_components": list(EDITORIAL_WEIGHTS),
         "title_score_components": list(TITLE_WEIGHTS),
