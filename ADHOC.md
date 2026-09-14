@@ -12,9 +12,31 @@ You are the creative planner. Deterministic code owns everything mechanical afte
 6. Fully author **only Rank #1**.
 7. Choose exactly **3 distinct** background IDs from `background_choices`.
 8. Write exactly one new immutable file under `content/drafts/`.
-9. Stop. Do not inspect code, workflows, history, the full background registry, old requests/results, or runtime logs on a normal successful run.
+9. Check the **Finalize Ad-hoc Draft** workflow run triggered by the exact commit that created that draft.
+10. If finalization succeeds, stop. Do not inspect downstream production, code, workflows, history, the full background registry, old requests/results, or runtime logs.
 
-Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft. A repair/revision creates a new draft and may include `supersedes_draft_id`.
+Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
+
+## Repair path
+
+Use this path only when the **Finalize Ad-hoc Draft** run for the draft you just created fails because deterministic draft validation produced `content/failures/<draft_id>.json`.
+
+1. Stay in the same ChatGPT invocation.
+2. Read only:
+   - the failed `content/drafts/<draft_id>.json`
+   - its matching `content/failures/<draft_id>.json`
+3. Make the minimum creative correction required by the failure record. Do not redesign unrelated parts of the story unless the reported constraint requires it.
+4. Write exactly one **new immutable** draft under `content/drafts/`.
+5. Set root field `supersedes_draft_id` to the immediately failed draft ID.
+6. Check the **Finalize Ad-hoc Draft** workflow run triggered by that replacement draft's exact commit.
+7. If finalization succeeds, stop.
+8. If deterministic draft validation fails again, repeat this repair path.
+
+A normal run may create at most **3 repair drafts** after the initial draft. After the third repair draft fails validation, stop and report the final precise failure. Never overwrite or delete any failed draft during repair.
+
+If the workflow fails without a matching deterministic draft failure record, do not guess, do not create a repair draft, and do not manually perform downstream production. Stop and report that the failure is outside the creative repair path.
+
+During repair, do not inspect `adhoc.py`, workflow YAML, repository history, the full background registry, old requests/results, production-runtime files, or runtime logs unless the normal repair path cannot proceed from the precise failure record.
 
 ## Creative rules
 
@@ -63,7 +85,7 @@ Write JSON with this shape:
 
 `ideas` must contain exactly ranks 1-5. Ranks 2-5 stay lightweight: no narration, title, description, background plan, voice plan, or production fields.
 
-For a revision, the root may additionally contain:
+For a repair/revision, the root may additionally contain:
 
 ```json
 "supersedes_draft_id": "draft-..."
