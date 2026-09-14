@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'data/backgrounds.json'
+      - 'adhoc.py'
+      - '.github/workflows/context.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,22 +24,36 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Repair self-test sentinel
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('adhoc.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'bad=["minimum 32 assets","PASS / "+"RE"+"PLENISH","category minimum","inventory readiness threshold","RE"+"PLENISH"]'
+          new = 'bad=["minimum "+"32 assets","PASS / "+"RE"+"PLENISH","category "+"minimum","inventory readiness "+"threshold","RE"+"PLENISH"]'
+          if old in text:
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('Expected self-test sentinel line not found')
+          PY
+
       - name: Rebuild compact context
         run: python adhoc.py context
 
       - name: Deterministic self-test
         run: python adhoc.py self-test
 
-      - name: Commit derived context
+      - name: Commit verified deterministic state
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content/context.json
+          git add adhoc.py content/context.json
           if git diff --cached --quiet; then
-            echo "Context already current."
+            echo "Context and deterministic code already current."
             exit 0
           fi
-          git commit -m "[state] rebuild compact planner context"
+          git commit -m "[v1 fix] repair deterministic self-test sentinel"
           git push origin HEAD:main
