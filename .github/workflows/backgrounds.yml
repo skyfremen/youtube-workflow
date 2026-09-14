@@ -94,8 +94,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y ffmpeg
           fi
-          ffmpeg -version | head -n 1
-          ffprobe -version | head -n 1
+          ffmpeg -version | sed -n '1p'
+          ffprobe -version | sed -n '1p'
 
       - name: Discover and build review evidence
         if: steps.target.outputs.mode == 'discover'
