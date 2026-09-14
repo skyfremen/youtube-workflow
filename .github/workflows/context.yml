@@ -1,0 +1,43 @@
+name: Rebuild Planner Context
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/backgrounds.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 1
+
+      - name: Rebuild compact context
+        run: python adhoc.py context
+
+      - name: Deterministic self-test
+        run: python adhoc.py self-test
+
+      - name: Commit derived context
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/context.json
+          if git diff --cached --quiet; then
+            echo "Context already current."
+            exit 0
+          fi
+          git commit -m "[state] rebuild compact planner context"
+          git push origin HEAD:main

@@ -1,0 +1,58 @@
+name: Ingest Production Result
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/results/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: result-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Identify one immutable result
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t results < <(
+            git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" |
+            awk '$1 == "A" && $2 ~ /^content\/results\/wd-[0-9a-f]{24}\.json$/ {print $2}'
+          )
+          if [ "${#results[@]}" -ne 1 ]; then
+            echo "::error::RESULT_COMMIT_INVALID expected exactly one newly added immutable result"
+            exit 1
+          fi
+          echo "path=${results[0]}" >> "${GITHUB_OUTPUT}"
+
+      - name: Ingest result and rebuild context
+        shell: bash
+        run: |
+          set -euo pipefail
+          python adhoc.py ingest-result --result "${{ steps.result.outputs.path }}"
+
+      - name: Commit derived editorial state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history.json content/context.json
+          if git diff --cached --quiet; then
+            echo "Result was already ingested."
+            exit 0
+          fi
+          git commit -m "[state] ingest verified production result"
+          git pull --rebase origin main
+          git push origin HEAD:main

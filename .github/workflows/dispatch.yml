@@ -1,0 +1,114 @@
+name: Dispatch Production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/requests/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dispatch-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Identify and validate one immutable request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t requests < <(
+            git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" |
+            awk '$1 == "A" && $2 ~ /^content\/requests\/wd-[0-9a-f]{24}\.json$/ {print $2}'
+          )
+          if [ "${#requests[@]}" -ne 1 ]; then
+            echo "::error::REQUEST_COMMIT_INVALID expected exactly one newly added immutable request"
+            exit 1
+          fi
+          python adhoc.py validate --request "${requests[0]}"
+          echo "path=${requests[0]}" >> "${GITHUB_OUTPUT}"
+          echo "source_sha=${GITHUB_SHA}" >> "${GITHUB_OUTPUT}"
+
+      - name: Create stable execution fence
+        id: execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$(python adhoc.py execution \
+            --request "${{ steps.request.outputs.path }}" \
+            --request-source-sha "${{ steps.request.outputs.source_sha }}")"
+          identity="$(printf '%s\n' "${output}" | tail -1)"
+          execution_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["execution_id"])' <<< "${identity}")"
+          dispatch_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["dispatch_id"])' <<< "${identity}")"
+          contract_hash="$(python -c 'import json,sys; print(json.load(sys.stdin)["contract_hash"])' <<< "${identity}")"
+          echo "execution_id=${execution_id}" >> "${GITHUB_OUTPUT}"
+          echo "dispatch_id=${dispatch_id}" >> "${GITHUB_OUTPUT}"
+          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
+          echo "path=content/executions/${execution_id}.json" >> "${GITHUB_OUTPUT}"
+
+      - name: Commit execution fence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${{ steps.execution.outputs.path }}"
+          if ! git diff --cached --quiet; then
+            git commit -m "[execution] prepare immutable production execution"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Resolve exact execution source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          source_sha="$(git log --diff-filter=A --format=%H -- "${{ steps.execution.outputs.path }}" | head -1)"
+          if [[ ! "${source_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::EXECUTION_SOURCE_UNRESOLVED"
+            exit 1
+          fi
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch opaque execution
+        env:
+          PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
+          EXECUTION_ID: ${{ steps.execution.outputs.execution_id }}
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          CONTRACT_HASH: ${{ steps.execution.outputs.contract_hash }}
+          DISPATCH_ID: ${{ steps.execution.outputs.dispatch_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+              "ref": "main",
+              "inputs": {
+                  "execution_id": os.environ["EXECUTION_ID"],
+                  "source_sha": os.environ["SOURCE_SHA"],
+                  "contract_hash": os.environ["CONTRACT_HASH"],
+                  "dispatch_id": os.environ["DISPATCH_ID"],
+              },
+          }, separators=(",", ":")))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/single.yml/dispatches \
+            -d "${payload}"
+          echo "Opaque execution dispatched."
