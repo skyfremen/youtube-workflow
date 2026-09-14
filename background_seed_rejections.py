@@ -5,12 +5,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import tempfile
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 import background_seed as bs
 
 ROOT = Path(__file__).resolve().parent
 REJECTIONS = ROOT / "data" / "background-rejections.json"
+SEARCH_PAGE_SIZE = 30
+MAX_SEARCH_PAGES_PER_QUERY = 4
+MAX_TECHNICAL_ATTEMPTS = 200
 
 
 def _asset_sort_key(asset_id: str) -> int:
@@ -65,6 +71,75 @@ def validate_state(registry_path: Path = bs.REGISTRY, rejections_path: Path = RE
     return registry, rejections
 
 
+def api_search_page(
+    query: str,
+    api_key: str,
+    per_page: int = SEARCH_PAGE_SIZE,
+    page: int = 1,
+) -> list[dict]:
+    """Search one deterministic Pexels page so discovery can backfill failures."""
+    params = urllib.parse.urlencode(
+        {
+            "query": query,
+            "size": "medium",
+            "per_page": min(max(int(per_page), 1), 80),
+            "page": max(int(page), 1),
+        }
+    )
+    request = urllib.request.Request(
+        f"{bs.PEXELS_SEARCH}?{params}",
+        headers={"Authorization": api_key, "User-Agent": "WackyDramasBackgroundSeeder/1.0"},
+    )
+    with urllib.request.urlopen(request, timeout=45) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    videos = payload.get("videos", [])
+    return videos if isinstance(videos, list) else []
+
+
+def _inventory_shortages(registry: dict, target_per_category: int) -> dict[str, int]:
+    counts = {category: 0 for category in bs.CATEGORIES}
+    for asset in registry["assets"]:
+        counts[asset["category"]] += 1
+    return {
+        category: max(0, int(target_per_category) - counts[category])
+        for category in bs.CATEGORIES
+    }
+
+
+def _candidate_stream(
+    category: str,
+    api_key: str,
+    excluded: set[str],
+    search_fn=None,
+    max_pages_per_query: int = MAX_SEARCH_PAGES_PER_QUERY,
+):
+    """Yield unseen metadata candidates across queries and Pexels pages."""
+    search_fn = search_fn or api_search_page
+    seen = set()
+    for query in bs.SEARCH_QUERIES[category]:
+        for page in range(1, max(1, int(max_pages_per_query)) + 1):
+            try:
+                videos = search_fn(query, api_key, SEARCH_PAGE_SIZE, page)
+            except Exception as exc:
+                print(
+                    f"WARN pexels search failed category={category} query={query!r} page={page}: {exc}",
+                    flush=True,
+                )
+                break
+            if not videos:
+                break
+            for video in sorted(videos, key=lambda item: bs.duration_preference(item.get("duration"))):
+                candidate = bs._candidate_from_video(video, category)
+                if not candidate:
+                    continue
+                asset_id = candidate["id"]
+                if asset_id in excluded or asset_id in seen:
+                    continue
+                seen.add(asset_id)
+                excluded.add(asset_id)
+                yield candidate
+
+
 def discover_with_rejections(
     request_path: Path,
     api_key: str,
@@ -72,22 +147,132 @@ def discover_with_rejections(
     registry_path: Path = bs.REGISTRY,
     reviews_root: Path = bs.REVIEWS,
     rejections_path: Path = REJECTIONS,
+    approvals_root: Path = bs.APPROVALS,
+    search_fn=None,
 ) -> Path:
-    original_pending = bs.pending_review_ids
+    """Discover until shortages are filled, review cap is reached, or search is exhausted.
 
-    def combined_pending(reviews_root_arg=bs.REVIEWS, approvals_root_arg=bs.APPROVALS):
-        return excluded_review_ids(
-            reviews_root_arg,
-            approvals_root_arg,
-            rejections_path,
-            pending_fn=original_pending,
+    Unlike V1 discovery, a technical failure does not consume a category slot. The
+    next unseen candidate is fetched (including later Pexels pages) and validated.
+    """
+    bs.validate_media_tools()
+    request_path = Path(request_path)
+    review_id = bs.request_id_from_path(request_path)
+    request = bs.validate_request(bs.read_json(request_path))
+    registry = bs.load_registry(registry_path)
+    manifest_path = Path(reviews_root) / review_id / "manifest.json"
+    if manifest_path.exists():
+        manifest = bs.read_json(manifest_path)
+        bs.rebuild_review_artifact(manifest, output_dir)
+        print(f"Review already exists; regenerated evidence: {manifest_path}")
+        return manifest_path
+
+    shortages = _inventory_shortages(registry, request["target_per_category"])
+    categories = [category for category in bs.CATEGORIES if shortages[category] > 0]
+    categories.sort(key=lambda category: (-shortages[category], category))
+
+    existing = {asset["id"] for asset in registry["assets"]}
+    excluded = existing | excluded_review_ids(
+        reviews_root,
+        approvals_root,
+        rejections_path,
+    )
+    streams = {
+        category: iter(_candidate_stream(category, api_key, excluded, search_fn=search_fn))
+        for category in categories
+    }
+
+    target_accepts = min(request["max_candidates"], sum(shortages.values()))
+    technical_attempt_limit = min(
+        MAX_TECHNICAL_ATTEMPTS,
+        max(24, request["max_candidates"] * 2, target_accepts * 6),
+    )
+    accepted = []
+    accepted_by_category = {category: 0 for category in categories}
+    exhausted = set()
+    attempts = 0
+
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    candidates_dir = Path(output_dir) / "candidates"
+    candidates_dir.mkdir(parents=True, exist_ok=True)
+
+    while len(accepted) < target_accepts and attempts < technical_attempt_limit:
+        active = [
+            category
+            for category in categories
+            if category not in exhausted and accepted_by_category[category] < shortages[category]
+        ]
+        if not active:
+            break
+        active.sort(
+            key=lambda category: (
+                accepted_by_category[category] / max(shortages[category], 1),
+                -(shortages[category] - accepted_by_category[category]),
+                category,
+            )
+        )
+        progressed = False
+        for category in active:
+            if len(accepted) >= target_accepts or attempts >= technical_attempt_limit:
+                break
+            if accepted_by_category[category] >= shortages[category]:
+                continue
+            try:
+                candidate = next(streams[category])
+            except StopIteration:
+                exhausted.add(category)
+                continue
+
+            progressed = True
+            attempts += 1
+            with tempfile.TemporaryDirectory(prefix="background-media-") as temp_name:
+                local_file = Path(temp_name) / f"{candidate['id']}.mp4"
+                try:
+                    bs.download_file(candidate["download_url"], local_file)
+                    probe = bs.validate_physical(candidate, local_file)
+                    review_candidate = bs._manifest_candidate(candidate, probe)
+                    bs.make_contact_sheet(
+                        local_file,
+                        review_candidate,
+                        probe,
+                        candidates_dir / f"{candidate['id']}.jpg",
+                    )
+                    accepted.append(review_candidate)
+                    accepted_by_category[category] += 1
+                    print(f"ACCEPT technical {candidate['id']} category={category}", flush=True)
+                except Exception as exc:
+                    print(f"REJECT technical {candidate['id']}: {exc}", flush=True)
+
+        if not progressed and all(category in exhausted for category in active):
+            break
+
+    unfilled = {
+        category: shortages[category] - accepted_by_category[category]
+        for category in categories
+        if accepted_by_category[category] < shortages[category]
+    }
+    if unfilled:
+        if len(accepted) >= request["max_candidates"]:
+            reason = "max_candidates accepted cap reached"
+        elif attempts >= technical_attempt_limit:
+            reason = "technical attempt safety limit reached"
+        else:
+            reason = "configured Pexels queries/pages exhausted"
+        print(
+            f"WARN discovery ended before all shortages were filled: reason={reason}; "
+            f"accepted={len(accepted)} attempts={attempts} unfilled={unfilled}",
+            flush=True,
         )
 
-    bs.pending_review_ids = combined_pending
-    try:
-        return bs.discover(request_path, api_key, output_dir, registry_path, reviews_root)
-    finally:
-        bs.pending_review_ids = original_pending
+    manifest = {"review_id": review_id, "request": request, "candidates": accepted}
+    bs.write_json(manifest_path, manifest)
+    bs.write_json(Path(output_dir) / "manifest.json", manifest)
+    bs.make_index(candidates_dir, Path(output_dir) / "index.jpg", len(accepted))
+    print(
+        f"Review manifest created: {manifest_path}; candidates={len(accepted)}; attempts={attempts}",
+        flush=True,
+    )
+    return manifest_path
 
 
 def _reviewed_candidate_ids(approval: dict, reviews_root: Path) -> set[str]:
