@@ -1,85 +1,12 @@
 {
-  "background_choices": [
-    {
-      "category": "pov_movement",
-      "description": "POV walk along a resort path",
-      "id": "satisfying-px-10839395",
-      "tags": [
-        "pov",
-        "walking",
-        "caption-friendly"
-      ]
-    },
-    {
-      "category": "cooking",
-      "description": "Rustic cooking over open fire",
-      "id": "satisfying-px-35696309",
-      "tags": [
-        "cooking",
-        "continuous-motion",
-        "caption-friendly"
-      ]
-    },
-    {
-      "category": "food_prep",
-      "description": "Close-up lemon cutting",
-      "id": "satisfying-px-10561216",
-      "tags": [
-        "food-prep",
-        "continuous-motion",
-        "caption-friendly"
-      ]
-    },
-    {
-      "category": "crafting",
-      "description": "Tea leaf hand-processing",
-      "id": "satisfying-px-32719027",
-      "tags": [
-        "satisfying",
-        "crafting",
-        "continuous-motion"
-      ]
-    },
-    {
-      "category": "satisfying_process",
-      "description": "Coffee dripping in Chemex",
-      "id": "satisfying-px-9356370",
-      "tags": [
-        "satisfying",
-        "fluid",
-        "continuous-motion"
-      ]
-    },
-    {
-      "category": "crafting",
-      "description": "Traditional pottery making",
-      "id": "satisfying-px-33721127",
-      "tags": [
-        "crafting",
-        "pottery",
-        "continuous-motion"
-      ]
-    },
-    {
-      "category": "cleaning",
-      "description": "Automatic car wash motion",
-      "id": "satisfying-px-32114510",
-      "tags": [
-        "cleaning",
-        "satisfying",
-        "continuous-motion"
-      ]
-    },
-    {
-      "category": "pov_movement",
-      "description": "Rainy mountain road drive",
-      "id": "satisfying-px-39400748",
-      "tags": [
-        "pov-movement",
-        "travel",
-        "continuous-motion"
-      ]
-    }
+  "background_categories": [
+    "assembly_process",
+    "city_motion",
+    "crafting",
+    "food_process",
+    "nature_motion",
+    "pov_movement",
+    "satisfying_process"
   ],
   "context_version": 1,
   "recent_story_cards": [
