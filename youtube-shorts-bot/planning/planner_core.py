@@ -1,8 +1,7 @@
 """Shared deterministic planner contract used by Daily and Ad-hoc.
 
-This module is intentionally upstream of private promotion. Planner-time validation
-must never import production workflow/publishing modules. Production promotion may
-import this module, but not vice versa.
+New planning uses pool schema v2. Historical schema-v1 pools remain immutable and
+are handled by the downstream promotion compatibility path, not by new precommit.
 """
 from __future__ import annotations
 
@@ -16,11 +15,16 @@ from common.workflow_common import CONTENT_ID_RE
 from planning.planner_profiles import ADHOC, DAILY, PlannerProfile
 from planning.planning_config import TITLE_WEIGHTS
 from validation.publication import validate_upload_contract
-from validation.validate_content import SCHEMA_VERSION, validate_request_data
+from validation.validate_content import (
+    SCHEMA_VERSION,
+    validate_request_data,
+    validate_selected_background_category,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BOT_ROOT = REPO_ROOT / "youtube-shorts-bot"
-POOL_SCHEMA_VERSION = 1
+POOL_SCHEMA_VERSION = 2
+LEGACY_POOL_SCHEMA_VERSION = 1
 CANDIDATE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 POOL_CONTENT_ID_RE = re.compile(r"^wd-[A-Za-z0-9-]+$")
 HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -76,28 +80,40 @@ def canonical_normal_slots(plan_date):
     ]
 
 
-def validate_ranked_candidates(pool, expected_count):
-    """Validate ranked-pool envelope while leaving request details candidate-scoped.
+def expected_candidate_count(profile: PlannerProfile, target_count) -> int:
+    return profile.expected_candidate_count(target_count)
 
-    The envelope deliberately accepts a loose production-shaped content ID. Exact
-    canonical content-ID validation happens inside candidate_errors so one malformed
-    candidate reports as one failed candidate rather than hiding the other 4/35
-    valid candidates. This preserves the existing fail-closed 5/5 and 36/36 gates
-    while keeping diagnostics useful.
-    """
+
+def validate_ranked_candidates(
+    pool,
+    expected_count,
+    *,
+    require_background_category=True,
+):
+    """Validate the immutable pool envelope without creatively changing requests."""
     candidates = pool.get("ranked_candidates")
     if not isinstance(candidates, list) or len(candidates) != expected_count:
         fail(f"ranked_candidates must contain exactly {expected_count} candidates")
     candidate_ids = []
     content_ids = []
+    expected_keys = (
+        {"rank", "candidate_id", "background_category", "request"}
+        if require_background_category
+        else {"rank", "candidate_id", "request"}
+    )
     for index, item in enumerate(candidates, start=1):
-        if not isinstance(item, dict) or set(item) != {"rank", "candidate_id", "request"}:
-            fail("each ranked candidate must contain exactly rank, candidate_id and request")
+        if not isinstance(item, dict) or set(item) != expected_keys:
+            fields = ", ".join(sorted(expected_keys))
+            fail(f"each ranked candidate must contain exactly {fields}")
         if item.get("rank") != index:
             fail("candidate ranks must be contiguous and start at 1")
         candidate_id = item.get("candidate_id")
         if not isinstance(candidate_id, str) or not CANDIDATE_ID_RE.fullmatch(candidate_id):
             fail(f"candidate rank {index} has invalid candidate_id")
+        if require_background_category:
+            category = item.get("background_category")
+            if not isinstance(category, str) or not category.strip():
+                fail(f"candidate rank {index} background_category must be non-empty")
         request = item.get("request")
         if not isinstance(request, dict):
             fail(f"candidate rank {index} request must be an object")
@@ -135,7 +151,7 @@ def validate_planning_execution(pool, candidate_ids, rules_source_sha):
         )
     if execution.get("ranked_candidate_ids") != candidate_ids:
         errors.append(
-            "planning_execution.ranked_candidate_ids must exactly match frozen rank order"
+            "planning_execution.ranked_candidate_ids must exactly match frozen candidate order"
         )
     if not HEX40_RE.fullmatch(str(rules_source_sha or "")):
         errors.append("rules_source_sha must be a lowercase full 40-character commit SHA")
@@ -170,6 +186,7 @@ def candidate_errors(
     request_path,
     profile: PlannerProfile,
     publish_at_override=None,
+    background_category=None,
 ):
     """Validate one frozen candidate without mutating the authored request."""
     content_id = str(request.get("content_id", ""))
@@ -195,6 +212,14 @@ def candidate_errors(
             registry=registry,
         )
     )
+    if background_category is not None:
+        errors.extend(
+            validate_selected_background_category(
+                candidate,
+                registry,
+                background_category,
+            )
+        )
     if candidate.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"new production request must use schema-v{SCHEMA_VERSION}")
     if not errors:
@@ -211,6 +236,7 @@ def scheduled_adhoc_matches(
     exclude_content_id=None,
     bot_root=None,
 ):
+    """Historical compatibility helper for schema-v1 scheduled Ad-hoc recovery."""
     prefix = f"wd-{singapore_date.replace('-', '')}T010000-adhoc-"
     root = BOT_ROOT if bot_root is None else Path(bot_root)
     request_dir = root / "content" / "requests"
