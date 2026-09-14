@@ -48,6 +48,8 @@ class PrecommitExecutionEnvironmentTests(unittest.TestCase):
         self.assertFalse(execution["full_background_registry_local_copy_required"])
         self.assertFalse(execution["materialization_verify_required"])
         self.assertFalse(execution["github_actions_planner_execution_required"])
+        self.assertEqual(execution["planning_passes"], 4)
+        self.assertFalse(execution["post_commit_monitoring"])
         self.assertEqual(
             execution["repository_identity_source"],
             "connector_resolved_current_main_sha",
@@ -58,7 +60,7 @@ class PrecommitExecutionEnvironmentTests(unittest.TestCase):
         self.assertIn("--verify-git-head", execution["developer_ci_precommit_command"])
         self.assertIn("--connector-current-main-sha", execution["drift_command"])
 
-    def test_canonical_prompts_do_not_require_shell_git(self):
+    def test_canonical_prompts_do_not_require_shell_git_or_replenishment(self):
         shared = (
             REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
         ).read_text(encoding="utf-8")
@@ -67,7 +69,9 @@ class PrecommitExecutionEnvironmentTests(unittest.TestCase):
         self.assertIn("shell git", lower)
         self.assertIn("connector_checkpoint.py", shared)
         self.assertIn("CHECKPOINT_STAGING_BLOCKED", shared)
-        self.assertIn("review-decisions/<request_id>.json", shared)
+        self.assertIn("global media-library readiness is **not**", lower)
+        self.assertIn("normal daily/ad-hoc planning does not create", lower)
+        self.assertNotIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
         for name in ("ADHOC_PLANNER_PROMPT.md", "DAILY_PLANNER_PROMPT.md"):
             prompt = (BOT_ROOT / "planning" / name).read_text(encoding="utf-8")
             combined = shared + "\n" + prompt
