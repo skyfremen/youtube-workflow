@@ -12,8 +12,31 @@ DRAFT_VERSION=REQUEST_VERSION=EXECUTION_VERSION=RESULT_VERSION=CONTEXT_VERSION=1
 RECENT_LIMIT=25; BG_LIMIT=8; MIN_BG=60.0; MAX_SEGMENT=100.0
 MIN_SOURCE=180.0; MAX_SOURCE=300.0; MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0
 TTS_SPEED=1.75
-IDEA_KEYS={"rank","premise","category","conflict","twist","payoff","why_it_works"}
-WINNER_KEYS={"rank","hook","narration","title","description","lead_gender","story_tone","payoff","background_ids"}
+WINNER_REQUIRED_KEYS={"premise","category","conflict","twist","hook","narration","title","description","lead_gender","story_tone","payoff","background_ids"}
+WINNER_ALLOWED_KEYS=WINNER_REQUIRED_KEYS|{"emoji_cues"}
+DEFAULT_EMOJIS=["😳","💬","🔥","👀"]
+EMOJI_MAP={
+    "shock":"😳",
+    "surprise":"😮",
+    "argument":"💢",
+    "anger":"😡",
+    "betrayal":"💔",
+    "suspicion":"🤨",
+    "secret":"🤫",
+    "evidence":"📱",
+    "money":"💰",
+    "revenge":"😈",
+    "embarrassment":"😬",
+    "victory":"😎",
+    "funny":"😂",
+    "romance":"❤️",
+    "panic":"😱",
+    "confusion":"😵",
+    "disbelief":"🤯",
+    "warning":"⚠️",
+    "celebration":"🎉",
+    "awkward":"🙃",
+}
 NATURAL={"natural","neutral","conversational","warm","calm"}
 EXPRESSIVE={"expressive","dramatic","comedy","sarcastic","dramatic_comedy","absurd"}
 TONES=NATURAL|EXPRESSIVE
@@ -50,6 +73,21 @@ def voice(g,t):
     if t not in TONES: raise VError("INVALID_STORY_TONE","winner.story_tone",t,"approved V1 tone")
     return ("af_bella" if t in EXPRESSIVE else "af_heart") if g=="female" else ("am_fenrir" if t in EXPRESSIVE else "am_echo")
 def estimate(hook,script): return round(len((hook+" "+script).split())/WORDS_PER_SEC,2)
+def cue_key(v):
+    if not isinstance(v,str): return ""
+    return re.sub(r"_+","_",re.sub(r"[^a-z0-9]+","_",v.strip().casefold())).strip("_")
+def resolve_emojis(cues):
+    if not isinstance(cues,list) or len(cues)!=4:
+        return list(DEFAULT_EMOJIS)
+    mapped=[]
+    for cue in cues:
+        emoji=EMOJI_MAP.get(cue_key(cue))
+        if not emoji:
+            return list(DEFAULT_EMOJIS)
+        mapped.append(emoji)
+    if len(set(mapped))!=4:
+        return list(DEFAULT_EMOJIS)
+    return mapped
 
 def registry(path=BG):
     x=read(path)
@@ -88,25 +126,18 @@ def build_context():
 
 def validate_draft(x,path=None):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
-    allowed={"draft_version","ideas","winner","supersedes_draft_id"}
-    if set(x)-allowed or not {"draft_version","ideas","winner"}<=set(x):
-        raise VError("INVALID_DRAFT_FIELDS","$",sorted(x),"V1 draft fields")
+    allowed={"draft_version","winner","supersedes_draft_id"}
+    if set(x)-allowed or not {"draft_version","winner"}<=set(x):
+        raise VError("INVALID_DRAFT_FIELDS","$",sorted(x),"V1 winner-only draft fields")
     if x["draft_version"]!=1: raise VError("INVALID_DRAFT_VERSION","draft_version",x["draft_version"],"1",False)
     if path: draft_id(path)
     if x.get("supersedes_draft_id") is not None and not DRAFT_RE.fullmatch(str(x["supersedes_draft_id"])):
         raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",x["supersedes_draft_id"],"valid prior draft id")
-    ideas=x["ideas"]
-    if not isinstance(ideas,list) or len(ideas)!=5: raise VError("IDEA_COUNT","ideas",len(ideas) if isinstance(ideas,list) else type(ideas).__name__,"exactly 5")
-    ranks=[]
-    for i,a in enumerate(ideas):
-        if not isinstance(a,dict) or set(a)!=IDEA_KEYS:
-            raise VError("IDEA_NOT_LIGHTWEIGHT",f"ideas[{i}]",sorted(a) if isinstance(a,dict) else type(a).__name__,"exact lightweight keys only")
-        ranks.append(a["rank"])
-        for k in IDEA_KEYS-{"rank"}: text(a.get(k),f"ideas[{i}].{k}")
-    if ranks!=[1,2,3,4,5]: raise VError("INVALID_IDEA_RANKS","ideas[].rank",ranks,"1,2,3,4,5")
     w=x["winner"]
-    if not isinstance(w,dict) or set(w)!=WINNER_KEYS: raise VError("INVALID_WINNER_FIELDS","winner",sorted(w) if isinstance(w,dict) else type(w).__name__,"exact V1 winner fields")
-    if w["rank"]!=1: raise VError("WINNER_NOT_RANK_ONE","winner.rank",w["rank"],"1")
+    if not isinstance(w,dict) or set(w)-WINNER_ALLOWED_KEYS or not WINNER_REQUIRED_KEYS<=set(w):
+        raise VError("INVALID_WINNER_FIELDS","winner",sorted(w) if isinstance(w,dict) else type(w).__name__,"winner-only V1 fields; emoji_cues optional")
+    for k in ("premise","category","conflict","twist"):
+        text(w.get(k),f"winner.{k}")
     hook=text(w["hook"],"winner.hook"); script=text(w["narration"],"winner.narration")
     title=text(w["title"],"winner.title"); desc=text(w["description"],"winner.description"); payoff=text(w["payoff"],"winner.payoff")
     if script.casefold().startswith(hook.casefold()): raise VError("HOOK_REPEATED","winner.narration",script[:100],"body must not repeat hook")
@@ -136,15 +167,15 @@ def bg_contract(ids,r):
 
 def make_request(path,d,r):
     did=draft_id(path); digest=hashlib.sha256(canonical(d)).hexdigest(); cid="wd-"+digest[:24]
-    w=d["winner"]; i=d["ideas"][0]
+    w=d["winner"]
     return {
       "request_version":1,"content_id":cid,"source_draft_id":did,
       "channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},
-      "story":{"category":text(i["category"],"ideas[0].category"),"premise":text(i["premise"],"ideas[0].premise"),
-        "conflict":text(i["conflict"],"ideas[0].conflict"),"twist":text(i["twist"],"ideas[0].twist"),
+      "story":{"category":text(w["category"],"winner.category"),"premise":text(w["premise"],"winner.premise"),
+        "conflict":text(w["conflict"],"winner.conflict"),"twist":text(w["twist"],"winner.twist"),
         "hook":text(w["hook"],"winner.hook"),"script":text(w["narration"],"winner.narration"),
         "lead_gender":str(w["lead_gender"]),"story_tone":str(w["story_tone"]),"punchline":text(w["payoff"],"winner.payoff"),
-        "card_emojis":["😳","💬","🔥","👀"]},
+        "card_emojis":resolve_emojis(w.get("emoji_cues"))},
       "narration":{"engine":"kokoro","voice":voice(str(w["lead_gender"]),str(w["story_tone"])),"speed":TTS_SPEED},
       "background":bg_contract(w["background_ids"],r),
       "youtube":{"title":text(w["title"],"winner.title"),"description":text(w["description"],"winner.description"),
@@ -257,33 +288,39 @@ def self_test():
     ok("5 no inventory gate",not any(x in src for x in bad))
     ids=[x["id"] for x in c["background_choices"][:3]]
     filler=" ".join(["Then everything changed when the truth finally came out."]*47); payoff="I had the receipts"
-    d={"draft_version":1,"ideas":[{"rank":i,"premise":f"P{i}","category":"work","conflict":f"C{i}","twist":f"T{i}","payoff":payoff if i==1 else f"X{i}","why_it_works":f"W{i}"} for i in range(1,6)],
-       "winner":{"rank":1,"hook":"My manager accused me in front of everyone.","narration":f"{filler} {payoff}. Nobody could answer after that.",
-       "title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"female","story_tone":"dramatic","payoff":payoff,"background_ids":ids}}
+    d={"draft_version":1,
+       "winner":{"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.",
+       "twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.",
+       "narration":f"{filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame",
+       "description":"A workplace accusation turns around fast.","lead_gender":"female","story_tone":"dramatic","payoff":payoff,
+       "emoji_cues":["shock","evidence","panic","victory"],"background_ids":ids}}
     dp=ROOT/"draft-selftest-deadbeef.json"; validate_draft(d,dp); q=make_request(dp,d,r); validate_request(q,r=r)
-    ok("6 valid draft"); ok("7 deterministic request",canonical(q)==canonical(make_request(dp,d,r)))
+    ok("6 valid winner-only draft"); ok("7 deterministic request",canonical(q)==canonical(make_request(dp,d,r)))
     bad_d=json.loads(json.dumps(d)); bad_d["winner"]["title"]="x"*101
     try: validate_draft(bad_d,dp); precise=False
     except VError as e: precise=e.code=="TITLE_TOO_LONG"
-    ok("8 precise failure",precise); ok("9 ranks2-5 lightweight",all(set(x)==IDEA_KEYS for x in d["ideas"][1:]))
-    ok("10 only rank1 full",set(d["winner"])==WINNER_KEYS)
-    ok("11 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
-    ok("12 background IDs valid",len({x["background_id"] for x in q["background"]["segments"]})==3)
-    js=json.dumps(q); ok("13 no slot",'"slot"' not in js); ok("14 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
-    ok("15 immediate public",q["visibility"]=="public")
+    ok("8 precise failure",precise)
+    ok("9 winner-only contract","ideas" not in d and WINNER_REQUIRED_KEYS<=set(d["winner"]) and set(d["winner"])<=WINNER_ALLOWED_KEYS)
+    ok("10 mapped emojis",q["story"]["card_emojis"]==["😳","📱","😱","😎"])
+    ok("11 emoji fallback",resolve_emojis(["shock","unknown-cue","panic","victory"])==DEFAULT_EMOJIS and resolve_emojis(None)==DEFAULT_EMOJIS)
+    ok("12 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
+    ok("13 background IDs valid",len({x["background_id"] for x in q["background"]["segments"]})==3)
+    js=json.dumps(q); ok("14 no slot",'"slot"' not in js); ok("15 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
+    ok("16 immediate public",q["visibility"]=="public")
     rblob=blob(pretty(q)); eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
-    ok("16 execution identity",bool(EID_RE.fullmatch(eid))); ok("17 contract hash",len(CONTRACT_HASH)==64)
+    ok("17 execution identity",bool(EID_RE.fullmatch(eid))); ok("18 contract hash",len(CONTRACT_HASH)==64)
     fake={"result_version":1,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
-    validate_result(fake); ok("18 result validates")
+    validate_result(fake); ok("19 result validates")
     wdir=ROOT/".github/workflows"; names={p.name for p in wdir.glob("*.yml")}
-    ok("19 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})
-    ok("20 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
+    ok("20 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})
+    ok("21 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
     legacy="youtube-"+"shorts-"+"bot/"
     live="\n".join(p.read_text(errors="ignore") for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts and p.suffix in {".py",".yml",".md",".json"})
-    ok("21 no legacy refs",legacy not in live); ok("22 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
-    a=(ROOT/"ADHOC.md").read_text(); ok("23 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
-    ok("24 no background minimum concept","32" not in a); ok("25 history compact",isinstance(read(HIST),list))
-    ok("26 no publication schedule object","publication" not in q); ok("27 no analytics","analytics" not in js)
+    ok("22 no legacy refs",legacy not in live); ok("23 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
+    a=(ROOT/"ADHOC.md").read_text(); ok("24 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
+    ok("25 winner-only documented","winner" in a and "persist only the winner" in a)
+    ok("26 no background minimum concept","32" not in a); ok("27 history compact",isinstance(read(HIST),list))
+    ok("28 no publication schedule object","publication" not in q); ok("29 no analytics","analytics" not in js)
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
