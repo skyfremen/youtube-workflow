@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Private pool admission and promote first valid candidates
+      - name: Admit pool and materialize required candidates
         if: ${{ github.event_name == 'push' }}
         id: promotion
         shell: bash
@@ -42,9 +42,10 @@ jobs:
           fi
           pool="${pools[0]}"
 
-          # Defense in depth: rerun the exact planner-time validator across all 36
-          # committed candidates before ranked promotion. This gate intentionally
-          # uses explicit rules_source_sha from the pool and does not inspect Git.
+          # Defense in depth: current schema-v2 pools must already contain exactly
+          # target_count hard-valid candidates. ranked_promotion maps each required
+          # candidate one-to-one to its frozen slot. Historical schema-v1 pools keep
+          # their versioned 36-candidate reserve-walk compatibility path.
           PYTHONPATH=youtube-shorts-bot python -m planning.pool_admission daily \
             --pool "${pool}" \
             --summary /tmp/pool-admission.json
@@ -71,7 +72,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add youtube-shorts-bot/content/planning/ youtube-shorts-bot/content/requests/
           if git diff --cached --quiet; then
-            echo "::error::Ranked pool promotion produced no canonical production state"
+            echo "::error::Pool promotion produced no canonical production state"
             exit 1
           fi
           git commit -m "[daily production] ${plan_date}"
