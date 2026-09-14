@@ -24,6 +24,11 @@ class GitlessSharedPlannerTests(unittest.TestCase):
                 "repository_tree_materialization_required"
             ]
         )
+        self.assertFalse(
+            manifest["chatgpt_work_requirements"][
+                "full_background_registry_local_copy_required"
+            ]
+        )
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -41,8 +46,13 @@ class GitlessSharedPlannerTests(unittest.TestCase):
 
         self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
         contract = json.loads(completed.stdout)
-        self.assertEqual(contract["profiles"]["daily"]["pool_size"], 36)
-        self.assertEqual(contract["profiles"]["adhoc"]["pool_size"], 5)
+        self.assertEqual(contract["profiles"]["daily"]["normal_next_day"]["expected_candidates"], 24)
+        self.assertEqual(contract["profiles"]["daily"]["reserve_candidate_count"], 0)
+        self.assertEqual(contract["profiles"]["adhoc"]["expected_candidates"], 1)
+        self.assertEqual(contract["profiles"]["adhoc"]["allowed_planning_modes"], ["manual_on_demand"])
+        self.assertEqual(contract["profiles"]["adhoc"]["reserve_candidate_count"], 0)
+        self.assertFalse(contract["profiles"]["daily"]["global_media_readiness_required"])
+        self.assertFalse(contract["profiles"]["adhoc"]["global_media_readiness_required"])
         self.assertFalse(contract["execution_environment"]["git_checkout_required"])
         self.assertFalse(
             contract["execution_environment"][
@@ -54,6 +64,9 @@ class GitlessSharedPlannerTests(unittest.TestCase):
                 "full_background_registry_local_copy_required"
             ]
         )
+        self.assertFalse(contract["background"]["planner_freezes_playback_rate"])
+        self.assertTrue(contract["background"]["runtime_derives_playback_rate_after_tts"])
+        self.assertTrue(contract["background"]["canonical_fallback_category"])
 
 
 if __name__ == "__main__":
