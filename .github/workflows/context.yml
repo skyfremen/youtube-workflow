@@ -1,9 +1,11 @@
 name: Rebuild Planner Context
 
-# Background inventory integration is intentionally paused during the clean
-# background-registry rebuild. Re-enable an automatic trigger when planner
-# integration is implemented in the next phase.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/backgrounds.json'
+      - 'adhoc.py'
   workflow_dispatch:
 
 permissions:
