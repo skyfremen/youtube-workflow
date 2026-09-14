@@ -1,0 +1,59 @@
+name: Install Background Seeder
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/background-seed-install.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+
+      - name: Patch canonical workflow-set assertion
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('adhoc.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'ok("23 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})'
+          new = 'ok("23 workflow set",names=={"adhoc-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})'
+          if old not in text:
+              raise SystemExit('Expected workflow-set assertion not found; refusing broad adhoc.py edit')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Remove one-shot installer before validation
+        run: rm .github/workflows/background-seed-install.yml
+
+      - name: Validate background subsystem
+        run: |
+          set -euo pipefail
+          python -m py_compile background_seed.py tests/test_background_seed.py
+          python background_seed.py validate-registry
+          python -m unittest discover -s tests -p 'test_*.py' -v
+          python - <<'PY'
+          from pathlib import Path
+          names={p.name for p in Path('.github/workflows').glob('*.yml')}
+          expected={'adhoc-draft.yml','backgrounds.yml','context.yml','dispatch.yml','result.yml'}
+          if names != expected:
+              raise SystemExit(f'Unexpected canonical workflow set: {sorted(names)}')
+          print('WORKFLOW_SET_PASS', sorted(names))
+          PY
+
+      - name: Commit compatibility patch and self-delete
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add adhoc.py .github/workflows/background-seed-install.yml
+          git commit -m "Align workflow self-test with background seeder"
+          git pull --rebase origin main
+          git push origin HEAD:main
