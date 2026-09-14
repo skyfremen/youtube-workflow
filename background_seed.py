@@ -85,7 +85,11 @@ def _https_host(url: str) -> str:
 
 def valid_source_url(url: str) -> bool:
     host = _https_host(url)
-    return host == "www.pexels.com" or host == "pexels.com"
+    try:
+        source_path = urllib.parse.urlparse(str(url)).path
+    except ValueError:
+        return False
+    return (host == "www.pexels.com" or host == "pexels.com") and source_path.startswith("/video/")
 
 
 def valid_media_url(url: str) -> bool:
@@ -343,7 +347,8 @@ def collect_metadata_candidates(
 
     ordered = []
     indexes = {category: 0 for category in categories}
-    while len(ordered) < request["max_candidates"]:
+    attempt_limit = min(request["max_candidates"] * 2, 24)
+    while len(ordered) < attempt_limit:
         progressed = False
         category_counts = {category: 0 for category in categories}
         for selected in ordered:
@@ -366,7 +371,7 @@ def collect_metadata_candidates(
                 continue
             ordered.append(candidate)
             progressed = True
-            if len(ordered) >= request["max_candidates"]:
+            if len(ordered) >= attempt_limit:
                 break
         if not progressed:
             break
