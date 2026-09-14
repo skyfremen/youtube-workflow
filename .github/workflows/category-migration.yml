@@ -1,0 +1,121 @@
+name: Background Category Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/category-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add categories and expose them in context
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          BG = Path('data/backgrounds.json')
+          ADHOC = Path('adhoc.py')
+          CTX = Path('content/context.json')
+
+          allowed = {
+              'pov_movement',
+              'cleaning',
+              'city_motion',
+              'crafting',
+              'food_prep',
+              'satisfying_process',
+              'assembly',
+              'baking',
+              'cooking',
+          }
+
+          def classify(asset):
+              tags = {str(x).strip().casefold() for x in (asset.get('visual_tags') or []) if str(x).strip()}
+              if 'cooking' in tags:
+                  return 'cooking'
+              if 'baking' in tags:
+                  return 'baking'
+              if 'food-prep' in tags:
+                  return 'food_prep'
+              if 'cleaning' in tags:
+                  return 'cleaning'
+              if 'assembly' in tags or 'manufacturing' in tags:
+                  return 'assembly'
+              if 'crafting' in tags or 'pottery' in tags or 'handmade' in tags:
+                  return 'crafting'
+              if 'city-motion' in tags or 'city' in tags or 'urban' in tags:
+                  return 'city_motion'
+              if 'pov' in tags or 'pov-movement' in tags or 'travel-motion' in tags or 'travel' in tags:
+                  return 'pov_movement'
+              return 'satisfying_process'
+
+          registry = json.loads(BG.read_text(encoding='utf-8'))
+          assets = registry.get('assets')
+          if not isinstance(assets, list) or not assets:
+              raise SystemExit('background registry assets[] missing or empty')
+
+          for asset in assets:
+              if not isinstance(asset, dict):
+                  raise SystemExit('background registry contains a non-object asset')
+              category = classify(asset)
+              if category not in allowed:
+                  raise SystemExit(f'invalid derived category: {category}')
+              asset['category'] = category
+
+          counts = Counter(asset['category'] for asset in assets)
+          if sum(counts.values()) != len(assets):
+              raise SystemExit('category count mismatch')
+          BG.write_text(json.dumps(registry, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          src = ADHOC.read_text(encoding='utf-8')
+          old = 'item={"id":str(a["id"]),"description":str(a.get("title") or a["id"]).strip(),"tags":tags}'
+          new = 'item={"id":str(a["id"]),"description":str(a.get("title") or a["id"]).strip(),"category":str(a.get("category") or "satisfying_process").strip(),"tags":tags}'
+          if old in src:
+              src = src.replace(old, new, 1)
+              ADHOC.write_text(src, encoding='utf-8')
+          elif new not in src:
+              raise SystemExit('could not locate adhoc.py shortlist item projection')
+
+          context = json.loads(CTX.read_text(encoding='utf-8'))
+          by_id = {str(a.get('id')): a for a in assets if isinstance(a, dict) and a.get('id')}
+          choices = context.get('background_choices')
+          if not isinstance(choices, list):
+              raise SystemExit('context background_choices[] missing')
+          for choice in choices:
+              bid = str(choice.get('id') or '')
+              asset = by_id.get(bid)
+              if asset is None:
+                  raise SystemExit(f'context references unknown background: {bid}')
+              choice['category'] = asset['category']
+          CTX.write_text(json.dumps(context, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          print(f'Categorized {len(assets)} background assets')
+          for category in sorted(allowed):
+              print(f'{category}: {counts.get(category, 0)}')
+          print(f'Exposed category on {len(choices)} current context choices')
+          PY
+
+      - name: Commit migration
+        shell: bash
+        run: |
+          if git diff --quiet -- data/backgrounds.json adhoc.py content/context.json; then
+            echo 'No changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/backgrounds.json adhoc.py content/context.json
+          git commit -m 'feat: categorize background assets'
+          git push origin HEAD:main
