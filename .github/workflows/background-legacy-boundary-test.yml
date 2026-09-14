@@ -1,0 +1,55 @@
+name: Verify Background Scope Boundary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/background-legacy-boundary-test.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+
+      - name: Remove one-shot boundary test before checks
+        run: rm .github/workflows/background-legacy-boundary-test.yml
+
+      - name: Run new background tests
+        run: |
+          set -euo pipefail
+          python background_seed.py validate-registry
+          python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Verify legacy Ad-hoc test fails only at postponed registry integration
+        run: |
+          set -euo pipefail
+          set +e
+          output="$(python adhoc.py self-test 2>&1)"
+          code=$?
+          set -e
+          printf '%s\n' "${output}"
+          if [[ "${code}" -eq 0 ]]; then
+            echo "Legacy Ad-hoc self-test unexpectedly passed despite intentionally postponed registry integration" >&2
+            exit 1
+          fi
+          if [[ "${output}" != *"schema_version 3 with assets[]"* ]]; then
+            echo "Legacy Ad-hoc self-test failed for an unexpected reason" >&2
+            exit 1
+          fi
+          echo "EXPECTED_SCOPE_BOUNDARY_PASS: legacy Ad-hoc still expects schema_version 3"
+
+      - name: Self-delete
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/background-legacy-boundary-test.yml
+          git commit -m "Remove one-shot background boundary test"
+          git pull --rebase origin main
+          git push origin HEAD:main
