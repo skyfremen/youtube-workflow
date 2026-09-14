@@ -1,5 +1,9 @@
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
+
+from planning.planner_core import canonical_normal_slots, validate_daily_slots
+from planning.planner_profiles import DAILY
 
 
 PLANNER = Path("youtube-shorts-bot/planning")
@@ -17,38 +21,68 @@ class PlannerSchedulePolicyTests(unittest.TestCase):
         )
 
     def test_normal_8pm_mode_still_plans_next_day(self):
-        self.assertIn("at/after 20:00 Asia/Singapore", self.text)
+        self.assertIn("20:00 Asia/Singapore", self.text)
         self.assertIn("next Singapore calendar day", self.text)
-        self.assertIn("`00:00` through `23:00`", self.text)
-        self.assertIn("`target_count` is exactly **24**", self.text)
+        self.assertEqual(DAILY.normal_target_count, 24)
+        slots = canonical_normal_slots("2026-09-15")
+        self.assertEqual(len(slots), 24)
+        self.assertEqual(len(set(slots)), 24)
+        parsed, errors = validate_daily_slots(
+            DAILY.normal_mode,
+            DAILY.normal_target_count,
+            slots,
+            "2026-09-15",
+        )
+        self.assertEqual(errors, [])
+        self.assertEqual(len(parsed), 24)
 
     def test_before_8pm_manual_run_is_same_day_catch_up(self):
         self.assertIn("`same_day_catch_up`", self.text)
         self.assertIn("current Singapore calendar day", self.text)
-        self.assertIn("when the canonical timing rules require catch-up", self.text)
+        self.assertIn("30 minutes", self.text)
 
     def test_catch_up_keeps_only_safe_exact_hourly_slots(self):
-        self.assertIn("top-of-hour slots at least **30 minutes in the future**", self.text)
-        self.assertIn("`publication_slots` contains exactly those eligible slots", self.text)
-        self.assertIn("If no eligible catch-up slot remains, fail closed", self.text)
-        self.assertIn("independently rechecks the 30-minute lead at promotion time", self.text)
+        safe_slots = ["2026-09-14T03:00:00Z", "2026-09-14T04:00:00Z"]
+        _, errors = validate_daily_slots(
+            "same_day_catch_up",
+            2,
+            safe_slots,
+            "2026-09-14",
+            now_utc=datetime(2026, 9, 14, 2, 15, tzinfo=timezone.utc),
+        )
+        self.assertEqual(errors, [])
+        _, errors = validate_daily_slots(
+            "same_day_catch_up",
+            1,
+            ["2026-09-14T03:00:00Z"],
+            "2026-09-14",
+            now_utc=datetime(2026, 9, 14, 2, 45, tzinfo=timezone.utc),
+        )
+        self.assertTrue(any("30 minutes" in error for error in errors))
+        self.assertIn("fail closed", self.text)
 
     def test_existing_daily_plan_uses_production_recovery_not_replanning(self):
         self.assertIn("daily-production.yml", self.text)
-        self.assertIn("manual recovery", self.text)
         self.assertIn("canonical `content/planning/YYYY-MM-DD.json` already exists", self.text)
-        self.assertIn("do **not** create another pool", self.text)
+        self.assertIn("recover the existing immutable content IDs", self.text)
 
     def test_failed_pool_uses_new_immutable_attempt(self):
-        self.assertIn("dp-YYYYMMDD-a01", self.text)
-        self.assertIn("dp-YYYYMMDD-a02", self.text)
-        self.assertIn("new immutable attempt", self.text)
-        self.assertIn("Failed candidates are not repaired or re-ranked", self.text)
+        self.assertIn("content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", self.text)
+        self.assertIn("failed immutable attempt is never edited or deleted", self.text.lower())
+        self.assertIn("corrected new attempt may be created", self.text.lower())
 
     def test_catch_up_pool_is_explicit(self):
+        self.assertEqual(DAILY.pool_size, 36)
         self.assertIn("`same_day_catch_up`", self.text)
-        self.assertIn("`target_count` equals the number of eligible remaining slots", self.text)
-        self.assertIn("ChatGPT still returns exactly **36 ranked candidates**", self.text)
+        self.assertIn("target count: exactly the number of valid remaining publication slots", self.text)
+        _, errors = validate_daily_slots(
+            "same_day_catch_up",
+            2,
+            ["2026-09-14T03:00:00Z"],
+            "2026-09-14",
+            now_utc=datetime(2026, 9, 14, 2, 0, tzinfo=timezone.utc),
+        )
+        self.assertTrue(any("exactly target_count" in error for error in errors))
 
 
 if __name__ == "__main__":

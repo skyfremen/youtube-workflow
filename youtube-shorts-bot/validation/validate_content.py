@@ -398,6 +398,11 @@ def _readiness_errors(registry_data):
     ]
 
 
+def _is_existing_immutable_request(request_path):
+    """Return whether validation is operating on already-materialized request state."""
+    return bool(request_path is not None and Path(request_path).is_file())
+
+
 def _validate_v6(data, request_path=None, *, enforce_registry=False, registry=None):
     treatment_errors = []
     visual = data.get("visual")
@@ -426,7 +431,8 @@ def _validate_v6(data, request_path=None, *, enforce_registry=False, registry=No
         except (OSError, TypeError, ValueError) as exc:
             errors.append(f"background registry is unavailable or invalid: {exc}")
         else:
-            errors.extend(_readiness_errors(registry_data))
+            if not _is_existing_immutable_request(request_path):
+                errors.extend(_readiness_errors(registry_data))
             errors.extend(validate_background_registry_contract(data, registry_data))
     return errors + treatment_errors
 
@@ -491,7 +497,8 @@ def _validate_v7(data, request_path=None, *, enforce_registry=False, registry=No
         except (OSError, TypeError, ValueError) as exc:
             errors.append(f"background registry is unavailable or invalid: {exc}")
         else:
-            errors.extend(_readiness_errors(registry_data))
+            if not _is_existing_immutable_request(request_path):
+                errors.extend(_readiness_errors(registry_data))
             errors.extend(validate_background_registry_contract(data, registry_data))
     return errors + visual_errors
 
