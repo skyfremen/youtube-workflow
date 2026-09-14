@@ -1,17 +1,9 @@
-"""Connector-native deterministic planner checkpoint for ChatGPT/Work.
+"""Standalone connector-native deterministic planner checkpoint.
 
-This module is intentionally self-contained (Python standard library only).
-ChatGPT/Work fetches this one file at the frozen rules_source_sha, writes it to a
-small temporary execution directory, and supplies two authored/input files:
-
-* the frozen ranked-pool JSON; and
-* a small connector-evidence JSON assembled from exact-SHA GitHub connector reads.
-
-It does not require a Git checkout, .git metadata, a repository archive, the full
-planner source tree, or a local copy of media-library/backgrounds.json.
-
-GitHub Actions remains downstream deterministic infrastructure only; it does not
-perform creative planning or replace this planner-time checkpoint.
+ChatGPT/Work fetches this exact file at ``rules_source_sha`` and supplies only the
+frozen authored pool plus small connector evidence. The checkpoint intentionally
+has no dependency on a Git checkout, the repository tree, the full media registry,
+global media-readiness state, or replenishment state.
 """
 from __future__ import annotations
 
@@ -25,15 +17,15 @@ import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-CHECKPOINT_SCHEMA_VERSION = 1
-POOL_SCHEMA_VERSION = 1
+CHECKPOINT_SCHEMA_VERSION = 2
+POOL_SCHEMA_VERSION = 2
 REQUEST_SCHEMA_VERSION = 7
-EVIDENCE_SCHEMA_VERSION = 1
-MAX_REPLENISH_ATTEMPTS = 5
+EVIDENCE_SCHEMA_VERSION = 2
 REPOSITORY = "skyfremen/youtube-workflow"
 CANONICAL_TIMEZONE = "Asia/Singapore"
 SGT = timezone(timedelta(hours=8))
 CATCH_UP_MIN_LEAD_MINUTES = 30
+CANONICAL_BACKGROUND_FALLBACK_CATEGORY = "satisfying_process"
 
 CONTENT_ID_RE = re.compile(r"^wd-[A-Za-z0-9-]+$")
 CANDIDATE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -76,6 +68,7 @@ PLANNING_EXECUTION_KEYS = {
     "editorial_selection_owner", "planning_method", "rules_source_sha",
     "ranked_candidate_ids",
 }
+CANDIDATE_KEYS = {"rank", "candidate_id", "background_category", "request"}
 
 EDITORIAL_WEIGHTS = {
     "opening_hook_potential": 20,
@@ -147,6 +140,10 @@ _APOSTROPHES = str.maketrans({
 _TOKEN_RE = re.compile(r"[0-9A-Za-z]+(?:'[0-9A-Za-z]+)*")
 
 BACKGROUND_MODE = "concatenated_fit_to_short"
+BACKGROUND_CATEGORIES = {
+    "cooking", "baking", "food_prep", "satisfying_process", "crafting", "cleaning",
+    "assembly", "pov_movement", "city_motion", "licensed_gameplay",
+}
 MIN_SEQUENCE_CLIP_SECONDS = 60.0
 MIN_SEQUENCE_CLIPS = 2
 MAX_SEQUENCE_CLIPS = 3
@@ -159,20 +156,21 @@ DURATION_EPSILON_SECONDS = 0.05
 PROFILE = {
     "adhoc": {
         "pool_type": "adhoc",
-        "pool_size": 5,
-        "planning_modes": {"scheduled_daily", "manual_on_demand"},
+        "planning_modes": {"manual_on_demand"},
         "date_field": "singapore_date",
         "fixed_target_count": 1,
+        "normal_target_count": None,
+        "candidate_count_policy": "fixed_one",
         "has_publication_slots": False,
         "publication": {"mode": "immediate", "timezone": CANONICAL_TIMEZONE, "publish_at": None},
     },
     "daily": {
         "pool_type": "daily",
-        "pool_size": 36,
         "planning_modes": {"normal_next_day", "same_day_catch_up"},
         "date_field": "plan_date",
         "fixed_target_count": None,
         "normal_target_count": 24,
+        "candidate_count_policy": "target_count",
         "has_publication_slots": True,
         "publication": {"mode": "scheduled", "timezone": CANONICAL_TIMEZONE, "publish_at": None},
     },
@@ -308,9 +306,7 @@ def _validate_planning(planning, youtube_title, errors):
         _score(planning.get(key), f"planning.{key}", errors)
     _score(planning.get("analytics_score"), "planning.analytics_score", errors, allow_none=True)
     _component_scores(planning.get("editorial_components"), EDITORIAL_WEIGHTS, "planning.editorial_components", errors)
-    aw = _number(planning.get("analytics_weight"), "planning.analytics_weight", errors, minimum=0, maximum=0.75)
-    if aw is not None and aw > 0.75:
-        errors.append("planning.analytics_weight must be <= 0.75")
+    _number(planning.get("analytics_weight"), "planning.analytics_weight", errors, minimum=0, maximum=0.75)
     if planning.get("selection_class") not in {"exploit", "explore"}:
         errors.append("planning.selection_class must be exploit or explore")
     if not _nonempty(planning.get("selection_reason")):
@@ -373,7 +369,32 @@ def _background_evidence(evidence):
     return value if isinstance(value, dict) else {}
 
 
-def _validate_sequence(sequence, label, evidence, errors):
+def _validate_evidence_asset(asset_id, asset, errors):
+    label = f"evidence.selected_backgrounds.{asset_id}"
+    if not isinstance(asset, dict):
+        errors.append(f"{label} must be an object")
+        return
+    required_true = (
+        "eligible", "registered", "selectable", "verified", "commercial_use",
+        "visual_review_verified", "production_rendition",
+    )
+    for field in required_true:
+        if asset.get(field) is not True:
+            errors.append(f"{label}.{field} must be true")
+    if asset.get("status") != "active":
+        errors.append(f"{label}.status must be active")
+    if asset.get("has_watermark") is not False:
+        errors.append(f"{label}.has_watermark must be false")
+    if asset.get("has_embedded_text") is not False:
+        errors.append(f"{label}.has_embedded_text must be false")
+    if asset.get("category") not in BACKGROUND_CATEGORIES:
+        errors.append(f"{label}.category must be a controlled background category")
+    if not _nonempty(asset.get("source_blob_sha")):
+        errors.append(f"{label}.source_blob_sha is required")
+    _number(asset.get("duration_seconds"), f"{label}.duration_seconds", errors, minimum=MIN_SEQUENCE_CLIP_SECONDS)
+
+
+def _validate_sequence(sequence, label, evidence, expected_category, errors):
     if not isinstance(sequence, list):
         errors.append(f"{label} must be a list")
         return []
@@ -400,8 +421,11 @@ def _validate_sequence(sequence, label, evidence, errors):
         if not isinstance(asset, dict):
             errors.append(f"{item_label} lacks connector evidence for background {asset_id}")
             continue
-        if asset.get("eligible") is not True:
-            errors.append(f"{item_label} background {asset_id} is not connector-evidence eligible")
+        if asset.get("category") != expected_category:
+            errors.append(
+                f"{item_label} background category {asset.get('category')!r} must equal "
+                f"candidate.background_category {expected_category!r}"
+            )
         source_duration = _number(asset.get("duration_seconds"), f"evidence.selected_backgrounds.{asset_id}.duration_seconds", errors, minimum=MIN_SEQUENCE_CLIP_SECONDS)
         if start is not None and duration is not None and source_duration is not None:
             if start + duration > source_duration + DURATION_EPSILON_SECONDS:
@@ -413,7 +437,7 @@ def _validate_sequence(sequence, label, evidence, errors):
     return ids
 
 
-def _validate_request(request, profile_name, evidence):
+def _validate_request(request, profile_name, background_category, evidence):
     errors = []
     if not isinstance(request, dict):
         return ["request root must be an object"]
@@ -487,13 +511,27 @@ def _validate_request(request, profile_name, evidence):
             errors.append("narration.speed must be 1.75")
 
     visual = request.get("visual")
+    if background_category not in BACKGROUND_CATEGORIES:
+        errors.append("candidate.background_category must be a controlled background category")
     if not isinstance(visual, dict) or set(visual) != V7_VISUAL_KEYS:
         errors.append("visual must contain exactly background_mode, background_primary_sequence, background_backup_sequence")
     else:
         if visual.get("background_mode") != BACKGROUND_MODE:
             errors.append(f"visual.background_mode must be {BACKGROUND_MODE}")
-        pids = _validate_sequence(visual.get("background_primary_sequence"), "visual.background_primary_sequence", evidence, errors)
-        bids = _validate_sequence(visual.get("background_backup_sequence"), "visual.background_backup_sequence", evidence, errors)
+        pids = _validate_sequence(
+            visual.get("background_primary_sequence"),
+            "visual.background_primary_sequence",
+            evidence,
+            background_category,
+            errors,
+        )
+        bids = _validate_sequence(
+            visual.get("background_backup_sequence"),
+            "visual.background_backup_sequence",
+            evidence,
+            background_category,
+            errors,
+        )
         overlap = sorted(set(pids) & set(bids))
         if overlap:
             errors.append("primary and backup background sequences must be disjoint; overlap=" + ", ".join(overlap))
@@ -543,9 +581,6 @@ def _validate_evidence(evidence, rules_source_sha):
     drift = evidence.get("drift")
     if not isinstance(drift, dict) or drift.get("status") != "PASS" or drift.get("current_main_sha") != rules_source_sha:
         errors.append("evidence.drift must PASS and current_main_sha must equal rules_source_sha at checkpoint time")
-    readiness = evidence.get("media_readiness")
-    if not isinstance(readiness, dict) or readiness.get("status") != "PASS":
-        errors.append("evidence.media_readiness.status must be PASS")
     uniqueness = evidence.get("uniqueness")
     if not isinstance(uniqueness, dict) or uniqueness.get("status") != "PASS":
         errors.append("evidence.uniqueness.status must be PASS")
@@ -556,14 +591,12 @@ def _validate_evidence(evidence, rules_source_sha):
         for asset_id, item in selected.items():
             if not isinstance(asset_id, str) or not asset_id:
                 errors.append("evidence.selected_backgrounds keys must be non-empty strings")
-            if not isinstance(item, dict):
-                errors.append(f"evidence.selected_backgrounds.{asset_id} must be an object")
                 continue
-            if item.get("eligible") is not True:
-                errors.append(f"evidence.selected_backgrounds.{asset_id}.eligible must be true")
-            if not _nonempty(item.get("source_blob_sha")):
-                errors.append(f"evidence.selected_backgrounds.{asset_id}.source_blob_sha is required")
-            _number(item.get("duration_seconds"), f"evidence.selected_backgrounds.{asset_id}.duration_seconds", errors, minimum=MIN_SEQUENCE_CLIP_SECONDS)
+            _validate_evidence_asset(asset_id, item, errors)
+    if "media_readiness" in evidence:
+        errors.append("evidence.media_readiness is obsolete for current planning; provide selected-background evidence only")
+    if "replenishment" in evidence:
+        errors.append("evidence.replenishment is obsolete for current planning")
     return errors
 
 
@@ -592,13 +625,17 @@ def _normal_slots(plan_date):
     ]
 
 
+def _expected_count(profile_name, target):
+    return 1 if profile_name == "adhoc" else target if isinstance(target, int) and not isinstance(target, bool) else 0
+
+
 def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"", now_utc=None):
     profile = PROFILE[profile_name]
     pool_errors = []
     pool_errors.extend(_validate_evidence(evidence, rules_source_sha))
     if not isinstance(pool, dict):
-        pool_errors.append("ranked pool root must be an object")
-        return _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, [])
+        pool_errors.append("planning pool root must be an object")
+        return _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, [], 0)
 
     expected_keys = {
         "schema_version", "pool_type", "pool_id", "planning_mode", "target_count",
@@ -609,11 +646,11 @@ def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"",
     missing = expected_keys - set(pool)
     extra = set(pool) - expected_keys
     if missing:
-        pool_errors.append("ranked pool missing fields: " + ", ".join(sorted(missing)))
+        pool_errors.append("planning pool missing fields: " + ", ".join(sorted(missing)))
     if extra:
-        pool_errors.append("ranked pool unexpected fields: " + ", ".join(sorted(extra)))
+        pool_errors.append("planning pool unexpected fields: " + ", ".join(sorted(extra)))
     if pool.get("schema_version") != POOL_SCHEMA_VERSION:
-        pool_errors.append(f"ranked pool schema_version must be {POOL_SCHEMA_VERSION}")
+        pool_errors.append(f"planning pool schema_version must be {POOL_SCHEMA_VERSION}")
     if pool.get("pool_type") != profile["pool_type"]:
         pool_errors.append(f"pool_type must be {profile['pool_type']}")
     date_value = str(pool.get(profile["date_field"], ""))
@@ -637,7 +674,7 @@ def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"",
 
     if profile_name == "daily":
         slots = pool.get("publication_slots")
-        if not isinstance(slots, list) or not isinstance(target, int) or len(slots) != target or len(slots) != len(set(slots)):
+        if not isinstance(slots, list) or not isinstance(target, int) or isinstance(target, bool) or len(slots) != target or len(slots) != len(set(slots)):
             pool_errors.append("publication_slots must contain exactly target_count unique slots")
         else:
             parsed = [_parse_slot(raw, date_value, pool_errors) for raw in slots]
@@ -654,39 +691,40 @@ def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"",
                     if any(item < threshold for item in parsed):
                         pool_errors.append(f"same_day_catch_up slots must be >= {CATCH_UP_MIN_LEAD_MINUTES} minutes in future")
 
+    expected = _expected_count(profile_name, target)
     candidates = pool.get("ranked_candidates")
     candidate_results = []
     candidate_ids = []
     content_ids = []
-    if not isinstance(candidates, list) or len(candidates) != profile["pool_size"]:
-        pool_errors.append(f"ranked_candidates must contain exactly {profile['pool_size']} candidates")
+    if not isinstance(candidates, list) or len(candidates) != expected:
+        pool_errors.append(f"ranked_candidates must contain exactly {expected} candidates")
         candidates = []
     for index, item in enumerate(candidates, start=1):
         item_errors = []
-        if not isinstance(item, dict) or set(item) != {"rank", "candidate_id", "request"}:
-            item_errors.append("candidate must contain exactly rank, candidate_id, request")
+        if not isinstance(item, dict) or set(item) != CANDIDATE_KEYS:
+            item_errors.append("candidate must contain exactly rank, candidate_id, background_category, request")
             candidate_id = None
             request = None
+            background_category = None
         else:
             candidate_id = item.get("candidate_id")
             request = item.get("request")
+            background_category = item.get("background_category")
             if item.get("rank") != index:
                 item_errors.append("candidate rank must equal frozen list position")
             if not isinstance(candidate_id, str) or not CANDIDATE_ID_RE.fullmatch(candidate_id):
                 item_errors.append("invalid candidate_id")
             else:
                 candidate_ids.append(candidate_id)
+            if background_category not in BACKGROUND_CATEGORIES:
+                item_errors.append("invalid background_category")
             if not isinstance(request, dict):
                 item_errors.append("request must be an object")
             else:
                 cid = request.get("content_id")
                 if isinstance(cid, str):
                     content_ids.append(cid)
-                item_errors.extend(_validate_request(request, profile_name, evidence))
-                if profile_name == "adhoc" and mode == "scheduled_daily" and isinstance(cid, str):
-                    prefix = f"wd-{date_value.replace('-', '')}T010000-adhoc-"
-                    if not cid.startswith(prefix):
-                        item_errors.append(f"scheduled_daily content_id must use {prefix} namespace")
+                item_errors.extend(_validate_request(request, profile_name, background_category, evidence))
         candidate_results.append({
             "rank": index,
             "candidate_id": candidate_id,
@@ -695,7 +733,7 @@ def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"",
             "errors": list(dict.fromkeys(item_errors)),
         })
     if len(candidate_ids) != len(set(candidate_ids)):
-        pool_errors.append("ranked candidate IDs must be unique")
+        pool_errors.append("candidate IDs must be unique")
     if len(content_ids) != len(set(content_ids)):
         pool_errors.append("candidate request content IDs must be unique")
 
@@ -710,15 +748,14 @@ def validate_pool(profile_name, pool, rules_source_sha, evidence, raw_bytes=b"",
         if execution.get("rules_source_sha") != rules_source_sha:
             pool_errors.append("planning_execution.rules_source_sha must equal rules_source_sha")
         if execution.get("ranked_candidate_ids") != candidate_ids:
-            pool_errors.append("planning_execution.ranked_candidate_ids must exactly match frozen rank order")
+            pool_errors.append("planning_execution.ranked_candidate_ids must exactly match frozen candidate order")
     if not HEX40_RE.fullmatch(str(rules_source_sha or "")):
         pool_errors.append("rules_source_sha must be lowercase 40-character SHA")
 
-    return _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, candidate_results)
+    return _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, candidate_results, expected)
 
 
-def _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, candidate_results):
-    expected = PROFILE[profile_name]["pool_size"]
+def _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, candidate_results, expected):
     valid = sum(item.get("status") == "PASS" for item in candidate_results)
     status = "PASS" if not pool_errors and len(candidate_results) == expected and valid == expected else "FAIL"
     date_field = PROFILE[profile_name]["date_field"]
@@ -736,7 +773,7 @@ def _result(profile_name, pool, rules_source_sha, raw_bytes, pool_errors, candid
         "draft_sha256": hashlib.sha256(raw_bytes).hexdigest() if raw_bytes else None,
         "expected_candidates": expected,
         "valid_candidates": valid,
-        "failed_candidates": expected - valid,
+        "failed_candidates": max(0, expected - valid),
         "pool_errors": list(dict.fromkeys(pool_errors)),
         "candidate_results": candidate_results,
     }
@@ -747,6 +784,7 @@ def contract_payload():
         "checkpoint_schema_version": CHECKPOINT_SCHEMA_VERSION,
         "pool_schema_version": POOL_SCHEMA_VERSION,
         "request_schema_version": REQUEST_SCHEMA_VERSION,
+        "evidence_schema_version": EVIDENCE_SCHEMA_VERSION,
         "repository": REPOSITORY,
         "execution_environment": {
             "canonical_mode": "connector_native_checkpoint",
@@ -755,18 +793,44 @@ def contract_payload():
             "repository_tree_materialization_required": False,
             "full_background_registry_local_copy_required": False,
             "github_actions_planning": False,
+            "planning_passes": 4,
+            "post_commit_planner_monitoring": False,
             "local_files_required": [
                 "connector_checkpoint.py",
                 "authored pool JSON",
-                "small connector-evidence JSON",
+                "small selected-evidence JSON",
             ],
         },
         "profiles": {
-            name: {**value, "planning_modes": sorted(value["planning_modes"])}
-            for name, value in PROFILE.items()
+            "adhoc": {
+                "allowed_planning_modes": ["manual_on_demand"],
+                "target_count": 1,
+                "expected_candidates": 1,
+                "publication": PROFILE["adhoc"]["publication"],
+                "global_media_readiness_required": False,
+                "automatic_replenishment_enabled": False,
+                "selected_background_validation_required": True,
+                "background_same_category_required": True,
+                "reserve_candidate_count": 0,
+                "post_commit_planner_monitoring": False,
+            },
+            "daily": {
+                "allowed_planning_modes": ["normal_next_day", "same_day_catch_up"],
+                "normal_next_day": {"target_count": 24, "expected_candidates": 24},
+                "same_day_catch_up": {"expected_candidates": "target_count"},
+                "publication": PROFILE["daily"]["publication"],
+                "global_media_readiness_required": False,
+                "automatic_replenishment_enabled": False,
+                "selected_background_validation_required": True,
+                "background_same_category_required": True,
+                "reserve_candidate_count": 0,
+                "post_commit_planner_monitoring": False,
+            },
         },
         "background": {
             "mode": BACKGROUND_MODE,
+            "categories": sorted(BACKGROUND_CATEGORIES),
+            "canonical_fallback_category": CANONICAL_BACKGROUND_FALLBACK_CATEGORY,
             "clip_count_min": MIN_SEQUENCE_CLIPS,
             "clip_count_preferred": PREFERRED_SEQUENCE_CLIPS,
             "clip_count_max": MAX_SEQUENCE_CLIPS,
@@ -775,22 +839,24 @@ def contract_payload():
             "sequence_preferred_seconds": PREFERRED_SEQUENCE_SOURCE_SECONDS,
             "sequence_max_seconds": MAX_SEQUENCE_SOURCE_SECONDS,
             "primary_backup_disjoint": True,
-        },
-        "media_replenishment": {
-            "automatic_continuation_required": True,
-            "replenish_is_terminal": False,
-            "max_replenishment_attempts": MAX_REPLENISH_ATTEMPTS,
-            "rejected_candidates_are_excluded_from_retry": True,
-            "targeted_deficit_discovery": True,
-            "resume_same_planner_invocation": True,
-            "exhausted_error_code": "E_MEDIA_REPLENISH_EXHAUSTED",
+            "same_category_primary_backup": True,
+            "planner_freezes_playback_rate": False,
+            "runtime_derives_playback_rate_after_tts": True,
         },
         "evidence": {
             "schema_version": EVIDENCE_SCHEMA_VERSION,
             "required_top_level": [
                 "schema_version", "repository", "rules_source_sha", "checkpoint_blob_sha",
-                "drift", "media_readiness", "uniqueness", "selected_backgrounds",
+                "drift", "uniqueness", "selected_backgrounds",
             ],
+            "global_media_readiness_forbidden": True,
+            "replenishment_state_forbidden": True,
+        },
+        "recovery": {
+            "checkpoint_failure": "repair affected authored input and rerun same checkpoint",
+            "preferred_background_unavailable": "try alternate eligible category then canonical fallback",
+            "replenishment": "not part of normal planning",
+            "terminal_only_after_recoverable_options_exhausted": True,
         },
     }
 
