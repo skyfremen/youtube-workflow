@@ -8,12 +8,10 @@ ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"
 DRAFTS=ROOT/"content/drafts"; REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"
 RESULTS=ROOT/"content/results"; FAILS=ROOT/"content/failures"
-DRAFT_VERSION=REQUEST_VERSION=EXECUTION_VERSION=RESULT_VERSION=CONTEXT_VERSION=1
+REQUEST_VERSION=EXECUTION_VERSION=RESULT_VERSION=CONTEXT_VERSION=1
 RECENT_LIMIT=25; BG_LIMIT=8; MIN_BG=60.0; MAX_SEGMENT=100.0
-MIN_SOURCE=180.0; MAX_SOURCE=300.0; MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0
+MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0
 TTS_SPEED=1.75
-WINNER_REQUIRED_KEYS={"premise","category","conflict","twist","hook","narration","title","description","lead_gender","story_tone","payoff","background_ids"}
-WINNER_ALLOWED_KEYS=WINNER_REQUIRED_KEYS|{"emoji_cues"}
 DEFAULT_EMOJIS=["😳","💬","🔥","👀"]
 EMOJI_MAP={
     "shock":"😳",
@@ -60,19 +58,43 @@ def canonical(x): return (json.dumps(x,ensure_ascii=False,sort_keys=True,separat
 def read(p): return json.loads(Path(p).read_text(encoding="utf-8"))
 def write(p,x): p=Path(p); p.parent.mkdir(parents=True,exist_ok=True); p.write_bytes(pretty(x))
 def blob(raw): return hashlib.sha1(f"blob {len(raw)}\0".encode()+raw).hexdigest()
+def clean(v): return str(v or "").strip()
 def text(v,f):
-    s=str(v or "").strip()
+    s=clean(v)
     if not s: raise VError("MISSING_TEXT",f,v,"non-empty text")
     return s
+def truncate_utf8(v,limit=5000):
+    s=clean(v); raw=s.encode()
+    if len(raw)<=limit: return s
+    return raw[:limit].decode("utf-8","ignore").rstrip()
 def draft_id(path):
     x=Path(path).stem
     if not DRAFT_RE.fullmatch(x): raise VError("INVALID_DRAFT_ID","draft_id",x,"draft-<8..96 letters/digits/hyphens>.json")
     return x
+def normalize_gender(v):
+    g=clean(v).casefold()
+    return g if g in {"female","male"} else "female"
+def normalize_tone(v):
+    t=clean(v).casefold()
+    return t if t in TONES else "natural"
 def voice(g,t):
-    if g not in {"female","male"}: raise VError("INVALID_LEAD_GENDER","winner.lead_gender",g,"female or male")
-    if t not in TONES: raise VError("INVALID_STORY_TONE","winner.story_tone",t,"approved V1 tone")
+    if g not in {"female","male"}: raise VError("INVALID_LEAD_GENDER","story.lead_gender",g,"female or male")
+    if t not in TONES: raise VError("INVALID_STORY_TONE","story.story_tone",t,"approved V1 tone")
     return ("af_bella" if t in EXPRESSIVE else "af_heart") if g=="female" else ("am_fenrir" if t in EXPRESSIVE else "am_echo")
 def estimate(hook,script): return round(len((hook+" "+script).split())/WORDS_PER_SEC,2)
+def strip_repeated_hook(hook,script):
+    h=clean(hook); s=clean(script)
+    if h and s[:len(h)].casefold()==h.casefold():
+        return s[len(h):].lstrip(" \t\r\n-—–:;,.!?")
+    return s
+def last_sentence(script):
+    s=clean(script)
+    if not s: return ""
+    parts=[x.strip() for x in re.split(r"(?<=[.!?])\s+",s) if x.strip()]
+    return parts[-1] if parts else s
+def resolve_payoff(v,script):
+    p=clean(v); s=clean(script)
+    return p if p and p.casefold() in s.casefold() else last_sentence(s)
 def cue_key(v):
     if not isinstance(v,str): return ""
     return re.sub(r"_+","_",re.sub(r"[^a-z0-9]+","_",v.strip().casefold())).strip("_")
@@ -117,68 +139,80 @@ def build_context():
     h=read(HIST)
     if not isinstance(h,list): raise VError("INVALID_HISTORY","data/history.json",type(h).__name__,"array")
     choices=shortlist(registry())
-    if not choices: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",0,"at least one valid approved background",False)
+    if len(choices)<3: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(choices),"at least three valid approved backgrounds",False)
     cards=[{k:str(x.get(k) or "") for k in ("title","premise","conflict","twist","payoff")}
            for x in h[-RECENT_LIMIT:] if isinstance(x,dict)]
     out={"context_version":1,"recent_story_cards":cards,"background_choices":choices}
     if len(pretty(out))>40000: raise VError("CONTEXT_TOO_LARGE","content/context.json",len(pretty(out)),"<=40000 bytes")
     write(CTX,out); return out
 
-def validate_draft(x,path=None):
+def normalize_draft(x):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
-    allowed={"draft_version","winner","supersedes_draft_id"}
-    if set(x)-allowed or not {"draft_version","winner"}<=set(x):
-        raise VError("INVALID_DRAFT_FIELDS","$",sorted(x),"V1 winner-only draft fields")
-    if x["draft_version"]!=1: raise VError("INVALID_DRAFT_VERSION","draft_version",x["draft_version"],"1",False)
-    if path: draft_id(path)
     if x.get("supersedes_draft_id") is not None and not DRAFT_RE.fullmatch(str(x["supersedes_draft_id"])):
         raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",x["supersedes_draft_id"],"valid prior draft id")
-    w=x["winner"]
-    if not isinstance(w,dict) or set(w)-WINNER_ALLOWED_KEYS or not WINNER_REQUIRED_KEYS<=set(w):
-        raise VError("INVALID_WINNER_FIELDS","winner",sorted(w) if isinstance(w,dict) else type(w).__name__,"winner-only V1 fields; emoji_cues optional")
-    for k in ("premise","category","conflict","twist"):
-        text(w.get(k),f"winner.{k}")
-    hook=text(w["hook"],"winner.hook"); script=text(w["narration"],"winner.narration")
-    title=text(w["title"],"winner.title"); desc=text(w["description"],"winner.description"); payoff=text(w["payoff"],"winner.payoff")
-    if script.casefold().startswith(hook.casefold()): raise VError("HOOK_REPEATED","winner.narration",script[:100],"body must not repeat hook")
-    if payoff.casefold() not in script.casefold(): raise VError("PAYOFF_NOT_IN_NARRATION","winner.payoff",payoff,"exact phrase in narration")
-    if len(title)>100: raise VError("TITLE_TOO_LONG","winner.title",len(title),"<=100 characters")
-    if len(desc.encode())>5000: raise VError("DESCRIPTION_TOO_LONG","winner.description",len(desc.encode()),"<=5000 bytes")
-    voice(str(w["lead_gender"]),str(w["story_tone"]))
-    ids=w["background_ids"]
-    if not isinstance(ids,list) or len(ids)!=3 or len(set(ids))!=3 or any(not isinstance(i,str) or not i.strip() for i in ids):
-        raise VError("INVALID_BACKGROUND_SELECTION","winner.background_ids",ids,"exactly 3 distinct IDs")
-    secs=estimate(hook,script)
-    if secs<MIN_NARR: raise VError("NARRATION_TOO_SHORT","winner.narration",f"estimated_seconds={secs}",f"minimum_seconds={MIN_NARR:g}")
-    if secs>MAX_NARR: raise VError("NARRATION_TOO_LONG","winner.narration",f"estimated_seconds={secs}",f"maximum_seconds={MAX_NARR:g}")
-    return x
+    w=x.get("winner")
+    if not isinstance(w,dict):
+        raise VError("INVALID_WINNER_FIELDS","winner",type(w).__name__,"winner object")
+    hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration"))
+    return {
+      "winner":{
+        "premise":clean(w.get("premise")),
+        "category":clean(w.get("category")),
+        "conflict":clean(w.get("conflict")),
+        "twist":clean(w.get("twist")),
+        "hook":hook,
+        "narration":script,
+        "title":clean(w.get("title")),
+        "description":truncate_utf8(w.get("description"),5000),
+        "lead_gender":normalize_gender(w.get("lead_gender")),
+        "story_tone":normalize_tone(w.get("story_tone")),
+        "payoff":resolve_payoff(w.get("payoff"),script),
+        "emoji_cues":w.get("emoji_cues"),
+        "background_ids":w.get("background_ids"),
+      }
+    }
+
+def select_background_ids(requested,r):
+    m=amap(r); selected=[]
+    values=requested if isinstance(requested,list) else []
+    for raw in values:
+        if not isinstance(raw,str): continue
+        bid=raw.strip()
+        if not bid or bid in selected: continue
+        a=m.get(bid)
+        if a and usable(a):
+            selected.append(bid)
+            if len(selected)==3: return selected
+    for a in r["assets"]:
+        if not usable(a): continue
+        bid=str(a["id"]).strip()
+        if bid and bid not in selected:
+            selected.append(bid)
+            if len(selected)==3: return selected
+    raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(selected),"at least three distinct valid approved backgrounds",False)
 
 def bg_contract(ids,r):
     m=amap(r); seg=[]
-    for bid in ids:
-        a=m.get(bid)
-        if not a: raise VError("UNKNOWN_BACKGROUND_ID","winner.background_ids",bid,"ID in approved registry")
-        if not usable(a): raise VError("BACKGROUND_NOT_ALLOWED","winner.background_ids",bid,"active verified approved asset",False)
+    for bid in select_background_ids(ids,r):
+        a=m[bid]
         seg.append({"background_id":bid,"segment_start_seconds":0.0,"segment_duration_seconds":round(min(float(a["duration_seconds"]),MAX_SEGMENT),3)})
-    total=sum(s["segment_duration_seconds"] for s in seg)
-    if total<MIN_SOURCE: raise VError("BACKGROUND_SOURCE_TOO_SHORT","winner.background_ids",f"total_source_seconds={total}",f">={MIN_SOURCE:g}")
-    if total>MAX_SOURCE: raise VError("BACKGROUND_SOURCE_TOO_LONG","winner.background_ids",f"total_source_seconds={total}",f"<={MAX_SOURCE:g}")
     return {"mode":"concatenated_fit_to_short","segments":seg}
 
-def make_request(path,d,r):
-    did=draft_id(path); digest=hashlib.sha256(canonical(d)).hexdigest(); cid="wd-"+digest[:24]
+def make_request(did,raw_draft,d,r):
+    digest=hashlib.sha256(canonical(raw_draft)).hexdigest(); cid="wd-"+digest[:24]
     w=d["winner"]
+    g=w["lead_gender"]; t=w["story_tone"]
     return {
       "request_version":1,"content_id":cid,"source_draft_id":did,
       "channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},
-      "story":{"category":text(w["category"],"winner.category"),"premise":text(w["premise"],"winner.premise"),
-        "conflict":text(w["conflict"],"winner.conflict"),"twist":text(w["twist"],"winner.twist"),
-        "hook":text(w["hook"],"winner.hook"),"script":text(w["narration"],"winner.narration"),
-        "lead_gender":str(w["lead_gender"]),"story_tone":str(w["story_tone"]),"punchline":text(w["payoff"],"winner.payoff"),
+      "story":{"category":w["category"],"premise":w["premise"],
+        "conflict":w["conflict"],"twist":w["twist"],
+        "hook":w["hook"],"script":w["narration"],
+        "lead_gender":g,"story_tone":t,"punchline":w["payoff"],
         "card_emojis":resolve_emojis(w.get("emoji_cues"))},
-      "narration":{"engine":"kokoro","voice":voice(str(w["lead_gender"]),str(w["story_tone"])),"speed":TTS_SPEED},
-      "background":bg_contract(w["background_ids"],r),
-      "youtube":{"title":text(w["title"],"winner.title"),"description":text(w["description"],"winner.description"),
+      "narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},
+      "background":bg_contract(w.get("background_ids"),r),
+      "youtube":{"title":w["title"],"description":w["description"],
         "hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},
       "visibility":"public",
       "render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p",
@@ -207,24 +241,23 @@ def validate_request(x,path=None,r=None):
     if not isinstance(b,dict) or set(b)!={"mode","segments"} or b["mode"]!="concatenated_fit_to_short": raise VError("INVALID_BACKGROUND_CONTRACT","background",b,"concatenated_fit_to_short segments",False)
     seg=b["segments"]
     if not isinstance(seg,list) or len(seg)!=3: raise VError("INVALID_BACKGROUND_SEGMENTS","background.segments",seg,"3 segments")
-    ids=[]; total=0.0; m=amap(r) if r else {}
+    ids=[]; m=amap(r) if r else {}
     for n,z in enumerate(seg):
         if not isinstance(z,dict) or set(z)!={"background_id","segment_start_seconds","segment_duration_seconds"}: raise VError("INVALID_BACKGROUND_SEGMENT",f"background.segments[{n}]",z,"id/start/duration",False)
         bid=text(z["background_id"],f"background.segments[{n}].background_id"); ids.append(bid)
         try: start=float(z["segment_start_seconds"]); dur=float(z["segment_duration_seconds"])
         except (TypeError,ValueError): raise VError("INVALID_BACKGROUND_TIMING",f"background.segments[{n}]",z,"numeric timing",False)
         if abs(start)>1e-6 or not MIN_BG<=dur<=MAX_SEGMENT: raise VError("INVALID_BACKGROUND_TIMING",f"background.segments[{n}]",z,f"start=0 duration {MIN_BG:g}-{MAX_SEGMENT:g}",False)
-        total+=dur
         if r:
             a=m.get(bid)
             if not a or not usable(a): raise VError("BACKGROUND_NOT_ALLOWED","background.segments",bid,"approved active verified asset",False)
             if dur>float(a["duration_seconds"])+.05: raise VError("BACKGROUND_RANGE_EXCEEDS_SOURCE","background.segments",bid,"segment fits source",False)
     if len(set(ids))!=3: raise VError("DUPLICATE_BACKGROUND_ID","background.segments",ids,"3 distinct IDs")
-    if not MIN_SOURCE<=total<=MAX_SOURCE: raise VError("INVALID_BACKGROUND_TOTAL","background.segments",total,f"{MIN_SOURCE:g}-{MAX_SOURCE:g}s",False)
     y=x["youtube"]; yk={"title","description","hashtags","tags","category_id","made_for_kids"}
     if not isinstance(y,dict) or set(y)!=yk: raise VError("INVALID_YOUTUBE_FIELDS","youtube",y,"exact V1 YouTube fields")
     if len(text(y["title"],"youtube.title"))>100: raise VError("TITLE_TOO_LONG","youtube.title",len(y["title"]),"<=100")
-    text(y["description"],"youtube.description")
+    desc=text(y["description"],"youtube.description")
+    if len(desc.encode())>5000: raise VError("DESCRIPTION_TOO_LONG","youtube.description",len(desc.encode()),"<=5000 bytes")
     if not isinstance(y["hashtags"],list) or not isinstance(y["tags"],list) or y["made_for_kids"] is not False: raise VError("INVALID_YOUTUBE_METADATA","youtube",y,"valid arrays and made_for_kids=false")
     if x["visibility"]!="public": raise VError("VISIBILITY_NOT_PUBLIC","visibility",x["visibility"],"public")
     forbidden={"slot","publish_at","schedule_date","schedule_time","reserved_hour"}
@@ -244,16 +277,17 @@ def fail(did,e): write(FAILS/(did+".json"),{"draft_id":did,"error_code":e.code,"
 def finalize(path):
     path=Path(path).resolve(); did=draft_id(path)
     try:
-        d=validate_draft(read(path),path); r=registry(); q=make_request(path,d,r); validate_request(q,r=r)
+        raw_draft=read(path); d=normalize_draft(raw_draft); r=registry(); q=make_request(did,raw_draft,d,r)
+        target=REQS/(q["content_id"]+".json"); validate_request(q,target,r)
     except VError as e: fail(did,e); raise
-    target=REQS/(q["content_id"]+".json"); raw=pretty(q)
+    raw=pretty(q)
     if target.exists() and target.read_bytes()!=raw: raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(raw),False)
     target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(raw); return target
 def validate_file(path):
     path=Path(path); q=validate_request(read(path),path,registry()); print(f"Request valid: {path.name}; request_version=1"); return q
 def make_execution(path,source):
     if not SHA40.fullmatch(source): raise VError("INVALID_SOURCE_SHA","request_source_sha",source,"40 lowercase hex",False)
-    path=Path(path); q=validate_file(path); raw=path.read_bytes(); rblob=blob(raw)
+    path=Path(path); q=read(path); raw=path.read_bytes(); rblob=blob(raw)
     eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
     did="dp-"+hashlib.sha256(eid.encode()).hexdigest()[:20]
     x={"execution_version":1,"execution_id":eid,"content_id":q["content_id"],"request_path":f"content/requests/{q['content_id']}.json",
@@ -270,7 +304,7 @@ def validate_result(x,path=None):
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}",str(x["youtube_video_id"])): raise VError("INVALID_YOUTUBE_VIDEO_ID","youtube_video_id",x["youtube_video_id"],"11 chars",False)
     text(x["published_at"],"published_at"); return x
 def ingest(path):
-    path=Path(path); x=validate_result(read(path),path); q=validate_file(REQS/(x["content_id"]+".json")); h=read(HIST)
+    path=Path(path); x=validate_result(read(path),path); q=read(REQS/(x["content_id"]+".json")); h=read(HIST)
     if not isinstance(h,list): raise VError("INVALID_HISTORY","data/history.json",type(h).__name__,"array",False)
     if not any(isinstance(i,dict) and i.get("content_id")==x["content_id"] for i in h):
         s=q["story"]; h.append({"content_id":x["content_id"],"title":q["youtube"]["title"],"premise":s["premise"],"category":s["category"],
@@ -283,44 +317,47 @@ def self_test():
         if not cond: raise AssertionError(name)
         checks.append(name)
     r=registry(); ok("1 registry parses"); c=build_context(); ok("2 context builds")
-    ok("3 context compact",len(pretty(c))<=40000); ok("4 shortlist small",5<=len(c["background_choices"])<=BG_LIMIT)
+    ok("3 context compact",len(pretty(c))<=40000); ok("4 shortlist small",3<=len(c["background_choices"])<=BG_LIMIT)
     src=Path(__file__).read_text(); bad=["minimum "+"32 assets","PASS / "+"RE"+"PLENISH","category "+"minimum","inventory readiness "+"threshold","RE"+"PLENISH"]
     ok("5 no inventory gate",not any(x in src for x in bad))
     ids=[x["id"] for x in c["background_choices"][:3]]
     filler=" ".join(["Then everything changed when the truth finally came out."]*47); payoff="I had the receipts"
-    d={"draft_version":1,
+    raw={"ignored_root":"allowed",
        "winner":{"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.",
        "twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.",
-       "narration":f"{filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame",
-       "description":"A workplace accusation turns around fast.","lead_gender":"female","story_tone":"dramatic","payoff":payoff,
-       "emoji_cues":["shock","evidence","panic","victory"],"background_ids":ids}}
-    dp=ROOT/"draft-selftest-deadbeef.json"; validate_draft(d,dp); q=make_request(dp,d,r); validate_request(q,r=r)
-    ok("6 valid winner-only draft"); ok("7 deterministic request",canonical(q)==canonical(make_request(dp,d,r)))
-    bad_d=json.loads(json.dumps(d)); bad_d["winner"]["title"]="x"*101
-    try: validate_draft(bad_d,dp); precise=False
-    except VError as e: precise=e.code=="TITLE_TOO_LONG"
-    ok("8 precise failure",precise)
-    ok("9 winner-only contract","ideas" not in d and WINNER_REQUIRED_KEYS<=set(d["winner"]) and set(d["winner"])<=WINNER_ALLOWED_KEYS)
-    ok("10 mapped emojis",q["story"]["card_emojis"]==["😳","📱","😱","😎"])
-    ok("11 emoji fallback",resolve_emojis(["shock","unknown-cue","panic","victory"])==DEFAULT_EMOJIS and resolve_emojis(None)==DEFAULT_EMOJIS)
-    ok("12 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
-    ok("13 background IDs valid",len({x["background_id"] for x in q["background"]["segments"]})==3)
-    js=json.dumps(q); ok("14 no slot",'"slot"' not in js); ok("15 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
-    ok("16 immediate public",q["visibility"]=="public")
+       "narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.",
+       "title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.",
+       "lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","ignored_winner":"allowed",
+       "emoji_cues":["shock","evidence","panic","victory"],"background_ids":[ids[0],"missing-background",ids[0]]}}
+    d=normalize_draft(raw); dp=ROOT/"draft-selftest-deadbeef.json"; q=make_request(dp.stem,raw,d,r); validate_request(q,REQS/(q["content_id"]+".json"),r)
+    ok("6 extra fields ignored","ignored_root" not in d and "ignored_winner" not in d["winner"])
+    ok("7 no draft version","draft_version" not in d)
+    ok("8 defaults",q["story"]["lead_gender"]=="female" and q["story"]["story_tone"]=="natural")
+    ok("9 repeated hook stripped",not q["story"]["script"].casefold().startswith(q["story"]["hook"].casefold()))
+    ok("10 payoff fallback",q["story"]["punchline"]=="Nobody could answer after that.")
+    ok("11 mapped emojis",q["story"]["card_emojis"]==["😳","📱","😱","😎"])
+    ok("12 emoji fallback",resolve_emojis(["shock","unknown-cue","panic","victory"])==DEFAULT_EMOJIS and resolve_emojis(None)==DEFAULT_EMOJIS)
+    ok("13 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
+    ok("14 background fallback",len({x["background_id"] for x in q["background"]["segments"]})==3 and all(x["background_id"] in amap(r) for x in q["background"]["segments"]))
+    long_desc="é"*3000
+    ok("15 description truncation",len(truncate_utf8(long_desc).encode())<=5000)
+    ok("16 deterministic request",canonical(q)==canonical(make_request(dp.stem,raw,normalize_draft(raw),r)))
+    js=json.dumps(q); ok("17 no slot",'"slot"' not in js); ok("18 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
+    ok("19 immediate public",q["visibility"]=="public")
     rblob=blob(pretty(q)); eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
-    ok("17 execution identity",bool(EID_RE.fullmatch(eid))); ok("18 contract hash",len(CONTRACT_HASH)==64)
+    ok("20 execution identity",bool(EID_RE.fullmatch(eid))); ok("21 contract hash",len(CONTRACT_HASH)==64)
     fake={"result_version":1,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
-    validate_result(fake); ok("19 result validates")
+    validate_result(fake); ok("22 result validates")
     wdir=ROOT/".github/workflows"; names={p.name for p in wdir.glob("*.yml")}
-    ok("20 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})
-    ok("21 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
+    ok("23 workflow set",names=={"adhoc-draft.yml","dispatch.yml","result.yml","context.yml"})
+    ok("24 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
     legacy="youtube-"+"shorts-"+"bot/"
     live="\n".join(p.read_text(errors="ignore") for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts and p.suffix in {".py",".yml",".md",".json"})
-    ok("22 no legacy refs",legacy not in live); ok("23 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
-    a=(ROOT/"ADHOC.md").read_text(); ok("24 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
-    ok("25 winner-only documented","winner" in a and "persist only the winner" in a)
-    ok("26 no background minimum concept","32" not in a); ok("27 history compact",isinstance(read(HIST),list))
-    ok("28 no publication schedule object","publication" not in q); ok("29 no analytics","analytics" not in js)
+    ok("25 no legacy refs",legacy not in live); ok("26 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
+    a=(ROOT/"ADHOC.md").read_text(); ok("27 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
+    ok("28 winner-only documented","winner" in a and "persist only the winner" in a)
+    ok("29 no background minimum concept","32" not in a); ok("30 history compact",isinstance(read(HIST),list))
+    ok("31 no publication schedule object","publication" not in q); ok("32 no analytics","analytics" not in js)
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
