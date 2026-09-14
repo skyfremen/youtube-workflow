@@ -1,0 +1,214 @@
+{
+  "channel": {
+    "handle": "@WACKYDRAMAS",
+    "name": "Wacky Dramas"
+  },
+  "content_id": "wd-20260914T075929-adhoc-m0759c01-466a90",
+  "narration": {
+    "engine": "kokoro",
+    "speed": 1.75,
+    "voice": "af_bella"
+  },
+  "planning": {
+    "analytics_score": null,
+    "analytics_weight": 0.0,
+    "attributes": {
+      "antagonist_role": "COWORKER",
+      "conflict": "coworker-blames-narrator-for-salary-sheet-exposure",
+      "ending_style": "JUSTICE",
+      "opening_style": "URGENT_CONFLICT",
+      "primary_emotion": "INJUSTICE",
+      "protagonist_role": "EMPLOYEE",
+      "subtype": "salary-sheet-permission-leak",
+      "title_style": "CONTRADICTION"
+    },
+    "editorial_components": {
+      "broad_relatability": 95,
+      "curiosity_gap": 98,
+      "emotional_stakes": 96,
+      "escalation_potential": 95,
+      "narration_suitability": 97,
+      "opening_hook_potential": 98,
+      "originality": 95,
+      "payoff_quality": 97,
+      "title_potential": 97
+    },
+    "editorial_score": 96,
+    "final_score": 96,
+    "hook_score": 97,
+    "plan_date": "2026-09-14",
+    "selected_title_score": 97,
+    "selection_class": "exploit",
+    "selection_reason": "Cold-start editorial selection: distinct recent-conflict profile, strong first-person hook, complete payoff, narration-safe structure, and no mature analytics steering.",
+    "similarity": {
+      "max_recent_similarity": 0.09
+    },
+    "target_duration_seconds": 145,
+    "title_candidates": [
+      {
+        "score": 97,
+        "score_components": {
+          "conciseness": 95,
+          "curiosity_gap": 99,
+          "emotional_impact": 98,
+          "immediate_comprehension": 97,
+          "natural_phrasing": 96,
+          "specificity": 98,
+          "truthful_reflection": 97,
+          "unanswered_question": 99
+        },
+        "style": "CONTRADICTION",
+        "title": "My Coworker Blamed Me for a Salary Leak\u2014The Audit Log Didn't #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 96,
+        "score_components": {
+          "conciseness": 94,
+          "curiosity_gap": 98,
+          "emotional_impact": 97,
+          "immediate_comprehension": 96,
+          "natural_phrasing": 95,
+          "specificity": 97,
+          "truthful_reflection": 96,
+          "unanswered_question": 98
+        },
+        "style": "DISCOVERY",
+        "title": "The Sharing Log Revealed Who Exposed Our Salary Sheet #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 95,
+        "score_components": {
+          "conciseness": 93,
+          "curiosity_gap": 97,
+          "emotional_impact": 96,
+          "immediate_comprehension": 95,
+          "natural_phrasing": 94,
+          "specificity": 96,
+          "truthful_reflection": 95,
+          "unanswered_question": 97
+        },
+        "style": "HIDDEN_REVELATION",
+        "title": "My Name Was Everywhere\u2014But I Never Shared the File #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 94,
+        "score_components": {
+          "conciseness": 92,
+          "curiosity_gap": 96,
+          "emotional_impact": 95,
+          "immediate_comprehension": 94,
+          "natural_phrasing": 93,
+          "specificity": 95,
+          "truthful_reflection": 94,
+          "unanswered_question": 96
+        },
+        "style": "CONSEQUENCE_FIRST",
+        "title": "One Permission Change Turned a Spreadsheet Into an HR Crisis #Shorts",
+        "truthful": true
+      },
+      {
+        "score": 93,
+        "score_components": {
+          "conciseness": 91,
+          "curiosity_gap": 95,
+          "emotional_impact": 94,
+          "immediate_comprehension": 93,
+          "natural_phrasing": 92,
+          "specificity": 94,
+          "truthful_reflection": 93,
+          "unanswered_question": 95
+        },
+        "style": "DELAYED_REVELATION",
+        "title": "They Investigated My Edits Until Security Checked the Link #Shorts",
+        "truthful": true
+      }
+    ]
+  },
+  "publication": {
+    "mode": "immediate",
+    "publish_at": null,
+    "timezone": "Asia/Singapore"
+  },
+  "schema_version": 7,
+  "story": {
+    "card_emojis": [
+      "\ud83d\udcca",
+      "\ud83d\udd12",
+      "\ud83d\ude33",
+      "\ud83e\uddfe",
+      "\ud83d\udcbb"
+    ],
+    "category": "WORKPLACE",
+    "hook": "My coworker blamed me for the salary leak",
+    "lead_gender": "female",
+    "punchline": {
+      "emphasis_text": "actually exposed it",
+      "text": "The sharing log showed who actually exposed it.",
+      "type": "REVEAL"
+    },
+    "script": "I learned about the leak from a calendar invite titled \u201cInformation Security Review.\u201d\n\nOur department kept a salary-planning spreadsheet in a restricted drive. I had access because I maintained the reporting formulas, but I did not set permissions. One Monday morning, screenshots from that sheet started circulating in a group chat. By lunch, people were comparing salaries and asking why two employees with the same title were paid differently.\n\nMy coworker walked straight to our manager and said I must have exposed it because my name appeared all over the version history.\n\nThat sounded convincing enough that I was told to stop touching the file while security investigated.\n\nI was furious, but arguing would only make me look defensive. I asked for one thing: please preserve the access logs before anyone changed the sharing settings.\n\nThe first log showed I had edited three formulas on Friday afternoon. My coworker pointed at it like a smoking gun. Then security opened the sharing audit.\n\nAt 6:42 Friday evening, someone had changed the spreadsheet from \u201cspecific people\u201d to \u201canyone in the company with the link.\u201d\n\nIt was not my account.\n\nIt was hers.\n\nShe immediately said she had only done that because a director could not open the file during a meeting. That part turned out to be true. She had been asked to fix access quickly.\n\nThe problem was what happened next.\n\nThe audit showed she copied the share link into a large project channel instead of sending it privately to the director. The channel had more than two hundred members. One person opened the sheet, took screenshots, and forwarded them elsewhere.\n\nMy coworker said she had forgotten the salary tabs were inside the workbook because the first tab was a harmless staffing dashboard.\n\nOur manager asked why she had blamed me before checking.\n\nShe said my formulas made it look like I \u201cowned\u201d the file and she panicked when people got angry.\n\nSecurity did not treat the mistake as malicious, but they did document it as an access-control incident. They also removed broad-link sharing from that folder entirely.\n\nI was taken off the review before the end of the day.\n\nWhat bothered me was not that she made a rushed mistake. I had made plenty of those. It was that she had tried to turn my name in the edit history into proof before anyone looked at the actual permission history.\n\nThe next morning she apologized in private. I told her I accepted the apology, but I wanted our manager included in the correction because the accusation had not been private.\n\nShe agreed.\n\nAt our team meeting, she explained exactly what she had changed and said I had not leaked the spreadsheet.\n\nThen security showed us a new dashboard that separated editing activity from sharing activity.\n\nMy name was still all over the formulas.\n\nBefore the team meeting, I also checked the document owner field because I wanted to be certain there was not some second sharing change under my account. The owner was our department service account, not either of us. Security showed that edit access and sharing access were separate permissions, which explained why my routine formula work had looked so incriminating at first glance.\n\nThey also found that the director she was trying to help already had access through a different group. The quickest fix would have been to refresh his login, not broaden the link. Nobody said that to embarrass her. It mattered because the incident review was supposed to prevent the same shortcut from happening again.\n\nI asked whether the person who posted screenshots would be disciplined. Security said that was a separate question and kept my review focused on the permission change. I appreciated that. For once, the process separated what could be proven from what people were assuming.\n\nHer account was the only one that had opened the door.\n\nThe version history showed who worked on the spreadsheet. The sharing log showed who actually exposed it.",
+    "story_tone": "dramatic",
+    "story_type": "salary-sheet-permission-leak"
+  },
+  "visual": {
+    "background_backup_sequence": [
+      {
+        "background_id": "satisfying-px-5285483",
+        "segment_duration_seconds": 90.0,
+        "segment_start_seconds": 10.0
+      },
+      {
+        "background_id": "satisfying-px-4319304",
+        "segment_duration_seconds": 60.0,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "satisfying-px-5894535",
+        "segment_duration_seconds": 60.0,
+        "segment_start_seconds": 0.0
+      }
+    ],
+    "background_mode": "concatenated_fit_to_short",
+    "background_primary_sequence": [
+      {
+        "background_id": "satisfying-px-15797632",
+        "segment_duration_seconds": 90.0,
+        "segment_start_seconds": 20.0
+      },
+      {
+        "background_id": "satisfying-px-15882705",
+        "segment_duration_seconds": 60.0,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "satisfying-px-3824385",
+        "segment_duration_seconds": 60.0,
+        "segment_start_seconds": 0.0
+      }
+    ]
+  },
+  "youtube": {
+    "category_id": "24",
+    "description": "A salary spreadsheet leak looked like my fault until security separated edit history from the actual sharing audit.",
+    "hashtags": [
+      "#Shorts",
+      "#WackyDramas",
+      "#WorkplaceDrama",
+      "#OfficeDrama",
+      "#PlotTwist"
+    ],
+    "made_for_kids": false,
+    "tags": [
+      "salary spreadsheet",
+      "workplace accusation",
+      "sharing audit",
+      "office drama",
+      "information security",
+      "coworker conflict"
+    ],
+    "title": "My Coworker Blamed Me for a Salary Leak\u2014The Audit Log Didn't #Shorts"
+  }
+}
