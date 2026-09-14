@@ -4,26 +4,39 @@ These rules apply to **new** Daily planning. Historical immutable 36-candidate p
 
 The business objective remains strong subscriber and qualified-view growth without weakening safety, originality, copyright, immutable-state, recovery, selected-media, or publication guarantees.
 
-## Profile
+## Profile and publication timing
 
 ### Normal next day
 
+For the normal scheduled planner invocation at/after **20:00 Asia/Singapore**, plan the **next Singapore calendar day**.
+
 - `planning_mode = normal_next_day`.
-- `target_count = 24`.
+- `target_count` is exactly **24**.
 - `candidate_count = 24`.
 - `reserve_candidate_count = 0`.
-- Use the canonical 24 hourly publication slots for the plan date.
+- Use the canonical hourly publication slots from `00:00` through `23:00` Asia/Singapore for that plan date.
 
 ### Same-day catch-up
 
-If current `main` still supports catch-up:
+For a manual run before 20:00 Asia/Singapore, use `same_day_catch_up` for the **current Singapore calendar day** when the canonical timing rules require catch-up.
 
-- resolve eligible remaining slots using the current lead-time contract;
-- `target_count = eligible_slot_count`;
-- `candidate_count = target_count`;
-- there are no reserves.
+- Keep only exact top-of-hour slots at least **30 minutes in the future**.
+- `publication_slots` contains exactly those eligible slots in chronological order.
+- `target_count` equals the number of eligible remaining slots.
+- `candidate_count = target_count`.
+- There are no reserves.
+- If no eligible catch-up slot remains, fail closed rather than inventing a non-canonical slot.
+- Downstream promotion independently rechecks the 30-minute lead at promotion time.
 
-There is no new-planning 36-candidate pool and no first-24-valid rank walk. If candidate N is weak or invalid, repair/regenerate candidate N while preserving unaffected candidates.
+### Existing canonical Daily plan
+
+If canonical `content/planning/YYYY-MM-DD.json` already exists, do **not** create another pool for that date. Use deterministic production recovery through `.github/workflows/daily-production.yml` / its manual recovery path for the already-immutable requests.
+
+### Immutable pool attempts
+
+Daily pool IDs remain immutable attempts such as `dp-YYYYMMDD-a01`, `dp-YYYYMMDD-a02`, and so on. Before a pool is committed, a checkpoint failure is repaired in the current draft and the same checkpoint is rerun. Once an immutable pool has been successfully committed, downstream automation must not creatively repair or rerank it; production recovery uses the frozen request/content identities.
+
+There is no new-planning 36-candidate pool and no first-24-valid rank walk. If candidate N is weak or invalid before pool commit, repair/regenerate candidate N while preserving unaffected candidates.
 
 ## Creative ownership and batch diversity
 
