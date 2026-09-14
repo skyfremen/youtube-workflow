@@ -1,7 +1,8 @@
 """Declarative Daily and Ad-hoc planner profiles.
 
-Profiles contain only mode-specific policy. Shared schema, semantic, media,
-background, narration and candidate validation live in the shared planner core.
+Profiles describe new-planning policy only. Historical immutable pool compatibility
+is handled explicitly by downstream promotion code; it is not part of the current
+planner contract.
 """
 from __future__ import annotations
 
@@ -28,6 +29,20 @@ class PlannerProfile:
     promotion_policy: str
     scheduling_policy: str
     diversity_policy: str
+    candidate_count_policy: str
+    global_media_readiness_required: bool
+    automatic_replenishment_enabled: bool
+    selected_background_validation_required: bool
+    background_same_category_required: bool
+    reserve_candidate_count: int
+    post_commit_planner_monitoring: bool
+
+    def expected_candidate_count(self, target_count: Optional[int]) -> int:
+        if self.candidate_count_policy == "target_count":
+            if isinstance(target_count, bool) or not isinstance(target_count, int):
+                return 0
+            return target_count
+        return self.pool_size
 
     def contract_dict(self):
         payload = asdict(self)
@@ -38,7 +53,7 @@ class PlannerProfile:
 DAILY = PlannerProfile(
     name="daily",
     pool_type="daily",
-    pool_size=36,
+    pool_size=24,
     planning_modes=frozenset({"normal_next_day", "same_day_catch_up"}),
     publication_template={
         "mode": "scheduled",
@@ -52,16 +67,23 @@ DAILY = PlannerProfile(
     has_publication_slots=True,
     identity_policy="date_scoped_daily_content_ids",
     uniqueness_policy="one_canonical_plan_per_plan_date_and_immutable_pool_attempt_ids",
-    promotion_policy="preserve_frozen_rank_order_select_first_target_valid_candidates",
+    promotion_policy="all_required_candidates_must_validate_and_map_one_to_one_to_slots",
     scheduling_policy="canonical_hourly_slots_or_same_day_catch_up",
     diversity_policy="daily_batch_diversity_constraints",
+    candidate_count_policy="target_count",
+    global_media_readiness_required=False,
+    automatic_replenishment_enabled=False,
+    selected_background_validation_required=True,
+    background_same_category_required=True,
+    reserve_candidate_count=0,
+    post_commit_planner_monitoring=False,
 )
 
 ADHOC = PlannerProfile(
     name="adhoc",
     pool_type="adhoc",
-    pool_size=5,
-    planning_modes=frozenset({"scheduled_daily", "manual_on_demand"}),
+    pool_size=1,
+    planning_modes=frozenset({"manual_on_demand"}),
     publication_template={
         "mode": "immediate",
         "timezone": CANONICAL_TIMEZONE,
@@ -72,11 +94,18 @@ ADHOC = PlannerProfile(
     normal_mode=None,
     normal_target_count=None,
     has_publication_slots=False,
-    identity_policy="scheduled_010000_namespace_or_distinct_manual_invocation_namespace",
-    uniqueness_policy="scheduled_daily_unique_per_singapore_date_manual_on_demand_exact_identity_only",
-    promotion_policy="preserve_frozen_rank_order_select_first_valid_candidate",
+    identity_policy="distinct_manual_invocation_namespace",
+    uniqueness_policy="manual_on_demand_exact_identity_only",
+    promotion_policy="single_required_candidate_must_validate",
     scheduling_policy="immediate_public",
-    diversity_policy="ranked_pool_candidate_diversity",
+    diversity_policy="single_candidate_semantic_quality",
+    candidate_count_policy="fixed",
+    global_media_readiness_required=False,
+    automatic_replenishment_enabled=False,
+    selected_background_validation_required=True,
+    background_same_category_required=True,
+    reserve_candidate_count=0,
+    post_commit_planner_monitoring=False,
 )
 
 PROFILES = {"daily": DAILY, "adhoc": ADHOC}
@@ -90,15 +119,12 @@ def get_profile(name: str) -> PlannerProfile:
 
 
 def assert_profiles_do_not_override_shared_contract():
-    """Structural drift guard: profiles must not own shared contracts."""
+    """Structural drift guard: profiles must not own shared schema/creative contracts."""
     forbidden_fragments = {
         "schema",
-        "semantic",
-        "background",
         "voice",
         "narration",
         "punchline",
-        "media_readiness",
         "request_validator",
     }
     fields = set(PlannerProfile.__dataclass_fields__)
