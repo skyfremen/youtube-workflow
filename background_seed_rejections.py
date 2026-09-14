@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Permanent visual-rejection tracking for Wacky Dramas background seeding."""
+"""Permanent visual and deterministic technical rejection tracking for Wacky Dramas background seeding."""
 from __future__ import annotations
 
 import argparse
@@ -17,6 +17,15 @@ REJECTIONS = ROOT / "data" / "background-rejections.json"
 SEARCH_PAGE_SIZE = 30
 MAX_SEARCH_PAGES_PER_QUERY = 4
 MAX_TECHNICAL_ATTEMPTS = 200
+PERMANENT_TECHNICAL_REASONS = frozenset(
+    {
+        "actual downloaded duration is shorter than 60 seconds",
+        "actual downloaded duration materially differs from Pexels metadata",
+        "actual downloaded dimensions differ from selected rendition metadata",
+        "actual downloaded fps materially differs from selected rendition metadata",
+        "actual downloaded file cannot satisfy 1080x1920 crop quality",
+    }
+)
 
 
 def _asset_sort_key(asset_id: str) -> int:
@@ -37,7 +46,10 @@ def validate_rejections(data, registry: dict | None = None) -> dict:
         approved = {item["id"] for item in registry.get("assets", [])}
         overlap = approved & set(rejected)
         if overlap:
-            raise bs.SeedError(f"background id cannot be both approved and rejected: {sorted(overlap, key=_asset_sort_key)[0]}")
+            raise bs.SeedError(
+                f"background id cannot be both approved and rejected: "
+                f"{sorted(overlap, key=_asset_sort_key)[0]}"
+            )
     return data
 
 
@@ -51,6 +63,31 @@ def permanent_rejected_ids(path: Path = REJECTIONS) -> set[str]:
     return set(load_rejections(path)["rejected_ids"])
 
 
+def is_permanent_technical_rejection(exc: Exception) -> bool:
+    return isinstance(exc, bs.SeedError) and str(exc) in PERMANENT_TECHNICAL_REASONS
+
+
+def persist_rejected_ids(
+    asset_ids,
+    path: Path = REJECTIONS,
+    registry: dict | None = None,
+) -> int:
+    incoming = set(asset_ids)
+    if not incoming:
+        return 0
+    data = load_rejections(path, registry)
+    existing = set(data["rejected_ids"])
+    combined = existing | incoming
+    validate_rejections({"rejected_ids": list(combined)}, registry)
+    added = combined - existing
+    if added:
+        bs.write_json(
+            path,
+            {"rejected_ids": sorted(combined, key=_asset_sort_key)},
+        )
+    return len(added)
+
+
 def excluded_review_ids(
     reviews_root: Path = bs.REVIEWS,
     approvals_root: Path = bs.APPROVALS,
@@ -61,7 +98,10 @@ def excluded_review_ids(
     return set(pending_fn(reviews_root, approvals_root)) | permanent_rejected_ids(rejections_path)
 
 
-def validate_state(registry_path: Path = bs.REGISTRY, rejections_path: Path = REJECTIONS) -> tuple[dict, dict]:
+def validate_state(
+    registry_path: Path = bs.REGISTRY,
+    rejections_path: Path = REJECTIONS,
+) -> tuple[dict, dict]:
     registry = bs.load_registry(registry_path)
     rejections = load_rejections(rejections_path, registry)
     print(
@@ -122,13 +162,17 @@ def _candidate_stream(
                 videos = search_fn(query, api_key, SEARCH_PAGE_SIZE, page)
             except Exception as exc:
                 print(
-                    f"WARN pexels search failed category={category} query={query!r} page={page}: {exc}",
+                    f"WARN pexels search failed category={category} query={query!r} "
+                    f"page={page}: {exc}",
                     flush=True,
                 )
                 break
             if not videos:
                 break
-            for video in sorted(videos, key=lambda item: bs.duration_preference(item.get("duration"))):
+            for video in sorted(
+                videos,
+                key=lambda item: bs.duration_preference(item.get("duration")),
+            ):
                 candidate = bs._candidate_from_video(video, category)
                 if not candidate:
                     continue
@@ -152,8 +196,8 @@ def discover_with_rejections(
 ) -> Path:
     """Discover until shortages are filled, review cap is reached, or search is exhausted.
 
-    Unlike V1 discovery, a technical failure does not consume a category slot. The
-    next unseen candidate is fetched (including later Pexels pages) and validated.
+    A deterministic physical-media failure is permanently rejected and does not consume
+    a category slot. Transient download/search/contact-sheet failures remain retryable.
     """
     bs.validate_media_tools()
     request_path = Path(request_path)
@@ -190,6 +234,7 @@ def discover_with_rejections(
     accepted = []
     accepted_by_category = {category: 0 for category in categories}
     exhausted = set()
+    permanent_technical_rejections = set()
     attempts = 0
 
     Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -200,7 +245,8 @@ def discover_with_rejections(
         active = [
             category
             for category in categories
-            if category not in exhausted and accepted_by_category[category] < shortages[category]
+            if category not in exhausted
+            and accepted_by_category[category] < shortages[category]
         ]
         if not active:
             break
@@ -239,12 +285,35 @@ def discover_with_rejections(
                     )
                     accepted.append(review_candidate)
                     accepted_by_category[category] += 1
-                    print(f"ACCEPT technical {candidate['id']} category={category}", flush=True)
+                    print(
+                        f"ACCEPT technical {candidate['id']} category={category}",
+                        flush=True,
+                    )
                 except Exception as exc:
-                    print(f"REJECT technical {candidate['id']}: {exc}", flush=True)
+                    permanent = is_permanent_technical_rejection(exc)
+                    if permanent:
+                        permanent_technical_rejections.add(candidate["id"])
+                    classification = "permanent" if permanent else "transient"
+                    print(
+                        f"REJECT technical {candidate['id']} ({classification}): {exc}",
+                        flush=True,
+                    )
 
         if not progressed and all(category in exhausted for category in active):
             break
+
+    added_technical_rejections = persist_rejected_ids(
+        permanent_technical_rejections,
+        rejections_path,
+        registry,
+    )
+    if permanent_technical_rejections:
+        total_rejected = len(permanent_rejected_ids(rejections_path))
+        print(
+            f"Technical rejection registry updated: "
+            f"added={added_technical_rejections} total={total_rejected}",
+            flush=True,
+        )
 
     unfilled = {
         category: shortages[category] - accepted_by_category[category]
@@ -269,7 +338,8 @@ def discover_with_rejections(
     bs.write_json(Path(output_dir) / "manifest.json", manifest)
     bs.make_index(candidates_dir, Path(output_dir) / "index.jpg", len(accepted))
     print(
-        f"Review manifest created: {manifest_path}; candidates={len(accepted)}; attempts={attempts}",
+        f"Review manifest created: {manifest_path}; "
+        f"candidates={len(accepted)}; attempts={attempts}",
         flush=True,
     )
     return manifest_path
@@ -280,7 +350,10 @@ def _reviewed_candidate_ids(approval: dict, reviews_root: Path) -> set[str]:
     if not manifest_path.exists():
         raise bs.SeedError("matching immutable review manifest does not exist")
     manifest = bs.read_json(manifest_path)
-    if manifest.get("review_id") != approval["review_id"] or not isinstance(manifest.get("candidates"), list):
+    if (
+        manifest.get("review_id") != approval["review_id"]
+        or not isinstance(manifest.get("candidates"), list)
+    ):
         raise bs.SeedError("review manifest identity is invalid")
     reviewed = []
     for item in manifest["candidates"]:
@@ -305,7 +378,10 @@ def promote_with_rejections(
     approved = set(approval["approved_ids"])
     unknown = approved - reviewed
     if unknown:
-        raise bs.SeedError(f"approval references candidate not in manifest: {sorted(unknown, key=_asset_sort_key)[0]}")
+        raise bs.SeedError(
+            f"approval references candidate not in manifest: "
+            f"{sorted(unknown, key=_asset_sort_key)[0]}"
+        )
 
     registry = bs.load_registry(registry_path)
     rejection_data = load_rejections(rejections_path, registry)
@@ -313,7 +389,8 @@ def promote_with_rejections(
     conflict = approved & permanent
     if conflict:
         raise bs.SeedError(
-            f"approval references permanently rejected candidate: {sorted(conflict, key=_asset_sort_key)[0]}"
+            f"approval references permanently rejected candidate: "
+            f"{sorted(conflict, key=_asset_sort_key)[0]}"
         )
 
     added = bs.promote(approval_path, registry_path, reviews_root)

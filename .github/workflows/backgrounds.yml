@@ -119,7 +119,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Persist immutable review manifest
+      - name: Persist immutable review manifest and technical rejections
         if: steps.target.outputs.mode == 'discover'
         shell: bash
         run: |
@@ -127,9 +127,9 @@ jobs:
           review_id="${{ steps.target.outputs.review_id }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "content/background-reviews/${review_id}/manifest.json"
+          git add "content/background-reviews/${review_id}/manifest.json" data/background-rejections.json
           if git diff --cached --quiet; then
-            echo "Review manifest already persisted."
+            echo "Review manifest and technical rejection registry already persisted."
             exit 0
           fi
           git commit -m "[backgrounds] persist review ${review_id}"
