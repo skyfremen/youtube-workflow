@@ -28,6 +28,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Run background seeding tests
+        run: python -m unittest discover -s tests -p 'test_background_seed*.py'
+
       - name: Resolve immutable request or approval
         id: target
         shell: bash
@@ -82,8 +85,8 @@ jobs:
             exit 1
           fi
 
-      - name: Validate clean registry
-        run: python background_seed.py validate-registry
+      - name: Validate background state
+        run: python background_seed_rejections.py validate
 
       - name: Ensure FFmpeg tools
         if: steps.target.outputs.mode == 'discover'
@@ -103,7 +106,7 @@ jobs:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
           set -euo pipefail
-          python background_seed.py discover \
+          python background_seed_rejections.py discover \
             --request "${{ steps.target.outputs.path }}" \
             --output-dir "${RUNNER_TEMP}/background-review"
 
@@ -154,14 +157,14 @@ jobs:
             exit 1
           fi
 
-      - name: Promote approved candidates
+      - name: Promote approved candidates and persist rejections
         if: steps.target.outputs.mode == 'promote'
         run: |
           set -euo pipefail
-          python background_seed.py promote --approval "${{ steps.target.outputs.path }}"
-          python background_seed.py validate-registry
+          python background_seed_rejections.py promote --approval "${{ steps.target.outputs.path }}"
+          python background_seed_rejections.py validate
 
-      - name: Commit approved inventory
+      - name: Commit approved inventory and rejection registry
         if: steps.target.outputs.mode == 'promote'
         shell: bash
         run: |
@@ -169,9 +172,9 @@ jobs:
           review_id="${{ steps.target.outputs.review_id }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/backgrounds.json
+          git add data/backgrounds.json data/background-rejections.json
           if git diff --cached --quiet; then
-            echo "No new approved assets to promote."
+            echo "No background inventory or rejection changes to commit."
             exit 0
           fi
           git commit -m "[backgrounds] promote ${review_id}"
