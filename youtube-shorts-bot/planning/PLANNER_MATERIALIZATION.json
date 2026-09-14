@@ -1,5 +1,5 @@
 {
-  "schema_version": 9,
+  "schema_version": 10,
   "contract": "connector_native_planner_checkpoint",
   "planner_bootstrap": {
     "preferred": "connector_native_checkpoint",
@@ -23,17 +23,55 @@
     "repository_tree_materialization_required": false,
     "full_background_registry_local_copy_required": false,
     "connector_filesystem_mount_required": false,
-    "materialization_verify_required": false
+    "materialization_verify_required": false,
+    "planning_passes": 4,
+    "post_commit_planner_monitoring": false
+  },
+  "profile_contracts": {
+    "adhoc": {
+      "allowed_planning_modes": [
+        "manual_on_demand"
+      ],
+      "target_count": 1,
+      "candidate_count": 1,
+      "reserve_candidate_count": 0,
+      "publication": "immediate_public",
+      "global_media_readiness_required": false,
+      "automatic_replenishment_enabled": false,
+      "selected_background_validation_required": true,
+      "background_same_category_required": true,
+      "post_commit_planner_monitoring": false
+    },
+    "daily": {
+      "allowed_planning_modes": [
+        "normal_next_day",
+        "same_day_catch_up"
+      ],
+      "normal_next_day": {
+        "target_count": 24,
+        "candidate_count": 24
+      },
+      "same_day_catch_up": {
+        "target_count": "eligible_slot_count",
+        "candidate_count": "target_count"
+      },
+      "reserve_candidate_count": 0,
+      "global_media_readiness_required": false,
+      "automatic_replenishment_enabled": false,
+      "selected_background_validation_required": true,
+      "background_same_category_required": true,
+      "post_commit_planner_monitoring": false
+    }
   },
   "connector_native_checkpoint": {
     "path": "youtube-shorts-bot/planning/connector_checkpoint.py",
-    "source_rule": "Fetch this one UTF-8 Python file from the exact rules_source_sha through the authorized GitHub connector/API and write only this file to a small temporary execution directory. The connector-returned Git blob SHA/equivalent canonical blob identity must be recorded in connector evidence.",
+    "source_rule": "Fetch this one UTF-8 Python file from the exact rules_source_sha through the authorized GitHub connector/API and write only this file to a small temporary execution directory. Record the connector-returned Git blob SHA or equivalent canonical blob identity in connector evidence.",
     "contract_command": "python connector_checkpoint.py contract",
     "validate_command": "python connector_checkpoint.py validate --profile <daily|adhoc> --pool <pool.json> --rules-source-sha <sha> --evidence <connector-evidence.json>",
     "standard_library_only": true,
     "repository_imports": false,
     "local_inputs": [
-      "authored ranked-pool JSON",
+      "authored planning-pool JSON",
       "small connector-evidence JSON"
     ],
     "forbidden_local_dependencies": [
@@ -42,10 +80,12 @@
       "planner module tree reconstruction",
       "media-library/backgrounds.json local copy",
       "GitHub Actions planner execution"
-    ]
+    ],
+    "single_mechanical_authority": true,
+    "manual_duplicate_validation_forbidden": true
   },
   "connector_evidence": {
-    "schema_version": 1,
+    "schema_version": 2,
     "purpose": "Small deterministic evidence envelope assembled from exact-SHA connector reads so the standalone checkpoint can validate repository-backed facts without reconstructing repository files locally.",
     "required_fields": [
       "schema_version",
@@ -53,88 +93,112 @@
       "rules_source_sha",
       "checkpoint_blob_sha",
       "drift",
-      "media_readiness",
       "uniqueness",
       "selected_backgrounds"
     ],
-    "drift_rule": "Immediately before checkpoint/commit, re-query current main through the authorized connector. drift.status may be PASS only when current_main_sha equals rules_source_sha after any required drift refresh.",
-    "media_readiness_rule": "Populate status=PASS only from current repository-owned readiness/background evidence. Resolve current media readiness before interpreting replenishment history. REPLENISH is recoverable and must run the shared background continuation procedure before candidate finalization.",
-    "uniqueness_rule": "Populate status=PASS only after connector inspection of the profile's current immutable identity namespace. manual_on_demand does not collide merely because same-date scheduled_daily state exists.",
-    "selected_backgrounds_rule": "Include only background IDs referenced by the authored pool. For each ID record connector-backed eligible=true, trusted duration_seconds, and the source blob identity/path evidence used to establish eligibility. The full registry is never copied locally merely to run planner-time validation."
-  },
-  "background_replenishment_continuation": {
-    "state": "recoverable_intermediate",
-    "automatic_continuation_required": true,
-    "replenish_is_terminal": false,
-    "implementation": "youtube-shorts-bot/media/replenishment_state.py",
-    "discovery_request_schema_version": 3,
-    "previous_discovery_request_schema_version": 2,
-    "legacy_discovery_request_schema_version": 1,
-    "review_decision_schema_version": 2,
-    "legacy_review_decision_schema_version": 1,
-    "readiness_manifest_schema_version": 2,
-    "readiness_event_schema_version": 1,
-    "session_identity_field": "replenishment_session_id",
-    "review_decision_prefix": "youtube-shorts-bot/content/background-sourcing/review-decisions/",
-    "max_attempts": 5,
-    "max_replenishment_attempts": 5,
-    "resume_same_planner_invocation": true,
-    "targeted_deficit_discovery": true,
-    "rejected_candidates_are_excluded_from_retry": true,
-    "terminal_exhausted_code": "E_MEDIA_REPLENISH_EXHAUSTED",
-    "deferred_code": "DEFERRED_REPLENISHMENT",
-    "readiness_first_gate": {
-      "enabled": true,
-      "audit_current_registry_before_history": true,
-      "on_current_pass": "CONTINUE_PLANNING",
-      "historical_or_legacy_state_can_block_current_pass": false,
-      "on_replenish_with_compatible_session": "RESUME_COMPATIBLE_SESSION",
-      "on_replenish_without_compatible_session": "CREATE_SCHEMA_V3_ATTEMPT_1",
-      "legacy_only_state_is_terminal": false,
-      "no_compatible_session_is_terminal": false,
-      "reaudit_before_terminal_result": true,
-      "invalid_terminal_reasons": [
-        "legacy replenishment state exists",
-        "legacy replenishment state is incompatible",
-        "no compatible current-format replenishment session exists"
-      ],
-      "allowed_replenishment_terminal_results": [
-        "DEFERRED_REPLENISHMENT only for a genuine bounded infrastructure wait",
-        "E_MEDIA_REPLENISH_EXHAUSTED only after current-format attempt 5"
-      ]
-    },
-    "new_request_required_fields": [
-      "schema_version",
-      "plan_date",
-      "request_id",
-      "max_candidates",
-      "target_categories",
-      "category_deficits",
-      "required_new_assets_at_least",
-      "exclude_provider_asset_ids",
-      "replenishment_session_id",
-      "planner_invocation",
-      "attempt"
+    "forbidden_fields": [
+      "media_readiness",
+      "replenishment"
     ],
-    "durable_review_exclusion": {
-      "enabled": true,
-      "rule": "Discovery must automatically exclude every provider asset already present in immutable review-decision state for the same replenishment_session_id, in addition to request-side exclusions."
-    },
-    "rules": [
-      "Audit current repository media readiness before interpreting any historical replenishment state.",
-      "If current readiness is PASS, continue planning; legacy, incompatible, unfinished, or exhausted replenishment history cannot block or restart the planner.",
-      "If current readiness is REPLENISH and no compatible current-format session exists, create a fresh stable schema-v3 attempt 1 for the same planner invocation instead of stopping.",
-      "Keep one stable replenishment_session_id across all replenishment attempts for the original planner invocation.",
-      "A rejected visual candidate is not a final planner result.",
-      "Persist one immutable evidence-bound review-decision document for each visually reviewed attempt before continuing.",
-      "Discovery automatically reloads same-session reviewed provider IDs so recovery does not depend on reconstructing exclusions from memory.",
-      "Target only currently deficient categories and rotate or broaden query vocabulary on later attempts.",
-      "After approved candidates are deterministically ingested, persist an immutable readiness event from current repository state.",
-      "On PASS, resume the same original Daily or Ad-hoc planner invocation immediately.",
-      "On REPLENISH with attempt below 5, create the next immutable targeted attempt automatically.",
-      "Only a genuine bounded infrastructure wait may return DEFERRED_REPLENISHMENT.",
-      "After attempt 5, fail closed with E_MEDIA_REPLENISH_EXHAUSTED and exact remaining deficits; never weaken media quality or visual-review rules."
+    "drift_rule": "Immediately before checkpoint/commit, re-query current main through the authorized connector. drift.status may be PASS only when current_main_sha equals rules_source_sha after any required refresh/revalidation.",
+    "uniqueness_rule": "Populate status=PASS only after connector inspection of the profile's current immutable identity namespace. New Ad-hoc is manual_on_demand only.",
+    "selected_backgrounds_rule": "Include only background IDs referenced by the authored pool. For each ID record current connector-backed hard-valid facts required by the checkpoint, including registered/selectable/active/verified/commercial-use/visual-review/rendition/watermark/text/category/duration/source-blob evidence. The full registry is never copied locally merely to run planner-time validation."
+  },
+  "selected_background_policy": {
+    "global_media_readiness_required": false,
+    "automatic_planner_replenishment_enabled": false,
+    "validate_only_referenced_assets": true,
+    "same_category_primary_backup_required": true,
+    "primary_backup_disjoint_required": true,
+    "preferred_category_rule": "Choose the semantically best suitable eligible category first.",
+    "fallback_rule": "If the preferred category cannot form hard-valid primary and backup sequences, try another suitable eligible category, then use the canonical fallback category exposed by the exact-SHA checkpoint contract.",
+    "fallback_never_weakens_hard_validation": true,
+    "planner_freezes_playback_rate": false,
+    "runtime_derives_playback_rate_after_tts": true,
+    "separate_media_library_maintenance_allowed": true
+  },
+  "planner_execution_model": {
+    "pass_count": 4,
+    "passes": [
+      {
+        "pass": 1,
+        "name": "contract_discovery_and_minimal_preflight",
+        "responsibilities": [
+          "resolve current main and freeze rules_source_sha",
+          "read only required current rules/contracts/history/analytics/identity evidence",
+          "inspect only background evidence needed for actual candidate selection"
+        ],
+        "forbidden": [
+          "global media-readiness gating",
+          "planner replenishment",
+          "manual mechanical revalidation"
+        ]
+      },
+      {
+        "pass": 2,
+        "name": "creative_authorship_and_semantic_review",
+        "responsibilities": [
+          "author exactly the production candidates actually required",
+          "make semantic/editorial decisions",
+          "choose voices/punchlines/background categories/sequences",
+          "repair or regenerate weak creative input automatically"
+        ]
+      },
+      {
+        "pass": 3,
+        "name": "one_canonical_deterministic_checkpoint",
+        "responsibilities": [
+          "run connector_checkpoint.py",
+          "treat failures as repair instructions",
+          "repair only affected authored input",
+          "rerun the same checkpoint until all required candidates pass"
+        ]
+      },
+      {
+        "pass": 4,
+        "name": "drift_check_immutable_commit_end",
+        "responsibilities": [
+          "re-query current main",
+          "refresh affected evidence/rules and revalidate on relevant drift",
+          "require PASS, commit_allowed=true, and exact draft_sha256 bytes",
+          "commit exactly one immutable pool artifact",
+          "end ChatGPT/Work planning after commit succeeds"
+        ]
+      }
     ]
+  },
+  "automatic_recovery": {
+    "ordinary_errors_are_terminal": false,
+    "story_failure": "repair or regenerate affected candidate only",
+    "metadata_failure": "repair affected authored field only",
+    "voice_failure": "select an appropriate value from the current voice contract",
+    "preferred_background_failure": "try alternate eligible category then canonical fallback",
+    "clip_failure": "replace with a hard-valid clip from the same chosen category",
+    "sequence_failure": "rebuild the affected sequence with valid clips/ranges",
+    "checkpoint_failure": "read exact diagnostic, repair affected input, rerun same checkpoint",
+    "repository_drift": "refresh affected rules/evidence, repair only if required, rerun checkpoint",
+    "retryable_commit_conflict": "refresh main, apply drift policy, revalidate if required, retry safely",
+    "validation_may_not_be_weakened": true
+  },
+  "terminal_before_commit": {
+    "allowed_only_after_safe_recovery_exhausted": true,
+    "examples": [
+      "authoritative current repository contract cannot be accessed",
+      "canonical connector checkpoint cannot be fetched/staged/executed",
+      "no hard-valid selected-background configuration exists after alternate eligible categories and canonical fallback are exhausted",
+      "authorized repository cannot accept immutable commit after safe conflict/drift retry",
+      "a current repository invariant makes the requested production state genuinely impossible"
+    ]
+  },
+  "historical_compatibility": {
+    "new_planning_pool_schema_version": 2,
+    "historical_pool_schema_version": 1,
+    "preserve_immutable_history": true,
+    "preserve_historical_adhoc_five_candidate_recovery": true,
+    "preserve_historical_daily_thirty_six_candidate_recovery": true,
+    "preserve_historical_scheduled_adhoc_recovery": true,
+    "preserve_historical_request_schemas": true,
+    "no_destructive_migration": true
   },
   "profile_entrypoints": {
     "daily": "youtube-shorts-bot/planning/DAILY_PLANNER_PROMPT.md",
@@ -142,11 +206,24 @@
   },
   "drift_policy": {
     "detection": "re-query current main through authorized GitHub connector/API immediately before immutable commit",
-    "rules": "refresh exact-SHA rules/checkpoint and rerun complete connector-native checkpoint",
-    "media": "refresh media/readiness/background evidence and rerun complete connector-native checkpoint",
-    "history": "refresh duplicate/analytics/recent-background reasoning and rerun complete checkpoint whenever authored pool bytes change",
-    "operational": "continue without restarting creative planning solely for operational evidence changes",
-    "unknown": "full refresh"
+    "rules": "refresh affected exact-SHA rules/checkpoint and rerun the canonical checkpoint",
+    "media": "refresh selected-background evidence and rerun the canonical checkpoint",
+    "history": "refresh duplicate/analytics/recent-background reasoning when relevant; rerun checkpoint whenever authored pool bytes change",
+    "operational": "continue without restarting creative planning solely for unrelated operational evidence changes",
+    "unknown": "refresh affected contract/evidence and revalidate"
+  },
+  "planner_success": {
+    "condition": "immutable planning pool successfully committed",
+    "after_success": "CHATGPT_WORK_PLANNER_ENDS",
+    "forbidden_post_commit_actions": [
+      "poll private production",
+      "inspect production jobs as part of the same planner invocation",
+      "wait for request promotion",
+      "poll public runtime",
+      "watch TTS or alignment or FFmpeg",
+      "wait for YouTube upload or verification",
+      "fetch YouTube video IDs"
+    ]
   },
   "blocked_status": {
     "name": "CHECKPOINT_STAGING_BLOCKED",
@@ -161,14 +238,15 @@
       "no Git checkout exists",
       "repository files have not been reconstructed locally",
       "the full backgrounds registry has not been copied locally",
+      "global background inventory is below maintenance thresholds",
       "legacy replenishment state exists or is incompatible",
-      "no compatible current-format replenishment session exists"
+      "no compatible replenishment session exists"
     ]
   },
   "developer_ci_git_mode": {
     "allowed": true,
     "chatgpt_work_allowed": false,
-    "rule": "Developers/CI may continue using the repository-native planner modules and full test suite from a genuine checkout. This is separate from the canonical ChatGPT/Work connector-native checkpoint path."
+    "rule": "Developers/CI may continue using repository-native planner modules and the full test suite from a genuine checkout. This is separate from canonical ChatGPT/Work connector-native checkpoint execution."
   },
   "forbidden_bootstrap_requirements": [
     "GitHub Actions creative planner execution",
@@ -181,6 +259,7 @@
     "requiring .git metadata",
     "reconstructing the repository module tree before planning",
     "copying the full background registry locally merely for planner validation",
-    "generic materialization failure after connector reads succeeded"
+    "global media readiness before Daily or Ad-hoc planning",
+    "planner-bound automatic replenishment"
   ]
 }
