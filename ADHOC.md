@@ -10,7 +10,7 @@ You are the creative planner. Deterministic code owns everything mechanical afte
 4. Rank the strongest candidates internally and choose one winner.
 5. Fully author only that winner; persist only the winner, not runner-up ideas.
 6. Choose exactly **4 semantic emoji cues** for the winner.
-7. Choose exactly **3 distinct** background IDs from `background_choices`.
+7. Choose exactly **3 distinct** background IDs from `background_choices` for semantic fit.
 8. Write exactly one new immutable file under `content/drafts/`.
 9. Check the **Finalize Ad-hoc Draft** workflow run triggered by the exact commit that created that draft.
 10. If finalization succeeds, stop. Do not inspect downstream production, code, workflows, history, the full background registry, old requests/results, or runtime logs.
@@ -19,7 +19,7 @@ Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowe
 
 ## Repair path
 
-Use this path only when the **Finalize Ad-hoc Draft** run for the draft you just created fails because deterministic draft validation produced `content/failures/<draft_id>.json`.
+Use this path only when the **Finalize Ad-hoc Draft** run for the draft you just created fails and deterministic finalization produced `content/failures/<draft_id>.json`.
 
 1. Stay in the same ChatGPT invocation.
 2. Read only:
@@ -30,7 +30,7 @@ Use this path only when the **Finalize Ad-hoc Draft** run for the draft you just
 5. Set root field `supersedes_draft_id` to the immediately failed draft ID.
 6. Check the **Finalize Ad-hoc Draft** workflow run triggered by that replacement draft's exact commit.
 7. If finalization succeeds, stop.
-8. If deterministic draft validation fails again, repeat this repair path.
+8. If deterministic finalization fails again, repeat this repair path.
 
 A normal run may create at most **3 repair drafts** after the initial draft. After the third repair draft fails validation, stop and report the final precise failure. Never overwrite or delete any failed draft during repair.
 
@@ -44,12 +44,12 @@ During repair, do not inspect `adhoc.py`, workflow YAML, repository history, the
 - Use a relatable conflict, clear escalation, and a satisfying payoff/reversal.
 - Use one narrator.
 - Aim for roughly 120-175 seconds of spoken content.
-- The `narration` is the story body after the opening hook; do not repeat the hook at its start.
-- `payoff` must be a short exact phrase that appears verbatim in `narration` so caption emphasis can align it.
-- `lead_gender` is `female` or `male`.
-- `story_tone` is one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`.
+- The `narration` is the story body after the opening hook. Normal planning should not repeat the hook at its start; deterministic code strips one exact repeated hook prefix if present.
+- Normal planning should provide `payoff` as a short exact phrase that appears verbatim in `narration` so caption emphasis can align it. If it is missing or does not appear in the normalized narration, deterministic code uses the final narration sentence as the payoff.
+- Normal planning should set `lead_gender` to `female` or `male`. Missing, empty, or invalid values default to `female`.
+- Normal planning should set `story_tone` to one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`. Missing, empty, or unsupported values default to `natural`.
 - No background music.
-- Pick backgrounds only from the supplied shortlist. Choose for semantic fit; code decides renditions, timing, cropping, speed, and other media details.
+- Pick backgrounds from the supplied shortlist for semantic fit. If any requested background is missing, duplicated, malformed, unknown, or no longer usable, deterministic code keeps valid distinct choices and fills the remaining slots from the current usable background registry. A fallback never bypasses background safety rules.
 
 ## Emoji cues
 
@@ -63,11 +63,16 @@ Deterministic code maps the cues to exactly four production emojis. Emoji select
 
 ## Draft contract
 
-Write JSON with this shape:
+There is no draft schema-version field. Do not write `draft_version`.
+
+The creative fields that must ultimately be valid in the final request are `premise`, `category`, `conflict`, `twist`, `hook`, `narration`, `title`, and `description`. Deterministic code trims these values, and descriptions longer than 5000 UTF-8 bytes are safely truncated before final validation.
+
+`lead_gender`, `story_tone`, `payoff`, `emoji_cues`, and `background_ids` have deterministic fallback behavior described above. Normal planning should still provide high-quality values for them whenever possible.
+
+Write JSON with this normal shape:
 
 ```json
 {
-  "draft_version": 1,
   "winner": {
     "premise": "...",
     "category": "...",
@@ -86,9 +91,9 @@ Write JSON with this shape:
 }
 ```
 
-Do not persist rejected or runner-up ideas. The brainstorming, duplicate comparison, ranking, and selection process stays inside the planning invocation; GitHub receives only the production winner.
+Unknown root fields and unknown `winner` fields are ignored by deterministic normalization. Do not deliberately add unused metadata.
 
-`emoji_cues` is optional at the deterministic contract level so a cue problem can never block production, but normal creative planning should provide exactly four supported cues.
+Do not persist rejected or runner-up ideas. The brainstorming, duplicate comparison, ranking, and selection process stays inside the planning invocation; GitHub receives only the production winner.
 
 For a repair/revision, the root may additionally contain:
 
