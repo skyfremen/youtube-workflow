@@ -1,0 +1,130 @@
+name: Seed Background Inventory
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/background-requests/*.json'
+      - 'content/background-approvals/*.json'
+  workflow_dispatch:
+    inputs:
+      path:
+        description: 'Existing background request or approval path'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backgrounds-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  backgrounds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve immutable request or approval
+        id: target
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_PATH: ${{ inputs.path }}
+        run: |
+          set -euo pipefail
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
+            path="${MANUAL_PATH}"
+          else
+            mapfile -t added < <(git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" | awk '$1 == "A" {print $2}' | grep -E '^content/background-(requests|approvals)/[^/]+\.json$' || true)
+            if [[ "${#added[@]}" -ne 1 ]]; then
+              echo "Expected exactly one newly-added immutable background request or approval; found ${#added[@]}" >&2
+              exit 1
+            fi
+            path="${added[0]}"
+          fi
+
+          if [[ "${path}" =~ ^content/background-requests/(bgreq-[A-Za-z0-9-]{8,96})\.json$ ]]; then
+            mode="discover"
+          elif [[ "${path}" =~ ^content/background-approvals/(bgreq-[A-Za-z0-9-]{8,96})\.json$ ]]; then
+            mode="promote"
+          else
+            echo "Unsupported background path: ${path}" >&2
+            exit 1
+          fi
+
+          if [[ ! -f "${path}" ]]; then
+            echo "Background input does not exist: ${path}" >&2
+            exit 1
+          fi
+
+          review_id="$(basename "${path}" .json)"
+          echo "path=${path}" >> "${GITHUB_OUTPUT}"
+          echo "mode=${mode}" >> "${GITHUB_OUTPUT}"
+          echo "review_id=${review_id}" >> "${GITHUB_OUTPUT}"
+
+      - name: Validate clean registry
+        run: python background_seed.py validate-registry
+
+      - name: Discover and build review evidence
+        if: steps.target.outputs.mode == 'discover'
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: |
+          set -euo pipefail
+          python background_seed.py discover \
+            --request "${{ steps.target.outputs.path }}" \
+            --output-dir "${RUNNER_TEMP}/background-review"
+
+      - name: Upload visual review artifact
+        if: steps.target.outputs.mode == 'discover'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: background-review-${{ steps.target.outputs.review_id }}
+          path: ${{ runner.temp }}/background-review/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Persist immutable review manifest
+        if: steps.target.outputs.mode == 'discover'
+        shell: bash
+        run: |
+          set -euo pipefail
+          review_id="${{ steps.target.outputs.review_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "content/background-reviews/${review_id}/manifest.json"
+          if git diff --cached --quiet; then
+            echo "Review manifest already persisted."
+            exit 0
+          fi
+          git commit -m "[backgrounds] persist review ${review_id}"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Promote approved candidates
+        if: steps.target.outputs.mode == 'promote'
+        run: |
+          set -euo pipefail
+          python background_seed.py promote --approval "${{ steps.target.outputs.path }}"
+          python background_seed.py validate-registry
+
+      - name: Commit approved inventory
+        if: steps.target.outputs.mode == 'promote'
+        shell: bash
+        run: |
+          set -euo pipefail
+          review_id="${{ steps.target.outputs.review_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/backgrounds.json
+          if git diff --cached --quiet; then
+            echo "No new approved assets to promote."
+            exit 0
+          fi
+          git commit -m "[backgrounds] promote ${review_id}"
+          git pull --rebase origin main
+          git push origin HEAD:main
