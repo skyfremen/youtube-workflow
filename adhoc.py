@@ -9,7 +9,7 @@ BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"conten
 DRAFTS=ROOT/"content/drafts"; REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"
 RESULTS=ROOT/"content/results"; FAILS=ROOT/"content/failures"
 REQUEST_VERSION=EXECUTION_VERSION=RESULT_VERSION=CONTEXT_VERSION=1
-RECENT_LIMIT=25; BG_LIMIT=8; MIN_BG=60.0; MAX_SEGMENT=100.0
+RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
 MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0
 TTS_SPEED=1.75
 DEFAULT_EMOJIS=["😳","💬","🔥","👀"]
@@ -113,36 +113,55 @@ def resolve_emojis(cues):
 
 def registry(path=BG):
     x=read(path)
-    if not isinstance(x,dict) or x.get("schema_version")!=3 or not isinstance(x.get("assets"),list):
-        raise VError("INVALID_BACKGROUND_REGISTRY",str(path),type(x).__name__,"schema_version 3 with assets[]",False)
+    if not isinstance(x,dict) or set(x)!={"assets"} or not isinstance(x.get("assets"),list):
+        raise VError("INVALID_BACKGROUND_REGISTRY",str(path),type(x).__name__,"root object containing exactly assets[]",False)
     return x
 def usable(a):
+    if not isinstance(a,dict): return False
     try: d=float(a.get("duration_seconds"))
-    except (AttributeError,TypeError,ValueError): return False
-    return isinstance(a,dict) and a.get("status")=="active" and a.get("verified") is True and \
-        a.get("commercial_use") is True and a.get("has_embedded_text") is not True and \
-        a.get("has_watermark") is not True and d>=MIN_BG and bool(str(a.get("id") or "").strip())
+    except (TypeError,ValueError): return False
+    return d>=MIN_BG and all(clean(a.get(k)) for k in ("id","category","source_url","download_url"))
 def amap(r): return {str(a["id"]):a for a in r["assets"] if isinstance(a,dict) and isinstance(a.get("id"),str)}
-def shortlist(r,limit=BG_LIMIT):
-    out=[]; deferred=[]; seen=set()
+def background_category(a): return clean(a.get("category")) or "satisfying_process"
+def category_assets(r):
+    out={}; seen=set()
     for a in r["assets"]:
         if not usable(a): continue
-        tags=[str(x) for x in (a.get("visual_tags") or []) if str(x).strip()][:4]
-        item={"id":str(a["id"]),"description":str(a.get("title") or a["id"]).strip(),"category":str(a.get("category") or "satisfying_process").strip(),"tags":tags}
-        sig=tuple(sorted(x.casefold() for x in tags[:2]))
-        if sig and sig in seen: deferred.append(item); continue
-        if sig: seen.add(sig)
-        out.append(item)
-        if len(out)>=limit: return out
-    return (out+deferred)[:limit]
+        bid=clean(a.get("id"))
+        if not bid or bid in seen: continue
+        seen.add(bid)
+        out.setdefault(background_category(a),[]).append(a)
+    return out
+def viable_background_categories(r):
+    groups=category_assets(r)
+    return sorted((k for k,v in groups.items() if len(v)>=MIN_CATEGORY_BACKGROUNDS),key=lambda x:(x.casefold(),x))
+def resolve_background_category(requested,r):
+    groups=category_assets(r)
+    viable={k:v for k,v in groups.items() if len(v)>=MIN_CATEGORY_BACKGROUNDS}
+    if not viable:
+        raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",0,"at least one category with three distinct valid approved backgrounds",False)
+    requested=clean(requested)
+    if requested in viable: return requested
+    folded=requested.casefold()
+    for category in sorted(viable,key=lambda x:(x.casefold(),x)):
+        if category.casefold()==folded: return category
+    return sorted(viable,key=lambda x:(-len(viable[x]),x.casefold(),x))[0]
+def select_background_ids(requested_category,r,seed):
+    category=resolve_background_category(requested_category,r)
+    assets=category_assets(r)[category]
+    ranked=sorted(assets,key=lambda a:(hashlib.sha256(f"{seed}:{clean(a.get('id'))}".encode()).hexdigest(),clean(a.get("id"))))
+    ids=[clean(a.get("id")) for a in ranked[:MIN_CATEGORY_BACKGROUNDS]]
+    if len(ids)!=MIN_CATEGORY_BACKGROUNDS or len(set(ids))!=MIN_CATEGORY_BACKGROUNDS:
+        raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(set(ids)),"three distinct valid approved backgrounds in one category",False)
+    return ids
 def build_context():
     h=read(HIST)
     if not isinstance(h,list): raise VError("INVALID_HISTORY","data/history.json",type(h).__name__,"array")
-    choices=shortlist(registry())
-    if len(choices)<3: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(choices),"at least three valid approved backgrounds",False)
+    categories=viable_background_categories(registry())
+    if not categories: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",0,"at least one category with three distinct valid approved backgrounds",False)
     cards=[{k:str(x.get(k) or "") for k in ("title","premise","conflict","twist","payoff")}
            for x in h[-RECENT_LIMIT:] if isinstance(x,dict)]
-    out={"context_version":1,"recent_story_cards":cards,"background_choices":choices}
+    out={"context_version":1,"recent_story_cards":cards,"background_categories":categories}
     if len(pretty(out))>40000: raise VError("CONTEXT_TOO_LARGE","content/context.json",len(pretty(out)),"<=40000 bytes")
     write(CTX,out); return out
 
@@ -168,32 +187,13 @@ def normalize_draft(x):
         "story_tone":normalize_tone(w.get("story_tone")),
         "payoff":resolve_payoff(w.get("payoff"),script),
         "emoji_cues":w.get("emoji_cues"),
-        "background_ids":w.get("background_ids"),
+        "background_category":clean(w.get("background_category")),
       }
     }
 
-def select_background_ids(requested,r):
-    m=amap(r); selected=[]
-    values=requested if isinstance(requested,list) else []
-    for raw in values:
-        if not isinstance(raw,str): continue
-        bid=raw.strip()
-        if not bid or bid in selected: continue
-        a=m.get(bid)
-        if a and usable(a):
-            selected.append(bid)
-            if len(selected)==3: return selected
-    for a in r["assets"]:
-        if not usable(a): continue
-        bid=str(a["id"]).strip()
-        if bid and bid not in selected:
-            selected.append(bid)
-            if len(selected)==3: return selected
-    raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(selected),"at least three distinct valid approved backgrounds",False)
-
-def bg_contract(ids,r):
+def bg_contract(category,r,seed):
     m=amap(r); seg=[]
-    for bid in select_background_ids(ids,r):
+    for bid in select_background_ids(category,r,seed):
         a=m[bid]
         seg.append({"background_id":bid,"segment_start_seconds":0.0,"segment_duration_seconds":round(min(float(a["duration_seconds"]),MAX_SEGMENT),3)})
     return {"mode":"concatenated_fit_to_short","segments":seg}
@@ -211,7 +211,7 @@ def make_request(did,raw_draft,d,r):
         "lead_gender":g,"story_tone":t,"punchline":w["payoff"],
         "card_emojis":resolve_emojis(w.get("emoji_cues"))},
       "narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},
-      "background":bg_contract(w.get("background_ids"),r),
+      "background":bg_contract(w.get("background_category"),r,cid),
       "youtube":{"title":w["title"],"description":w["description"],
         "hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},
       "visibility":"public",
@@ -250,7 +250,7 @@ def validate_request(x,path=None,r=None):
         if abs(start)>1e-6 or not MIN_BG<=dur<=MAX_SEGMENT: raise VError("INVALID_BACKGROUND_TIMING",f"background.segments[{n}]",z,f"start=0 duration {MIN_BG:g}-{MAX_SEGMENT:g}",False)
         if r:
             a=m.get(bid)
-            if not a or not usable(a): raise VError("BACKGROUND_NOT_ALLOWED","background.segments",bid,"approved active verified asset",False)
+            if not a or not usable(a): raise VError("BACKGROUND_NOT_ALLOWED","background.segments",bid,"approved promoted asset",False)
             if dur>float(a["duration_seconds"])+.05: raise VError("BACKGROUND_RANGE_EXCEEDS_SOURCE","background.segments",bid,"segment fits source",False)
     if len(set(ids))!=3: raise VError("DUPLICATE_BACKGROUND_ID","background.segments",ids,"3 distinct IDs")
     y=x["youtube"]; yk={"title","description","hashtags","tags","category_id","made_for_kids"}
@@ -317,10 +317,12 @@ def self_test():
         if not cond: raise AssertionError(name)
         checks.append(name)
     r=registry(); ok("1 registry parses"); c=build_context(); ok("2 context builds")
-    ok("3 context compact",len(pretty(c))<=40000); ok("4 shortlist small",3<=len(c["background_choices"])<=BG_LIMIT)
+    groups=category_assets(r)
+    ok("3 context compact",len(pretty(c))<=40000)
+    ok("4 viable background categories",bool(c["background_categories"]) and all(len(groups.get(x,[]))>=MIN_CATEGORY_BACKGROUNDS for x in c["background_categories"]))
     src=Path(__file__).read_text(); bad=["minimum "+"32 assets","PASS / "+"RE"+"PLENISH","category "+"minimum","inventory readiness "+"threshold","RE"+"PLENISH"]
     ok("5 no inventory gate",not any(x in src for x in bad))
-    ids=[x["id"] for x in c["background_choices"][:3]]
+    bgcat=c["background_categories"][0]
     filler=" ".join(["Then everything changed when the truth finally came out."]*47); payoff="I had the receipts"
     raw={"ignored_root":"allowed",
        "winner":{"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.",
@@ -328,9 +330,9 @@ def self_test():
        "narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.",
        "title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.",
        "lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","ignored_winner":"allowed",
-       "emoji_cues":["shock","evidence","panic","victory"],"background_ids":[ids[0],"missing-background",ids[0]]}}
+       "emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"background_ids":["legacy-id-is-ignored"]}}
     d=normalize_draft(raw); dp=ROOT/"draft-selftest-deadbeef.json"; q=make_request(dp.stem,raw,d,r); validate_request(q,REQS/(q["content_id"]+".json"),r)
-    ok("6 extra fields ignored","ignored_root" not in d and "ignored_winner" not in d["winner"])
+    ok("6 extra fields ignored","ignored_root" not in d and "ignored_winner" not in d["winner"] and "background_ids" not in d["winner"])
     ok("7 no draft version","draft_version" not in d)
     ok("8 defaults",q["story"]["lead_gender"]=="female" and q["story"]["story_tone"]=="natural")
     ok("9 repeated hook stripped",not q["story"]["script"].casefold().startswith(q["story"]["hook"].casefold()))
@@ -338,26 +340,31 @@ def self_test():
     ok("11 mapped emojis",q["story"]["card_emojis"]==["😳","📱","😱","😎"])
     ok("12 emoji fallback",resolve_emojis(["shock","unknown-cue","panic","victory"])==DEFAULT_EMOJIS and resolve_emojis(None)==DEFAULT_EMOJIS)
     ok("13 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
-    ok("14 background fallback",len({x["background_id"] for x in q["background"]["segments"]})==3 and all(x["background_id"] in amap(r) for x in q["background"]["segments"]))
+    m=amap(r); qids=[x["background_id"] for x in q["background"]["segments"]]
+    ok("14 same-category backgrounds",len(set(qids))==3 and all(background_category(m[x])==bgcat for x in qids))
+    bad_raw=json.loads(json.dumps(raw)); bad_raw["winner"]["background_category"]="missing-category"
+    badq=make_request(dp.stem,bad_raw,normalize_draft(bad_raw),r); fallback=resolve_background_category("missing-category",r)
+    ok("15 background category fallback",all(background_category(m[x["background_id"]])==fallback for x in badq["background"]["segments"]))
     long_desc="é"*3000
-    ok("15 description truncation",len(truncate_utf8(long_desc).encode())<=5000)
-    ok("16 deterministic request",canonical(q)==canonical(make_request(dp.stem,raw,normalize_draft(raw),r)))
-    js=json.dumps(q); ok("17 no slot",'"slot"' not in js); ok("18 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
-    ok("19 immediate public",q["visibility"]=="public")
+    ok("16 description truncation",len(truncate_utf8(long_desc).encode())<=5000)
+    ok("17 deterministic request",canonical(q)==canonical(make_request(dp.stem,raw,normalize_draft(raw),r)))
+    js=json.dumps(q); ok("18 no slot",'"slot"' not in js); ok("19 no schedule",not any(k in js for k in ['"publish_at"','"schedule_date"','"schedule_time"','"reserved_hour"']))
+    ok("20 immediate public",q["visibility"]=="public")
     rblob=blob(pretty(q)); eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
-    ok("20 execution identity",bool(EID_RE.fullmatch(eid))); ok("21 contract hash",len(CONTRACT_HASH)==64)
+    ok("21 execution identity",bool(EID_RE.fullmatch(eid))); ok("22 contract hash",len(CONTRACT_HASH)==64)
     fake={"result_version":1,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
-    validate_result(fake); ok("22 result validates")
+    validate_result(fake); ok("23 result validates")
     wdir=ROOT/".github/workflows"; names={p.name for p in wdir.glob("*.yml")}
-    ok("23 workflow set",names=={"adhoc-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
-    ok("24 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
+    ok("24 workflow set",names=={"adhoc-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
+    ok("25 generic workflows",all("daily" not in (wdir/n).read_text().lower() for n in ("dispatch.yml","result.yml","context.yml")))
     legacy="youtube-"+"shorts-"+"bot/"
     live="\n".join(p.read_text(errors="ignore") for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts and p.suffix in {".py",".yml",".md",".json"})
-    ok("25 no legacy refs",legacy not in live); ok("26 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
-    a=(ROOT/"ADHOC.md").read_text(); ok("27 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
-    ok("28 winner-only documented","winner" in a and "persist only the winner" in a)
-    ok("29 no background minimum concept","32" not in a); ok("30 history compact",isinstance(read(HIST),list))
-    ok("31 no publication schedule object","publication" not in q); ok("32 no analytics","analytics" not in js)
+    ok("26 no legacy refs",legacy not in live); ok("27 no legacy tree",not (ROOT/("youtube-"+"shorts-"+"bot")).exists())
+    a=(ROOT/"ADHOC.md").read_text(); ok("28 normal two reads one write",all(x in a for x in ("content/context.json","content/drafts/")))
+    ok("29 winner-only documented","winner" in a and "persist only the winner" in a)
+    ok("30 background category documented","background_category" in a and "background_categories" in a)
+    ok("31 no background minimum concept","32" not in a); ok("32 history compact",isinstance(read(HIST),list))
+    ok("33 no publication schedule object","publication" not in q); ok("34 no analytics","analytics" not in js)
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
@@ -369,7 +376,7 @@ def main():
     sub.add_parser("contract-hash"); sub.add_parser("self-test"); a=ap.parse_args()
     try:
         if a.cmd=="context":
-            c=build_context(); print(f"Context rebuilt: recent={len(c['recent_story_cards'])} backgrounds={len(c['background_choices'])}")
+            c=build_context(); print(f"Context rebuilt: recent={len(c['recent_story_cards'])} background_categories={len(c['background_categories'])}")
         elif a.cmd=="finalize": print(finalize(a.draft).relative_to(ROOT).as_posix())
         elif a.cmd=="validate": validate_file(a.request)
         elif a.cmd=="execution":
