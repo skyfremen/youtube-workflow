@@ -1,8 +1,8 @@
-"""Shared fail-closed pre-commit engine for Daily and Ad-hoc ranked pools.
+"""Shared fail-closed pre-commit engine for current Daily and Ad-hoc pools.
 
-ChatGPT/Work remains the creative/editorial owner. This module validates frozen
-ranked pools using one implementation selected by a small declarative profile.
-It never generates, repairs, substitutes or creatively reranks content.
+ChatGPT/Work owns semantic/editorial decisions. This module validates only the
+frozen authored pool and selected assets. It never generates, repairs, substitutes,
+replenishes, reranks, or performs global media-readiness gating.
 """
 from __future__ import annotations
 
@@ -23,13 +23,13 @@ from planning.planner_core import (
     POOL_SCHEMA_VERSION,
     PlannerContractError,
     candidate_errors,
+    expected_candidate_count,
     parse_date,
-    scheduled_adhoc_matches,
     validate_daily_slots,
     validate_planning_execution,
     validate_ranked_candidates,
 )
-from planning.planner_profiles import ADHOC, DAILY, PlannerProfile, get_profile
+from planning.planner_profiles import DAILY, PlannerProfile, get_profile
 from validation.validate_content import SCHEMA_VERSION
 
 BASE_POOL_KEYS = {
@@ -79,47 +79,57 @@ def _pool_path(profile: PlannerProfile, pool_id, date_value):
 
 def _validate_structure(pool, profile, rules_source_sha, *, now_utc=None):
     errors = []
+    empty = {
+        "pool_id": None,
+        "date_value": None,
+        "planning_mode": None,
+        "target_count": None,
+        "publication_slots": None,
+        "expected_count": 0,
+        "candidates": None,
+        "errors": errors,
+    }
     if not isinstance(pool, dict):
-        return {
-            "pool_id": None,
-            "date_value": None,
-            "planning_mode": None,
-            "target_count": None,
-            "publication_slots": None,
-            "candidates": None,
-            "errors": [f"{profile.name} draft root must be an object"],
-        }
+        errors.append(f"{profile.name} draft root must be an object")
+        return empty
 
     expected_keys = _expected_pool_keys(profile)
     missing = expected_keys - set(pool)
     extra = set(pool) - expected_keys
     if missing:
         errors.append(
-            f"{profile.name} ranked pool missing fields: " + ", ".join(sorted(missing))
+            f"{profile.name} planning pool missing fields: " + ", ".join(sorted(missing))
         )
     if extra:
         errors.append(
-            f"{profile.name} ranked pool unexpected fields: " + ", ".join(sorted(extra))
+            f"{profile.name} planning pool unexpected fields: " + ", ".join(sorted(extra))
         )
+
+    date_value = str(pool.get(profile.date_field, ""))
+    mode = pool.get("planning_mode")
+    target = pool.get("target_count")
+    slots = pool.get("publication_slots") if profile.has_publication_slots else None
+    expected_count = expected_candidate_count(profile, target)
+    result = {
+        "pool_id": pool.get("pool_id"),
+        "date_value": date_value,
+        "planning_mode": mode,
+        "target_count": target,
+        "publication_slots": slots,
+        "expected_count": expected_count,
+        "candidates": None,
+        "errors": errors,
+    }
     if errors:
-        return {
-            "pool_id": pool.get("pool_id"),
-            "date_value": pool.get(profile.date_field),
-            "planning_mode": pool.get("planning_mode"),
-            "target_count": pool.get("target_count"),
-            "publication_slots": pool.get("publication_slots"),
-            "candidates": None,
-            "errors": errors,
-        }
+        return result
 
     if pool.get("schema_version") != POOL_SCHEMA_VERSION:
         errors.append(
-            f"{profile.name} ranked pool schema_version must be {POOL_SCHEMA_VERSION}"
+            f"{profile.name} planning pool schema_version must be {POOL_SCHEMA_VERSION}"
         )
     if pool.get("pool_type") != profile.pool_type:
-        errors.append(f"{profile.name} ranked pool pool_type must be {profile.pool_type}")
+        errors.append(f"{profile.name} planning pool pool_type must be {profile.pool_type}")
 
-    date_value = str(pool.get(profile.date_field, ""))
     try:
         parse_date(date_value, f"{profile.name} {profile.date_field}")
     except PlannerContractError as exc:
@@ -136,17 +146,15 @@ def _validate_structure(pool, profile, rules_source_sha, *, now_utc=None):
     elif not ADHOC_POOL_RE.fullmatch(expected_path):
         errors.append("Ad-hoc pool_id must satisfy the canonical immutable pool naming contract")
 
-    mode = pool.get("planning_mode")
     if mode not in profile.planning_modes:
         errors.append(
             f"{profile.name} planning_mode must be one of {sorted(profile.planning_modes)}"
         )
 
-    target = pool.get("target_count")
     if profile.fixed_target_count is not None:
         if target != profile.fixed_target_count:
             errors.append(
-                f"{profile.name} ranked pool target_count must be exactly "
+                f"{profile.name} planning pool target_count must be exactly "
                 f"{profile.fixed_target_count}"
             )
     else:
@@ -158,7 +166,6 @@ def _validate_structure(pool, profile, rules_source_sha, *, now_utc=None):
                 f"{profile.normal_target_count}"
             )
 
-    slots = pool.get("publication_slots") if profile.has_publication_slots else None
     if profile.has_publication_slots and date_value:
         _, slot_errors = validate_daily_slots(
             mode,
@@ -171,43 +178,28 @@ def _validate_structure(pool, profile, rules_source_sha, *, now_utc=None):
 
     candidates = None
     candidate_ids = None
-    try:
-        candidates, candidate_ids = validate_ranked_candidates(pool, profile.pool_size)
-    except PlannerContractError as exc:
-        errors.append(str(exc))
+    if expected_count > 0:
+        try:
+            candidates, candidate_ids = validate_ranked_candidates(
+                pool,
+                expected_count,
+                require_background_category=True,
+            )
+        except PlannerContractError as exc:
+            errors.append(str(exc))
     if candidate_ids is not None:
-        errors.extend(
-            validate_planning_execution(pool, candidate_ids, rules_source_sha)
-        )
+        errors.extend(validate_planning_execution(pool, candidate_ids, rules_source_sha))
     elif not HEX40_RE.fullmatch(str(rules_source_sha or "")):
         errors.append("rules_source_sha must be a lowercase full 40-character commit SHA")
 
-    if profile is ADHOC and mode == "scheduled_daily" and candidates:
-        prefix = f"wd-{date_value.replace('-', '')}T010000-adhoc-"
-        for item in candidates:
-            content_id = str(item["request"].get("content_id", ""))
-            if not content_id.startswith(prefix):
-                errors.append(
-                    f"rank {item['rank']} scheduled_daily content_id must use "
-                    f"the exact {prefix} namespace"
-                )
-
-    return {
-        "pool_id": pool_id,
-        "date_value": date_value,
-        "planning_mode": mode,
-        "target_count": target,
-        "publication_slots": slots,
-        "candidates": candidates,
-        "errors": errors,
-    }
+    result["candidates"] = candidates
+    return result
 
 
 def _apply_uniqueness(profile, structure):
     errors = []
     pool_id = structure["pool_id"]
     date_value = structure["date_value"]
-    mode = structure["planning_mode"]
     if profile is DAILY:
         canonical_plan = BOT_ROOT / "content" / "planning" / f"{date_value}.json"
         expected_pool = (
@@ -226,11 +218,6 @@ def _apply_uniqueness(profile, structure):
             errors.append(
                 "immutable Daily planning pool already exists; use a new immutable attempt ID"
             )
-    elif mode == "scheduled_daily" and scheduled_adhoc_matches(date_value):
-        errors.append(
-            "scheduled Ad-hoc production already exists for this Singapore date; "
-            "recover the canonical request instead of creating a new pool"
-        )
     return errors
 
 
@@ -245,7 +232,7 @@ def validate_draft(
     check_uniqueness=True,
     now_utc=None,
 ):
-    """Validate a complete frozen ranked pool without mutating it."""
+    """Validate a complete current planning pool without mutating it."""
     started = time.perf_counter()
     profile = get_profile(profile_name)
     original = copy.deepcopy(pool)
@@ -281,8 +268,10 @@ def validate_draft(
             request = item["request"]
             content_id = str(request.get("content_id", ""))
             publish_at = None
-            if profile.has_publication_slots and isinstance(slots, list) and slots:
-                publish_at = slots[(int(item["rank"]) - 1) % len(slots)]
+            if profile.has_publication_slots and isinstance(slots, list):
+                rank = int(item["rank"])
+                if 1 <= rank <= len(slots):
+                    publish_at = slots[rank - 1]
             request_path = BOT_ROOT / "content" / "requests" / f"{content_id}.json"
             errors = candidate_errors(
                 request,
@@ -290,6 +279,7 @@ def validate_draft(
                 request_path=request_path,
                 profile=profile,
                 publish_at_override=publish_at,
+                background_category=item.get("background_category"),
             )
             candidate_results.append(
                 {
@@ -302,7 +292,7 @@ def validate_draft(
             )
 
     valid_count = sum(item["status"] == "PASS" for item in candidate_results)
-    expected_count = profile.pool_size
+    expected_count = structure["expected_count"]
     status = (
         "PASS"
         if not pool_errors
@@ -327,7 +317,7 @@ def validate_draft(
         "draft_sha256": hashlib.sha256(raw_bytes).hexdigest() if raw_bytes else None,
         "expected_candidates": expected_count,
         "valid_candidates": valid_count,
-        "failed_candidates": expected_count - valid_count,
+        "failed_candidates": max(0, expected_count - valid_count),
         "pool_errors": pool_errors,
         "candidate_results": candidate_results,
         "validation_elapsed_ms": round((time.perf_counter() - started) * 1000.0, 3),
@@ -373,7 +363,7 @@ def main_for_profile(profile_name):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Shared Wacky Dramas ranked-pool pre-commit validator"
+        description="Shared Wacky Dramas planning-pool pre-commit validator"
     )
     parser.add_argument("--profile", choices=("daily", "adhoc"), required=True)
     parser.add_argument("--pool", required=True)
