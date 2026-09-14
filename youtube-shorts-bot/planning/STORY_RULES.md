@@ -26,7 +26,7 @@ Good categories include relationship, dating, marriage, betrayal, family, inheri
 
 The private planner is the semantic authority for every production story. While writing the final script, identify the actual reveal, reversal, comeback, consequence, contradiction, unexpected detail or payoff that delivers the main emotional/comedic/dramatic reward. Do not defer this decision to the renderer or infer it later from audio position, punctuation, keywords, prosody or “last sentence” rules.
 
-Every newly authored schema-v5 `story` contains a required `punchline` object:
+Every newly authored schema-v7 `story` contains the required `punchline` object introduced by the earlier schema family:
 
 ```json
 {
@@ -103,47 +103,61 @@ Always use:
 
 Never output retired branding, legacy CTA/series fields, forced Part-2 fields, music requirements or a mutable publication queue.
 
-## Daily ranked-pool planning
+## Daily planning
 
-`DAILY_PLANNER_PROMPT.md` is the canonical Daily planning contract.
+`DAILY_PLANNER_PROMPT.md` is the canonical Daily profile entry point.
 
-For a normal day ChatGPT creates exactly **36 complete production-quality candidates ranked 1..36**. They are planning candidates, not 36 production requests. `daily-production.yml` mechanically validates them in frozen rank order and promotes the first 24 valid candidates into exactly 24 immutable schema-v5 production requests.
+For a normal full day ChatGPT authors exactly **24 complete production-quality candidates**, one for each required publication slot. For same-day catch-up ChatGPT authors exactly `target_count`, where `target_count` is the number of eligible remaining publication slots. There are no fully authored reserve candidates and no first-24-of-36 rank walk for new planning.
 
-The Daily creative funnel still begins broadly (normally at least 120 distinct premises), rejects weak/duplicate ideas cheaply, develops strong contenders, runs truthful title competition and applies analytics/diversity/editorial reasoning before final rank.
+The creative funnel may still begin broadly with cheap premise exploration (normally at least 120 distinct raw premises), reject weak/duplicate ideas early, develop the exact production set, run truthful title competition and apply analytics/diversity/editorial reasoning. Broad ideation does not require fully authoring extra reserve stories.
 
-If a candidate fails hard validation, code skips it and uses the next already-ranked reserve; code never repairs or creatively replaces it.
+If candidate N is weak or invalid before immutable pool commit, ChatGPT repairs or regenerates candidate N while preserving the other valid candidates, then reruns the canonical deterministic checkpoint. Repository code never creatively repairs or reranks authored stories.
 
-## Ad-hoc ranked-pool planning
+## Ad-hoc planning
 
-`ADHOC_PLANNER_PROMPT.md` is the canonical Ad-hoc contract.
+`ADHOC_PLANNER_PROMPT.md` is the canonical Ad-hoc profile entry point.
 
-ChatGPT creates exactly **5 complete production-quality candidates ranked 1..5**. `adhoc-production.yml` validates them in frozen rank order and promotes the first valid candidate into one immutable schema-v5 immediate-public request.
+New Ad-hoc planning supports **`manual_on_demand` only**. ChatGPT authors exactly **one** complete production-quality candidate with `target_count = 1`. The candidate may retain `rank = 1` for pool-shape compatibility, but there is no five-story creative competition, reserve walk or first-valid-of-five promotion for new pools.
 
-Scheduled Ad-hoc and manual/on-demand Ad-hoc identities are explicitly distinguished by the pool contract. Repository code enforces one canonical scheduled Ad-hoc request per Singapore date.
+Multiple manual invocations may coexist when their immutable identities differ. Historical scheduled Ad-hoc pools/requests remain immutable and recoverable only through the historical compatibility path; `scheduled_daily` is not a new-planning mode.
 
-## Background and treatment planning
+If the single candidate is weak or invalid before pool commit, repair or regenerate it and rerun the canonical checkpoint rather than terminating or authoring reserve candidates.
 
-ChatGPT owns logical background selection, planning-time audit reasoning and treatment decisions. The public runtime does not choose a third logical asset or infer a new treatment.
+## Background planning for schema v7
 
-Use current `media/background_selector.py`, `media/background_treatment.py`, `media/background_policy.py`, `docs/background-media-strategy.md`, registry metadata and private successful receipts as policy/history evidence.
+ChatGPT owns semantic background-category suitability and the exact logical sequence choices. The public runtime does not choose a third logical asset, infer a replacement sequence or creatively reinterpret the request.
 
-For every candidate:
+For every new pool candidate:
 
-- primary and backup logical IDs differ;
-- both are registered, active, verified, commercially usable, watermark/text-free and sufficiently high quality;
-- each has at least one production-suitable rendition after real 9:16 crop rules;
-- retention motion and subtitle readability outrank literal story reenactment;
-- recent asset/category/segment/playback repetition is avoided when strong alternatives exist;
-- both treatments freeze `segment_start_seconds`, `segment_duration_seconds`, and `playback_rate`;
-- when source duration is unknown/untrusted, use full-source treatment (`start=0`, `duration=null`) with a valid playback rate;
-- the configured emergency pair may be used only after ChatGPT determines the normal pair is not safely eligible and only if the emergency pair still passes hard safety facts.
+- choose one `background_category` that suits the story;
+- every clip in both primary and backup sequences must belong to that same category;
+- use schema-v7 `concatenated_fit_to_short` primary and backup ordered sequences;
+- use 2–3 distinct clips per sequence, with 3 preferred;
+- primary and backup must be disjoint;
+- freeze exact logical clip IDs, sequence order, `segment_start_seconds` and `segment_duration_seconds`;
+- do not intentionally loop clips;
+- do **not** choose, calculate, freeze or manually validate playback rate; runtime derives the overall playback rate from actual final narration/timeline duration.
 
-`media/background_treatment.py` is a policy/history reference and optional planning aid. Its deterministic helper output is **not** the production authority for newly authored ranked pools; ChatGPT freezes the final choice and private validation only accepts/rejects it.
+Selected assets must satisfy all current hard requirements, including registration, selectability, active/verified/visual-review state, commercial-use permission, watermark/text rules, trusted duration, production-suitable rendition, quality/retention requirements and valid segment ranges.
 
-## Schema and immutability
+Global media-library readiness is not a Daily/Ad-hoc planner gate. Do not start, resume or wait for planner-bound replenishment during normal planning.
 
-New production candidates use **schema v5**. Schema v4 exists only for recovery/execution of historical immutable requests.
+If the preferred category cannot form valid primary and backup sequences:
 
-ChatGPT commits ranked planning-pool artifacts, not canonical production requests. Private promotion workflows materialize canonical requests only after validation. Once a pool/request/result/recovery artifact is committed under an append-only path, do not edit or delete it.
+```text
+preferred suitable category
+→ another suitable eligible category
+→ canonical fallback category exposed by the exact-SHA checkpoint contract
+```
 
-Only promoted winners trigger expensive physical media resolution, TTS, alignment, rendering or YouTube upload.
+Fallback never weakens hard validation. If one selected clip fails, replace it with a hard-valid clip from the same chosen category. If the category itself cannot form both sequences, change category and rebuild both sequences.
+
+## Schema, validation and immutability
+
+New production candidates use **schema v7** and current planning pools use the repository's current pool schema. Historical schema v4/v5/v6 requests and schema-v1 planning pools remain immutable recovery formats where compatibility is still required.
+
+ChatGPT commits planning-pool artifacts, not canonical production requests. Before commit, the exact-SHA standalone `planning/connector_checkpoint.py` is the single mechanical planning authority. Mechanical failures are repair instructions: repair only affected authored input and rerun the same checkpoint until all required candidates pass.
+
+Private promotion workflows deterministically materialize canonical requests only after validation. For current pools every required candidate must already pass; production does not search reserves or creatively substitute backgrounds. Historical schema-v1 pools keep their versioned compatibility behavior.
+
+Once a pool/request/result/recovery artifact is committed under an append-only path, do not edit or delete it. After a successful immutable planning-pool commit, ChatGPT/Work planning ends; downstream promotion, rendering and upload are automation responsibilities.
