@@ -106,7 +106,7 @@ def shortlist(r,limit=BG_LIMIT):
     for a in r["assets"]:
         if not usable(a): continue
         tags=[str(x) for x in (a.get("visual_tags") or []) if str(x).strip()][:4]
-        item={"id":str(a["id"]),"description":str(a.get("title") or a["id"]).strip(),"tags":tags}
+        item={"id":str(a["id"]),"description":str(a.get("title") or a["id"]).strip(),"category":str(a.get("category") or "satisfying_process").strip(),"tags":tags}
         sig=tuple(sorted(x.casefold() for x in tags[:2]))
         if sig and sig in seen: deferred.append(item); continue
         if sig: seen.add(sig)
