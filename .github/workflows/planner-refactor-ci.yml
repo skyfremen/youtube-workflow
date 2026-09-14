@@ -17,6 +17,8 @@ jobs:
       - name: Compile planner code
         working-directory: youtube-shorts-bot
         run: python -m compileall -q planning validation media tests
+      - name: Install test runner
+        run: python -m pip install pytest
       - name: Run planner regression tests
         working-directory: youtube-shorts-bot
         run: |
