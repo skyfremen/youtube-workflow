@@ -74,6 +74,7 @@ jobs:
             exit 1
           fi
 
+          git switch --force-create dispatch-work "${REQUEST_SOURCE_SHA}"
           python adhoc.py validate --request "${request_path}"
           echo "path=${request_path}" >> "${GITHUB_OUTPUT}"
           echo "source_sha=${REQUEST_SOURCE_SHA}" >> "${GITHUB_OUTPUT}"
