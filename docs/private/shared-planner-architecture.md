@@ -1,20 +1,22 @@
 # Shared Planner Architecture
 
-Daily and Ad-hoc are two profiles of one Wacky Dramas planner.
+Daily and Ad-hoc are two profiles of one Wacky Dramas planner. This architecture describes **new planning**; historical immutable artifacts retain versioned compatibility.
 
 ## Ownership
 
-Shared behavior belongs in shared code/configuration. A new planner feature must first be classified as:
+Shared behavior belongs in shared code/configuration. Classify a new planner feature as:
 
-- `SHARED` — default when the behavior should apply to both Daily and Ad-hoc.
-- `DAILY_ONLY` — only when Daily semantics genuinely differ.
-- `ADHOC_ONLY` — only when Ad-hoc semantics genuinely differ.
+- `SHARED` — default when both profiles should behave the same;
+- `DAILY_ONLY` — only for genuine Daily semantics such as publication slots/batch diversity;
+- `ADHOC_ONLY` — only for genuine Ad-hoc semantics such as immediate publication/manual identity.
 
-Schema, semantic validation, story/title/punchline contracts, narration/voice rules, background/media readiness, background treatment validation, common publication validation and candidate validation are `SHARED`.
+Schema validation, story/title/punchline contracts, narration/voice rules, selected-background hard validation, sequence validation, publication validation and candidate validation are shared.
 
-Pool count, identity/uniqueness policy, scheduling/publication mode and promotion cardinality may be profile-specific.
+Profile-specific differences are current candidate/target cardinality, identity/uniqueness, publication scheduling and batch diversity.
 
-## Architecture
+Global media-library readiness and replenishment are **not part of normal planner admission**. Separate background-library maintenance tooling may continue independently.
+
+## Current architecture
 
 ```text
 current private main
@@ -25,106 +27,130 @@ resolve exact current-main SHA
         |
 freeze rules_source_sha
         |
-materialize exact manifest + required files
+read exact-SHA profile/contract + targeted evidence
         |
-verify per-file source/blob evidence
+creative authorship of exactly required candidates
         |
-planning.materialization_verify PASS
+standalone connector_checkpoint.py
         |
-local ChatGPT/Work Python
+repair affected authored input and rerun if needed
         |
-planner_contract.py + media_readiness
+connector/API current-main drift check
         |
-creative planning
+immutable planning pool commit
         |
-planner_precommit.py --profile daily|adhoc
+CHATGPT / WORK PLANNER ENDS
         |
-connector/API current-main SHA drift check
+private deterministic production workflow
         |
-immutable ranked pool
+immutable request(s)
         |
-private Daily/Ad-hoc production workflow
-        |
-production-runtime
+public stateless production-runtime
 ```
 
-For ChatGPT/Work, the authorized GitHub connector/API is the repository source-acquisition mechanism, not the planner. Shell Git access to `github.com` is neither attempted nor required. GitHub Actions is downstream deterministic CI/production/control-plane infrastructure only and never owns creative planning.
+For ChatGPT/Work, the authorized GitHub connector/API is the repository source-acquisition mechanism. Shell Git access to `github.com` is neither attempted nor required. GitHub Actions is downstream deterministic CI/production/control-plane infrastructure only and never owns creative planning.
+
+## Current profile contracts
+
+### Ad-hoc
+
+- `manual_on_demand` only for new planning;
+- target 1, candidate count 1, reserve count 0;
+- immediate/public publication;
+- no global readiness gate;
+- no planner-bound automatic replenishment;
+- selected-background hard validation and same-category primary/backup required.
+
+### Daily
+
+- normal full day target/candidate count 24;
+- catch-up target is eligible remaining slot count and candidate count equals target;
+- reserve count 0;
+- no first-24-of-36 promotion for new pools;
+- no global readiness gate;
+- no planner-bound automatic replenishment;
+- selected-background hard validation and same-category primary/backup required.
 
 ## Shared implementation
 
-- `planning/planner_profiles.py` — declarative mode differences only.
-- `planning/planner_core.py` — shared ranked-pool/candidate/date/publication validation helpers.
-- `planning/planner_precommit.py` — one fail-closed planner-time validator for both profiles.
-- `planning/planner_contract.py` — machine-readable contract and shared-contract fingerprint.
-- `planning/planner_drift.py` — deterministic path classification for connector/API drift, with real-Git comparison retained only for genuine checkout contexts.
-- `planning/materialization_verify.py` — exact-SHA connector materialization/evidence verifier.
-- `validation/validate_content.py` — shared request/schema/background contract.
-- `validation/publication.py` — shared publication and YouTube metadata constraints used by planner and uploader.
-- `planning/daily_precommit.py` and `planning/adhoc_precommit.py` — compatibility wrappers only.
-- `planning/ranked_promotion.py` — downstream immutable-state promotion; it consumes shared planner contracts rather than owning creative planning.
+- `planning/planner_profiles.py` — declarative current profile differences.
+- `planning/planner_core.py` — shared pool/candidate/date/publication validation helpers and schema-v1 compatibility primitives.
+- `planning/planner_precommit.py` — repository-native developer/CI validator for current pools.
+- `planning/connector_checkpoint.py` — self-contained, exact-SHA ChatGPT/Work mechanical planning authority.
+- `planning/planner_contract.py` / `planner_contract_base.py` — machine-readable current contract.
+- `planning/planner_drift.py` — deterministic path classification for drift.
+- `validation/validate_content.py` — shared request/schema and selected-background validation. Schema-v7 validates referenced assets without requiring global inventory readiness.
+- `validation/publication.py` — shared publication and YouTube metadata constraints.
+- `planning/daily_precommit.py` / `planning/adhoc_precommit.py` — compatibility wrappers around shared precommit.
+- `planning/ranked_promotion.py` — downstream deterministic promotion. Current schema-v2 pools have no reserve walk; historical schema-v1 pools retain their versioned compatibility path.
 
 ## Canonical ChatGPT/Work connector bootstrap
 
-ChatGPT/Work begins directly with the authorized GitHub connector/API. It does not first try `git fetch`, `git clone`, `git pull`, `git ls-remote`, `git rev-parse origin/main`, worktree creation, Git authentication repair, DNS/proxy/network repair, or any `.git`-dependent health check.
+1. Query the authorized connector/API for exact current `main` and freeze it as `rules_source_sha`.
+2. Fetch `planning/PLANNER_MATERIALIZATION.json` and the profile/rule files required by that invocation at the same SHA.
+3. Fetch only the exact-SHA standalone `planning/connector_checkpoint.py` for local checkpoint execution.
+4. Load targeted recent/history/analytics/identity/background evidence through connector reads.
+5. Author the required pool.
+6. Assemble a small connector-evidence JSON containing current drift/uniqueness and hard-valid facts only for selected backgrounds.
+7. Run the standalone checkpoint.
 
-The canonical acquisition sequence is:
+Do not first try Git fetch/clone/pull/ls-remote, worktree creation, Git authentication repair, DNS/proxy repair, `.git` health checks, a full repository materialization, or a local full background-registry copy.
 
-1. Query the connector/API for the exact current `main` commit SHA and freeze it as `rules_source_sha`.
-2. Fetch `youtube-shorts-bot/planning/PLANNER_MATERIALIZATION.json` at that exact SHA.
-3. Materialize every manifest-required path from that same SHA into an ordinary temporary directory.
-4. Record the connector-returned source SHA and Git blob SHA/equivalent canonical blob identity for every path, including the manifest itself.
-5. Run `planning.materialization_verify --profile <daily|adhoc> --root ... --rules-source-sha ... --evidence ...`.
-6. Continue only after `status=PASS`, then run `planning.planner_contract` and `media.media_readiness audit --allow-not-ready` from that same materialized snapshot.
+## Selected-background architecture
 
-No synthetic `.git`, HEAD, clone, worktree or shell-network probe is created to satisfy planner validation. `MATERIALIZATION_BLOCKED` is reserved for a concrete named connector/API fetch/reconstruction/evidence/write failure or a verifier `FAIL`; local Git/DNS/checkout absence is not a ChatGPT/Work blocker.
+Every current schema-v2 pool candidate carries one `background_category`. Its schema-v7 request freezes primary and backup ordered sequences, but the category remains planning metadata and is not added to the public request schema.
 
-Persistence/reuse is an optimization only. Cached source is reusable only when its connector evidence belongs to the identical immutable SHA.
+The checkpoint/repository validator enforces:
 
-## Real Git checkout mode outside ChatGPT/Work
+- selected asset hard eligibility;
+- exact category equality for every primary and backup clip;
+- valid clip/sequence counts and duration ranges;
+- no duplicate asset within a sequence;
+- primary/backup disjointness;
+- exact segment range validity.
 
-Developer tooling, CI and GitHub Actions may legitimately use a real Git checkout when that execution context is already based on Git metadata. That mode remains supported for tasks such as immutable-history checks, cross-repository contract parity, normal source development and other deterministic CI operations.
+ChatGPT chooses the preferred semantically suitable category. If it cannot form valid sequences, ChatGPT tries another suitable eligible category and finally the single canonical fallback category exposed by the checkpoint contract. The fallback never weakens validation.
 
-A real Git checkout may use `--verify-git-head` and the Git-based `planning.planner_drift --base-sha/--head-sha` helpers. These are deliberately separate from the canonical ChatGPT/Work path and must not be presented as a prerequisite, preferred path, initial attempt or fallback prerequisite for ChatGPT/Work.
+Schema-v7 playback rate remains runtime-owned: ChatGPT freezes IDs/order/start/duration, while runtime derives the overall rate from actual final narration/timeline duration.
 
 ## Drift protection
 
-Whole-repository branch movement is not automatically equivalent to planner-contract drift.
+Immediately before immutable pool commit, re-query current `main` through the connector/API and compare it with `rules_source_sha`.
 
-Immediately before immutable output is committed, ChatGPT/Work re-queries current `main` through the authorized GitHub connector/API and compares the returned SHA to `rules_source_sha`. No shell Git network command is used.
-
-If the SHA changed, connector/API compare evidence supplies changed paths when available. `planning.planner_drift.classify_connector_transition` or its CLI connector mode applies the existing path categories without Git:
+If main changed, use changed-path evidence where available:
 
 | Class | Examples | Required action |
 | --- | --- | --- |
-| rules | planner, validation, media policy, shared planner docs | refresh exact connector snapshot; materialization verify + contract + readiness + full precommit |
-| media | background registry/sourcing state | refresh media; readiness + background revalidation + full precommit |
-| history | analytics, requests, results, planning/pools | refresh affected creative history; rerun semantic/editorial checks |
-| operational | recovery, completion, diagnostics/progress evidence | no creative restart solely for this drift |
-| unknown | any unclassified path | conservative full refresh |
+| rules | planner, validation, media policy, shared planner docs | refresh affected exact-SHA contract/rules; repair if needed; rerun checkpoint |
+| media | background registry/selected-asset facts | refresh selected-background evidence; rerun checkpoint |
+| history | analytics, requests, results, planning pools | refresh affected semantic/editorial history; rerun checkpoint if authored bytes change |
+| operational | recovery/completion/diagnostics evidence | continue without creative restart solely for unrelated operational drift |
+| unknown | unclassified path | conservatively refresh affected contract/evidence and revalidate |
 
-If the branch moved but a trustworthy changed-path set is unavailable, connector mode conservatively performs a full refresh. Real-Git developer/CI mode may additionally compute the existing path-scoped fingerprints from local Git objects.
+Do not restart all creative planning merely because an unrelated operational file changed.
 
-The strongest drift prevention remains structural: both profiles invoke the same `planner_precommit.validate_draft` and the same candidate/request/publication validators.
+## Validation model
 
-## Validation and preflight
+ChatGPT owns semantic/editorial review. Mechanical facts are proven once by the canonical deterministic checkpoint. Do not duplicate it with a hand-written validation pass.
 
-The canonical precommit already performs structural, schema, semantic, publication, background and uniqueness validation and reports `validation_elapsed_ms`. A second independent preflight rules engine would duplicate logic and risk drift, so no parallel validator is introduced. ChatGPT/Work may run the canonical precommit repeatedly while drafting; the final successful run remains mandatory.
+A checkpoint failure normally means:
 
-For the canonical connector-materialized ChatGPT/Work path, precommit does **not** use `--verify-git-head`:
-
-```bash
-PYTHONPATH=youtube-shorts-bot python -m planning.planner_precommit \
-  --profile <daily|adhoc> \
-  --pool <pool-file> \
-  --rules-source-sha <rules_source_sha>
+```text
+read exact diagnostic
+→ repair affected authored field/candidate/selected asset
+→ preserve unaffected work
+→ rebuild draft bytes if changed
+→ rerun same checkpoint
 ```
 
-The source-integrity proof is the exact `rules_source_sha`, exact connector-materialized bytes, verified per-file connector evidence and `planning.materialization_verify PASS`. A local HEAD is never fabricated. `--verify-git-head` is retained only for genuine real-Git developer/CI checkout mode.
+A successful checkpoint must report `commit_allowed=true` and all required candidates valid. The final committed pool bytes must exactly match checkpoint `draft_sha256`.
 
-## Performance diagnostics
+Developer/CI may separately run repository-native modules from a genuine Git checkout, including `--verify-git-head`. This mode is not a prerequisite or fallback requirement for ChatGPT/Work.
 
-Canonical ChatGPT/Work planner runs may report connector resolution/materialization, contract, readiness, state-load, precommit and commit timings. These timings are report-only and never affect ranking. Git-specific reuse/fetch timings are applicable only to the separate developer/CI real-Git mode.
+## Production boundary and historical compatibility
 
-## Production boundary
+After a successful immutable pool commit, ChatGPT/Work planning ends. Private production workflows perform deterministic defense-in-depth validation, materialize canonical immutable requests and dispatch the public stateless runtime. They must not creatively rewrite/rerank stories, choose replacement backgrounds or repair malformed planner content.
 
-This transport change does not alter request schemas, ranking/business logic, private promotion semantics, background readiness/replenishment behavior, visual-review ownership or the public runtime contract. Private Daily and Ad-hoc workflows remain separate production entry points because their trigger/promotion semantics differ. Public `production-runtime` remains stateless execution.
+Current planning-pool schema v2 expresses the simplified cardinality/category contract. Historical schema-v1 pools remain immutable and recoverable: 5-candidate Ad-hoc, 36-candidate Daily and scheduled Ad-hoc semantics remain available only through the historical compatibility path. Request schemas v4/v5/v6 also remain historical recovery formats.
+
+No `production-runtime` change is required merely for this planner simplification because promoted schema-v7 request shape is unchanged.
