@@ -1,14 +1,15 @@
-"""Shared planning-time media readiness gate for Daily and Ad-hoc.
+"""Global background-library readiness audit for maintenance workflows.
 
-The checked-in active registry may legitimately be empty after a hard reset. Both
-planners treat that state as REPLENISH, automatically source reviewed licensed
-Pexels footage, wait for Background Management to persist the refreshed atomic
-registry, then continue only after PASS.
+This module measures whether the checked-in registry has broad inventory/category
+coverage and enough sequence-capable atomic clips for healthy library maintenance.
+Its PASS/REPLENISH result is deliberately **not** a prerequisite for new Daily or
+Ad-hoc planning. Current planners validate only the exact background assets they
+select and never enter a planner-bound replenishment loop.
 
-Readiness is schema-v7 sequence-capable: an individual asset no longer needs to
-cover a whole Short. It must be a production-quality >=60s atomic clip. PASS also
-proves that two disjoint 2-3 clip sequences can each provide at least the minimum
-frozen source coverage, so primary/backup planning cannot dead-end after readiness.
+Schema-v7 sequence capability remains useful maintenance information: an atomic
+asset must be a production-quality >=60s clip, and the audit reports whether the
+library can broadly form two disjoint 2-3 clip sequences. Separate background
+management tooling may use these deficits to replenish the library proactively.
 """
 from __future__ import annotations
 
@@ -155,7 +156,7 @@ def audit_registry(registry):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Shared Wacky Dramas media readiness gate")
+    parser = argparse.ArgumentParser(description="Wacky Dramas global background maintenance audit")
     parser.add_argument("--registry", default=str(REGISTRY_PATH))
     sub = parser.add_subparsers(dest="command", required=True)
     audit = sub.add_parser("audit")
