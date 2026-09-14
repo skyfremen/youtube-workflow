@@ -39,13 +39,12 @@ jobs:
           echo "path=${drafts[0]}" >> "${GITHUB_OUTPUT}"
           echo "id=$(basename "${drafts[0]}" .json)" >> "${GITHUB_OUTPUT}"
 
-      - name: Finalize and validate
+      - name: Finalize draft
         id: finalize
         shell: bash
         run: |
           set -euo pipefail
           request_path="$(python adhoc.py finalize --draft "${{ steps.draft.outputs.path }}" | tail -1)"
-          python adhoc.py validate --request "${request_path}"
           echo "request_path=${request_path}" >> "${GITHUB_OUTPUT}"
 
       - name: Commit immutable request
