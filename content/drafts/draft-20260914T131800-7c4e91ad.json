@@ -1,0 +1,65 @@
+{
+  "draft_version": 1,
+  "ideas": [
+    {
+      "rank": 1,
+      "premise": "A manager removes a developer's name from her own automation project, then brings her into the executive demo only to answer the technical questions he cannot.",
+      "category": "WORK",
+      "conflict": "Her manager publicly claims ownership of three months of her work while expecting her to quietly make him look competent.",
+      "twist": "The director asks for the deployment approval record, which automatically shows exactly who built, reviewed, and shipped every change.",
+      "payoff": "The audit trail had receipts.",
+      "why_it_works": "Instantly relatable workplace injustice, escalating secondhand embarrassment, and a clean evidence-based reversal without requiring the lead to sabotage anyone."
+    },
+    {
+      "rank": 2,
+      "premise": "A woman keeps finding tiny charges on the household card and assumes her husband is hiding an expensive hobby, only to discover he has been secretly buying back the childhood book collection her mother sold years ago.",
+      "category": "COUPLE",
+      "conflict": "Suspicious spending creates a growing trust fight just before their anniversary.",
+      "twist": "The mysterious purchases are individually sourced copies of books from her childhood, including handwritten editions she thought were gone forever.",
+      "payoff": "He wasn't hiding a hobby. He was rebuilding my childhood.",
+      "why_it_works": "Starts like betrayal, builds believable suspicion, then flips into a warm emotional reveal."
+    },
+    {
+      "rank": 3,
+      "premise": "A tenant's new neighbor reports every tiny sound to the landlord until the landlord finally schedules a formal noise inspection during the exact hour the complaints claim the tenant is loudest.",
+      "category": "NEIGHBORS",
+      "conflict": "Constant complaints threaten the tenant's lease despite her changing her routine to stay almost silent.",
+      "twist": "During the inspection the noise starts while the tenant is standing silently beside the landlord, revealing it comes from plumbing inside the neighbor's wall.",
+      "payoff": "The loud neighbor was the building.",
+      "why_it_works": "Simple setup, escalating frustration, and a satisfying live reveal that clears the accused person completely."
+    },
+    {
+      "rank": 4,
+      "premise": "A sister insists the family group chat forgot her birthday, then posts a long angry message before anyone can reply.",
+      "category": "FAMILY",
+      "conflict": "She accuses the whole family of not caring and threatens to skip the weekend gathering.",
+      "twist": "Everyone had moved to a temporary surprise-party chat because she had accidentally been added to the planning thread the year before.",
+      "payoff": "She was the only person missing from the chat on purpose.",
+      "why_it_works": "Very relatable group-chat misunderstanding with fast escalation and an embarrassing but harmless reversal."
+    },
+    {
+      "rank": 5,
+      "premise": "A cafe customer repeatedly sends back a drink for being wrong, until the barista finally asks her to read the mobile order aloud.",
+      "category": "EVERYDAY LIFE",
+      "conflict": "The customer blames three different baristas for making the same supposedly incorrect drink.",
+      "twist": "Her saved mobile favorite contains the exact customization she keeps insisting she never ordered.",
+      "payoff": "She had been arguing with her own preset.",
+      "why_it_works": "Compact public conflict, escalating confidence, and a funny self-inflicted reveal that is easy to understand instantly."
+    }
+  ],
+  "winner": {
+    "rank": 1,
+    "hook": "My manager deleted my name from the project deck, then invited me to the executive demo so I could answer the questions he couldn't.",
+    "narration": "For three months, I had been building an automation that replaced a painfully manual process our team ran every morning. I designed the flow, wrote the code, tested the edge cases, fixed the production issues, and documented the whole thing. My manager, Adrian, mostly asked me for status updates.\n\nThe day before the executive demo, he sent me the final slides. My name was nowhere on them. The title page said, 'Designed and delivered by Adrian.' When I asked about it, he replied, 'Leadership prefers one accountable owner. Don't worry, everyone knows it was a team effort.'\n\nThen he added me to the meeting anyway. His message said, 'Please stay available for technical questions.'\n\nSo I did exactly that.\n\nAdrian opened the demo by talking about how he had identified the problem, designed the approach, and driven the implementation. I stayed quiet. The automation worked perfectly, which somehow made his speech even more confident.\n\nThen the technology director started asking questions. Why had we chosen one integration method over another? How did retries work? What happened if the downstream system was unavailable? Adrian answered the first question vaguely, guessed the second one, and got the third one wrong.\n\nEach time, he turned to me and said, 'Maybe Mira can add some color.'\n\nI answered plainly. No sarcasm. No dramatic correction. Just the actual design decisions and the reasons behind them. After the fourth answer, the director looked at me and asked, 'Were you the engineer who implemented this?'\n\nBefore I could reply, Adrian jumped in. 'It was really a collaborative effort.'\n\nThe director nodded and asked to see the deployment approval record because he wanted to reuse our controls for another project. Adrian opened it on screen.\n\nThere it was: my name on the implementation, my name on every deployment, my comments on every failed test, my fixes, my approvals, and Adrian's name appearing mostly beside status acknowledgements.\n\nNobody said anything for about five seconds.\n\nThen the director smiled at me and said, 'Mira, can you present this architecture at next week's engineering forum?'\n\nAdrian closed the record very quickly.\n\nThe audit trail had receipts.",
+    "title": "My Manager Took Credit for My Project—Then Opened the Audit Log",
+    "description": "He removed her name from the presentation and claimed the project as his own. Then one routine executive question put the entire history on screen.",
+    "lead_gender": "female",
+    "story_tone": "dramatic_comedy",
+    "payoff": "The audit trail had receipts.",
+    "background_ids": [
+      "satisfying-px-9356370",
+      "satisfying-px-32719027",
+      "satisfying-px-33721127"
+    ]
+  }
+}
