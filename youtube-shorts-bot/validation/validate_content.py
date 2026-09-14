@@ -2,8 +2,8 @@
 
 Schema v4/v5/v6 remain immutable recovery formats. New production uses schema v7,
 which freezes two or three distinct atomic background ranges per primary/backup
-sequence. The public runtime concatenates the selected sequence once and derives
-one playback rate only after the actual post-TTS render duration is known.
+sequence. For schema v7, registry enforcement validates only the selected assets;
+global inventory readiness is a separate media-library maintenance concern.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import math
 from pathlib import Path
 
 from common.workflow_common import load_json
+from media.background_selector_base import HIGH_RETENTION_CATEGORIES, retention_category
 from media.continuous_background import (
     CONCATENATED_FIT_TO_SHORT_MODE,
     DURATION_EPSILON_SECONDS,
@@ -302,8 +303,8 @@ def _v7_asset_errors(asset, asset_id, label, segment):
         return errors
     if not is_selectable(asset):
         errors.append(
-            f"{label} background {asset_id} must satisfy current atomic media-readiness "
-            "quality, retention, duration and production-rendition requirements"
+            f"{label} background {asset_id} must satisfy current atomic media quality, "
+            "retention, duration and production-rendition requirements"
         )
     source_duration = _source_duration(asset)
     if source_duration is None:
@@ -320,6 +321,7 @@ def _v7_asset_errors(asset, asset_id, label, segment):
 
 
 def validate_background_registry_contract(data, registry=None):
+    """Validate only assets referenced by the request; never gate on global inventory."""
     if not isinstance(data, dict) or data.get("schema_version") not in {6, 7}:
         return []
     visual = data.get("visual")
@@ -381,7 +383,41 @@ def validate_background_registry_contract(data, registry=None):
     return errors
 
 
+def validate_selected_background_category(data, registry, expected_category):
+    """Validate schema-v7 same-category primary/backup selection for new pools."""
+    errors = []
+    if data.get("schema_version") != 7:
+        return errors
+    if expected_category not in HIGH_RETENTION_CATEGORIES:
+        return [
+            f"background_category must be a current high-retention category; got {expected_category!r}"
+        ]
+    try:
+        mapping = asset_map(registry)
+        sequences = {
+            "primary": sequence_for_slot(data, "primary"),
+            "backup": sequence_for_slot(data, "backup"),
+        }
+    except (TypeError, ValueError) as exc:
+        return [f"cannot validate selected background category: {exc}"]
+    for slot, sequence in sequences.items():
+        for index, segment in enumerate(sequence):
+            asset_id = segment["background_id"]
+            asset = mapping.get(asset_id)
+            if not isinstance(asset, dict):
+                continue
+            actual = retention_category(asset)
+            if actual != expected_category:
+                errors.append(
+                    f"visual.background_{slot}_sequence[{index}] background {asset_id} "
+                    f"category {actual!r} must equal candidate.background_category "
+                    f"{expected_category!r}"
+                )
+    return errors
+
+
 def _readiness_errors(registry_data):
+    """Historical schema-v6 readiness compatibility only."""
     readiness = audit_registry(registry_data)
     if readiness["ready"]:
         return []
@@ -391,8 +427,8 @@ def _readiness_errors(registry_data):
         if value
     }
     return [
-        "shared background media readiness requires automatic replenishment "
-        f"before new production: selectable={readiness['selectable_assets']}/"
+        "historical schema-v6 background media readiness is not satisfied: "
+        f"selectable={readiness['selectable_assets']}/"
         f"{readiness['minimum_selectable_assets']}; category_deficits={deficits}; "
         f"duration_ineligible={readiness['duration_ineligible_assets']}"
     ]
@@ -491,7 +527,8 @@ def _validate_v7(data, request_path=None, *, enforce_registry=False, registry=No
         except (OSError, TypeError, ValueError) as exc:
             errors.append(f"background registry is unavailable or invalid: {exc}")
         else:
-            errors.extend(_readiness_errors(registry_data))
+            # New v7 validates only referenced assets. Global readiness/replenishment
+            # is intentionally outside the planner and production-request path.
             errors.extend(validate_background_registry_contract(data, registry_data))
     return errors + visual_errors
 
