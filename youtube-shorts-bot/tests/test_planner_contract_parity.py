@@ -35,7 +35,7 @@ class PlannerContractParityTests(unittest.TestCase):
                     standalone["fixed_target_count"], profile.fixed_target_count
                 )
                 self.assertEqual(
-                    standalone["normal_target_count"], profile.normal_target_count
+                    standalone.get("normal_target_count"), profile.normal_target_count
                 )
                 self.assertEqual(
                     standalone["publication"], profile.publication_template
