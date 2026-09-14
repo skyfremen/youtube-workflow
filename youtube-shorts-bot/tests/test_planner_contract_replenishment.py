@@ -1,29 +1,36 @@
 from planning.planner_contract import build_contract
 
 
-def test_media_replenishment_is_resumable_for_all_planners():
-    readiness = build_contract()["media_readiness"]
+def test_global_readiness_and_replenishment_are_not_planner_prerequisites():
+    contract = build_contract()
+    readiness = contract["media_readiness"]
 
-    assert readiness["required_before_daily"] is True
-    assert readiness["required_before_adhoc"] is True
-    assert readiness["replenish_is_terminal"] is False
-    assert readiness["automatic_continuation_required"] is True
-    assert readiness["max_replenishment_attempts"] == 5
-    assert readiness["resume_same_planner_invocation"] is True
-    assert readiness["rejected_candidates_are_excluded_from_retry"] is True
-    assert readiness["targeted_deficit_discovery"] is True
-    assert readiness["replenishment_state_implementation"] == "media.replenishment_state"
-    assert readiness["replenishment_manifest_is_allowed_prerequisite_commit"] is True
-    assert readiness["pool_only_commit_rule_applies_after_readiness_pass"] is True
+    assert readiness["planner_uses_global_readiness"] is False
+    assert readiness["required_before_daily"] is False
+    assert readiness["required_before_adhoc"] is False
+    assert readiness["automatic_continuation_required"] is False
+    assert readiness["automatic_replenishment_enabled"] is False
+    assert readiness["maintenance_only"] is True
 
-    sequence = readiness["replenishment_sequence"]
-    assert sequence[0] == "audit returns REPLENISH"
-    assert any("Background Management" in step for step in sequence)
-    assert any("rerun media.media_readiness" in step for step in sequence)
-    assert any("resume Daily or Ad-hoc ranked-pool authorship" in step for step in sequence)
+    selected = contract["selected_background_validation"]
+    assert selected["required"] is True
+    assert selected["same_category_primary_backup"] is True
+    assert selected["global_registry_readiness_required"] is False
+    assert selected["validate_only_referenced_assets"] is True
 
-    rules = readiness["rules"]
-    assert any("resumable prerequisite state" in rule for rule in rules)
-    assert any("commit only the ranked-pool JSON" in rule for rule in rules)
-    assert any("Do not end a planning invocation" in rule for rule in rules)
-    assert readiness["exhausted_error_code"] == "E_MEDIA_REPLENISH_EXHAUSTED"
+    treatment = contract["background_treatment"]
+    assert treatment["global_inventory_gate"] is False
+    assert treatment["automatic_planner_replenishment"] is False
+    assert treatment["same_category_primary_and_backup_required"] is True
+    assert treatment["planner_freezes_playback_rate"] is False
+    assert treatment["runtime_derives_playback_rate_after_tts"] is True
+    assert treatment["canonical_fallback_category"]
+
+
+def test_planner_recovery_is_repair_retry_not_replenishment():
+    recovery = build_contract()["planner_recovery"]
+    assert recovery["recoverable_failures_are_terminal"] is False
+    assert recovery["repair_scope"] == "affected candidate or field only"
+    assert "rerun same canonical checkpoint" in recovery["checkpoint_failure"]
+    assert "alternate/fallback category" in recovery["background_failure"]
+    assert recovery["post_commit"] == "end_planner"
