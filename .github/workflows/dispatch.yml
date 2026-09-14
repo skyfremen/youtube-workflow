@@ -5,29 +5,55 @@ on:
     branches: [main]
     paths:
       - 'content/requests/*.json'
+  workflow_call:
+    inputs:
+      request_source_sha:
+        description: Exact commit that added the immutable request
+        required: true
+        type: string
+    secrets:
+      PUBLIC_PRODUCTION_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      request_source_sha:
+        description: Exact commit that added the immutable request
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: dispatch-${{ github.ref }}
+  group: dispatch-${{ inputs.request_source_sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    env:
+      REQUEST_SOURCE_SHA: ${{ inputs.request_source_sha || github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.request_source_sha || github.sha }}
 
       - name: Identify and validate one immutable request
         id: request
         shell: bash
         run: |
           set -euo pipefail
+          if [[ ! "${REQUEST_SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::REQUEST_SOURCE_INVALID expected a full 40-character commit SHA"
+            exit 1
+          fi
+          if [ "$(git rev-parse HEAD)" != "${REQUEST_SOURCE_SHA}" ]; then
+            echo "::error::REQUEST_SOURCE_MISMATCH checkout did not resolve the requested source SHA"
+            exit 1
+          fi
           mapfile -t requests < <(
-            git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" |
+            git diff-tree --no-commit-id --name-status -r "${REQUEST_SOURCE_SHA}" |
             awk '$1 == "A" && $2 ~ /^content\/requests\/wd-[0-9a-f]{24}\.json$/ {print $2}'
           )
           if [ "${#requests[@]}" -ne 1 ]; then
@@ -36,7 +62,7 @@ jobs:
           fi
           python adhoc.py validate --request "${requests[0]}"
           echo "path=${requests[0]}" >> "${GITHUB_OUTPUT}"
-          echo "source_sha=${GITHUB_SHA}" >> "${GITHUB_OUTPUT}"
+          echo "source_sha=${REQUEST_SOURCE_SHA}" >> "${GITHUB_OUTPUT}"
 
       - name: Create stable execution fence
         id: execution
