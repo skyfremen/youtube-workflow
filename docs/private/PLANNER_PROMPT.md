@@ -2,65 +2,197 @@
 
 Daily and Ad-hoc are profiles of one planner. Repository code/configuration at exact current `main` is authoritative. The authorized GitHub connector/API is the canonical ChatGPT/Work repository source; shell Git is neither attempted nor required.
 
-## Repository-first identity
+This document describes **new planning**. Historical immutable pools, requests, recovery artifacts and older schemas retain their historical compatibility behavior.
 
-Freeze one exact lowercase 40-character `rules_source_sha`. Fetch the current `PLANNER_MATERIALIZATION.json`, standalone `planning/connector_checkpoint.py`, selected profile rules, story/background rules and targeted state through exact-SHA connector reads. Stage locally only the standalone checkpoint, authored pool and small connector-evidence JSON. `CHECKPOINT_STAGING_BLOCKED` is legal only when that connector-native checkpoint cannot actually be fetched/staged/executed; Git/DNS/checkout failure is not a blocker.
+## Guiding principle
 
-## Shared automatic background replenishment and continuation
+```text
+semantic / creative decision
+→ ChatGPT / Work
 
-`REPLENISH` is a recoverable intermediate planner state. It is **not** a final result while bounded recovery remains possible. Daily and Ad-hoc must use the same procedure and preserve the original planner invocation throughout it.
+mechanical / structural validation
+→ one canonical deterministic checkpoint
 
-### Mandatory readiness-first gate
+recoverable failure
+→ repair / retry / regenerate / substitute / fallback / revalidate
 
-Always resolve **current repository media readiness before interpreting any historical replenishment state**.
-
-- If the current registry audits `PASS`, continue the planner immediately. Legacy, incomplete, exhausted, incompatible, or otherwise historical replenishment sessions are history only and **must not block, resume, restart, or downgrade a readiness-PASS planner invocation**.
-- Only when the current registry audits `REPLENISH` may replenishment-session state control the next action.
-- On `REPLENISH`, first resume the sole compatible current-format session for the exact planner invocation when one exists. If no compatible current-format session exists, create one fresh stable replenishment session and commit schema-v3 attempt 1 for that same planner invocation. Legacy-only or incompatible historical state is not a blocker and is not a reason to terminate.
-- `BLOCKED`/failure solely because legacy state exists, because a legacy session is not resumable, or because no compatible current-format session exists is an invalid terminal outcome. The valid action in that case is current readiness `PASS` -> continue planning, or current readiness `REPLENISH` -> create the fresh schema-v3 attempt.
-- Before reporting any replenishment-related terminal result, re-audit current readiness. A terminal replenishment result is permitted only for a genuine bounded infrastructure wait under the media strategy or `E_MEDIA_REPLENISH_EXHAUSTED` after the current-format session reaches attempt 5. Historical session state alone can never satisfy this gate.
-
-1. Read current total/category/duration/sequence deficits from repository-owned readiness evidence. If the current audit is `PASS`, stop evaluating replenishment state and continue candidate planning.
-2. Only when the current audit is `REPLENISH`, resume a compatible unfinished replenishment session for this planner invocation; otherwise create one stable session identity and schema-v3 attempt 1 immediately. Compatibility is strict: only discovery-request schema v3 bound to the exact current `planner_invocation` and schema-v2 evidence-bound review decisions are resumable. Legacy discovery requests/review decisions from older schemas are immutable history only; never upgrade them in place, synthesize missing v2 decision metadata from them, or copy their approvals into a new-format readiness manifest. If only legacy state exists, leave it untouched and start a fresh schema-v3 replenishment session for the current planner invocation. Never create a second Daily/Ad-hoc planning invocation merely because replenishment is needed.
-3. Use discovery-request schema v3 for automatic retries. Freeze `planner_invocation_id`, profile/mode, Singapore date and `initial_rules_source_sha`; target only positive `category_deficits`; carry `attempt` (1-5) and the stable `replenishment_session_id`; and exclude active+verified assets plus every provider asset already discovered or visually reviewed in this session.
-4. Private Background Management performs deterministic provider discovery, exact-source transport/contact sheets/artifact upload and deterministic persistence only. It never performs ChatGPT-owned visual approval or creative planning.
-5. Review exact-source visual evidence. Persist every approve/reject decision as immutable repository evidence under `content/background-sourcing/review-decisions/<request_id>.json` before continuing. Review-decision schema v2 binds the batch to the frozen planner invocation and exact immutable review-evidence index, then records per-provider `decision`, `discovery_category`, `reviewed_category`, `category_match`, reason, source, and approved ingest metadata when applicable. The provider search category is provenance, not truth: an asset may satisfy a deficit only when ChatGPT's visual review confirms that category. Misleading search results are rejected.
-6. Treat the immutable review-decision state as authoritative session memory. `media.pexels_discovery` automatically unions all provider IDs already reviewed in the same `replenishment_session_id` with request-side `exclude_provider_asset_ids`; do not depend on ChatGPT perfectly reconstructing exclusions after interruption.
-7. After persisting a schema-v2 review decision, **continue the same invocation immediately**; do not stop merely because the visual-review step completed. If the current attempt has one or more approved category matches, create and commit exactly one immutable **schema-v2 readiness manifest** under `content/background-sourcing/readiness/`. It must preserve the same `replenishment_session_id`, `planner_invocation`, `attempt`, and `discovery_request_id`; `review_decision_ids` must exactly match candidate order; every candidate must be the approved candidate metadata from its immutable decision plus its deterministic `review_decision_id`. Validate the manifest against the current schema/decision contract before commit. Never create a schema-v1 manifest for a resumable schema-v3 session.
-8. The readiness-manifest commit is the deterministic ingestion hand-off. Background Management must ingest only candidates bound byte-for-byte to immutable approvals, revalidate provider facts, persist the registry, re-run media readiness, and append exactly one immutable post-ingestion event at `content/background-sourcing/replenishment-events/<replenishment_session_id>/aNN-readiness.json`. The event is the authoritative completion receipt for that attempt. Do not infer ingestion success merely from a workflow start, a readiness manifest, or an updated registry.
-9. After committing the readiness manifest, use the authorized GitHub connector/API to re-read current repository state for that same session until either the corresponding post-ingestion event is present or a genuine bounded infrastructure wait is established. Do not end the planner merely because the event was not present on the first read. When the event appears, follow its `continuation_phase` mechanically:
-   - `READY_TO_RESUME`: immediately resume the **same original planner invocation** at the phase that was waiting for media and continue candidate authorship/checkpoint/commit.
-   - `NEED_DISCOVERY`: if `attempt < 5`, create and commit the next schema-v3 targeted discovery request for the same session/invocation, increment the attempt, rotate/broaden canonical search vocabulary as allowed by current media strategy, and continue the loop automatically.
-   - `EXHAUSTED`: stop only with `E_MEDIA_REPLENISH_EXHAUSTED` and the exact remaining deficits/attempt/rejection diagnostics.
-10. If an attempt has **zero approved candidates**, no readiness manifest or ingestion is required. This is not a terminal planner result. If `attempt < 5`, immediately create the next targeted schema-v3 discovery request for the same session/invocation and continue. Only attempt 5 may transition to `EXHAUSTED`.
-11. An individual candidate rejection, an all-rejected batch before attempt 5, completion of visual review, creation of review evidence, creation of a readiness manifest, workflow dispatch/start, a first missing-event read, legacy-only state, or absence of a compatible current-format session are **never** valid reasons to terminate the planner invocation.
-12. A genuine bounded external/infrastructure wait may report `DEFERRED_REPLENISHMENT` only when the current background-media strategy's defer conditions are actually met. The report must identify the exact session, attempt, expected next immutable artifact/event, and why it cannot yet be obtained. It must not be used as a substitute for performing the connector-native continuation loop.
-13. On every resumed execution, re-audit current media readiness first, then reconstruct the phase from immutable repository state only if readiness remains `REPLENISH`. Never duplicate a discovery request, review decision, readiness manifest, readiness event, or planner invocation. If the expected immutable artifact already exists with matching identity, consume it and continue from the next phase.
-
-The required state machine is therefore:
-
-`CURRENT_READINESS_PASS -> CONTINUE_PLANNING`
-
-or, only when current readiness is `REPLENISH`:
-
-`REPLENISH -> (resume compatible session | create fresh schema-v3 attempt 1) -> WAITING_DISCOVERY -> WAITING_EVIDENCE -> NEEDS_VISUAL_REVIEW -> (NEED_DISCOVERY when all rejected | NEEDS_INGESTION when approvals exist) -> WAITING_INGESTION -> (READY_TO_RESUME | NEED_DISCOVERY | EXHAUSTED)`.
-
-`READY_TO_RESUME` is not a new planning invocation: it returns control to the exact Daily/Ad-hoc invocation that entered `REPLENISH` and immediately re-enters the readiness-first gate.
-
-## Connector evidence and checkpoint
-
-Before final pool commit, assemble connector evidence with repository, exact `rules_source_sha`, checkpoint blob identity, current-main drift PASS, media-readiness PASS, uniqueness PASS and evidence only for selected background IDs. Never invent PASS evidence or copy the whole registry merely for checkpointing.
-
-Run the exact-SHA standalone checkpoint:
-
-```bash
-python connector_checkpoint.py validate --profile <daily|adhoc> --pool <pool.json> --rules-source-sha <rules_source_sha> --evidence <connector-evidence.json>
+successful immutable pool commit
+→ planner ends
 ```
 
-All expected candidates must PASS and `commit_allowed=true`; committed bytes must match `draft_sha256`. Re-query current `main` immediately before validation/commit and apply the repository drift policy if it moved.
+Normal recoverable problems are not terminal planner results.
 
-## Ownership and production boundary
+## Repository-first identity
 
-ChatGPT/Work owns premise generation/rejection, duplicate reasoning, analytics/editorial judgment, complete story/title/metadata writing, voice/punchline semantics, exact logical background choices/ranges, visual review/fallback reasoning and final rank. Repository code and the standalone checkpoint own deterministic validation. GitHub Actions may perform deterministic media transport/state work and downstream production but must not creatively generate/rank the Daily/Ad-hoc pool.
+1. Resolve exact current `main` through the authorized GitHub connector/API.
+2. Freeze the lowercase 40-character SHA as `rules_source_sha`.
+3. Read only the current exact-SHA profile rules, story/background rules, machine-readable materialization contract, standalone `planning/connector_checkpoint.py`, and targeted state required by the current invocation.
+4. Stage locally only the standalone checkpoint, authored pool JSON and small connector-evidence JSON required by the current checkpoint contract.
 
-Only after checkpoint PASS may ChatGPT/Work commit the immutable ranked pool through the authorized GitHub connector/API. Existing private workflows then validate/promote mechanically, create canonical immutable requests and dispatch the public stateless runtime. Developers/CI may separately use repository-native modules from a genuine checkout.
+Do not require or attempt shell Git, clone/fetch/pull/ls-remote, worktrees, GitHub DNS/proxy repair, a full repository checkout, a reconstructed planner module tree, or a local copy of the complete background registry merely to plan.
+
+`CHECKPOINT_STAGING_BLOCKED` is legal only when the exact-SHA standalone checkpoint cannot actually be fetched, staged or executed. Absence of Git/DNS/checkout is not a ChatGPT/Work blocker.
+
+## Profile cardinality
+
+### Ad-hoc
+
+```text
+planning_mode = manual_on_demand
+target_count = 1
+candidate_count = 1
+reserve_candidate_count = 0
+publication = immediate/public
+```
+
+New Ad-hoc planning does not support `scheduled_daily`.
+
+### Daily
+
+Normal full day:
+
+```text
+planning_mode = normal_next_day
+target_count = 24
+candidate_count = 24
+reserve_candidate_count = 0
+```
+
+Same-day catch-up, when supported by current `main`:
+
+```text
+target_count = eligible_slot_count
+candidate_count = target_count
+```
+
+There is no new-planning first-valid reserve walk. If a required candidate is weak or invalid, repair/regenerate that candidate while preserving unaffected valid candidates.
+
+## Background policy for planning
+
+Global media-library readiness is **not** a prerequisite for Daily or Ad-hoc planning. A repository-wide `REPLENISH` state, total inventory deficit, category inventory deficit, sequence-capacity deficit or historical replenishment session does not by itself block a new planner invocation.
+
+Normal Daily/Ad-hoc planning does not create, resume, wait for or interpret planner-bound replenishment sessions, discovery attempts, readiness manifests/events or attempt loops. Background discovery/review/maintenance tooling may remain available as a **separate media-library maintenance workflow**, independent of the planner.
+
+Removing global readiness does not weaken selected-media validation. Every background actually referenced by an authored pool must satisfy the current hard requirements, including registration, selectability, active/verified/visual-reviewed state, commercial-use eligibility, watermark/text rules, trusted duration, production rendition, quality/retention rules, valid segment ranges and schema compatibility.
+
+For each schema-v7 candidate:
+
+- ChatGPT chooses one `background_category`;
+- every primary and backup clip must belong to that same category;
+- each ordered sequence contains 2–3 distinct clips, 3 preferred;
+- primary and backup are disjoint;
+- exact logical IDs, order, segment starts and segment durations are frozen;
+- no intentional looping is allowed;
+- ChatGPT does **not** choose, calculate or freeze playback rate;
+- runtime derives playback rate after the actual narration/timeline duration is known.
+
+Selection fallback is:
+
+```text
+preferred suitable category
+→ another suitable eligible category
+→ canonical fallback category exposed by the exact-SHA checkpoint contract
+```
+
+Fallback never relaxes hard selected-asset validation.
+
+## Exactly four ChatGPT / Work passes
+
+### PASS 1 — contract discovery and minimal preflight
+
+Resolve `rules_source_sha`, current profile/cardinality/publication contract, current schemas/controlled values/voice rules, selected-background rules and canonical fallback configuration. Load only targeted recent story history, analytics/editorial learning, recent background use, identity/uniqueness state and Daily slot evidence that materially affects this invocation.
+
+PASS 1 is evidence collection, not a manual validation pass. Do not run global background readiness, inspect replenishment history, start replenishment, reproduce schema validation or build a second mechanical checklist.
+
+### PASS 2 — creative authorship and semantic review
+
+Author exactly the candidates actually required by the profile. ChatGPT/Work owns originality, semantic duplicate reasoning, hook/conflict/stakes/escalation/payoff/ending quality, truthful title quality, spoken flow, lead gender/tone, voice appropriateness, punchline semantics, background category suitability, visual continuity/readability, undesirable recent background reuse and Daily batch diversity.
+
+If a story/premise/title/voice/background choice is weak, repair or regenerate the affected input automatically. For Daily, preserve already-good candidates instead of restarting the batch.
+
+PASS 2 may use the contract to author correct values but must not manually prove candidate-count arithmetic, regexes, enum membership, publication JSON exactness, sequence arithmetic/disjointness or other facts covered by PASS 3.
+
+### PASS 3 — one canonical deterministic checkpoint
+
+Assemble small connector evidence with:
+
+- repository and exact `rules_source_sha`;
+- checkpoint blob identity;
+- drift evidence valid for the checkpoint moment;
+- profile uniqueness/identity evidence;
+- only the exact selected background IDs and the hard-valid facts required by the checkpoint.
+
+Do not include global `media_readiness` or replenishment state in current evidence and do not copy the complete background registry merely to validate the pool.
+
+Run:
+
+```bash
+python connector_checkpoint.py validate \
+  --profile <daily|adhoc> \
+  --pool <pool.json> \
+  --rules-source-sha <rules_source_sha> \
+  --evidence <connector-evidence.json>
+```
+
+The checkpoint is the single mechanical planning authority. A failure is normally an actionable repair instruction:
+
+```text
+read exact diagnostic
+→ identify affected authored candidate/field/selected asset
+→ repair only what is necessary
+→ rebuild draft bytes if changed
+→ refresh affected connector evidence if needed
+→ rerun the same checkpoint
+```
+
+Never weaken/bypass validation simply to obtain PASS. A successful checkpoint supersedes manual re-verification of the mechanical rules it covers.
+
+### PASS 4 — drift check, immutable commit, end
+
+Immediately before commit:
+
+1. Re-query current `main` through the connector/API.
+2. Compare it with `rules_source_sha`.
+3. If relevant drift occurred, refresh only affected rules/evidence, repair authored content only when necessary and rerun the canonical checkpoint.
+4. Require the latest checkpoint to show `PASS`, `commit_allowed=true` and every required candidate valid.
+5. Require final pool bytes to exactly match checkpoint `draft_sha256`.
+6. Commit exactly one immutable planning-pool artifact using the authorized connector/API and repository commit convention.
+7. Confirm only that the immutable pool commit succeeded.
+
+Then **CHATGPT / WORK PLANNING ENDS**.
+
+Do not wait for private Production, canonical request materialization, public runtime, TTS, forced alignment, FFmpeg, YouTube upload or YouTube verification after a successful pool commit. Those are downstream automation responsibilities and may be inspected later only as a separate explicit task.
+
+## Automatic recovery rules
+
+Normal creative/mechanical failures are recoverable:
+
+- weak/duplicated/confusing/poorly sized story → repair or regenerate that candidate;
+- weak title/metadata/punchline field → repair that field;
+- invalid voice value → read current voice contract and choose the appropriate valid value;
+- preferred category unavailable → try another suitable eligible category, then canonical fallback;
+- one selected clip invalid → replace it with another hard-valid clip from the same chosen category;
+- sequence invalid → rebuild the affected sequence;
+- checkpoint failure → repair exact failure and rerun;
+- repository drift → refresh affected rules/evidence and revalidate;
+- retryable commit conflict → refresh main, apply drift policy, revalidate if needed and retry safely.
+
+Do not force-push, overwrite immutable state or model ordinary repairable failures as terminal outcomes.
+
+## Genuine terminal blockers before commit
+
+The planner may terminate before a successful commit only after safe recovery has genuinely been exhausted, for example:
+
+1. the authoritative current repository contract cannot be accessed;
+2. the mandatory standalone checkpoint cannot be fetched/staged/executed;
+3. no hard-valid selected-background configuration can be formed after suitable alternate categories/assets and the canonical fallback have all been exhausted;
+4. the authorized repository cannot accept the immutable commit after safe retry/drift recovery;
+5. a current repository invariant makes the requested production state genuinely impossible.
+
+Report the exact blocker rather than a generic `validation failed` message.
+
+## Ownership and downstream boundary
+
+ChatGPT/Work owns the creative result. Repository code must not creatively rewrite, rerank or replace authored stories/background choices. The standalone checkpoint and repository validators own deterministic validation.
+
+Private production workflows may perform deterministic defense-in-depth validation, immutable request materialization and dispatch. Historical schema-v1 pools retain their historical compatibility path. Public `production-runtime` remains stateless and receives the same immutable schema-v7 request shape; candidate `background_category` is planning-pool metadata and is not added to the runtime request.
