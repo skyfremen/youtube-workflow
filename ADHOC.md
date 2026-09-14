@@ -10,7 +10,7 @@ You are the creative planner. Deterministic code owns everything mechanical afte
 4. Rank the strongest candidates internally and choose one winner.
 5. Fully author only that winner; persist only the winner, not runner-up ideas.
 6. Choose exactly **4 semantic emoji cues** for the winner.
-7. Choose exactly **3 distinct** background IDs from `background_choices` for semantic fit.
+7. Choose exactly **1** `background_category` from `background_categories` for semantic fit. Do not choose or invent individual background IDs.
 8. Write exactly one new immutable file under `content/drafts/`.
 9. Check the **Finalize Ad-hoc Draft** workflow run triggered by the exact commit that created that draft.
 10. If finalization succeeds, stop. Do not inspect downstream production, code, workflows, history, the full background registry, old requests/results, or runtime logs.
@@ -49,7 +49,9 @@ During repair, do not inspect `adhoc.py`, workflow YAML, repository history, the
 - Normal planning should set `lead_gender` to `female` or `male`. Missing, empty, or invalid values default to `female`.
 - Normal planning should set `story_tone` to one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`. Missing, empty, or unsupported values default to `natural`.
 - No background music.
-- Pick backgrounds from the supplied shortlist for semantic fit. If any requested background is missing, duplicated, malformed, unknown, or no longer usable, deterministic code keeps valid distinct choices and fills the remaining slots from the current usable background registry. A fallback never bypasses background safety rules.
+- `content/context.json` exposes only background categories that currently contain at least three usable promoted assets. Choose one supplied `background_category` for semantic fit.
+- Deterministic code selects exactly three distinct assets from that same category. Selection is seeded by the final content identity so retries are stable while different stories normally receive different clips.
+- If `background_category` is missing, malformed, unknown, or no longer has three usable assets when the draft is finalized, deterministic code falls back to the viable category with the largest current inventory, using alphabetical order as the tie-break. A background fallback never bypasses registry validity rules.
 
 ## Emoji cues
 
@@ -67,7 +69,7 @@ There is no draft schema-version field. Do not write `draft_version`.
 
 The creative fields that must ultimately be valid in the final request are `premise`, `category`, `conflict`, `twist`, `hook`, `narration`, `title`, and `description`. Deterministic code trims these values, and descriptions longer than 5000 UTF-8 bytes are safely truncated before final validation.
 
-`lead_gender`, `story_tone`, `payoff`, `emoji_cues`, and `background_ids` have deterministic fallback behavior described above. Normal planning should still provide high-quality values for them whenever possible.
+`lead_gender`, `story_tone`, `payoff`, `emoji_cues`, and `background_category` have deterministic fallback behavior described above. Normal planning should still provide high-quality values for them whenever possible.
 
 Write JSON with this normal shape:
 
@@ -86,7 +88,7 @@ Write JSON with this normal shape:
     "story_tone": "dramatic",
     "payoff": "...",
     "emoji_cues": ["shock", "evidence", "panic", "victory"],
-    "background_ids": ["...", "...", "..."]
+    "background_category": "crafting"
   }
 }
 ```
