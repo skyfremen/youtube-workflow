@@ -38,10 +38,11 @@ class WorkflowTopologyTests(unittest.TestCase):
         self.assertIn("[daily production] ${plan_date}", daily)
         self.assertIn("validation.planning_audit", daily)
         self.assertIn("actions/workflows/run.yml/dispatches", daily)
-        self.assertIn("exactly 36", planner)
-        self.assertIn("first `target_count` candidates", planner)
+        self.assertIn("exactly **36** complete candidates", planner)
+        self.assertIn("first `target_count`", planner)
         self.assertIn("content/planning-pools/daily/YYYY-MM-DD/dp-<attempt-id>.json", planner)
-        self.assertIn("new immutable attempt", planner)
+        self.assertIn("failed immutable attempt is never edited or deleted", planner.lower())
+        self.assertIn("corrected new attempt may be created", planner.lower())
 
     def test_adhoc_uses_ranked_pool_entrypoint_and_scheduled_idempotency(self):
         adhoc = (WORKFLOWS / "adhoc-production.yml").read_text(encoding="utf-8")
@@ -54,7 +55,7 @@ class WorkflowTopologyTests(unittest.TestCase):
         self.assertIn("planning.ranked_promotion verify-adhoc", adhoc)
         self.assertIn("validation.validate_content --request", adhoc)
         self.assertIn("actions/workflows/single.yml/dispatches", adhoc)
-        self.assertIn("exactly **5** candidates", planner)
+        self.assertIn("exactly **5**", planner)
         self.assertIn("first valid candidate", planner)
         self.assertIn("scheduled_daily", planner)
         self.assertIn("manual_on_demand", planner)
