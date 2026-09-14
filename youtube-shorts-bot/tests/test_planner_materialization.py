@@ -20,7 +20,7 @@ class PlannerMaterializationTests(unittest.TestCase):
         cls.data = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     def test_connector_native_checkpoint_is_canonical(self):
-        self.assertEqual(self.data["schema_version"], 9)
+        self.assertEqual(self.data["schema_version"], 10)
         self.assertEqual(self.data["contract"], "connector_native_planner_checkpoint")
         bootstrap = self.data["planner_bootstrap"]
         self.assertEqual(bootstrap["preferred"], "connector_native_checkpoint")
@@ -43,8 +43,10 @@ class PlannerMaterializationTests(unittest.TestCase):
             "full_background_registry_local_copy_required",
             "connector_filesystem_mount_required",
             "materialization_verify_required",
+            "post_commit_planner_monitoring",
         ):
             self.assertFalse(requirements[key], key)
+        self.assertEqual(requirements["planning_passes"], 4)
 
     def test_standalone_checkpoint_path_exists_and_runs_without_repository(self):
         checkpoint = self.data["connector_native_checkpoint"]
@@ -53,6 +55,7 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertTrue(source.is_file(), relative)
         self.assertTrue(checkpoint["standard_library_only"])
         self.assertFalse(checkpoint["repository_imports"])
+        self.assertTrue(checkpoint["single_mechanical_authority"])
 
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "connector_checkpoint.py"
@@ -68,36 +71,47 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
         payload = json.loads(completed.stdout)
         self.assertEqual(payload["repository"], "skyfremen/youtube-workflow")
-        self.assertEqual(payload["checkpoint_schema_version"], 1)
+        self.assertEqual(payload["checkpoint_schema_version"], 2)
         self.assertEqual(payload["request_schema_version"], 7)
+        self.assertEqual(payload["pool_schema_version"], 2)
         self.assertEqual(
             payload["execution_environment"]["canonical_mode"],
             "connector_native_checkpoint",
         )
         self.assertFalse(payload["execution_environment"]["shell_git_required"])
         self.assertFalse(payload["execution_environment"]["git_checkout_required"])
-        self.assertEqual(payload["profiles"]["daily"]["pool_size"], 36)
-        self.assertEqual(payload["profiles"]["adhoc"]["pool_size"], 5)
+        self.assertEqual(payload["execution_environment"]["planning_passes"], 4)
+        self.assertEqual(payload["profiles"]["daily"]["normal_next_day"]["expected_candidates"], 24)
+        self.assertEqual(payload["profiles"]["adhoc"]["expected_candidates"], 1)
+        self.assertEqual(payload["profiles"]["adhoc"]["allowed_planning_modes"], ["manual_on_demand"])
 
-    def test_bounded_replenishment_contract_is_machine_readable(self):
-        continuation = self.data["background_replenishment_continuation"]
-        self.assertEqual(continuation["state"], "recoverable_intermediate")
-        self.assertEqual(continuation["discovery_request_schema_version"], 3)
-        self.assertEqual(continuation["review_decision_schema_version"], 2)
-        self.assertFalse(continuation["replenish_is_terminal"])
-        self.assertTrue(continuation["automatic_continuation_required"])
-        self.assertTrue(continuation["resume_same_planner_invocation"])
-        self.assertEqual(
-            continuation["session_identity_field"], "replenishment_session_id"
-        )
-        self.assertEqual(continuation["max_attempts"], 5)
-        self.assertEqual(
-            continuation["terminal_exhausted_code"],
-            "E_MEDIA_REPLENISH_EXHAUSTED",
-        )
-        self.assertTrue(continuation["durable_review_exclusion"]["enabled"])
+    def test_selected_background_contract_replaces_planner_replenishment(self):
+        evidence = self.data["connector_evidence"]
+        self.assertEqual(evidence["schema_version"], 2)
+        self.assertIn("selected_backgrounds", evidence["required_fields"])
+        self.assertNotIn("media_readiness", evidence["required_fields"])
+        self.assertNotIn("replenishment", evidence["required_fields"])
+        self.assertIn("media_readiness", evidence["forbidden_fields"])
+        self.assertIn("replenishment", evidence["forbidden_fields"])
 
-    def test_forbidden_bootstrap_keeps_shell_git_out_of_chatgpt(self):
+        policy = self.data["selected_background_policy"]
+        self.assertFalse(policy["global_media_readiness_required"])
+        self.assertFalse(policy["automatic_planner_replenishment_enabled"])
+        self.assertTrue(policy["validate_only_referenced_assets"])
+        self.assertTrue(policy["same_category_primary_backup_required"])
+        self.assertFalse(policy["planner_freezes_playback_rate"])
+        self.assertTrue(policy["runtime_derives_playback_rate_after_tts"])
+
+    def test_profile_cardinality_is_machine_readable(self):
+        profiles = self.data["profile_contracts"]
+        self.assertEqual(profiles["adhoc"]["allowed_planning_modes"], ["manual_on_demand"])
+        self.assertEqual(profiles["adhoc"]["candidate_count"], 1)
+        self.assertEqual(profiles["adhoc"]["reserve_candidate_count"], 0)
+        self.assertEqual(profiles["daily"]["normal_next_day"]["candidate_count"], 24)
+        self.assertEqual(profiles["daily"]["same_day_catch_up"]["candidate_count"], "target_count")
+        self.assertEqual(profiles["daily"]["reserve_candidate_count"], 0)
+
+    def test_forbidden_bootstrap_keeps_shell_git_and_global_readiness_out(self):
         forbidden = self.data["forbidden_bootstrap_requirements"]
         for expected in (
             "ChatGPT/Work git fetch",
@@ -107,6 +121,8 @@ class PlannerMaterializationTests(unittest.TestCase):
             "ChatGPT/Work Git worktree creation",
             "ChatGPT/Work github.com DNS/proxy repair",
             "requiring .git metadata",
+            "global media readiness before Daily or Ad-hoc planning",
+            "planner-bound automatic replenishment",
         ):
             self.assertIn(expected, forbidden)
         self.assertTrue(any("GitHub Actions" in value for value in forbidden))
@@ -116,8 +132,9 @@ class PlannerMaterializationTests(unittest.TestCase):
         self.assertIn("authorized GitHub connector/API", shared)
         self.assertIn("connector_checkpoint.py", shared)
         self.assertIn("CHECKPOINT_STAGING_BLOCKED", shared)
-        self.assertIn("review-decisions/<request_id>.json", shared)
-        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
+        self.assertIn("Global media-library readiness is **not**", shared)
+        self.assertIn("CHATGPT / WORK PLANNING ENDS", shared)
+        self.assertNotIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
 
         for name, profile in (
             ("ADHOC_PLANNER_PROMPT.md", "adhoc"),
