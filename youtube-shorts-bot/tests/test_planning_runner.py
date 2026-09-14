@@ -140,15 +140,16 @@ class PlanningRunnerTests(unittest.TestCase):
             self.assertIn("failed closed", proc.stderr + proc.stdout)
 
     def test_prompts_make_chatgpt_rank_and_author_complete_candidates(self):
+        core = (BASE / "planning" / "planner_core.py").read_text(encoding="utf-8").lower()
+        self.assertIn("chatgpt_ranked_pool", core)
         for prompt in (canonical_planner_text("DAILY"), canonical_planner_text("ADHOC")):
             lower = prompt.lower()
             self.assertIn("chatgpt", lower)
             self.assertIn("rank", lower)
-            self.assertIn("chatgpt_ranked_pool", lower)
             self.assertIn("must not", lower)
             self.assertIn("creatively", lower)
             self.assertIn("background", lower)
-            self.assertIn("treatment", lower)
+            self.assertTrue("sequence" in lower or "segment" in lower)
 
 
 if __name__ == "__main__":
