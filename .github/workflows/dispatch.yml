@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.request_source_sha || github.sha }}
+          ref: main
 
       - name: Identify and validate one immutable request
         id: request
@@ -48,10 +48,15 @@ jobs:
             echo "::error::REQUEST_SOURCE_INVALID expected a full 40-character commit SHA"
             exit 1
           fi
-          if [ "$(git rev-parse HEAD)" != "${REQUEST_SOURCE_SHA}" ]; then
-            echo "::error::REQUEST_SOURCE_MISMATCH checkout did not resolve the requested source SHA"
+          if ! git cat-file -e "${REQUEST_SOURCE_SHA}^{commit}" 2>/dev/null; then
+            echo "::error::REQUEST_SOURCE_MISSING exact request source commit is unavailable"
             exit 1
           fi
+          if ! git merge-base --is-ancestor "${REQUEST_SOURCE_SHA}" HEAD; then
+            echo "::error::REQUEST_SOURCE_NOT_ON_MAIN exact request source is not an ancestor of current main"
+            exit 1
+          fi
+
           mapfile -t requests < <(
             git diff-tree --no-commit-id --name-status -r "${REQUEST_SOURCE_SHA}" |
             awk '$1 == "A" && $2 ~ /^content\/requests\/wd-[0-9a-f]{24}\.json$/ {print $2}'
@@ -60,8 +65,17 @@ jobs:
             echo "::error::REQUEST_COMMIT_INVALID expected exactly one newly added immutable request"
             exit 1
           fi
-          python adhoc.py validate --request "${requests[0]}"
-          echo "path=${requests[0]}" >> "${GITHUB_OUTPUT}"
+
+          request_path="${requests[0]}"
+          source_blob="$(git rev-parse "${REQUEST_SOURCE_SHA}:${request_path}")"
+          current_blob="$(git hash-object "${request_path}")"
+          if [ "${source_blob}" != "${current_blob}" ]; then
+            echo "::error::REQUEST_IMMUTABILITY_VIOLATION request changed after its source commit"
+            exit 1
+          fi
+
+          python adhoc.py validate --request "${request_path}"
+          echo "path=${request_path}" >> "${GITHUB_OUTPUT}"
           echo "source_sha=${REQUEST_SOURCE_SHA}" >> "${GITHUB_OUTPUT}"
 
       - name: Create stable execution fence
