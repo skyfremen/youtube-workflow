@@ -42,17 +42,14 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             "planning.planner_drift",
         )
 
-    def test_profiles_cannot_own_shared_validation_contracts(self):
+    def test_profiles_cannot_own_shared_schema_or_creative_contracts(self):
         self.assertTrue(assert_profiles_do_not_override_shared_contract())
         fields = set(PlannerProfile.__dataclass_fields__)
         for forbidden in (
             "schema",
-            "semantic",
-            "background",
             "voice",
             "narration",
             "punchline",
-            "media_readiness",
             "request_validator",
         ):
             self.assertFalse(
@@ -60,13 +57,24 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
                 f"shared contract leaked into profile field containing {forbidden}",
             )
 
-    def test_profiles_contain_only_expected_mode_differences(self):
-        self.assertEqual(DAILY.pool_size, 36)
-        self.assertEqual(ADHOC.pool_size, 5)
+    def test_profiles_express_simplified_cardinality_and_media_routing(self):
+        self.assertEqual(DAILY.pool_size, 24)
+        self.assertEqual(ADHOC.pool_size, 1)
         self.assertEqual(DAILY.publication_template["mode"], "scheduled")
         self.assertEqual(ADHOC.publication_template["mode"], "immediate")
+        self.assertEqual(ADHOC.planning_modes, frozenset({"manual_on_demand"}))
         self.assertEqual(ADHOC.fixed_target_count, 1)
         self.assertEqual(DAILY.normal_target_count, 24)
+        self.assertEqual(DAILY.reserve_candidate_count, 0)
+        self.assertEqual(ADHOC.reserve_candidate_count, 0)
+        self.assertFalse(DAILY.global_media_readiness_required)
+        self.assertFalse(ADHOC.global_media_readiness_required)
+        self.assertFalse(DAILY.automatic_replenishment_enabled)
+        self.assertFalse(ADHOC.automatic_replenishment_enabled)
+        self.assertTrue(DAILY.selected_background_validation_required)
+        self.assertTrue(ADHOC.selected_background_validation_required)
+        self.assertTrue(DAILY.background_same_category_required)
+        self.assertTrue(ADHOC.background_same_category_required)
 
     def test_legacy_precommit_modules_are_thin_shared_engine_wrappers(self):
         self.assertEqual(
@@ -86,6 +94,7 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         )
         self.assertTrue(checkpoint["standard_library_only"])
         self.assertFalse(checkpoint["repository_imports"])
+        self.assertTrue(checkpoint["single_mechanical_authority"])
         self.assertIn("repository checkout", checkpoint["forbidden_local_dependencies"])
         self.assertIn(".git metadata", checkpoint["forbidden_local_dependencies"])
         self.assertIn(
@@ -93,7 +102,7 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
             checkpoint["forbidden_local_dependencies"],
         )
 
-    def test_connector_is_canonical_without_git_dependency(self):
+    def test_connector_is_canonical_without_git_or_replenishment_dependency(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
             manifest["planner_bootstrap"]["preferred"],
@@ -105,19 +114,18 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         )
         requirements = manifest["chatgpt_work_requirements"]
         self.assertFalse(requirements["git_required"])
-        self.assertFalse(requirements["git_executable_required"])
         self.assertFalse(requirements["checkout_required"])
-        self.assertFalse(requirements["git_metadata_required"])
         self.assertFalse(requirements["repository_tree_materialization_required"])
-        self.assertFalse(requirements["materialization_verify_required"])
-        self.assertTrue(
-            any(
-                "GitHub Actions" in value
-                for value in manifest["forbidden_bootstrap_requirements"]
-            )
-        )
+        self.assertEqual(requirements["planning_passes"], 4)
+        self.assertFalse(requirements["post_commit_planner_monitoring"])
+        evidence = manifest["connector_evidence"]
+        self.assertEqual(evidence["schema_version"], 2)
+        self.assertNotIn("media_readiness", evidence["required_fields"])
+        self.assertNotIn("replenishment", evidence["required_fields"])
+        self.assertIn("media_readiness", evidence["forbidden_fields"])
+        self.assertIn("replenishment", evidence["forbidden_fields"])
 
-    def test_shared_prompt_is_canonical_for_bootstrap(self):
+    def test_shared_prompt_is_canonical_four_pass_contract(self):
         shared = (
             REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
         ).read_text(encoding="utf-8")
@@ -130,8 +138,9 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertIn("one planner", shared.lower())
         self.assertIn("authorized GitHub connector/API", shared)
         self.assertIn("connector_checkpoint.py", shared)
-        self.assertIn("CHECKPOINT_STAGING_BLOCKED", shared)
-        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
+        self.assertIn("Exactly four", shared)
+        self.assertIn("CHATGPT / WORK PLANNING ENDS", shared)
+        self.assertIn("Global media-library readiness is **not**", shared)
         self.assertIn("docs/private/PLANNER_PROMPT.md", daily)
         self.assertIn("docs/private/PLANNER_PROMPT.md", adhoc)
         self.assertIn("--profile daily", daily)
@@ -139,30 +148,17 @@ class SharedPlannerArchitectureTests(unittest.TestCase):
         self.assertNotIn("--verify-git-head", daily)
         self.assertNotIn("--verify-git-head", adhoc)
 
-    def test_replenishment_visual_review_is_transport_adaptive_and_durable(self):
-        shared = (
-            REPO_ROOT / "docs" / "private" / "PLANNER_PROMPT.md"
-        ).read_text(encoding="utf-8")
+    def test_background_strategy_separates_maintenance_from_planning(self):
         strategy = (BOT_ROOT / "docs" / "background-media-strategy.md").read_text(
             encoding="utf-8"
         )
-
-        self.assertIn("Background Management", shared)
-        self.assertIn("review-decisions/<request_id>.json", shared)
-        self.assertIn("authoritative session memory", shared)
-        self.assertIn("E_MEDIA_REPLENISH_EXHAUSTED", shared)
-        self.assertIn("DEFERRED_REPLENISHMENT", shared)
-
-        self.assertIn("private Background Management review-evidence artifact", strategy)
-        self.assertIn("GitHub connector delivery", strategy)
-        self.assertIn("contact-sheet.jpg", strategy)
-        self.assertIn("--input-dir", strategy)
-        self.assertIn("EVIDENCE_ACCESS_BLOCKED", strategy)
-        self.assertIn("REVIEW_EVIDENCE_TRANSPORT_FAILED", strategy)
-        self.assertIn("GitHub Actions must never set `verified_preview`", strategy)
-        self.assertIn("replenishment_session_id", strategy)
-        self.assertIn("review-decisions/<request_id>.json", strategy)
-        self.assertIn("attempt < 5", strategy)
+        self.assertIn("maintenance signal", strategy)
+        self.assertIn("not a Daily/Ad-hoc planner admission gate", strategy)
+        self.assertIn("same category", strategy)
+        self.assertIn("canonical fallback category", strategy)
+        self.assertIn("does **not** choose, calculate or freeze playback rate", strategy)
+        self.assertIn("separate media-library maintenance", strategy.lower())
+        self.assertIn("Historical replenishment", strategy)
 
 
 if __name__ == "__main__":
