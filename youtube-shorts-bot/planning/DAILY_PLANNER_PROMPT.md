@@ -1,44 +1,88 @@
 # Wacky Dramas — Daily Planner
 
-This is the canonical **Daily profile** entry point for the shared Wacky Dramas planner.
+This is the canonical **new Daily planning** entry point.
 
-Read and follow, in order:
+Repository code/configuration at exact current `main` is authoritative. Use the authorized GitHub connector/API. Do not use shell Git, clone/fetch/pull, DNS/proxy repair, a full checkout, or reconstruction of the planner tree.
 
-1. `docs/private/PLANNER_PROMPT.md` — shared connector-native execution/replenishment/drift contract.
-2. `planning/PLANNER_MATERIALIZATION.json` — machine-readable ChatGPT/Work checkpoint contract.
-3. `planning/DAILY_PLANNER_RULES.md` — Daily creative/schedule/diversity/promotion rules.
-4. `planning/STORY_RULES.md`.
-5. `docs/background-media-strategy.md` — canonical shared background policy.
+Read only the current exact-SHA files needed for this invocation:
 
-Repository code/configuration at exact current `main` is authoritative. Resolve current `main` through the authorized GitHub connector/API and freeze `rules_source_sha`. **Do not shell-Git the repository and do not reconstruct the planner module tree locally.** Fetch the exact-SHA self-contained `planning/connector_checkpoint.py`; only that checkpoint file plus the authored pool/evidence JSON need local staging.
+1. `docs/private/PLANNER_PROMPT.md` — shared four-pass execution contract.
+2. `planning/PLANNER_MATERIALIZATION.json` — connector-native materialization/checkpoint contract.
+3. `planning/DAILY_PLANNER_RULES.md` — Daily schedule/diversity/identity rules.
+4. `planning/STORY_RULES.md` — shared story/metadata rules.
+5. `docs/background-media-strategy.md` — selected-background policy.
+6. Exact-SHA `planning/connector_checkpoint.py` — single mechanical planning authority.
 
-For execution/bootstrap conflicts with older wording, the current `planning/PLANNER_MATERIALIZATION.json` and `docs/private/PLANNER_PROMPT.md` win. GitHub Actions must not perform Daily creative planning.
+Historical immutable pools/requests keep their historical recovery behavior. The rules below apply to **new planning**.
 
-## Daily contract
+## Current Daily contract
 
-Use `profile=daily` from the standalone checkpoint contract. The ranked pool contains exactly **36** candidates in frozen rank order. `normal_next_day` target is 24 canonical hourly slots; `same_day_catch_up` follows the current Daily rules and minimum lead-time contract.
+For a normal full day:
 
-## Background readiness and sequence contract
+```text
+planning_mode = normal_next_day
+target_count = 24
+candidate_count = 24
+reserve_candidate_count = 0
+publication = canonical 24 hourly slots
+```
 
-An empty/insufficient registry is `REPLENISH`, not a terminal planner failure. Run the shared bounded automatic procedure; this profile does not implement a separate retry engine. Resume a compatible unfinished session, persist every exact-source visual decision, and continue attempts automatically through `PASS`, a genuine infrastructure blocker, or `E_MEDIA_REPLENISH_EXHAUSTED`. Candidate rejection is not planner failure. On `PASS`, immediately resume this same Daily invocation and its canonical candidate/ranking pipeline.
+For `same_day_catch_up`, if supported by current `main`:
 
-New requests use schema v7 `concatenated_fit_to_short`:
+```text
+target_count = eligible remaining slot count
+candidate_count = target_count
+```
 
-- one primary ordered sequence and one backup ordered sequence;
-- each sequence has 2-3 distinct atomic clips; 3 preferred;
-- every chosen range is at least 60 seconds;
-- each sequence totals 210-300 seconds; 240 seconds preferred;
+There is no 36-candidate pool, reserve walk, or first-24-valid promotion for new planning. If one required candidate has a problem, repair/regenerate that candidate while preserving the other valid candidates.
+
+Global background readiness is **not** a planner prerequisite. Automatic planner replenishment is **disabled**. Selected-background hard validation remains mandatory. After successful immutable pool commit, ChatGPT/Work planning ends.
+
+## Exactly four passes
+
+### PASS 1 — contract discovery and minimal preflight
+
+1. Resolve current `main` through the connector and freeze `rules_source_sha`.
+2. Fetch the exact-SHA standalone checkpoint and resolve its `contract` output.
+3. Resolve current planning mode, plan date, publication-slot contract, eligible slot count, `target_count`, `candidate_count=target_count`, schemas, identities, story/diversity rules, voice rules, selected-background rules, canonical fallback category, and checkpoint/evidence schema.
+4. Inspect only targeted recent story history, analytics/editorial evidence, recent background reuse, identity state, existing-plan/idempotency state, publication-slot evidence, and registry entries needed for actual candidate backgrounds.
+5. Do **not** run global media readiness, inspect replenishment sessions, start replenishment, or manually duplicate checkpoint validation.
+
+### PASS 2 — creative authorship and semantic review
+
+Create exactly `target_count` production-quality candidates. For a normal day this is **24**. ChatGPT owns semantic/editorial judgment: originality, near-duplicate avoidance, hook, exposition, stakes, escalation, payoff, title truth/attractiveness, spoken flow, voice suitability, punchline semantics, background suitability/readability, recent media reuse, and batch diversity across conflict/category/title/ending patterns.
+
+Each pool candidate includes:
+
+- complete immutable production request;
+- one `background_category`;
+- primary ordered background sequence;
+- backup ordered background sequence;
+- exact logical clip IDs, order, segment starts and segment durations.
+
+For schema-v7 `concatenated_fit_to_short`:
+
+- primary and backup use the candidate's **same** category;
+- 2–3 distinct clips per sequence, 3 preferred;
 - primary and backup are disjoint;
-- freeze exact logical IDs, order, segment start and duration;
-- do not freeze playback rate; runtime derives one overall rate after actual TTS duration;
-- never repeat a clip to fill time and never intentionally loop;
-- preserve Daily diversity and anti-repetition requirements across the batch.
+- no intentional looping;
+- do not author/freeze playback rate; runtime derives it after actual narration/timeline duration.
 
-The connector-evidence JSON includes only selected IDs with current exact-SHA eligibility/duration evidence; the full registry is not a required local checkpoint input.
+Choose the best-fitting category first. If it cannot form hard-valid primary and backup sequences, try another suitable eligible category, then the canonical fallback category reported by the checkpoint contract. Fallback never relaxes hard validity.
 
-## Mandatory checkpoint
+If candidate 17 is weak or invalid, repair/regenerate candidate 17 only. Preserve unaffected good candidates. Normal recoverable story/title/voice/background failures do not terminate the planner.
 
-After complete Daily authorship/ranking, run:
+### PASS 3 — one canonical deterministic checkpoint
+
+Stage only:
+
+- exact-SHA `connector_checkpoint.py`;
+- the authored pool JSON;
+- small connector evidence JSON for drift, uniqueness, publication/identity facts as required, and the exact selected background IDs.
+
+Do not copy the full background registry locally and do not include global readiness/replenishment state.
+
+Run:
 
 ```bash
 python connector_checkpoint.py validate \
@@ -48,6 +92,34 @@ python connector_checkpoint.py validate \
   --evidence /tmp/wacky-daily-connector-evidence.json
 ```
 
-All 36 candidates must `PASS` and `commit_allowed` must be true. Re-query current `main` immediately before the final run; evidence `drift.status=PASS` is valid only when `current_main_sha == rules_source_sha` after any required refresh. Final pool bytes must exactly match `draft_sha256`.
+Normal full-day success requires:
 
-Commit only the allowed immutable Daily pool artifact through the authorized GitHub connector/API. Existing private workflows then validate/promote mechanically and dispatch the public stateless runtime. ChatGPT/Work does not directly render/TTS/upload.
+```text
+expected_candidates = 24
+valid_candidates = 24
+failed_candidates = 0
+commit_allowed = true
+```
+
+Catch-up success requires `expected_candidates = valid_candidates = target_count` and zero failures.
+
+A checkpoint failure is a repair instruction. Read the exact diagnostic, repair only affected authored input/selected assets, rebuild draft bytes if changed, refresh evidence if needed, and rerun the **same** checkpoint. Never weaken validation to obtain PASS.
+
+### PASS 4 — drift check, immutable commit, end
+
+Immediately before commit:
+
+1. Re-query current `main`.
+2. If `current_main_sha != rules_source_sha`, classify drift, refresh only affected rules/evidence, repair only if required, and rerun the checkpoint.
+3. Require the latest checkpoint to be `PASS`, `commit_allowed=true`, and every required candidate valid.
+4. Require final pool bytes to match `draft_sha256` exactly.
+5. Commit exactly one immutable Daily planning-pool artifact through the authorized connector/API using the repository commit convention.
+6. Confirm only that the commit succeeded.
+
+Then **CHATGPT / WORK PLANNING ENDS**.
+
+Do not poll private Production, public runtime, rendering, TTS, alignment, YouTube upload, or YouTube verification after pool commit. Those are downstream automation responsibilities and may be inspected only as a separate explicit task.
+
+## Genuine terminal blockers before commit
+
+Terminate only after safe recovery is exhausted and one of these is genuinely true: the authoritative contract cannot be accessed; the canonical checkpoint cannot be staged/executed; no hard-valid selected background configuration exists after suitable alternatives and canonical fallback are exhausted; the repository cannot accept the immutable commit after safe drift/conflict retry; or a current invariant makes production impossible.
