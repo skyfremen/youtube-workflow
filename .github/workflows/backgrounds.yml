@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Resolve immutable request or approval
         id: target
@@ -66,6 +66,22 @@ jobs:
           echo "mode=${mode}" >> "${GITHUB_OUTPUT}"
           echo "review_id=${review_id}" >> "${GITHUB_OUTPUT}"
 
+      - name: Verify immutable input file
+        shell: bash
+        run: |
+          set -euo pipefail
+          path="${{ steps.target.outputs.path }}"
+          mapfile -t commits < <(git log --format='%H' -- "${path}")
+          if [[ "${#commits[@]}" -ne 1 ]]; then
+            echo "Background request/approval must be immutable; ${path} has ${#commits[@]} commits" >&2
+            exit 1
+          fi
+          status="$(git show --format= --name-status "${commits[0]}" -- "${path}" | awk 'NF {print $1; exit}')"
+          if [[ "${status}" != "A" ]]; then
+            echo "Background request/approval was not introduced as a new immutable file: ${path}" >&2
+            exit 1
+          fi
+
       - name: Validate clean registry
         run: python background_seed.py validate-registry
 
@@ -104,6 +120,27 @@ jobs:
           git commit -m "[backgrounds] persist review ${review_id}"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Verify immutable review manifest
+        if: steps.target.outputs.mode == 'promote'
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="content/background-reviews/${{ steps.target.outputs.review_id }}/manifest.json"
+          if [[ ! -f "${manifest}" ]]; then
+            echo "Missing matching review manifest: ${manifest}" >&2
+            exit 1
+          fi
+          mapfile -t commits < <(git log --format='%H' -- "${manifest}")
+          if [[ "${#commits[@]}" -ne 1 ]]; then
+            echo "Review manifest must be immutable; ${manifest} has ${#commits[@]} commits" >&2
+            exit 1
+          fi
+          status="$(git show --format= --name-status "${commits[0]}" -- "${manifest}" | awk 'NF {print $1; exit}')"
+          if [[ "${status}" != "A" ]]; then
+            echo "Review manifest was not introduced as a new immutable file" >&2
+            exit 1
+          fi
 
       - name: Promote approved candidates
         if: steps.target.outputs.mode == 'promote'
