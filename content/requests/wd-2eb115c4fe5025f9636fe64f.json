@@ -1,0 +1,77 @@
+{
+  "background": {
+    "mode": "concatenated_fit_to_short",
+    "segments": [
+      {
+        "background_id": "satisfying-px-9356370",
+        "segment_duration_seconds": 74.0,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "satisfying-px-32719027",
+        "segment_duration_seconds": 64.0,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "satisfying-px-33721127",
+        "segment_duration_seconds": 100.0,
+        "segment_start_seconds": 0.0
+      }
+    ]
+  },
+  "channel": {
+    "handle": "@WACKYDRAMAS",
+    "name": "Wacky Dramas"
+  },
+  "content_id": "wd-2eb115c4fe5025f9636fe64f",
+  "narration": {
+    "engine": "kokoro",
+    "speed": 1.75,
+    "voice": "af_bella"
+  },
+  "render": {
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "background_music": false,
+    "fps": 30,
+    "h264_profile": "high",
+    "height": 1920,
+    "pixel_format": "yuv420p",
+    "video_codec": "h264",
+    "width": 1080
+  },
+  "request_version": 1,
+  "source_draft_id": "draft-20260914T131800-7c4e91ad",
+  "story": {
+    "card_emojis": [
+      "😳",
+      "💬",
+      "🔥",
+      "👀"
+    ],
+    "category": "WORK",
+    "conflict": "Her manager publicly claims ownership of three months of her work while expecting her to quietly make him look competent.",
+    "hook": "My manager deleted my name from the project deck, then invited me to the executive demo so I could answer the questions he couldn't.",
+    "lead_gender": "female",
+    "premise": "A manager removes a developer's name from her own automation project, then brings her into the executive demo only to answer the technical questions he cannot.",
+    "punchline": "The audit trail had receipts.",
+    "script": "For three months, I had been building an automation that replaced a painfully manual process our team ran every morning. I designed the flow, wrote the code, tested the edge cases, fixed the production issues, and documented the whole thing. My manager, Adrian, mostly asked me for status updates.\n\nThe day before the executive demo, he sent me the final slides. My name was nowhere on them. The title page said, 'Designed and delivered by Adrian.' When I asked about it, he replied, 'Leadership prefers one accountable owner. Don't worry, everyone knows it was a team effort.'\n\nThen he added me to the meeting anyway. His message said, 'Please stay available for technical questions.'\n\nSo I did exactly that.\n\nAdrian opened the demo by talking about how he had identified the problem, designed the approach, and driven the implementation. I stayed quiet. The automation worked perfectly, which somehow made his speech even more confident.\n\nThen the technology director started asking questions. Why had we chosen one integration method over another? How did retries work? What happened if the downstream system was unavailable? Adrian answered the first question vaguely, guessed the second one, and got the third one wrong.\n\nEach time, he turned to me and said, 'Maybe Mira can add some color.'\n\nI answered plainly. No sarcasm. No dramatic correction. Just the actual design decisions and the reasons behind them. After the fourth answer, the director looked at me and asked, 'Were you the engineer who implemented this?'\n\nBefore I could reply, Adrian jumped in. 'It was really a collaborative effort.'\n\nThe director nodded and asked to see the deployment approval record because he wanted to reuse our controls for another project. Adrian opened it on screen.\n\nThere it was: my name on the implementation, my name on every deployment, my comments on every failed test, my fixes, my approvals, and Adrian's name appearing mostly beside status acknowledgements.\n\nNobody said anything for about five seconds.\n\nThen the director smiled at me and said, 'Mira, can you present this architecture at next week's engineering forum?'\n\nAdrian closed the record very quickly.\n\nThe audit trail had receipts.",
+    "story_tone": "dramatic_comedy",
+    "twist": "The director asks for the deployment approval record, which automatically shows exactly who built, reviewed, and shipped every change."
+  },
+  "visibility": "public",
+  "youtube": {
+    "category_id": "24",
+    "description": "He removed her name from the presentation and claimed the project as his own. Then one routine executive question put the entire history on screen.",
+    "hashtags": [
+      "#WackyDramas",
+      "#Shorts"
+    ],
+    "made_for_kids": false,
+    "tags": [
+      "Wacky Dramas",
+      "Shorts"
+    ],
+    "title": "My Manager Took Credit for My Project—Then Opened the Audit Log"
+  }
+}
