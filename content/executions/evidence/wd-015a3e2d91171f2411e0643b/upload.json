@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-015a3e2d91171f2411e0643b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:27:24.951468Z",
+  "request_blob_sha": "5ac5be743ce0a18d013ff9f5d4deefb6a79f0965",
+  "request_path": "content/requests/wd-015a3e2d91171f2411e0643b.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She said the restaurant had canceled our parents' anniversary dinner. The host had a very different explanation.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c88266055b5873211d37",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Stole Our Parents' Anniversary Reservation"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951997523"
+  },
+  "youtube_video_id": "vSefw_6ELaw"
+}
