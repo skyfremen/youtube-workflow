@@ -35,6 +35,11 @@ class VError(ValueError):
         self.code,self.field,self.observed,self.required,self.repairable=code,field,observed,required,repairable
         super().__init__(f"{code} field={field} observed={observed!r} required={required}")
 
+class DraftValidationError(VError):
+    def __init__(self,violations):
+        self.violations=list(violations)
+        super().__init__("DRAFT_VALIDATION_FAILED","winners",f"violations={len(self.violations)}","all winners satisfy planner-repairable constraints",True)
+
 def pretty(x): return (json.dumps(x,ensure_ascii=False,sort_keys=True,indent=2)+"\n").encode()
 def canonical(x): return (json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode()
 def read(p): return json.loads(Path(p).read_text(encoding="utf-8"))
@@ -138,6 +143,24 @@ def normalize_draft(x):
     winners=x.get("winners")
     if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
     return {"winners":[normalize_winner(w,i) for i,w in enumerate(winners)]}
+
+def collect_draft_violations(d):
+    out=[]; required=("premise","category","conflict","twist","hook","narration","title","description")
+    for index,w in enumerate(d["winners"]):
+        title=clean(w.get("title"))
+        for field in required:
+            value=clean(w.get(field))
+            if not value:
+                out.append({"winner_index":index,"winner_title":title,"error_code":"MISSING_TEXT","field":f"winners[{index}].{field}","observed_value":value,"required_constraint":"non-empty text"})
+        hook=clean(w.get("hook")); narration=clean(w.get("narration"))
+        if hook and narration:
+            secs=estimate(hook,narration)
+            if secs<MIN_NARR or secs>MAX_NARR:
+                out.append({"winner_index":index,"winner_title":title,"error_code":"NARRATION_TOO_SHORT" if secs<MIN_NARR else "NARRATION_TOO_LONG","field":f"winners[{index}].narration","observed_value":f"estimated_seconds={secs}","required_constraint":f"{MIN_NARR:g}-{MAX_NARR:g}s"})
+        if title and len(title)>100:
+            out.append({"winner_index":index,"winner_title":title,"error_code":"TITLE_TOO_LONG","field":f"winners[{index}].title","observed_value":len(title),"required_constraint":"<=100"})
+    return out
+
 def bg_contract(category,r,seed):
     m=amap(r); seg=[]
     for bid in select_background_ids(category,r,seed):
@@ -267,11 +290,16 @@ def validate_batch(x,path=None,r=None):
     if len(set(slots))!=len(slots): raise VError("DUPLICATE_BATCH_SLOT","items",slots,"unique slots within this batch",False)
     return x
 
-def fail(did,e): write(FAILS/(did+".json"),{"draft_id":did,"error_code":e.code,"field":e.field,"observed_value":e.observed,"required_constraint":e.required,"repairable":e.repairable})
+def fail(did,e):
+    payload={"draft_id":did,"error_code":e.code,"field":e.field,"observed_value":e.observed,"required_constraint":e.required,"repairable":e.repairable}
+    if isinstance(e,DraftValidationError): payload["violations"]=e.violations
+    write(FAILS/(did+".json"),payload)
 def finalize(path):
     path=Path(path).resolve(); did=draft_id(path)
     try:
-        raw=read(path); d=normalize_draft(raw); r=registry(); slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); target=REQS/(q["request_id"]+".json"); validate_batch(q,target,r)
+        raw=read(path); d=normalize_draft(raw); r=registry(); violations=collect_draft_violations(d)
+        if violations: raise DraftValidationError(violations)
+        slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); target=REQS/(q["request_id"]+".json"); validate_batch(q,target,r)
     except VError as e: fail(did,e); raise
     rawq=pretty(q)
     if target.exists() and target.read_bytes()!=rawq: raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(rawq),False)
@@ -338,6 +366,7 @@ def self_test():
     workflows={p.name for p in (ROOT/".github/workflows").glob("*.yml")}; ok("15 workflow set",workflows=={"finalize-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
     ok("16 daily test count","DAILY_WINNER_COUNT = 3" in (ROOT/"DAILY.md").read_text(encoding="utf-8")); ok("17 no old adhoc pipeline",not (ROOT/"adhoc.py").exists()); ok("18 no old adhoc workflow",not (ROOT/".github/workflows/adhoc-draft.yml").exists())
     source=Path(__file__).read_text(encoding="utf-8"); legacy_mode_key="planning_"+"mode"; ok("19 mode agnostic",legacy_mode_key not in source)
+    short=dict(d["winners"][0]); short["narration"]="too short"; violations=collect_draft_violations({"winners":[short,dict(short)]}); ok("20 aggregate draft violations",[v["winner_index"] for v in violations if v["error_code"]=="NARRATION_TOO_SHORT"]==[0,1])
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
