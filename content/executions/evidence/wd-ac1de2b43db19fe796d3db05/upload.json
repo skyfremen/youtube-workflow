@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ac1de2b43db19fe796d3db05",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:10:10.442192Z",
+  "request_blob_sha": "e399b4900b4221f385bf3965e4df589169225cf5",
+  "request_path": "content/requests/wd-ac1de2b43db19fe796d3db05.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A coworker's heroic last-minute rescues look very different once IT opens the calendar audit log.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-34d6b801758da1905f8c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Kept Saving the Meetings He Cancelled"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004714064"
+  },
+  "youtube_video_id": "0XSmqVZzdRY"
+}
