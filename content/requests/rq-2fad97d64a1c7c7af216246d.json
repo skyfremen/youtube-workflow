@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-32024102",
+            "segment_duration_seconds": 87.921,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-13575058",
+            "segment_duration_seconds": 65.642,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-2651544",
+            "segment_duration_seconds": 73.748,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-46311b8b94f7acf4b12f22d9",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-15T06:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260915T130214-fa5a8e53",
+      "story": {
+        "card_emojis": [
+          "🤨",
+          "💔",
+          "📱",
+          "🤯"
+        ],
+        "category": "relationship betrayal",
+        "conflict": "Her boyfriend turns a reasonable question about a repeated Thursday-night location into an argument about trust and privacy, convincing friends she is obsessively tracking him while he continues visiting the restaurant in secret.",
+        "hook": "My boyfriend called me controlling for asking why he was at the same restaurant every Thursday. Then the restaurant called me.",
+        "lead_gender": "female",
+        "premise": "A woman questions why her boyfriend appears at the same restaurant every Thursday, gets accused of being controlling when he disables location sharing, then discovers he has been secretly dating someone else because he kept using her restaurant rewards account on every visit.",
+        "punchline": "You turned off your location, but you kept using my rewards account.",
+        "script": "For three months, Thursday was supposedly my boyfriend's boring late-office night. He would text around six, say the team was buried in work, and come home just before eleven smelling like expensive cologne and mint gum. I barely thought about it until I opened our shared location app one Thursday to check whether he was still at work before ordering dinner. His dot was across town at a restaurant called Marlow's.\n\nI asked him about it when he got home. He didn't hesitate. He said his team had gone there after work and accused me of checking his location like a probation officer. I apologized, because honestly, one dinner was not evidence of anything.\n\nThe next Thursday, his dot was at Marlow's again. The Thursday after that, same place. When I mentioned the pattern, he exploded. He said I had trust issues, told two of our friends I was monitoring him, and disabled location sharing in front of me like he was making some grand statement about boundaries.\n\nFor a week, I actually wondered whether I had become the problem. Then Marlow's called me.\n\nThe manager said my rewards account had enough points for a complimentary tasting menu, but they wanted to confirm a duplicate visit because the same phone number had been entered twice on one evening. I told her I hadn't eaten there in months. She paused and asked whether someone else in my household might be using my number.\n\nThat was when I opened the restaurant app. My boyfriend had been typing my phone number into the rewards terminal every Thursday. There were timestamps, table numbers, and itemized receipts. Two cocktails every visit. Two entrees. One shared dessert. Always around seven thirty.\n\nI didn't confront him immediately. I booked the free tasting menu for the next Thursday and asked my sister to come with me. We arrived at seven fifteen. At seven forty, he walked in holding another woman's hand.\n\nHe froze. She froze. I just opened the rewards app and turned my phone toward him.\n\nYou turned off your location, but you kept using my rewards account.\n\nThe other woman looked at him and asked, very quietly, whether I was his girlfriend. He had apparently told her he was single. She left before the appetizers arrived. I stayed, ate the free tasting menu with my sister, and changed the password on every account he had access to before dessert.",
+        "story_tone": "dramatic",
+        "twist": "After he disables location sharing, the restaurant contacts her rewards account about repeated Thursday visits, revealing that he kept entering her phone number for points while taking another woman there."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "He said I was controlling for noticing the same Thursday-night restaurant. Then his own habit of collecting my reward points exposed exactly what he was hiding.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "He Turned Off His Location. He Forgot My Rewards Account."
+      }
+    }
+  ],
+  "request_id": "rq-2fad97d64a1c7c7af216246d",
+  "request_version": 2,
+  "source_draft_id": "draft-20260915T130214-fa5a8e53"
+}
