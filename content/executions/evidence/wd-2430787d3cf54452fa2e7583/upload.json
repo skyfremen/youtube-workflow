@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2430787d3cf54452fa2e7583",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:28:14.451414Z",
+  "request_blob_sha": "004f6609e7257f374a2d2c620b885b3d45957fe5",
+  "request_path": "content/requests/wd-2430787d3cf54452fa2e7583.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The buyer demanded a refund for a 'defective' laptop, but one number on the bottom changed the whole story.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ced6ada69eeabdb3ccf5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Returned a Different Laptop"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951981336"
+  },
+  "youtube_video_id": "CUql4dI7lIA"
+}
