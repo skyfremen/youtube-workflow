@@ -31,10 +31,11 @@ Use this only when **Finalize Draft** creates `content/failures/<draft_id>.json`
 
 1. Read only the failed draft and matching failure file.
 2. If `repairable` is false, stop and report the failure.
-3. Otherwise change only the winner(s) needed to satisfy the reported constraint; preserve the rest of the batch.
-4. Write a new immutable draft containing the complete winners array and set `supersedes_draft_id` to the immediately failed draft ID.
-5. Recheck **Finalize Draft**.
-6. Create at most 3 repair drafts after the initial draft.
+3. If the failure contains `violations[]`, repair every listed violation in one replacement draft. Use each violation's zero-based `winner_index` to identify the exact winner; `winner_title` is a human-readable cross-check. Change only those listed winners and preserve every unlisted winner exactly.
+4. If `violations[]` is absent, follow the single top-level `field`, `observed_value`, and `required_constraint` exactly. Do not guess which winner failed.
+5. Write a new immutable draft containing the complete winners array and set `supersedes_draft_id` to the immediately failed draft ID.
+6. Recheck **Finalize Draft**.
+7. Create at most 3 repair drafts after the initial draft.
 
 ## Winner rules
 
