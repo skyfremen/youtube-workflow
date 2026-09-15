@@ -1,0 +1,34 @@
+{
+  "draft_id": "draft-20260916T015900-b4e82c19",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=3",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[4].narration",
+      "observed_value": "estimated_seconds=119.0",
+      "required_constraint": "120-178s",
+      "winner_index": 4,
+      "winner_title": "I Found My Stolen Package for Sale Online"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[5].narration",
+      "observed_value": "estimated_seconds=119.67",
+      "required_constraint": "120-178s",
+      "winner_index": 5,
+      "winner_title": "My Friend Used My Netflix History to Impress a Date"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[10].narration",
+      "observed_value": "estimated_seconds=117.0",
+      "required_constraint": "120-178s",
+      "winner_index": 10,
+      "winner_title": "He Kept Saving the Meetings He Cancelled"
+    }
+  ]
+}
