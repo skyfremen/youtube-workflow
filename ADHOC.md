@@ -1,4 +1,4 @@
-# Wacky Dramas Ad-hoc V1
+# Wacky Dramas Ad-hoc
 
 You are the creative planner. Deterministic code owns everything mechanical after your draft.
 
@@ -7,100 +7,80 @@ You are the creative planner. Deterministic code owns everything mechanical afte
 1. Read `content/context.json`.
 2. Generate about 10-15 lightweight premises internally.
 3. Compare them with `recent_story_cards`; reject semantic duplicates.
-4. Rank the strongest candidates internally and choose one winner.
-5. Fully author only that winner; persist only the winner, not runner-up ideas.
-6. Choose exactly **4 semantic emoji cues** for the winner.
-7. Choose exactly **1** `background_category` from `background_categories` for semantic fit. Do not choose or invent individual background IDs.
-8. Write exactly one new immutable file under `content/drafts/`.
-9. Check the **Finalize Ad-hoc Draft** workflow run triggered by the exact commit that created that draft.
-10. If finalization succeeds, stop. Do not inspect downstream production, code, workflows, history, the full background registry, old requests/results, or runtime logs.
+4. Rank the strongest candidates internally and choose exactly 1 winner.
+5. Fully author only that winner; persist no runner-up ideas.
+6. Choose exactly 4 semantic emoji cues.
+7. Choose exactly 1 `background_category` from `background_categories` for semantic fit. Do not choose individual background IDs.
+8. Write exactly one new immutable file under `content/drafts/` using the array-only draft contract below. Ad-hoc must put exactly 1 winner inside `winners[]`.
+9. Check the **Finalize Draft** workflow triggered by that exact draft commit.
+10. If finalization succeeds, stop. Do not manually perform downstream production.
 
 Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
 
 ## Repair path
 
-Use this path only when the **Finalize Ad-hoc Draft** run for the draft you just created fails and deterministic finalization produced `content/failures/<draft_id>.json`.
+Use this only when the **Finalize Draft** run for the draft you just created fails and deterministic finalization produced `content/failures/<draft_id>.json`.
 
 1. Stay in the same ChatGPT invocation.
-2. Read only:
-   - the failed `content/drafts/<draft_id>.json`
-   - its matching `content/failures/<draft_id>.json`
-3. Make the minimum creative correction required by the failure record. Do not redesign unrelated parts of the story unless the reported constraint requires it.
-4. Write exactly one **new immutable** draft under `content/drafts/`.
-5. Set root field `supersedes_draft_id` to the immediately failed draft ID.
-6. Check the **Finalize Ad-hoc Draft** workflow run triggered by that replacement draft's exact commit.
-7. If finalization succeeds, stop.
-8. If deterministic finalization fails again, repeat this repair path.
+2. Read only the failed draft and its matching failure file.
+3. If `repairable` is false, stop and report the failure. Do not create a repair draft.
+4. Otherwise make the minimum creative correction required.
+5. Write one new immutable draft with the same complete `winners[]` array.
+6. Set root field `supersedes_draft_id` to the immediately failed draft ID.
+7. Check **Finalize Draft** for the replacement commit.
+8. Repeat only if needed, up to 3 repair drafts after the initial draft.
 
-A normal run may create at most **3 repair drafts** after the initial draft. After the third repair draft fails validation, stop and report the final precise failure. Never overwrite or delete any failed draft during repair.
-
-If the workflow fails without a matching deterministic draft failure record, do not guess, do not create a repair draft, and do not manually perform downstream production. Stop and report that the failure is outside the creative repair path.
-
-During repair, do not inspect `adhoc.py`, workflow YAML, repository history, the full background registry, old requests/results, production-runtime files, or runtime logs unless the normal repair path cannot proceed from the precise failure record.
+If workflow failure occurs without a matching deterministic failure file, stop and report it. Do not guess or manually perform downstream production.
 
 ## Creative rules
 
 - Hook immediately with a clear, compelling situation.
 - Use a relatable conflict, clear escalation, and a satisfying payoff/reversal.
-- Use one narrator.
+- Use one narrator per winner.
 - Aim for roughly 120-175 seconds of spoken content.
-- The `narration` is the story body after the opening hook. Normal planning should not repeat the hook at its start; deterministic code strips one exact repeated hook prefix if present.
-- Normal planning should provide `payoff` as a short exact phrase that appears verbatim in `narration` so caption emphasis can align it. If it is missing or does not appear in the normalized narration, deterministic code uses the final narration sentence as the payoff.
-- Normal planning should set `lead_gender` to `female` or `male`. Missing, empty, or invalid values default to `female`.
-- Normal planning should set `story_tone` to one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`. Missing, empty, or unsupported values default to `natural`.
+- `narration` is the story body after the opening hook. Do not deliberately repeat the hook at the start; deterministic code strips one exact repeated prefix if present.
+- `payoff` should be a short exact phrase that appears verbatim in `narration`. If missing or unmatched, deterministic code uses the final narration sentence.
+- `lead_gender` should be `female` or `male`; invalid/missing values default to `female`.
+- `story_tone` should be one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`; invalid/missing values default to `natural`.
 - No background music.
-- `content/context.json` exposes only background categories that currently contain at least three usable promoted assets. Choose one supplied `background_category` for semantic fit.
-- Deterministic code selects exactly three distinct assets from that same category. Selection is seeded by the final content identity so retries are stable while different stories normally receive different clips.
-- If `background_category` is missing, malformed, unknown, or no longer has three usable assets when the draft is finalized, deterministic code falls back to the viable category with the largest current inventory, using alphabetical order as the tie-break. A background fallback never bypasses registry validity rules.
+- Choose one supplied `background_category`. Deterministic code selects exactly three distinct approved assets from that category. Invalid/unavailable categories fall back to the viable category with the largest inventory, alphabetical tie-break.
 
 ## Emoji cues
 
-Choose exactly four semantic cues that match four meaningful beats of the winning story. Use cue words, not raw emoji characters.
-
-Supported cues are:
+Choose exactly four semantic cue words. Supported cues:
 
 `shock`, `surprise`, `argument`, `anger`, `betrayal`, `suspicion`, `secret`, `evidence`, `money`, `revenge`, `embarrassment`, `victory`, `funny`, `romance`, `panic`, `confusion`, `disbelief`, `warning`, `celebration`, `awkward`.
 
-Deterministic code maps the cues to exactly four production emojis. Emoji selection is non-blocking: if `emoji_cues` is missing, malformed, duplicated after mapping, or contains an unsupported cue, production uses the safe default set `😳`, `💬`, `🔥`, `👀` instead of failing the draft.
+Invalid/missing emoji cues are non-blocking and fall back to `😳`, `💬`, `🔥`, `👀`.
 
 ## Draft contract
 
-There is no draft schema-version field. Do not write `draft_version`.
+This is a hard cutover. The singular root field `winner` is invalid. Only `winners[]` is accepted going forward. There is no `draft_version` and no `planning_mode`.
 
-The creative fields that must ultimately be valid in the final request are `premise`, `category`, `conflict`, `twist`, `hook`, `narration`, `title`, and `description`. Deterministic code trims these values, and descriptions longer than 5000 UTF-8 bytes are safely truncated before final validation.
-
-`lead_gender`, `story_tone`, `payoff`, `emoji_cues`, and `background_category` have deterministic fallback behavior described above. Normal planning should still provide high-quality values for them whenever possible.
-
-Write JSON with this normal shape:
+Ad-hoc writes exactly 1 winner:
 
 ```json
 {
-  "winner": {
-    "premise": "...",
-    "category": "...",
-    "conflict": "...",
-    "twist": "...",
-    "hook": "...",
-    "narration": "...",
-    "title": "...",
-    "description": "...",
-    "lead_gender": "female",
-    "story_tone": "dramatic",
-    "payoff": "...",
-    "emoji_cues": ["shock", "evidence", "panic", "victory"],
-    "background_category": "crafting"
-  }
+  "winners": [
+    {
+      "premise": "...",
+      "category": "...",
+      "conflict": "...",
+      "twist": "...",
+      "hook": "...",
+      "narration": "...",
+      "title": "...",
+      "description": "...",
+      "lead_gender": "female",
+      "story_tone": "dramatic",
+      "payoff": "...",
+      "emoji_cues": ["shock", "evidence", "panic", "victory"],
+      "background_category": "crafting"
+    }
+  ]
 }
 ```
 
-Unknown root fields and unknown `winner` fields are ignored by deterministic normalization. Do not deliberately add unused metadata.
+For repair, the root may additionally contain `"supersedes_draft_id": "draft-..."`.
 
-Do not persist rejected or runner-up ideas. The brainstorming, duplicate comparison, ranking, and selection process stays inside the planning invocation; GitHub receives only the production winner.
-
-For a repair/revision, the root may additionally contain:
-
-```json
-"supersedes_draft_id": "draft-..."
-```
-
-Do not invent IDs, timestamps, TTS voices, raw emojis, media URLs, render settings, execution state, or publication schedules inside the draft.
+Do not invent IDs, timestamps, TTS voices, raw production emojis, media URLs, render settings, execution state, publication dates, or publication slots. GitHub allocates publication slots after the draft is finalized.
