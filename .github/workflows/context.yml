@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'data/backgrounds.json'
-      - 'adhoc.py'
+      - 'pipeline.py'
   workflow_dispatch:
 
 permissions:
@@ -24,10 +24,10 @@ jobs:
           fetch-depth: 1
 
       - name: Rebuild compact context
-        run: python adhoc.py context
+        run: python pipeline.py context
 
       - name: Deterministic self-test
-        run: python adhoc.py self-test
+        run: python pipeline.py self-test
 
       - name: Commit derived context
         shell: bash
