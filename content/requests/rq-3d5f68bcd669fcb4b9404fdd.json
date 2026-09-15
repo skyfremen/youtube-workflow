@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-33585547",
+            "segment_duration_seconds": 62.262,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-11067515",
+            "segment_duration_seconds": 60.792,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-39192747",
+            "segment_duration_seconds": 60.967,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-900c22d9856ba75f786c28e2",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-15T08:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260915T154800-6f3a9c21",
+      "story": {
+        "card_emojis": [
+          "😳",
+          "🤨",
+          "📱",
+          "💔"
+        ],
+        "category": "friends",
+        "conflict": "The narrator sees repeated unfamiliar smart-lock entries while away, but her best friend insists she is imagining a technical problem and says nobody else has been inside the apartment.",
+        "hook": "I left my best friend one key to feed my dog for four days. On night two, my smart lock said six strangers had entered my apartment.",
+        "lead_gender": "female",
+        "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
+        "punchline": "You weren't dog-sitting. You were running an Airbnb out of my apartment.",
+        "script": "I was two cities away when the first alert appeared: front door unlocked, 8:12 p.m. I texted Maya, because she was the only person with a temporary code. She replied with a photo of my dog and said, 'Yep, just me.' Then my lock logged another entry at 8:19. And another at 8:26. By 9 p.m., six different entries had appeared.\n\nI called her. Maya laughed and said the lock was probably glitching because she had opened the door a few times while carrying dog food upstairs. That explanation almost worked until the next morning, when my camera sent a motion alert showing a man I had never seen wheeling a suitcase past my door.\n\nI sent her the screenshot. She said he must be visiting the neighbor across the hall. Then she told me I was ruining my own vacation by obsessing over notifications.\n\nSo I stopped arguing and checked the smart-lock history. Maya's code had been used at 11:03 a.m., then deleted. Fifteen minutes later, a brand-new guest code appeared. I never created it. That night, the same thing happened again: Maya entered, another code appeared, and strangers came in carrying backpacks.\n\nI called my building manager and asked him not to confront anyone yet. I wanted to understand what was happening before I accused my best friend of something insane.\n\nThe answer arrived the next morning when my phone rang from an unknown number. A nervous woman said, 'Hi, we're staying in your apartment, and the Wi-Fi password on the listing doesn't work. Your number is on the emergency card on the fridge.'\n\nI asked her what listing. She sent me the link. There was my sofa. My kitchen. My bedroom. Even my dog's bed had been cropped out of the photos. The host name was Maya. She had booked three groups into my apartment over four days while telling me she was doing me a favor.\n\nI called her again. This time I didn't mention the lock. I just asked, 'How's my dog?'\n\nShe said, 'Sleeping peacefully on your couch.'\n\nI looked at the live camera image. Maya wasn't there. Three tourists were eating takeout on that couch.\n\nI sent her the rental listing and the guest's message. She went silent for so long I could hear traffic through her phone. Then she said she only did it because she needed money and planned to clean everything before I got home.\n\nI told her, 'You weren't dog-sitting. You were running an Airbnb out of my apartment.'\n\nMy building manager removed the guests, the platform took down the listing, and Maya had to refund every booking. I changed the lock code before my flight home. She still insists she was going to share the money with me. Somehow, she never mentioned that part until after she got caught.",
+        "story_tone": "dramatic",
+        "twist": "A confused rental guest calls the narrator using the emergency contact card on the fridge, proving the best friend rented out the apartment and had been entering only to reset it between guests."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "She offered to feed my dog while I was away. Then my smart lock started showing strangers entering my apartment—and one of them called me about the Wi-Fi.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Best Friend Rented Out My Apartment While I Was Away"
+      }
+    }
+  ],
+  "request_id": "rq-3d5f68bcd669fcb4b9404fdd",
+  "request_version": 2,
+  "source_draft_id": "draft-20260915T154800-6f3a9c21"
+}
