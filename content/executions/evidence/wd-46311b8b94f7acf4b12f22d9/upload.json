@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-46311b8b94f7acf4b12f22d9",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T05:12:56.006194Z",
+  "request_blob_sha": "c564356099977b495cb83d6e67f14c9cfddd3c1d",
+  "request_path": "content/requests/wd-46311b8b94f7acf4b12f22d9.json",
+  "source_commit_sha": "fa507e2b77e51debe53844cf4dde560e87e8bb73",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He said I was controlling for noticing the same Thursday-night restaurant. Then his own habit of collecting my reward points exposed exactly what he was hiding.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-02e272e965d727edddfa",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Turned Off His Location. He Forgot My Rewards Account."
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "07126a4e0450c23c7a63e2381c8fdb7dc2841514",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34931199004"
+  },
+  "youtube_video_id": "iNkv-f9TMdU"
+}
