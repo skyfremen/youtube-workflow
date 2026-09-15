@@ -163,7 +163,7 @@ jobs:
           set -euo pipefail
           python background_seed_rejections.py promote --approval "${{ steps.target.outputs.path }}"
           python background_seed_rejections.py validate
-          python adhoc.py context
+          python pipeline.py context
 
       - name: Commit approved inventory, rejection registry, and context
         if: steps.target.outputs.mode == 'promote'
