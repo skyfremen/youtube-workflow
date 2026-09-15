@@ -24,11 +24,13 @@ Use this only when the **Finalize Draft** run for the draft you just created fai
 1. Stay in the same ChatGPT invocation.
 2. Read only the failed draft and its matching failure file.
 3. If `repairable` is false, stop and report the failure. Do not create a repair draft.
-4. Otherwise make the minimum creative correction required.
-5. Write one new immutable draft with the same complete `winners[]` array.
-6. Set root field `supersedes_draft_id` to the immediately failed draft ID.
-7. Check **Finalize Draft** for the replacement commit.
-8. Repeat only if needed, up to 3 repair drafts after the initial draft.
+4. If the failure contains `violations[]`, repair every listed violation in one replacement draft. Use each violation's zero-based `winner_index` to identify the exact winner; `winner_title` is a human-readable cross-check. Ad-hoc has one winner, so the index should normally be `0`.
+5. If `violations[]` is absent, follow the single top-level `field`, `observed_value`, and `required_constraint` exactly. Do not guess beyond the reported failure.
+6. Make only the minimum creative correction required and preserve everything else.
+7. Write one new immutable draft with the same complete `winners[]` array.
+8. Set root field `supersedes_draft_id` to the immediately failed draft ID.
+9. Check **Finalize Draft** for the replacement commit.
+10. Repeat only if needed, up to 3 repair drafts after the initial draft.
 
 If workflow failure occurs without a matching deterministic failure file, stop and report it. Do not guess or manually perform downstream production.
 
