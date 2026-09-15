@@ -1,0 +1,77 @@
+{
+  "background": {
+    "mode": "concatenated_fit_to_short",
+    "segments": [
+      {
+        "background_id": "px-29975898",
+        "segment_duration_seconds": 75.701,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "px-33652401",
+        "segment_duration_seconds": 70.933,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "px-29959411",
+        "segment_duration_seconds": 71.004,
+        "segment_start_seconds": 0.0
+      }
+    ]
+  },
+  "channel": {
+    "handle": "@WACKYDRAMAS",
+    "name": "Wacky Dramas"
+  },
+  "content_id": "wd-c0945702a7419f9e7df0343b",
+  "narration": {
+    "engine": "kokoro",
+    "speed": 1.75,
+    "voice": "af_bella"
+  },
+  "render": {
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "background_music": false,
+    "fps": 30,
+    "h264_profile": "high",
+    "height": 1920,
+    "pixel_format": "yuv420p",
+    "video_codec": "h264",
+    "width": 1080
+  },
+  "request_version": 1,
+  "source_draft_id": "draft-20260915T093000-7c4a1f2e",
+  "story": {
+    "card_emojis": [
+      "💔",
+      "📱",
+      "🙃",
+      "😎"
+    ],
+    "category": "workplace",
+    "conflict": "The narrator's manager takes sole credit for her work and sidelines her during the client meeting, assuming he can present the deck without understanding the research behind it.",
+    "hook": "My manager stole my entire presentation, but he forgot to check the last slide.",
+    "lead_gender": "female",
+    "premise": "A woman spends weeks building a client presentation, only for her manager to remove her name and present it as his own, until the client asks about a hidden appendix slide he never bothered to read.",
+    "punchline": "You put your name on my work. You should have learned how it worked.",
+    "script": "I had spent almost three weeks building a proposal for our biggest client. I did the research, interviewed the operations team, rebuilt the cost model twice, and stayed late fixing every little chart. My manager barely touched it, but the morning before the meeting he asked me to send him the final PowerPoint so he could 'clean up the formatting.'\n\nWhen I opened it the next day, my name was gone. Not moved. Gone. The title slide now said, 'Prepared by Daniel.' Even the notes section had been rewritten to make it sound like he had led the analysis.\n\nI asked him why, and he smiled like I was being difficult. He said, 'Clients don't need to know everyone behind the scenes.' Then he told me to sit in the meeting and only speak if he asked me something.\n\nSo I did. I sat there while he presented my work like he had personally discovered every problem. For the first twenty minutes, it went perfectly. He even used one of my jokes and got a laugh.\n\nThen the client's finance director flipped to the appendix. Daniel hadn't planned to show those slides, but she had read the deck beforehand. She pointed at a sensitivity model and said, 'I have a question about this assumption. Why did Maya choose six months instead of nine?'\n\nDaniel froze.\n\nHe clicked backward, then forward, buying time. The appendix had a tiny methodology note I had added weeks earlier: 'Model owner: Maya Chen.' He clearly had never read it.\n\nThe client looked straight at me and asked if I could explain. Daniel tried to jump in, but he mixed up two of the variables within ten seconds. So I answered. Then she asked another question. Then another. Soon the entire room was talking to me while Daniel sat there pretending to take notes.\n\nAt the end, the client said, 'Maya, this is excellent work. Please make sure you're in our next session.'\n\nMy manager pulled me aside afterward and said I had embarrassed him. I told him, 'You put your name on my work. You should have learned how it worked.'\n\nThe funniest part? The client emailed our director that afternoon praising the proposal and specifically naming me as the person who should lead the next phase. Daniel got copied on the email.",
+    "story_tone": "dramatic_comedy",
+    "twist": "The manager is exposed by a client question about an appendix slide that credits the narrator by name and contains a technical decision only she can explain."
+  },
+  "visibility": "public",
+  "youtube": {
+    "category_id": "24",
+    "description": "My manager removed my name from weeks of work and presented the entire client deck as his own. He thought nobody would notice—until the client opened the appendix he never bothered to read. #workplace #office #storytime #drama #karma",
+    "hashtags": [
+      "#WackyDramas",
+      "#Shorts"
+    ],
+    "made_for_kids": false,
+    "tags": [
+      "Wacky Dramas",
+      "Shorts"
+    ],
+    "title": "My Manager Stole My Presentation—Then the Client Opened the Last Slide"
+  }
+}
