@@ -89,11 +89,7 @@ jobs:
             --request-source-sha "${{ steps.request.outputs.source_sha }}")"
           identity="$(printf '%s\n' "${output}" | tail -1)"
           execution_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["execution_id"])' <<< "${identity}")"
-          dispatch_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["dispatch_id"])' <<< "${identity}")"
-          contract_hash="$(python -c 'import json,sys; print(json.load(sys.stdin)["contract_hash"])' <<< "${identity}")"
           echo "execution_id=${execution_id}" >> "${GITHUB_OUTPUT}"
-          echo "dispatch_id=${dispatch_id}" >> "${GITHUB_OUTPUT}"
-          echo "contract_hash=${contract_hash}" >> "${GITHUB_OUTPUT}"
           echo "path=content/executions/${execution_id}.json" >> "${GITHUB_OUTPUT}"
 
       - name: Commit execution fence
@@ -128,8 +124,6 @@ jobs:
           PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
           EXECUTION_ID: ${{ steps.execution.outputs.execution_id }}
           SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
-          CONTRACT_HASH: ${{ steps.execution.outputs.contract_hash }}
-          DISPATCH_ID: ${{ steps.execution.outputs.dispatch_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,8 +134,6 @@ jobs:
               "inputs": {
                   "execution_id": os.environ["EXECUTION_ID"],
                   "source_sha": os.environ["SOURCE_SHA"],
-                  "contract_hash": os.environ["CONTRACT_HASH"],
-                  "dispatch_id": os.environ["DISPATCH_ID"],
               },
           }, separators=(",", ":")))
           PY
