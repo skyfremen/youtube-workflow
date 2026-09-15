@@ -1,0 +1,35 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c0945702a7419f9e7df0343b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T01:39:26.830023Z",
+  "request_blob_sha": "edcae33195e5f59df22c1cbd34a9afe72ee3ec63",
+  "request_path": "content/requests/wd-c0945702a7419f9e7df0343b.json",
+  "source_commit_sha": "ee45ed4c3ab29b32ed4dad57713fcec1d1140013",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My manager removed my name from weeks of work and presented the entire client deck as his own. He thought nobody would notice—until the client opened the appendix he never bothered to read. #workplace #office #storytime #drama #karma\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e0e8a00269415fd7cb6a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Stole My Presentation—Then the Client Opened the Last Slide"
+    },
+    "status": {
+      "privacyStatus": "public",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "162cbb62bcfbeb991e702659c064793b51c0584c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34917573600"
+  },
+  "youtube_video_id": "yfmyRDRvRKg"
+}
