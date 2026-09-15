@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-182534246696f02ead24019c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:26:34.413138Z",
+  "request_blob_sha": "cc58639d32443f6d796c9f772f2262177190a866",
+  "request_path": "content/requests/wd-182534246696f02ead24019c.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The mileage kept climbing after every 'job interview.' Then a stranger called asking why the rental car would not unlock.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5012d5a720d96c3baad8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Rented Out My Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951993300"
+  },
+  "youtube_video_id": "P9Y0kOkNfwA"
+}
