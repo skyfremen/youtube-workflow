@@ -1,0 +1,106 @@
+{
+  "draft_id": "draft-20260916T015500-a7c31e4b",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=12",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[0].narration",
+      "observed_value": "estimated_seconds=105.67",
+      "required_constraint": "120-178s",
+      "winner_index": 0,
+      "winner_title": "The Hotel Had Photos of My Minibar Theft"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[1].narration",
+      "observed_value": "estimated_seconds=102.0",
+      "required_constraint": "120-178s",
+      "winner_index": 1,
+      "winner_title": "My Gym Said I Was Sharing My Membership"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[2].narration",
+      "observed_value": "estimated_seconds=104.33",
+      "required_constraint": "120-178s",
+      "winner_index": 2,
+      "winner_title": "She Made Grandma Think She Was Forgetful"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[3].narration",
+      "observed_value": "estimated_seconds=100.33",
+      "required_constraint": "120-178s",
+      "winner_index": 3,
+      "winner_title": "The Printer Kept Framing Me at Work"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[4].narration",
+      "observed_value": "estimated_seconds=97.67",
+      "required_constraint": "120-178s",
+      "winner_index": 4,
+      "winner_title": "I Found My Stolen Package for Sale Online"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[5].narration",
+      "observed_value": "estimated_seconds=100.33",
+      "required_constraint": "120-178s",
+      "winner_index": 5,
+      "winner_title": "My Friend Used My Netflix History to Impress a Date"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[6].narration",
+      "observed_value": "estimated_seconds=96.67",
+      "required_constraint": "120-178s",
+      "winner_index": 6,
+      "winner_title": "Someone Was Refilling My Skincare Bottle"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[7].narration",
+      "observed_value": "estimated_seconds=104.67",
+      "required_constraint": "120-178s",
+      "winner_index": 7,
+      "winner_title": "My Car Was Driving Without Me"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[8].narration",
+      "observed_value": "estimated_seconds=99.67",
+      "required_constraint": "120-178s",
+      "winner_index": 8,
+      "winner_title": "The Bakery Changed My Wedding Cake Order"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[9].narration",
+      "observed_value": "estimated_seconds=99.0",
+      "required_constraint": "120-178s",
+      "winner_index": 9,
+      "winner_title": "My Neighbor Was Creating My Trash Fines"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[10].narration",
+      "observed_value": "estimated_seconds=94.67",
+      "required_constraint": "120-178s",
+      "winner_index": 10,
+      "winner_title": "He Kept Saving the Meetings He Cancelled"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[11].narration",
+      "observed_value": "estimated_seconds=102.33",
+      "required_constraint": "120-178s",
+      "winner_index": 11,
+      "winner_title": "Their Instagram Proved My New Table Was Already Damaged"
+    }
+  ]
+}
