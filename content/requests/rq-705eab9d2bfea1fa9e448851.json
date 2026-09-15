@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-15780166",
+            "segment_duration_seconds": 62.603,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-29959411",
+            "segment_duration_seconds": 71.004,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-33652401",
+            "segment_duration_seconds": 70.933,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-67053c0892359102518ef0f1",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-15T08:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260915T154600-a73c91e4",
+      "story": {
+        "card_emojis": [
+          "🤨",
+          "📱",
+          "💔",
+          "😎"
+        ],
+        "category": "workplace",
+        "conflict": "The narrator keeps receiving warnings for messes found after meetings booked under her name, while a coworker insists she must be forgetting to clean up and management begins treating her as irresponsible.",
+        "hook": "I got a final warning for trashing a meeting room I had left spotless twenty minutes earlier.",
+        "lead_gender": "female",
+        "premise": "A woman is repeatedly blamed for leaving the office meeting room filthy after late client calls, until the cleaner's timestamped photos reveal her coworker has been using her calendar bookings to hide his own after-hours side business.",
+        "punchline": "You weren't hiding behind the meeting room. You were hiding behind my name.",
+        "script": "For three weeks, every Friday morning, my manager forwarded me another complaint about Meeting Room Four. Empty coffee cups, takeaway boxes, sticky notes all over the glass wall. The strange part was that the room was always clean when I left. I used it for late client calls on Thursdays, usually until seven, and I was obsessive about wiping the table because our office cleaner had once joked that I was her easiest customer.\n\nThen the complaints started. The booking system showed my name until eight, so management assumed everything found inside afterward was mine. I shortened my bookings. The mess still appeared. I took a photo before leaving. My coworker Daniel laughed when he saw me doing it and said, \"Maybe take a video too, since apparently the cups are teleporting.\"\n\nThe next morning, there were six cups in the room and another warning in my inbox. Daniel told our manager he had walked past at seven-thirty and seen the room occupied. He carefully avoided saying he had seen me, but everyone heard it that way. My manager gave me a final warning and told me one more incident would affect my performance review.\n\nSo the following Thursday, I finished my call at six-forty, photographed the spotless room, and cancelled the remaining booking instead of simply leaving early. Ten minutes later, Daniel appeared at my desk looking strangely annoyed. He asked why Meeting Room Four had suddenly become available. I asked why he cared. He said he was just curious.\n\nFriday morning, the cleaner found another mess. This time she came directly to me before reporting it. She had been taking timestamped photos at the start of each room because facilities was auditing cleaning times. Her photos showed my clean room at six-fifty. Another photo at seven-ten caught Daniel inside through the glass, laptop open, food spread across the table, talking to three people on a video call.\n\nIT checked the guest Wi-Fi logs and discovered the calls were for Daniel's private consulting business. He had been waiting for my late bookings, slipping into the room after I left, and relying on my name remaining on the reservation so nobody would question him. When I cancelled early, he panicked because his cover disappeared.\n\nMy manager called me in to apologize. Daniel was already sitting there, staring at the table. I put the cleaner's photos beside my final warning and said, \"You weren't hiding behind the meeting room. You were hiding behind my name.\"",
+        "story_tone": "dramatic",
+        "twist": "The cleaner's timestamped photos show the coworker entering after the narrator leaves and using her still-active room reservations to conduct paid consulting calls he is forbidden to run from the office."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "She kept getting blamed for a trashed office meeting room—until one timestamped photo revealed who was really using her name after hours.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "He Used My Meeting Room Booking as His Alibi"
+      }
+    }
+  ],
+  "request_id": "rq-705eab9d2bfea1fa9e448851",
+  "request_version": 2,
+  "source_draft_id": "draft-20260915T154600-a73c91e4"
+}
