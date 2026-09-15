@@ -1,0 +1,35 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0c710c1f4461e67f5546a88b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T01:54:31.823736Z",
+  "request_blob_sha": "e4f1bc810229507466f0aba756010b899505d483",
+  "request_path": "content/requests/wd-0c710c1f4461e67f5546a88b.json",
+  "source_commit_sha": "281db80218aa08083a0814e2c0ac49a3fdcb0a50",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three noise complaints blamed a dog that didn't exist. The hallway camera showed exactly where the barking was really coming from. #WackyDramas #Storytime #NeighborDrama\n\n#Shorts",
+      "tags": [
+        "wd-id-83f472b3b8e4059fb8ac",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Reported My Dog. I Don't Own One."
+    },
+    "status": {
+      "privacyStatus": "public",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "369cdec87edaa270559e00eab9680feb1997327a",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34918682251"
+  },
+  "youtube_video_id": "LQhPSpYCKfk"
+}
