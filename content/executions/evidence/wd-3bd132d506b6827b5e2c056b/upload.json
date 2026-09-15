@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3bd132d506b6827b5e2c056b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:27:42.140075Z",
+  "request_blob_sha": "e71caaec6b873c5d3998f92ba016b1eb3e447ada",
+  "request_path": "content/requests/wd-3bd132d506b6827b5e2c056b.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Random cars kept appearing in her assigned bay—until one driver showed her the paid booking confirmation.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-eeef06fa30a6f257a63b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Rented Out My Parking Space"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951989318"
+  },
+  "youtube_video_id": "QKD5SLxPsQw"
+}
