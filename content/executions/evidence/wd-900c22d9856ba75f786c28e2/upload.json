@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-900c22d9856ba75f786c28e2",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T07:56:22.450250Z",
+  "request_blob_sha": "217066e562a243acb4d4a3050ab6e95253d22902",
+  "request_path": "content/requests/wd-900c22d9856ba75f786c28e2.json",
+  "source_commit_sha": "c70117ff62954aeca38a706de4a02f315883fc1e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She offered to feed my dog while I was away. Then my smart lock started showing strangers entering my apartment—and one of them called me about the Wi-Fi.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ad3c1e5bd49327121f4c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Best Friend Rented Out My Apartment While I Was Away"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T08:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34943660092"
+  },
+  "youtube_video_id": "xlDSVqo1wUE"
+}
