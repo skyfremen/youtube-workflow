@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7875cfb23649ad61a3afba00",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:29:08.843532Z",
+  "request_blob_sha": "79c027586b9cb4df1b965f143f4586b9f82ad2ba",
+  "request_path": "content/requests/wd-7875cfb23649ad61a3afba00.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He said I had the wrong storage number. Then another tenant showed up with a key—and the same number on his lease.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b2b36377e710dca862e8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Landlord Rented My Storage Cage Twice"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951985621"
+  },
+  "youtube_video_id": "zIRwET0lNVg"
+}
