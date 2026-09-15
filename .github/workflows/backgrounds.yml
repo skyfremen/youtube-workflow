@@ -157,14 +157,15 @@ jobs:
             exit 1
           fi
 
-      - name: Promote approved candidates and persist rejections
+      - name: Promote approved candidates, persist rejections, and rebuild context
         if: steps.target.outputs.mode == 'promote'
         run: |
           set -euo pipefail
           python background_seed_rejections.py promote --approval "${{ steps.target.outputs.path }}"
           python background_seed_rejections.py validate
+          python adhoc.py context
 
-      - name: Commit approved inventory and rejection registry
+      - name: Commit approved inventory, rejection registry, and context
         if: steps.target.outputs.mode == 'promote'
         shell: bash
         run: |
@@ -172,9 +173,9 @@ jobs:
           review_id="${{ steps.target.outputs.review_id }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/backgrounds.json data/background-rejections.json
+          git add data/backgrounds.json data/background-rejections.json content/context.json
           if git diff --cached --quiet; then
-            echo "No background inventory or rejection changes to commit."
+            echo "No background inventory, rejection, or context changes to commit."
             exit 0
           fi
           git commit -m "[backgrounds] promote ${review_id}"
