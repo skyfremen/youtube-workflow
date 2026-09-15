@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cfa5a5c9f0c90f5bb1f18730",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:06:53.707078Z",
+  "request_blob_sha": "366e6f3a9c99169c932b0ff89090dd9321842cb5",
+  "request_path": "content/requests/wd-cfa5a5c9f0c90f5bb1f18730.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Impossible toll charges look like a camera error until one tiny sticker connects the mystery car to a familiar workshop.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7a91aac05f2e8f4b3f84",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Car Was Driving Without Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004707899"
+  },
+  "youtube_video_id": "CPd9U9SqgqU"
+}
