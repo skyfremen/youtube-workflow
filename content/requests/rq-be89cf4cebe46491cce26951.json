@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-36775559",
+            "segment_duration_seconds": 60.433,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-38555862",
+            "segment_duration_seconds": 100.0,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-27936929",
+            "segment_duration_seconds": 70.7,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-09a6b3cfdb950ff1f0854254",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-15T07:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260915T135100-a4c91e2f",
+      "story": {
+        "card_emojis": [
+          "😵",
+          "🤨",
+          "📱",
+          "🤯"
+        ],
+        "category": "family",
+        "conflict": "Her sister tells the whole family she chose not to attend her nephew's birthday, while the narrator insists she went to the original venue at the original time and had no idea the plans changed.",
+        "hook": "My sister spent two weeks telling our family I skipped my nephew's birthday. Then she sent one screenshot that proved she never wanted me there.",
+        "lead_gender": "female",
+        "premise": "A woman is shamed by her sister for supposedly skipping her nephew's birthday, then a cousin's screenshot reveals the sister deliberately removed her from the family group chat just before changing the party time and location.",
+        "punchline": "You didn't forget to invite me. You removed me before you changed the plan.",
+        "script": "My nephew was turning six, and my sister Claire had planned his birthday for Saturday at three at a little indoor playground near our parents' house. She sent the original invitation three weeks early, and I even replied that I would bring the dinosaur set he kept talking about.\n\nOn Saturday I arrived at 2:50 carrying the gift and a tray of cupcakes. The front desk looked confused. There was no party under Claire's name. I called her twice. No answer. I texted, asking if I had the date wrong. Still nothing. After twenty minutes, I drove home feeling ridiculous.\n\nThat night my mother called and asked why I had skipped the party. I told her I hadn't. Apparently the whole family had spent the afternoon at a different play center across town, starting at one. Claire told everyone she had posted the change in the family group chat two days earlier and that I had simply ignored it.\n\nI checked the chat. I could see old messages from the week before, then suddenly a bunch of photos from after the party. Nothing about a new location. Claire said maybe my phone had glitched. Then she started making little comments to relatives about how I was always too busy for family.\n\nWhat bothered me most was my nephew. The next time I saw him, he asked why I didn't come to his birthday. I told him I had tried, and Claire immediately cut in and said, 'Don't make excuses to a six-year-old.'\n\nA few days later, my cousin Lena messaged me privately. She said the argument felt strange because she remembered something happening in the group chat before the plans changed. She scrolled back and sent me a screenshot.\n\nThere it was: 11:42 a.m., 'Claire removed Maya from the group.' At 11:47, Claire posted the new time and location. Then, at 5:36 p.m. after the party, 'Claire added Maya to the group.'\n\nI sent the screenshot to Claire and asked why. She called immediately and said she had only removed me because she was 'cleaning up the chat' and must have added me back by accident. I asked why her cleanup lasted exactly through the birthday update and ended exactly after the party. She had no answer.\n\nSo I posted the screenshot once in the family chat with one sentence: You didn't forget to invite me. You removed me before you changed the plan.\n\nClaire stopped replying. My mother apologized. And my nephew finally got his dinosaur set the next morning, along with the truth that I had never chosen to miss his birthday.",
+        "story_tone": "dramatic",
+        "twist": "A cousin's screenshot of the family chat shows a system message proving the sister removed the narrator minutes before posting the new party details, then added her back only after the party ended."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "She told the whole family I ignored my nephew's birthday. One screenshot showed exactly what really happened.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Sister Said I Skipped the Party—Her Screenshot Proved Why"
+      }
+    }
+  ],
+  "request_id": "rq-be89cf4cebe46491cce26951",
+  "request_version": 2,
+  "source_draft_id": "draft-20260915T135100-a4c91e2f"
+}
