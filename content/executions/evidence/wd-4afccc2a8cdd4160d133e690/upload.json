@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4afccc2a8cdd4160d133e690",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T08:29:35.708116Z",
+  "request_blob_sha": "24481e02f9751131518e7dfdba30b91228334502",
+  "request_path": "content/requests/wd-4afccc2a8cdd4160d133e690.json",
+  "source_commit_sha": "74ec1b2d50dba05aed825fe8445ab125060b683e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I kept missing every plan and thought my phone was the problem. Then someone sent me screenshots from the chat I was never supposed to see.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-461a8b17589bc3b718b9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friends Said the Group Chat Was Glitching"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34946697740"
+  },
+  "youtube_video_id": "StvyOdZKkkc"
+}
