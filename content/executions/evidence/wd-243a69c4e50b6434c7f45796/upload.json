@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-243a69c4e50b6434c7f45796",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T09:26:27.447517Z",
+  "request_blob_sha": "37e3a3cc014d94eaca14ff910fcaf2d283110483",
+  "request_path": "content/requests/wd-243a69c4e50b6434c7f45796.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She said I was forgetting where the gifts went. A cashier remembered exactly where they went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-05d0c9a177674e3d900d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Returned My Baby Shower Gifts for Credit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951987611"
+  },
+  "youtube_video_id": "BPjpSJZW9-M"
+}
