@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-eb732720ec81715a28fd74cb",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:12:14.527168Z",
+  "request_blob_sha": "549ea43e5e8d26f488b8b9ec9804c5ec47e9d033",
+  "request_path": "content/requests/wd-eb732720ec81715a28fd74cb.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A gym's duplicate entry logs seem to prove membership sharing until the cameras reveal who is actually handing out the codes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3f6c8d0f9418e97c2acc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Gym Said I Was Sharing My Membership"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004696245"
+  },
+  "youtube_video_id": "Z_VyRWtt_eI"
+}
