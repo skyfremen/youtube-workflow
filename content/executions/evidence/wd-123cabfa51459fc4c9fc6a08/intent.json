@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-123cabfa51459fc4c9fc6a08",
+  "created_at": "2026-09-15T09:27:29.784840Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "50d128ea7b50cac8b146e412947f858f7ae42071",
+  "request_path": "content/requests/wd-123cabfa51459fc4c9fc6a08.json",
+  "source_commit_sha": "168ae61cc5f1d07118b40e41eef349d61494c592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "We kept blaming the caterer for tiny portions—until he came back and saw where the missing food had gone.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-64029687c0f23bca7a50",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Aunt Stole the Catering Before Guests Arrived"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34951983586"
+  }
+}
