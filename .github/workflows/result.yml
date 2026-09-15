@@ -36,11 +36,11 @@ jobs:
           fi
           echo "path=${results[0]}" >> "${GITHUB_OUTPUT}"
 
-      - name: Ingest result and rebuild context
+      - name: Ingest scheduled result and rebuild context
         shell: bash
         run: |
           set -euo pipefail
-          python adhoc.py ingest-result --result "${{ steps.result.outputs.path }}"
+          python pipeline.py ingest-result --result "${{ steps.result.outputs.path }}"
 
       - name: Commit derived editorial state
         shell: bash
@@ -53,6 +53,6 @@ jobs:
             echo "Result was already ingested."
             exit 0
           fi
-          git commit -m "[state] ingest verified production result"
+          git commit -m "[state] ingest verified scheduled result"
           git pull --rebase origin main
           git push origin HEAD:main
