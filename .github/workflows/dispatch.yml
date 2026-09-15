@@ -1,14 +1,10 @@
 name: Dispatch Production
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'content/requests/*.json'
   workflow_call:
     inputs:
       request_source_sha:
-        description: Exact commit that added the immutable request
+        description: Exact commit that added the immutable batch request
         required: true
         type: string
     secrets:
@@ -17,29 +13,25 @@ on:
   workflow_dispatch:
     inputs:
       request_source_sha:
-        description: Exact commit that added the immutable request
+        description: Exact commit that added the immutable batch request
         required: true
         type: string
 
 permissions:
   contents: write
 
-concurrency:
-  group: dispatch-${{ inputs.request_source_sha || github.sha }}
-  cancel-in-progress: false
-
 jobs:
   dispatch:
     runs-on: ubuntu-latest
     env:
-      REQUEST_SOURCE_SHA: ${{ inputs.request_source_sha || github.sha }}
+      REQUEST_SOURCE_SHA: ${{ inputs.request_source_sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
           ref: main
 
-      - name: Identify and validate one immutable request
+      - name: Identify and validate one immutable batch request
         id: request
         shell: bash
         run: |
@@ -56,16 +48,14 @@ jobs:
             echo "::error::REQUEST_SOURCE_NOT_ON_MAIN exact request source is not an ancestor of current main"
             exit 1
           fi
-
           mapfile -t requests < <(
             git diff-tree --no-commit-id --name-status -r "${REQUEST_SOURCE_SHA}" |
-            awk '$1 == "A" && $2 ~ /^content\/requests\/wd-[0-9a-f]{24}\.json$/ {print $2}'
+            awk '$1 == "A" && $2 ~ /^content\/requests\/rq-[0-9a-f]{24}\.json$/ {print $2}'
           )
           if [ "${#requests[@]}" -ne 1 ]; then
-            echo "::error::REQUEST_COMMIT_INVALID expected exactly one newly added immutable request"
+            echo "::error::REQUEST_COMMIT_INVALID expected exactly one newly added immutable batch request"
             exit 1
           fi
-
           request_path="${requests[0]}"
           source_blob="$(git rev-parse "${REQUEST_SOURCE_SHA}:${request_path}")"
           current_blob="$(git hash-object "${request_path}")"
@@ -73,34 +63,40 @@ jobs:
             echo "::error::REQUEST_IMMUTABILITY_VIOLATION request changed after its source commit"
             exit 1
           fi
-
           git switch --force-create dispatch-work "${REQUEST_SOURCE_SHA}"
-          python adhoc.py validate --request "${request_path}"
+          python pipeline.py validate --request "${request_path}"
           echo "path=${request_path}" >> "${GITHUB_OUTPUT}"
           echo "source_sha=${REQUEST_SOURCE_SHA}" >> "${GITHUB_OUTPUT}"
 
-      - name: Create stable execution fence
-        id: execution
+      - name: Create stable execution fences for every item
+        id: executions
         shell: bash
         run: |
           set -euo pipefail
-          output="$(python adhoc.py execution \
+          output="$(python pipeline.py executions \
             --request "${{ steps.request.outputs.path }}" \
             --request-source-sha "${{ steps.request.outputs.source_sha }}")"
-          identity="$(printf '%s\n' "${output}" | tail -1)"
-          execution_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["execution_id"])' <<< "${identity}")"
-          echo "execution_id=${execution_id}" >> "${GITHUB_OUTPUT}"
-          echo "path=content/executions/${execution_id}.json" >> "${GITHUB_OUTPUT}"
+          summary="$(printf '%s\n' "${output}" | tail -1)"
+          echo "summary=${summary}" >> "${GITHUB_OUTPUT}"
+          python - "${summary}" <<'PY'
+          import json, sys
+          executions=json.loads(sys.argv[1]).get("executions") or []
+          if not executions: raise SystemExit("No executions were created")
+          with open("/tmp/execution_paths.txt","w",encoding="utf-8") as f:
+              for item in executions: f.write(item["path"]+"\n")
+          with open("/tmp/execution_ids.txt","w",encoding="utf-8") as f:
+              for item in executions: f.write(item["execution_id"]+"\n")
+          PY
 
-      - name: Commit execution fence
+      - name: Commit execution fences together
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${{ steps.execution.outputs.path }}"
+          while IFS= read -r path; do git add "${path}"; done < /tmp/execution_paths.txt
           if ! git diff --cached --quiet; then
-            git commit -m "[execution] prepare immutable production execution"
+            git commit -m "[execution] prepare production batch"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
@@ -112,36 +108,32 @@ jobs:
           set -euo pipefail
           git fetch origin main
           git reset --hard origin/main
-          source_sha="$(git log --diff-filter=A --format=%H -- "${{ steps.execution.outputs.path }}" | head -1)"
+          first_path="$(head -1 /tmp/execution_paths.txt)"
+          source_sha="$(git log --diff-filter=A --format=%H -- "${first_path}" | head -1)"
           if [[ ! "${source_sha}" =~ ^[0-9a-f]{40}$ ]]; then
             echo "::error::EXECUTION_SOURCE_UNRESOLVED"
             exit 1
           fi
           echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Dispatch opaque execution
+      - name: Dispatch every execution to single.yml
         env:
           PUBLIC_PRODUCTION_TOKEN: ${{ secrets.PUBLIC_PRODUCTION_TOKEN }}
-          EXECUTION_ID: ${{ steps.execution.outputs.execution_id }}
           SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
         shell: bash
         run: |
           set -euo pipefail
-          payload="$(python - <<'PY'
-          import json, os
-          print(json.dumps({
-              "ref": "main",
-              "inputs": {
-                  "execution_id": os.environ["EXECUTION_ID"],
-                  "source_sha": os.environ["SOURCE_SHA"],
-              },
-          }, separators=(",", ":")))
+          while IFS= read -r execution_id; do
+            payload="$(python - "${execution_id}" "${SOURCE_SHA}" <<'PY'
+          import json, sys
+          print(json.dumps({"ref":"main","inputs":{"execution_id":sys.argv[1],"source_sha":sys.argv[2]}},separators=(",",":")))
           PY
-          )"
-          curl --fail --silent --show-error -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/single.yml/dispatches \
-            -d "${payload}"
-          echo "Opaque execution dispatched."
+            )"
+            curl --fail --silent --show-error -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${PUBLIC_PRODUCTION_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/skyfremen/production-runtime/actions/workflows/single.yml/dispatches \
+              -d "${payload}"
+            echo "Dispatched ${execution_id}."
+          done < /tmp/execution_ids.txt
