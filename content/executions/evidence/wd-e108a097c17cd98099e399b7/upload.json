@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e108a097c17cd98099e399b7",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T08:30:16.581276Z",
+  "request_blob_sha": "0a9361346e32506a2bdbf08333e23abe521e0dbf",
+  "request_path": "content/requests/wd-e108a097c17cd98099e399b7.json",
+  "source_commit_sha": "74ec1b2d50dba05aed825fe8445ab125060b683e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She blamed the venue for moving my family to the worst tables. The revision history told a very different story.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-596a74f78750101272e8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Rewrote My Wedding Seating Chart"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-15T09:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8778c286a3ca2002cf7b6675b3b0486cbadad1b7",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34946695896"
+  },
+  "youtube_video_id": "ss68bgktfHw"
+}
