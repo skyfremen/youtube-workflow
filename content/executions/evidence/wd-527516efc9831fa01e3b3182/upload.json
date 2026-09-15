@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-527516efc9831fa01e3b3182",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:06:52.606182Z",
+  "request_blob_sha": "394f74d01895a5f072da80e9f2372282b0ed59ed",
+  "request_path": "content/requests/wd-527516efc9831fa01e3b3182.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An expensive serum seems to change overnight until a tiny travel bottle reveals where the real product went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1242355695a342f3fc7d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Was Refilling My Skincare Bottle"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004706100"
+  },
+  "youtube_video_id": "M0esYDrQeoE"
+}
