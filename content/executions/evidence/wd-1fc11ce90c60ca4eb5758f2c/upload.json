@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1fc11ce90c60ca4eb5758f2c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:07:18.393693Z",
+  "request_blob_sha": "e5f18b6dd5c788be4b3da2165bea436876a739a8",
+  "request_path": "content/requests/wd-1fc11ce90c60ca4eb5758f2c.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bizarre recommendation feed turns out to be part of one friend's extremely elaborate dating strategy.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-42ea76b38f44a4c5d158",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Used My Netflix History to Impress a Date"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004704226"
+  },
+  "youtube_video_id": "VKQ98KRvMBs"
+}
