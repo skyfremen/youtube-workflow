@@ -1,0 +1,77 @@
+{
+  "background": {
+    "mode": "concatenated_fit_to_short",
+    "segments": [
+      {
+        "background_id": "px-33585547",
+        "segment_duration_seconds": 62.262,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "px-13575058",
+        "segment_duration_seconds": 65.642,
+        "segment_start_seconds": 0.0
+      },
+      {
+        "background_id": "px-35556759",
+        "segment_duration_seconds": 100.0,
+        "segment_start_seconds": 0.0
+      }
+    ]
+  },
+  "channel": {
+    "handle": "@WACKYDRAMAS",
+    "name": "Wacky Dramas"
+  },
+  "content_id": "wd-0c710c1f4461e67f5546a88b",
+  "narration": {
+    "engine": "kokoro",
+    "speed": 1.75,
+    "voice": "af_bella"
+  },
+  "render": {
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "background_music": false,
+    "fps": 30,
+    "h264_profile": "high",
+    "height": 1920,
+    "pixel_format": "yuv420p",
+    "video_codec": "h264",
+    "width": 1080
+  },
+  "request_version": 1,
+  "source_draft_id": "draft-20260915T094600-a91c4e7b",
+  "story": {
+    "card_emojis": [
+      "😵",
+      "🤨",
+      "📱",
+      "😎"
+    ],
+    "category": "neighbors",
+    "conflict": "The narrator is threatened with condo penalties over late-night barking even though she has no pet, while the neighbor across the hall keeps presenting suspiciously precise recordings as proof.",
+    "hook": "My neighbor filed three noise complaints about my dog. I don't own a dog.",
+    "lead_gender": "female",
+    "premise": "A woman receives repeated condo noise complaints about a dog she does not own, then discovers her neighbor has been playing barking sounds outside her door to manufacture evidence and pressure her to move.",
+    "punchline": "You were reporting your own recording.",
+    "script": "The first complaint arrived on a Tuesday morning. Management said someone had reported loud barking from my unit around midnight. I laughed because I thought they had the wrong apartment. I live alone, I don't have pets, and the closest thing I own to a dog is a pair of slippers with corgis on them.\n\nThen a second complaint arrived two nights later. This one included a thirty-second audio clip. There was definitely a dog barking, and whoever recorded it was standing close enough that it sounded like the noise was coming straight through my front door. Management warned me that another incident could mean a formal penalty.\n\nThe neighbor across the hall, Melissa, suddenly became very interested in my situation. She kept asking whether I was hiding a pet from the building and telling me that rules were rules. She even suggested that if the building was becoming too stressful, maybe I should consider moving. That was the first moment the whole thing felt strange instead of annoying.\n\nSo on the next night, I stayed awake. At 12:17, barking started again. It was loud, repetitive, and weirdly perfect, like the same dog was barking in exactly the same rhythm. I opened my door. The hallway was empty. The sound stopped almost immediately.\n\nThe next morning, complaint number three arrived with another recording from Melissa. Management scheduled a meeting and told me I needed proof that I wasn't keeping an animal. I said I could do better than that. I asked them to pull the hallway camera footage from the exact times listed in all three complaints.\n\nWe watched it together. On the first night, Melissa stepped out of her apartment holding a small Bluetooth speaker. She placed it behind a decorative planter beside my door, went back inside, and started recording from her own doorway. Two nights later, she did the same thing. On the third night, the footage showed her rushing out to grab the speaker seconds after I opened my door.\n\nMelissa went completely silent. Then management asked why she wanted me gone so badly. She finally admitted her sister had been trying to rent a unit on our floor, and she thought if I moved, mine might become available.\n\nI looked at the three complaint forms on the table and slid them toward her. You were reporting your own recording.\n\nManagement cancelled every warning against me, fined Melissa for harassment, and told her any future complaint would need independent verification. A month later, her sister found another apartment. Apparently the building had one vacancy after all. It just wasn't mine.",
+    "story_tone": "dramatic",
+    "twist": "Hallway camera footage reveals the complaining neighbor secretly placing a Bluetooth speaker near the narrator's door and playing barking audio so the complaints would appear legitimate."
+  },
+  "visibility": "public",
+  "youtube": {
+    "category_id": "24",
+    "description": "Three noise complaints blamed a dog that didn't exist. The hallway camera showed exactly where the barking was really coming from. #WackyDramas #Storytime #NeighborDrama",
+    "hashtags": [
+      "#WackyDramas",
+      "#Shorts"
+    ],
+    "made_for_kids": false,
+    "tags": [
+      "Wacky Dramas",
+      "Shorts"
+    ],
+    "title": "She Reported My Dog. I Don't Own One."
+  }
+}
