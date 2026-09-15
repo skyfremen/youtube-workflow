@@ -6,8 +6,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"
-DRAFTS=ROOT/"content/drafts"; REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"
-RESULTS=ROOT/"content/results"; FAILS=ROOT/"content/failures"
+REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"
 REQUEST_VERSION=EXECUTION_VERSION=RESULT_VERSION=CONTEXT_VERSION=1
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
 MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0
@@ -39,9 +38,9 @@ NATURAL={"natural","neutral","conversational","warm","calm"}
 EXPRESSIVE={"expressive","dramatic","comedy","sarcastic","dramatic_comedy","absurd"}
 TONES=NATURAL|EXPRESSIVE
 DRAFT_RE=re.compile(r"^draft-[A-Za-z0-9-]{8,96}$"); CID_RE=re.compile(r"^wd-[0-9a-f]{24}$")
-EID_RE=re.compile(r"^ex-[0-9a-f]{24}$"); DID_RE=re.compile(r"^dp-[0-9a-f]{20}$"); SHA40=re.compile(r"^[0-9a-f]{40}$")
+EID_RE=re.compile(r"^ex-[0-9a-f]{24}$"); SHA40=re.compile(r"^[0-9a-f]{40}$")
 CONTRACT={
- "name":"wacky-dramas-production-v1","request_version":1,"execution_version":1,"result_version":1,
+ "name":"wacky-dramas-production-v1","request_version":REQUEST_VERSION,"execution_version":EXECUTION_VERSION,"result_version":RESULT_VERSION,
  "visibility":"public","request_path":"content/requests/{content_id}.json",
  "execution_path":"content/executions/{execution_id}.json","result_path":"content/results/{content_id}.json",
  "registry_path":"data/backgrounds.json",
@@ -161,7 +160,7 @@ def build_context():
     if not categories: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",0,"at least one category with three distinct valid approved backgrounds",False)
     cards=[{k:str(x.get(k) or "") for k in ("title","premise","conflict","twist","payoff")}
            for x in h[-RECENT_LIMIT:] if isinstance(x,dict)]
-    out={"context_version":1,"recent_story_cards":cards,"background_categories":categories}
+    out={"context_version":CONTEXT_VERSION,"recent_story_cards":cards,"background_categories":categories}
     if len(pretty(out))>40000: raise VError("CONTEXT_TOO_LARGE","content/context.json",len(pretty(out)),"<=40000 bytes")
     write(CTX,out); return out
 
@@ -203,7 +202,7 @@ def make_request(did,raw_draft,d,r):
     w=d["winner"]
     g=w["lead_gender"]; t=w["story_tone"]
     return {
-      "request_version":1,"content_id":cid,"source_draft_id":did,
+      "request_version":REQUEST_VERSION,"content_id":cid,"source_draft_id":did,
       "channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},
       "story":{"category":w["category"],"premise":w["premise"],
         "conflict":w["conflict"],"twist":w["twist"],
@@ -222,7 +221,7 @@ def make_request(did,raw_draft,d,r):
 def validate_request(x,path=None,r=None):
     top={"request_version","content_id","source_draft_id","channel","story","narration","background","youtube","visibility","render"}
     if not isinstance(x,dict) or set(x)!=top: raise VError("INVALID_REQUEST_FIELDS","$",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V1 request fields",False)
-    if x["request_version"]!=1: raise VError("INVALID_REQUEST_VERSION","request_version",x["request_version"],"1",False)
+    if x["request_version"]!=REQUEST_VERSION: raise VError("INVALID_REQUEST_VERSION","request_version",x["request_version"],str(REQUEST_VERSION),False)
     cid=str(x["content_id"])
     if not CID_RE.fullmatch(cid): raise VError("INVALID_CONTENT_ID","content_id",cid,"wd- plus 24 lowercase hex",False)
     if path and Path(path).name!=cid+".json": raise VError("REQUEST_FILENAME_MISMATCH",str(path),Path(path).name,cid+".json",False)
@@ -240,7 +239,7 @@ def validate_request(x,path=None,r=None):
     b=x["background"]
     if not isinstance(b,dict) or set(b)!={"mode","segments"} or b["mode"]!="concatenated_fit_to_short": raise VError("INVALID_BACKGROUND_CONTRACT","background",b,"concatenated_fit_to_short segments",False)
     seg=b["segments"]
-    if not isinstance(seg,list) or len(seg)!=3: raise VError("INVALID_BACKGROUND_SEGMENTS","background.segments",seg,"3 segments")
+    if not isinstance(seg,list) or len(seg)!=MIN_CATEGORY_BACKGROUNDS: raise VError("INVALID_BACKGROUND_SEGMENTS","background.segments",seg,f"{MIN_CATEGORY_BACKGROUNDS} segments")
     ids=[]; m=amap(r) if r else {}
     for n,z in enumerate(seg):
         if not isinstance(z,dict) or set(z)!={"background_id","segment_start_seconds","segment_duration_seconds"}: raise VError("INVALID_BACKGROUND_SEGMENT",f"background.segments[{n}]",z,"id/start/duration",False)
@@ -252,7 +251,7 @@ def validate_request(x,path=None,r=None):
             a=m.get(bid)
             if not a or not usable(a): raise VError("BACKGROUND_NOT_ALLOWED","background.segments",bid,"approved promoted asset",False)
             if dur>float(a["duration_seconds"])+.05: raise VError("BACKGROUND_RANGE_EXCEEDS_SOURCE","background.segments",bid,"segment fits source",False)
-    if len(set(ids))!=3: raise VError("DUPLICATE_BACKGROUND_ID","background.segments",ids,"3 distinct IDs")
+    if len(set(ids))!=MIN_CATEGORY_BACKGROUNDS: raise VError("DUPLICATE_BACKGROUND_ID","background.segments",ids,f"{MIN_CATEGORY_BACKGROUNDS} distinct IDs")
     y=x["youtube"]; yk={"title","description","hashtags","tags","category_id","made_for_kids"}
     if not isinstance(y,dict) or set(y)!=yk: raise VError("INVALID_YOUTUBE_FIELDS","youtube",y,"exact V1 YouTube fields")
     if len(text(y["title"],"youtube.title"))>100: raise VError("TITLE_TOO_LONG","youtube.title",len(y["title"]),"<=100")
@@ -284,13 +283,13 @@ def finalize(path):
     if target.exists() and target.read_bytes()!=raw: raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(raw),False)
     target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(raw); return target
 def validate_file(path):
-    path=Path(path); q=validate_request(read(path),path,registry()); print(f"Request valid: {path.name}; request_version=1"); return q
+    path=Path(path); q=validate_request(read(path),path,registry()); print(f"Request valid: {path.name}; request_version={REQUEST_VERSION}"); return q
 def make_execution(path,source):
     if not SHA40.fullmatch(source): raise VError("INVALID_SOURCE_SHA","request_source_sha",source,"40 lowercase hex",False)
     path=Path(path); q=read(path); raw=path.read_bytes(); rblob=blob(raw)
     eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
     did="dp-"+hashlib.sha256(eid.encode()).hexdigest()[:20]
-    x={"execution_version":1,"execution_id":eid,"content_id":q["content_id"],"request_path":f"content/requests/{q['content_id']}.json",
+    x={"execution_version":EXECUTION_VERSION,"execution_id":eid,"content_id":q["content_id"],"request_path":f"content/requests/{q['content_id']}.json",
        "request_source_sha":source,"request_blob_sha":rblob,"contract_hash":CONTRACT_HASH,"dispatch_id":did,"state":"prepared"}
     target=EXECS/(eid+".json"); rawx=pretty(x)
     if target.exists() and target.read_bytes()!=rawx: raise VError("IMMUTABLE_EXECUTION_CONFLICT",str(target),blob(target.read_bytes()),blob(rawx),False)
@@ -298,7 +297,7 @@ def make_execution(path,source):
 def validate_result(x,path=None):
     keys={"result_version","content_id","execution_id","status","youtube_video_id","visibility","verified","published_at"}
     if not isinstance(x,dict) or set(x)!=keys: raise VError("INVALID_RESULT_FIELDS","$",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V1 result fields",False)
-    if x["result_version"]!=1 or not CID_RE.fullmatch(str(x["content_id"])) or not EID_RE.fullmatch(str(x["execution_id"])): raise VError("INVALID_RESULT_IDENTITY","$",x,"V1 result identity",False)
+    if x["result_version"]!=RESULT_VERSION or not CID_RE.fullmatch(str(x["content_id"])) or not EID_RE.fullmatch(str(x["execution_id"])): raise VError("INVALID_RESULT_IDENTITY","$",x,"V1 result identity",False)
     if path and Path(path).name!=x["content_id"]+".json": raise VError("RESULT_FILENAME_MISMATCH",str(path),Path(path).name,x["content_id"]+".json",False)
     if x["status"]!="published" or x["visibility"]!="public" or x["verified"] is not True: raise VError("RESULT_NOT_VERIFIED_PUBLIC","$",x,"published/public/verified",False)
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}",str(x["youtube_video_id"])): raise VError("INVALID_YOUTUBE_VIDEO_ID","youtube_video_id",x["youtube_video_id"],"11 chars",False)
@@ -341,7 +340,7 @@ def self_test():
     ok("12 emoji fallback",resolve_emojis(["shock","unknown-cue","panic","victory"])==DEFAULT_EMOJIS and resolve_emojis(None)==DEFAULT_EMOJIS)
     ok("13 voices",voice("female","natural")=="af_heart" and voice("female","dramatic")=="af_bella" and voice("male","natural")=="am_echo" and voice("male","dramatic")=="am_fenrir")
     m=amap(r); qids=[x["background_id"] for x in q["background"]["segments"]]
-    ok("14 same-category backgrounds",len(set(qids))==3 and all(background_category(m[x])==bgcat for x in qids))
+    ok("14 same-category backgrounds",len(set(qids))==MIN_CATEGORY_BACKGROUNDS and all(background_category(m[x])==bgcat for x in qids))
     bad_raw=json.loads(json.dumps(raw)); bad_raw["winner"]["background_category"]="missing-category"
     badq=make_request(dp.stem,bad_raw,normalize_draft(bad_raw),r); fallback=resolve_background_category("missing-category",r)
     ok("15 background category fallback",all(background_category(m[x["background_id"]])==fallback for x in badq["background"]["segments"]))
@@ -352,7 +351,7 @@ def self_test():
     ok("20 immediate public",q["visibility"]=="public")
     rblob=blob(pretty(q)); eid="ex-"+hashlib.sha256(f"{q['content_id']}|{rblob}".encode()).hexdigest()[:24]
     ok("21 execution identity",bool(EID_RE.fullmatch(eid))); ok("22 contract hash",len(CONTRACT_HASH)==64)
-    fake={"result_version":1,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
+    fake={"result_version":RESULT_VERSION,"content_id":q["content_id"],"execution_id":eid,"status":"published","youtube_video_id":"abcdefghijk","visibility":"public","verified":True,"published_at":"2026-09-14T04:00:00Z"}
     validate_result(fake); ok("23 result validates")
     wdir=ROOT/".github/workflows"; names={p.name for p in wdir.glob("*.yml")}
     ok("24 workflow set",names=={"adhoc-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
@@ -381,7 +380,7 @@ def main():
         elif a.cmd=="validate": validate_file(a.request)
         elif a.cmd=="execution":
             t,x=make_execution(a.request,a.request_source_sha); print(t.relative_to(ROOT).as_posix())
-            print(json.dumps({"execution_id":x["execution_id"],"dispatch_id":x["dispatch_id"],"contract_hash":x["contract_hash"]},sort_keys=True))
+            print(json.dumps({"execution_id":x["execution_id"]},sort_keys=True))
         elif a.cmd=="ingest-result": ingest(a.result); print("Result ingested")
         elif a.cmd=="contract-hash": print(CONTRACT_HASH)
         else: self_test()
