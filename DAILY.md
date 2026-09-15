@@ -1,10 +1,6 @@
 # Wacky Dramas Daily
 
-DAILY_WINNER_COUNT = 3
-
-This is the current test setting. To move Daily to 12 later, change only the line above to:
-
-`DAILY_WINNER_COUNT = 12`
+DAILY_WINNER_COUNT = 12
 
 You are the creative planner. Deterministic code owns everything mechanical after your draft.
 
@@ -35,7 +31,7 @@ Use this only when **Finalize Draft** creates `content/failures/<draft_id>.json`
 4. If `violations[]` is absent, follow the single top-level `field`, `observed_value`, and `required_constraint` exactly. Do not guess which winner failed.
 5. Write a new immutable draft containing the complete winners array and set `supersedes_draft_id` to the immediately failed draft ID.
 6. Recheck **Finalize Draft**.
-7. Create at most 3 repair drafts after the initial draft.
+7. Create at most 5 repair drafts after the initial draft.
 
 ## Winner rules
 
