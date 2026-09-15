@@ -1,0 +1,33 @@
+{
+  "content_id": "wd-425f8a634e97747168148f28",
+  "created_at": "2026-09-15T00:47:13.106232Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "00c6295b4fef845d1632d4c4ee95d3537d36f961",
+  "request_path": "content/requests/wd-425f8a634e97747168148f28.json",
+  "source_commit_sha": "1f453942ddb50119d53ff21e133cbd74830678f2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My roommate handled every bill and made a mysterious monthly building fee sound completely official. Then the landlord showed up asking why the real rent was late—and the entire story fell apart.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a777d00627ea98af9aec",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Invented a Fake Rent Fee"
+    },
+    "status": {
+      "privacyStatus": "public",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d9b12a653023f2d61619da250a014da32970ce67",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "34913906055"
+  }
+}
