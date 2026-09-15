@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d7f8e85d227b2013446cc1f5",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-15T18:07:15.548250Z",
+  "request_blob_sha": "3848092dd8b894b480819003bab3262dcadbc564",
+  "request_path": "content/requests/wd-d7f8e85d227b2013446cc1f5.json",
+  "source_commit_sha": "1e96ecf84a283abd6fd1e5bb38ebd75ef1edc46f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A business traveler keeps getting impossible minibar charges until one tiny reflection exposes where the hotel's evidence really came from.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-452124ea1b50419124dc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Hotel Had Photos of My Minibar Theft"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "8fe1c65001b24a6f9e66b624783ad8ef42886a2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35004694053"
+  },
+  "youtube_video_id": "aUTQSoABXAs"
+}
