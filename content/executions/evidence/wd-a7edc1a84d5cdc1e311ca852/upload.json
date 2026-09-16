@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a7edc1a84d5cdc1e311ca852",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T12:10:24.870244Z",
+  "request_blob_sha": "c48bd674b917812385dda1de7cf50c2b17968df7",
+  "request_path": "content/requests/wd-a7edc1a84d5cdc1e311ca852.json",
+  "source_commit_sha": "ee5d7558480df98a1d052ce5b0806a2c0cfdd298",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Suspicious restaurant charges look like family theft until one delivery note reveals where the meals were really going.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-beaf5bff98b4679288ad",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Thought My Sister Was Stealing Mom's Card"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35093794949"
+  },
+  "youtube_video_id": "cUXt3r6-lF0"
+}
