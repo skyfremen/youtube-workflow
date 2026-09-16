@@ -5,7 +5,7 @@
       "cars": {
         "sample_size": 1,
         "views_6h": {
-          "median": 42.0,
+          "median": 60.0,
           "sample": 1
         }
       },
@@ -34,21 +34,21 @@
         }
       },
       "family": {
-        "sample_size": 7,
+        "sample_size": 8,
         "views_24h": {
           "median": 2.0,
-          "sample": 3
+          "sample": 5
         },
         "views_6h": {
-          "median": 35.0,
-          "sample": 4
+          "median": 4.0,
+          "sample": 5
         }
       },
       "friends": {
         "sample_size": 3,
         "views_24h": {
-          "median": 276.0,
-          "sample": 1
+          "median": 140.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 144.0,
@@ -56,7 +56,7 @@
         }
       },
       "friendship": {
-        "sample_size": 1,
+        "sample_size": 2,
         "views_24h": {
           "median": 60.0,
           "sample": 1
@@ -64,6 +64,10 @@
       },
       "home_renovation": {
         "sample_size": 1,
+        "views_24h": {
+          "median": 1.0,
+          "sample": 1
+        },
         "views_6h": {
           "median": 1.0,
           "sample": 1
@@ -103,13 +107,21 @@
       },
       "pets": {
         "sample_size": 1,
+        "views_24h": {
+          "median": 3.0,
+          "sample": 1
+        },
         "views_6h": {
           "median": 3.0,
           "sample": 1
         }
       },
       "relationship": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 342.0,
+          "sample": 1
+        }
       },
       "relationship betrayal": {
         "sample_size": 1,
@@ -122,6 +134,16 @@
         "sample_size": 1,
         "views_24h": {
           "median": 7.0,
+          "sample": 1
+        }
+      },
+      "roommates": {
+        "sample_size": 1
+      },
+      "shopping": {
+        "sample_size": 1,
+        "views_6h": {
+          "median": 1.0,
           "sample": 1
         }
       },
@@ -139,65 +161,73 @@
           "sample": 1
         },
         "views_6h": {
-          "median": 75.0,
+          "median": 314.0,
           "sample": 1
         }
       },
       "work": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 0.0,
+          "sample": 1
+        }
       },
       "workplace": {
-        "sample_size": 3,
+        "sample_size": 4,
         "views_24h": {
           "median": 135.5,
           "sample": 2
+        },
+        "views_6h": {
+          "median": 0.0,
+          "sample": 1
         }
       }
     },
     "detailed_analytics_available": true,
     "duration_performance": {
       "under_120": {
-        "sample_size": 34,
+        "sample_size": 39,
         "views_24h": {
-          "median": 60.0,
-          "sample": 15
+          "median": 5.5,
+          "sample": 20
         },
         "views_6h": {
-          "median": 25.0,
-          "sample": 14
+          "median": 5.0,
+          "sample": 19
         }
       }
     },
-    "generated_at": "2026-09-16T10:12:44Z",
+    "generated_at": "2026-09-16T15:29:52Z",
     "lead_gender_performance": {
       "female": {
-        "sample_size": 29,
+        "sample_size": 31,
         "views_24h": {
-          "median": 81.5,
-          "sample": 14
+          "median": 21.0,
+          "sample": 18
         },
         "views_6h": {
-          "median": 34.0,
-          "sample": 10
+          "median": 8.0,
+          "sample": 13
         }
       },
       "male": {
-        "sample_size": 5,
+        "sample_size": 8,
         "views_24h": {
-          "median": 0.0,
-          "sample": 1
+          "median": 2.0,
+          "sample": 2
         },
         "views_6h": {
-          "median": 23.5,
-          "sample": 4
+          "median": 4.5,
+          "sample": 6
         }
       }
     },
     "learning": {
       "analytics_weight": "low",
       "checkpoint_samples": {
-        "24h": 15,
-        "6h": 14,
+        "24h": 20,
+        "6h": 19,
         "72h": 0,
         "7d": 0
       },
@@ -208,8 +238,8 @@
       "comedy": {
         "sample_size": 3,
         "views_24h": {
-          "median": 0.0,
-          "sample": 1
+          "median": 2.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 144.0,
@@ -217,43 +247,43 @@
         }
       },
       "conversational": {
-        "sample_size": 2,
+        "sample_size": 4,
         "views_24h": {
           "median": 60.0,
           "sample": 1
         },
         "views_6h": {
-          "median": 66.0,
-          "sample": 1
+          "median": 33.5,
+          "sample": 2
         }
       },
       "dramatic": {
         "sample_size": 15,
         "views_24h": {
-          "median": 103.0,
-          "sample": 7
+          "median": 35.0,
+          "sample": 9
         },
         "views_6h": {
-          "median": 8.0,
-          "sample": 7
+          "median": 6.0,
+          "sample": 8
         }
       },
       "dramatic_comedy": {
-        "sample_size": 6,
+        "sample_size": 7,
         "views_24h": {
-          "median": 168.0,
-          "sample": 3
+          "median": 87.5,
+          "sample": 4
         },
         "views_6h": {
-          "median": 1.0,
-          "sample": 1
+          "median": 0.5,
+          "sample": 2
         }
       },
       "natural": {
         "sample_size": 3,
         "views_24h": {
-          "median": 191.0,
-          "sample": 1
+          "median": 97.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 4.0,
@@ -268,10 +298,10 @@
         }
       },
       "warm": {
-        "sample_size": 3,
+        "sample_size": 5,
         "views_6h": {
-          "median": 767.5,
-          "sample": 2
+          "median": 408.0,
+          "sample": 4
         }
       }
     },
@@ -322,7 +352,7 @@
         "views_24h": 191
       }
     ],
-    "videos_analyzed": 34,
+    "videos_analyzed": 39,
     "window_days": 30
   },
   "background_categories": [
