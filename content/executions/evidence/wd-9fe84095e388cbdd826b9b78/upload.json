@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9fe84095e388cbdd826b9b78",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T12:13:57.044834Z",
+  "request_blob_sha": "10fc17b8fd81bddd2928e13f0ed2857fda112174",
+  "request_path": "content/requests/wd-9fe84095e388cbdd826b9b78.json",
+  "source_commit_sha": "ee5d7558480df98a1d052ce5b0806a2c0cfdd298",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three suspiciously awkward date nights share the same nervous waiter until the reason behind the secret rehearsals comes out.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c04fe73f07d624f7def5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Why Did the Same Waiter Ruin Every Date?"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35093799615"
+  },
+  "youtube_video_id": "cSATW6RrcvU"
+}
