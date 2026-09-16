@@ -1,10 +1,17 @@
 {
   "analytics_version": 1,
   "category_performance": {
+    "cars": {
+      "sample_size": 1,
+      "views_6h": {
+        "median": 42.0,
+        "sample": 1
+      }
+    },
     "consumer": {
       "sample_size": 1,
       "views_24h": {
-        "median": 190.0,
+        "median": 191.0,
         "sample": 1
       }
     },
@@ -26,27 +33,31 @@
       }
     },
     "family": {
-      "sample_size": 6,
+      "sample_size": 7,
       "views_24h": {
-        "median": 375.0,
-        "sample": 1
+        "median": 2.0,
+        "sample": 3
       },
       "views_6h": {
-        "median": 4.0,
-        "sample": 3
+        "median": 35.0,
+        "sample": 4
       }
     },
     "friends": {
       "sample_size": 3,
       "views_24h": {
-        "median": 275.0,
+        "median": 276.0,
+        "sample": 1
+      },
+      "views_6h": {
+        "median": 144.0,
         "sample": 1
       }
     },
     "friendship": {
       "sample_size": 1,
       "views_24h": {
-        "median": 59.0,
+        "median": 60.0,
         "sample": 1
       }
     },
@@ -58,22 +69,34 @@
       }
     },
     "housing": {
-      "sample_size": 1
+      "sample_size": 1,
+      "views_24h": {
+        "median": 1.0,
+        "sample": 1
+      }
     },
     "marketplace": {
-      "sample_size": 1
+      "sample_size": 1,
+      "views_24h": {
+        "median": 0.0,
+        "sample": 1
+      }
     },
     "neighborhood": {
       "sample_size": 1,
       "views_6h": {
-        "median": 243.0,
+        "median": 474.0,
         "sample": 1
       }
     },
     "neighbors": {
       "sample_size": 3,
       "views_24h": {
-        "median": 652.0,
+        "median": 327.5,
+        "sample": 2
+      },
+      "views_6h": {
+        "median": 60.0,
         "sample": 1
       }
     },
@@ -83,6 +106,9 @@
         "median": 3.0,
         "sample": 1
       }
+    },
+    "relationship": {
+      "sample_size": 1
     },
     "relationship betrayal": {
       "sample_size": 1,
@@ -106,11 +132,18 @@
       }
     },
     "wedding": {
-      "sample_size": 1,
+      "sample_size": 2,
       "views_24h": {
         "median": 297.0,
         "sample": 1
+      },
+      "views_6h": {
+        "median": 75.0,
+        "sample": 1
       }
+    },
+    "work": {
+      "sample_size": 1
     },
     "workplace": {
       "sample_size": 3,
@@ -123,43 +156,47 @@
   "detailed_analytics_available": true,
   "duration_performance": {
     "under_120": {
-      "sample_size": 29,
+      "sample_size": 34,
       "views_24h": {
-        "median": 179.0,
-        "sample": 10
+        "median": 60.0,
+        "sample": 15
       },
       "views_6h": {
-        "median": 4.0,
-        "sample": 9
+        "median": 25.0,
+        "sample": 14
       }
     }
   },
-  "generated_at": "2026-09-16T05:37:32Z",
+  "generated_at": "2026-09-16T10:12:44Z",
   "lead_gender_performance": {
     "female": {
-      "sample_size": 25,
+      "sample_size": 29,
       "views_24h": {
-        "median": 179.0,
-        "sample": 10
+        "median": 81.5,
+        "sample": 14
       },
       "views_6h": {
-        "median": 3.0,
-        "sample": 7
+        "median": 34.0,
+        "sample": 10
       }
     },
     "male": {
-      "sample_size": 4,
+      "sample_size": 5,
+      "views_24h": {
+        "median": 0.0,
+        "sample": 1
+      },
       "views_6h": {
-        "median": 4.5,
-        "sample": 2
+        "median": 23.5,
+        "sample": 4
       }
     }
   },
   "learning": {
     "analytics_weight": "low",
     "checkpoint_samples": {
-      "24h": 10,
-      "6h": 9,
+      "24h": 15,
+      "6h": 14,
       "72h": 0,
       "7d": 0
     },
@@ -168,24 +205,36 @@
   },
   "tone_performance": {
     "comedy": {
-      "sample_size": 3
+      "sample_size": 3,
+      "views_24h": {
+        "median": 0.0,
+        "sample": 1
+      },
+      "views_6h": {
+        "median": 144.0,
+        "sample": 1
+      }
     },
     "conversational": {
-      "sample_size": 1,
+      "sample_size": 2,
       "views_24h": {
-        "median": 59.0,
+        "median": 60.0,
+        "sample": 1
+      },
+      "views_6h": {
+        "median": 66.0,
         "sample": 1
       }
     },
     "dramatic": {
-      "sample_size": 12,
+      "sample_size": 15,
       "views_24h": {
-        "median": 275.0,
-        "sample": 5
+        "median": 103.0,
+        "sample": 7
       },
       "views_6h": {
-        "median": 3.0,
-        "sample": 4
+        "median": 8.0,
+        "sample": 7
       }
     },
     "dramatic_comedy": {
@@ -202,7 +251,7 @@
     "natural": {
       "sample_size": 3,
       "views_24h": {
-        "median": 190.0,
+        "median": 191.0,
         "sample": 1
       },
       "views_6h": {
@@ -211,12 +260,16 @@
       }
     },
     "sarcastic": {
-      "sample_size": 2
+      "sample_size": 2,
+      "views_24h": {
+        "median": 1.5,
+        "sample": 2
+      }
     },
     "warm": {
-      "sample_size": 2,
+      "sample_size": 3,
       "views_6h": {
-        "median": 397.5,
+        "median": 767.5,
         "sample": 2
       }
     }
@@ -256,7 +309,7 @@
       "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
       "story_tone": "dramatic",
       "title": "My Best Friend Rented Out My Apartment While I Was Away",
-      "views_24h": 275
+      "views_24h": 276
     },
     {
       "category": "consumer",
@@ -265,9 +318,9 @@
       "premise": "A salon customer is charged repeated no-show fees for appointments she actually attended, then discovers the receptionist has been marking completed visits as missed so she can resell popular time slots for cash tips.",
       "story_tone": "natural",
       "title": "The Salon Charged Me for an Appointment I Attended",
-      "views_24h": 190
+      "views_24h": 191
     }
   ],
-  "videos_analyzed": 29,
+  "videos_analyzed": 34,
   "window_days": 30
 }
