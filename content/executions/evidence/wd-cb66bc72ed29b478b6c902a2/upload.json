@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cb66bc72ed29b478b6c902a2",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T12:15:16.081460Z",
+  "request_blob_sha": "a17e6b4f6a37dc50772160ee59fd2a7f8b84f632",
+  "request_path": "content/requests/wd-cb66bc72ed29b478b6c902a2.json",
+  "source_commit_sha": "ee5d7558480df98a1d052ce5b0806a2c0cfdd298",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Last-minute presentation edits look like workplace sabotage until version history reveals a very different reason for the changes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-028bb1440a3e43b72f22",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Changed My Slides Before Every Meeting"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35093811547"
+  },
+  "youtube_video_id": "joRwqbCLqRU"
+}
