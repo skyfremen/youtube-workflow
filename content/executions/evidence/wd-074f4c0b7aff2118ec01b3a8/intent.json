@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-074f4c0b7aff2118ec01b3a8",
+  "created_at": "2026-09-16T00:14:08.592378Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "ff925d1f7941f0d1e5122ad3840e78647f6c9a50",
+  "request_path": "content/requests/wd-074f4c0b7aff2118ec01b3a8.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The thermostat kept changing at the same hours every night, and our utility bill was climbing. I finally followed my roommate downstairs.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8f445f7e924023916120",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Kept Secretly Turning Up the Heat"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038624919"
+  }
+}
