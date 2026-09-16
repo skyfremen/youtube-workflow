@@ -18,8 +18,15 @@
     "couple": {
       "sample_size": 1
     },
+    "couple_comedy": {
+      "sample_size": 1
+    },
     "entertainment": {
       "sample_size": 1,
+      "views_24h": {
+        "median": 2.0,
+        "sample": 1
+      },
       "views_6h": {
         "median": 2.0,
         "sample": 1
@@ -27,20 +34,24 @@
     },
     "everyday life": {
       "sample_size": 1,
+      "views_24h": {
+        "median": 6.0,
+        "sample": 1
+      },
       "views_6h": {
         "median": 5.0,
         "sample": 1
       }
     },
     "family": {
-      "sample_size": 8,
+      "sample_size": 9,
       "views_24h": {
-        "median": 2.0,
-        "sample": 5
+        "median": 3.0,
+        "sample": 6
       },
       "views_6h": {
-        "median": 4.0,
-        "sample": 5
+        "median": 2.5,
+        "sample": 6
       }
     },
     "friends": {
@@ -58,6 +69,10 @@
       "sample_size": 2,
       "views_24h": {
         "median": 60.0,
+        "sample": 1
+      },
+      "views_6h": {
+        "median": 0.0,
         "sample": 1
       }
     },
@@ -88,6 +103,10 @@
     },
     "neighborhood": {
       "sample_size": 1,
+      "views_24h": {
+        "median": 571.0,
+        "sample": 1
+      },
       "views_6h": {
         "median": 474.0,
         "sample": 1
@@ -101,6 +120,13 @@
       },
       "views_6h": {
         "median": 60.0,
+        "sample": 1
+      }
+    },
+    "parenting": {
+      "sample_size": 1,
+      "views_6h": {
+        "median": 3.0,
         "sample": 1
       }
     },
@@ -137,7 +163,11 @@
       }
     },
     "roommates": {
-      "sample_size": 1
+      "sample_size": 1,
+      "views_6h": {
+        "median": 1.0,
+        "sample": 1
+      }
     },
     "shopping": {
       "sample_size": 1,
@@ -147,10 +177,14 @@
       }
     },
     "travel": {
-      "sample_size": 1,
-      "views_6h": {
-        "median": 8.0,
+      "sample_size": 2,
+      "views_24h": {
+        "median": 14.0,
         "sample": 1
+      },
+      "views_6h": {
+        "median": 5.0,
+        "sample": 2
       }
     },
     "wedding": {
@@ -172,13 +206,13 @@
       }
     },
     "workplace": {
-      "sample_size": 4,
+      "sample_size": 5,
       "views_24h": {
         "median": 135.5,
         "sample": 2
       },
       "views_6h": {
-        "median": 0.0,
+        "median": 1.0,
         "sample": 1
       }
     }
@@ -186,47 +220,47 @@
   "detailed_analytics_available": true,
   "duration_performance": {
     "under_120": {
-      "sample_size": 39,
+      "sample_size": 44,
       "views_24h": {
-        "median": 5.5,
-        "sample": 20
+        "median": 7.0,
+        "sample": 25
       },
       "views_6h": {
-        "median": 5.0,
-        "sample": 19
+        "median": 3.0,
+        "sample": 24
       }
     }
   },
-  "generated_at": "2026-09-16T15:29:52Z",
+  "generated_at": "2026-09-16T20:21:10Z",
   "lead_gender_performance": {
     "female": {
-      "sample_size": 31,
+      "sample_size": 34,
       "views_24h": {
-        "median": 21.0,
-        "sample": 18
+        "median": 24.5,
+        "sample": 22
       },
       "views_6h": {
-        "median": 8.0,
-        "sample": 13
+        "median": 3.0,
+        "sample": 16
       }
     },
     "male": {
-      "sample_size": 8,
+      "sample_size": 10,
       "views_24h": {
-        "median": 2.0,
-        "sample": 2
+        "median": 4.0,
+        "sample": 3
       },
       "views_6h": {
-        "median": 4.5,
-        "sample": 6
+        "median": 2.5,
+        "sample": 8
       }
     }
   },
   "learning": {
     "analytics_weight": "low",
     "checkpoint_samples": {
-      "24h": 20,
-      "6h": 19,
+      "24h": 25,
+      "6h": 24,
       "72h": 0,
       "7d": 0
     },
@@ -234,8 +268,15 @@
     "stage": "cold_start"
   },
   "tone_performance": {
+    "calm": {
+      "sample_size": 1,
+      "views_6h": {
+        "median": 2.0,
+        "sample": 1
+      }
+    },
     "comedy": {
-      "sample_size": 3,
+      "sample_size": 4,
       "views_24h": {
         "median": 2.0,
         "sample": 2
@@ -252,15 +293,15 @@
         "sample": 1
       },
       "views_6h": {
-        "median": 33.5,
-        "sample": 2
+        "median": 1.0,
+        "sample": 3
       }
     },
     "dramatic": {
-      "sample_size": 15,
+      "sample_size": 16,
       "views_24h": {
-        "median": 35.0,
-        "sample": 9
+        "median": 14.0,
+        "sample": 11
       },
       "views_6h": {
         "median": 6.0,
@@ -274,15 +315,15 @@
         "sample": 4
       },
       "views_6h": {
-        "median": 0.5,
+        "median": 1.0,
         "sample": 2
       }
     },
     "natural": {
       "sample_size": 3,
       "views_24h": {
-        "median": 97.0,
-        "sample": 2
+        "median": 6.0,
+        "sample": 3
       },
       "views_6h": {
         "median": 4.0,
@@ -297,14 +338,28 @@
       }
     },
     "warm": {
-      "sample_size": 5,
+      "sample_size": 7,
+      "views_24h": {
+        "median": 825.0,
+        "sample": 2
+      },
       "views_6h": {
-        "median": 408.0,
-        "sample": 4
+        "median": 3.0,
+        "sample": 7
       }
     }
   },
   "top_examples": [
+    {
+      "category": "family",
+      "content_id": "wd-6a1e77f8a074e3db743d338a",
+      "duration_seconds": 87.0,
+      "premise": "A woman discovers her cousin has been quietly changing the delivery address on their grandmother's online grocery orders and keeping the expensive items while delivering only basics.",
+      "story_tone": "warm",
+      "title": "She Made Grandma Think She Was Forgetful",
+      "views_24h": 1079,
+      "views_6h": 1061
+    },
     {
       "category": "neighbors",
       "content_id": "wd-0c710c1f4461e67f5546a88b",
@@ -313,6 +368,16 @@
       "story_tone": "dramatic",
       "title": "She Reported My Dog. I Don't Own One.",
       "views_24h": 652
+    },
+    {
+      "category": "neighborhood",
+      "content_id": "wd-2ab67a038585b475b64d2bd3",
+      "duration_seconds": 80.0,
+      "premise": "A woman thinks her new neighbor is deliberately trying to get her car towed with increasingly hostile parking notes, until she learns the notes were written by the neighbor's teenage son to keep one curb space empty for a surprise mobility ramp being installed for his injured father.",
+      "story_tone": "warm",
+      "title": "I Thought My Neighbor Was Trying to Get Me Towed",
+      "views_24h": 571,
+      "views_6h": 474
     },
     {
       "category": "family",
@@ -331,26 +396,8 @@
       "story_tone": "dramatic_comedy",
       "title": "My Bridesmaid Sold My Wedding Decor",
       "views_24h": 297
-    },
-    {
-      "category": "friends",
-      "content_id": "wd-900c22d9856ba75f786c28e2",
-      "duration_seconds": 103.0,
-      "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
-      "story_tone": "dramatic",
-      "title": "My Best Friend Rented Out My Apartment While I Was Away",
-      "views_24h": 276
-    },
-    {
-      "category": "consumer",
-      "content_id": "wd-7495937755d290d78aac8bc3",
-      "duration_seconds": 76.0,
-      "premise": "A salon customer is charged repeated no-show fees for appointments she actually attended, then discovers the receptionist has been marking completed visits as missed so she can resell popular time slots for cash tips.",
-      "story_tone": "natural",
-      "title": "The Salon Charged Me for an Appointment I Attended",
-      "views_24h": 191
     }
   ],
-  "videos_analyzed": 39,
+  "videos_analyzed": 44,
   "window_days": 30
 }
