@@ -14,12 +14,11 @@ The count is the only planning difference. Do not change creative behavior based
 ## Normal run
 
 1. Read `content/context.json`.
-2. Generate a broad candidate pool internally and compare it with `recent_story_cards`; reject semantic duplicates.
-3. Select exactly `winner_count` strong winners. When `winner_count > 1`, treat them as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, and emotional beats.
+2. Generate a broad, varied candidate pool internally; reject semantic duplicates against `recent_story_cards`, then select exactly `winner_count` strong winners.
+3. When `winner_count > 1`, treat the winners as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, and emotional beats.
 4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
 5. Write exactly one new immutable file under `content/drafts/` containing all selected winners in one `winners[]` array.
-6. Check the **Finalize Draft** workflow triggered by that exact draft commit.
-7. If finalization succeeds, stop. Do not manually perform downstream production.
+6. Check the **Finalize Draft** workflow triggered by that exact draft commit. If it succeeds, stop.
 
 Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
 
@@ -38,19 +37,11 @@ Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
 
 ## Repair path
 
-Use this only when **Finalize Draft** creates `content/failures/<draft_id>.json` for the draft you just wrote.
+If **Finalize Draft** creates `content/failures/<draft_id>.json`, stay in the same invocation and read only the failed draft and its matching failure file. If `repairable` is false, stop and report the failure.
 
-1. Stay in the same ChatGPT invocation.
-2. Read only the failed draft and its matching failure file.
-3. If `repairable` is false, stop and report the failure. Do not create a repair draft.
-4. If the failure contains `violations[]`, repair every listed violation in one replacement draft. Use each violation's zero-based `winner_index` to identify the exact winner; `winner_title` is a human-readable cross-check. Change only listed winners and preserve every unlisted winner exactly.
-5. If `violations[]` is absent, follow the single top-level `field`, `observed_value`, and `required_constraint` exactly. Do not guess which winner failed or make unrelated changes.
-6. Make only the minimum creative correction required.
-7. Write a new immutable draft containing the complete `winners[]` array and set root field `supersedes_draft_id` to the immediately failed draft ID.
-8. Recheck **Finalize Draft** for the replacement commit.
-9. Repeat only if needed, up to 5 repair drafts after the initial draft.
+Otherwise repair every listed `violations[]` entry in one replacement draft, using `winner_index` to identify affected winners. Change only affected winners and preserve all others exactly. If `violations[]` is absent, follow the top-level `field`, `observed_value`, and `required_constraint` exactly. Make only the minimum creative correction required.
 
-If workflow failure occurs without a matching deterministic failure file, stop and report it. Do not guess or manually perform downstream production.
+Write the complete replacement `winners[]` with root field `supersedes_draft_id` pointing to the immediately failed draft, then recheck **Finalize Draft**. Repeat only if needed, up to 5 repair drafts after the initial draft. If workflow failure occurs without a matching deterministic failure file, stop and report it rather than guessing.
 
 ## Creative rules
 
