@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'content/results/*.json'
+      - 'content/result-reconciliations/*.json'
 
 permissions:
   contents: write
@@ -21,8 +22,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Identify one immutable result
-        id: result
+      - name: Identify immutable result input
+        id: input
         shell: bash
         run: |
           set -euo pipefail
@@ -30,40 +31,105 @@ jobs:
             git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" |
             awk '$1 == "A" && $2 ~ /^content\/results\/wd-[0-9a-f]{24}\.json$/ {print $2}'
           )
-          if [ "${#results[@]}" -ne 1 ]; then
-            echo "::error::RESULT_COMMIT_INVALID expected exactly one newly added immutable result"
+          mapfile -t reconciliations < <(
+            git diff-tree --no-commit-id --name-status -r "${GITHUB_SHA}" |
+            awk '$1 == "A" && $2 ~ /^content\/result-reconciliations\/reconcile-[A-Za-z0-9-]{8,96}\.json$/ {print $2}'
+          )
+
+          if [[ "${#results[@]}" -eq 1 && "${#reconciliations[@]}" -eq 0 ]]; then
+            echo "mode=result" >> "${GITHUB_OUTPUT}"
+            echo "path=${results[0]}" >> "${GITHUB_OUTPUT}"
+          elif [[ "${#results[@]}" -eq 0 && "${#reconciliations[@]}" -eq 1 ]]; then
+            echo "mode=reconcile" >> "${GITHUB_OUTPUT}"
+            echo "path=${reconciliations[0]}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "::error::RESULT_COMMIT_INVALID expected exactly one newly added immutable result or reconciliation request"
             exit 1
           fi
-          echo "path=${results[0]}" >> "${GITHUB_OUTPUT}"
 
       - name: Ingest from latest state and commit derived editorial state
         shell: bash
         env:
-          RESULT_PATH: ${{ steps.result.outputs.path }}
+          INPUT_MODE: ${{ steps.input.outputs.mode }}
+          INPUT_PATH: ${{ steps.input.outputs.path }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          resolve_result_paths() {
+            if [[ "${INPUT_MODE}" == "result" ]]; then
+              printf '%s\n' "${INPUT_PATH}"
+              return
+            fi
+
+            python - "${INPUT_PATH}" <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          request_path = Path(sys.argv[1])
+          with request_path.open(encoding="utf-8") as f:
+              request = json.load(f)
+
+          if not isinstance(request, dict) or set(request) != {"content_ids"}:
+              raise SystemExit("RECONCILIATION_INVALID expected exactly the content_ids field")
+          content_ids = request["content_ids"]
+          if not isinstance(content_ids, list) or not content_ids or len(content_ids) > 100:
+              raise SystemExit("RECONCILIATION_INVALID content_ids must contain 1..100 items")
+          if len(content_ids) != len(set(content_ids)):
+              raise SystemExit("RECONCILIATION_INVALID duplicate content_ids")
+
+          resolved = []
+          for content_id in content_ids:
+              if not isinstance(content_id, str) or not re.fullmatch(r"wd-[0-9a-f]{24}", content_id):
+                  raise SystemExit(f"RECONCILIATION_INVALID content_id={content_id!r}")
+              path = Path("content/results") / f"{content_id}.json"
+              if not path.is_file():
+                  raise SystemExit(f"RECONCILIATION_RESULT_MISSING {path}")
+              with path.open(encoding="utf-8") as f:
+                  result = json.load(f)
+              resolved.append((str(result.get("publish_at", "")), content_id, path.as_posix()))
+
+          for _, _, path in sorted(resolved):
+              print(path)
+          PY
+          }
 
           for attempt in 1 2 3; do
             echo "Editorial-state ingest attempt ${attempt}/3"
             git fetch origin main
             git reset --hard origin/main
 
-            if [[ ! -f "${RESULT_PATH}" ]]; then
-              echo "::error::RESULT_MISSING_FROM_MAIN ${RESULT_PATH}"
+            if [[ ! -f "${INPUT_PATH}" ]]; then
+              echo "::error::RESULT_INPUT_MISSING_FROM_MAIN ${INPUT_PATH}"
               exit 1
             fi
 
-            python pipeline.py ingest-result --result "${RESULT_PATH}"
-            git add data/history.json content/context.json
+            mapfile -t result_paths < <(resolve_result_paths)
+            if [[ "${#result_paths[@]}" -eq 0 ]]; then
+              echo "::error::RESULT_INPUT_RESOLVED_EMPTY"
+              exit 1
+            fi
 
+            for result_path in "${result_paths[@]}"; do
+              echo "Ingesting ${result_path}"
+              python pipeline.py ingest-result --result "${result_path}"
+            done
+
+            git add data/history.json content/context.json
             if git diff --cached --quiet; then
-              echo "Result was already ingested and context is current."
+              echo "All requested results were already ingested and context is current."
               exit 0
             fi
 
-            git commit -m "[state] ingest verified scheduled result"
+            if [[ "${INPUT_MODE}" == "reconcile" ]]; then
+              git commit -m "[state] reconcile verified scheduled results"
+            else
+              git commit -m "[state] ingest verified scheduled result"
+            fi
+
             if git push origin HEAD:main; then
               exit 0
             fi
