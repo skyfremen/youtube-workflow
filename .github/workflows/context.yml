@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: context-${{ github.ref }}
+  group: editorial-state-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -21,24 +21,36 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Rebuild compact context
-        run: python pipeline.py context
-
-      - name: Deterministic self-test
-        run: python pipeline.py self-test
-
-      - name: Commit derived context
+      - name: Rebuild latest compact context and commit
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content/context.json
-          if git diff --cached --quiet; then
-            echo "Context already current."
-            exit 0
-          fi
-          git commit -m "[state] rebuild compact planner context"
-          git push origin HEAD:main
+
+          for attempt in 1 2 3; do
+            echo "Context rebuild attempt ${attempt}/3"
+            git fetch origin main
+            git reset --hard origin/main
+
+            python pipeline.py context
+            python pipeline.py self-test
+            git add content/context.json
+
+            if git diff --cached --quiet; then
+              echo "Context already current."
+              exit 0
+            fi
+
+            git commit -m "[state] rebuild compact planner context"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "::warning::main advanced before context could be pushed; rebuilding from latest main"
+          done
+
+          echo "::error::CONTEXT_PUSH_RETRY_EXHAUSTED after 3 attempts"
+          exit 1
