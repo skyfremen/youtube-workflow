@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-7480066",
+            "segment_duration_seconds": 69.482,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-9736342",
+            "segment_duration_seconds": 88.417,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-35822699",
+            "segment_duration_seconds": 100.0,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-c16a28ad3a826e1348fc941c",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-16T22:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260916T140200-b4d91e2f",
+      "story": {
+        "card_emojis": [
+          "🤨",
+          "📱",
+          "💔",
+          "🤯"
+        ],
+        "category": "family",
+        "conflict": "The sister insists the registry is glitching and accuses the narrator of obsessing over gifts, while more purchased items vanish and relatives begin asking why their presents were never acknowledged.",
+        "hook": "Three days before my baby shower, the store called to ask why I had already returned half my gifts.",
+        "lead_gender": "female",
+        "premise": "A pregnant woman notices that several expensive baby-shower gifts are marked purchased on her registry but never arrive, then discovers her sister has been intercepting the deliveries and returning them for store credit before the shower.",
+        "punchline": "You weren't returning my gifts. You were returning everyone else's trust in you.",
+        "script": "I thought the call was a mistake because I had not returned anything. My registry showed a stroller, bottle sterilizer, baby monitor, diaper bag, and several smaller items as purchased, but none had reached me.\n\nAt first I assumed relatives planned to bring them to the shower. Then my aunt texted to ask whether I liked the diaper bag she had shipped directly to my apartment. She sent the delivery confirmation. It had been left outside my door while I was at work.\n\nMy sister had a spare key because she was helping me prepare the nursery. When I asked whether she had seen the package, she said no and joked that pregnancy brain was making me overthink everything.\n\nThat explanation almost worked until my friend called about the baby monitor. Tracking showed it was delivered on a Saturday when I was home, but I remembered my sister arriving early and insisting I nap while she organized the living room.\n\nI checked my building camera. Older footage was gone, but one recent package appeared at my door at 10:14. Twenty minutes later, my sister walked out carrying a large shopping bag she had not brought in.\n\nWhen I called her again, she got angry. She claimed she had returned one duplicate item because she was helping and planned to use the credit for something I needed. I asked what duplicate item. She stopped answering.\n\nThe next morning, the baby store called. Their loss-prevention team had flagged several returns connected to my registry. Someone had been bringing back unopened products without gift receipts and taking store credit. Because the registry number verified the purchases, every return was linked to my account.\n\nThey asked me to come in and confirm whether I recognized the customer on security footage. I went with my husband.\n\nOn the screen was my sister.\n\nShe returned my aunt's diaper bag, the sterilizer, and the baby monitor. In one clip she wore the same jacket she wore to dinner with us that night. She had been collecting packages from my doorstep or moving them inside with her spare key, then returning them before I knew they had arrived.\n\nWhen I confronted her, she admitted she was behind on credit-card payments. She had discovered registry gifts were easy to turn into store credit. She used some credit for groceries and sold the rest through local marketplace groups for cash.\n\nWhat hurt most was realizing she had let me question my friends, relatives, delivery drivers, and even my own memory while telling me I was being dramatic.\n\nI changed the lock that afternoon and called everyone whose gift had disappeared before my sister could invent another version.\n\nShe told our family I humiliated her over baby supplies.\n\nI told her, \"You weren't returning my gifts. You were returning everyone else's trust in you.\"\n\nThe store restored what credit it could. My aunt said the only thing she wanted replaced was the spare key.\n\nFor once, everyone agreed.",
+        "story_tone": "dramatic",
+        "twist": "A store employee calls about repeated no-receipt returns tied to the narrator's registry, and security footage shows the sister returning unopened gifts that relatives had shipped to the narrator's home."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "My baby registry said the gifts were purchased, but they kept disappearing before I ever saw them. Then the store called about the returns.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Sister Returned My Baby Shower Gifts Before I Opened Them"
+      }
+    }
+  ],
+  "request_id": "rq-ff2eb90d623be8bc1e433494",
+  "request_version": 2,
+  "source_draft_id": "draft-20260916T140200-b4d91e2f"
+}
