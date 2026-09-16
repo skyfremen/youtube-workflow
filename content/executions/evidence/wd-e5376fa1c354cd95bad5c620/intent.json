@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-e5376fa1c354cd95bad5c620",
+  "created_at": "2026-09-16T00:18:51.561682Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "0511d8b652fc30eefa16aa9abe2a8553492bd0c6",
+  "request_path": "content/requests/wd-e5376fa1c354cd95bad5c620.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I thought I was being punished after a tense client meeting. Then the client found my private social account.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-eb74de9ee41cedeff714",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Removed Me From My Biggest Project"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T20:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038634012"
+  }
+}
