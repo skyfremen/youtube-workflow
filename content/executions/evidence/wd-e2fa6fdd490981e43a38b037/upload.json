@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e2fa6fdd490981e43a38b037",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T00:14:50.053350Z",
+  "request_blob_sha": "0a4fa83349eb2f48f69ce6936ab78711b98e1f5c",
+  "request_path": "content/requests/wd-e2fa6fdd490981e43a38b037.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I bragged that I could always taste the cheap version. My girlfriend decided to test that claim scientifically.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7acec5ee44f80d24fe0b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Girlfriend Secretly Swapped My Expensive Groceries"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038632436"
+  },
+  "youtube_video_id": "75daCxDcyLo"
+}
