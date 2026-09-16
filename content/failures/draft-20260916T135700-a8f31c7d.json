@@ -1,0 +1,18 @@
+{
+  "draft_id": "draft-20260916T135700-a8f31c7d",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_LONG",
+      "field": "winners[0].narration",
+      "observed_value": "estimated_seconds=224.33",
+      "required_constraint": "120-178s",
+      "winner_index": 0,
+      "winner_title": "My Sister Returned My Baby Shower Gifts Before I Opened Them"
+    }
+  ]
+}
