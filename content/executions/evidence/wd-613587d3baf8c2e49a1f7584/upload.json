@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-613587d3baf8c2e49a1f7584",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T12:16:25.125067Z",
+  "request_blob_sha": "c553bdda0a65aa4cca7695031fbc5d7d9fb590fb",
+  "request_path": "content/requests/wd-613587d3baf8c2e49a1f7584.json",
+  "source_commit_sha": "ee5d7558480df98a1d052ce5b0806a2c0cfdd298",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mysteriously overfed dog puts suspicion on a neighbor until flour, paw prints, and one rubber ball reveal the real culprit.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ecd5e50aad198781a6af",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Dog Figured Out How to Hack His Feeder"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T09:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35093816285"
+  },
+  "youtube_video_id": "gaJwxnHVqlc"
+}
