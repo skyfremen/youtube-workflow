@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e32ef25e8852133256e09972",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T00:13:41.959907Z",
+  "request_blob_sha": "81b51a9a609fd9da6b5904a6449ae478ddaebbbc",
+  "request_path": "content/requests/wd-e32ef25e8852133256e09972.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I agreed to a dinner for four coworkers. My boss quietly turned it into a full office event—and the visiting executive noticed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a9cb338007655994a571",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boss Turned My Apartment Into a Company Event"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T12:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038621133"
+  },
+  "youtube_video_id": "TqzUh-h0a-Y"
+}
