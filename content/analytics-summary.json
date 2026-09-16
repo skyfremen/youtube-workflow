@@ -8,6 +8,9 @@
         "sample": 1
       }
     },
+    "couple": {
+      "sample_size": 1
+    },
     "entertainment": {
       "sample_size": 1
     },
@@ -48,7 +51,11 @@
       "sample_size": 1
     },
     "neighbors": {
-      "sample_size": 2
+      "sample_size": 3,
+      "views_24h": {
+        "median": 652.0,
+        "sample": 1
+      }
     },
     "pets": {
       "sample_size": 1
@@ -60,28 +67,28 @@
         "sample": 1
       }
     },
+    "roommate_drama": {
+      "sample_size": 1,
+      "views_24h": {
+        "median": 7.0,
+        "sample": 1
+      }
+    },
     "travel": {
       "sample_size": 1
-    },
-    "unknown": {
-      "sample_size": 5,
-      "views_24h": {
-        "median": 168.0,
-        "sample": 3
-      }
     },
     "wedding": {
       "sample_size": 1,
       "views_24h": {
-        "median": 297.0,
+        "median": 296.0,
         "sample": 1
       }
     },
     "workplace": {
-      "sample_size": 1,
+      "sample_size": 3,
       "views_24h": {
-        "median": 102.0,
-        "sample": 1
+        "median": 135.5,
+        "sample": 2
       }
     }
   },
@@ -95,24 +102,17 @@
       }
     }
   },
-  "generated_at": "2026-09-16T05:18:42Z",
+  "generated_at": "2026-09-16T05:25:29Z",
   "lead_gender_performance": {
     "female": {
-      "sample_size": 20,
+      "sample_size": 25,
       "views_24h": {
-        "median": 190.0,
-        "sample": 7
+        "median": 179.0,
+        "sample": 10
       }
     },
     "male": {
       "sample_size": 4
-    },
-    "unknown": {
-      "sample_size": 5,
-      "views_24h": {
-        "median": 168.0,
-        "sample": 3
-      }
     }
   },
   "tone_performance": {
@@ -127,17 +127,17 @@
       }
     },
     "dramatic": {
-      "sample_size": 11,
+      "sample_size": 12,
       "views_24h": {
-        "median": 188.5,
-        "sample": 4
+        "median": 275.0,
+        "sample": 5
       }
     },
     "dramatic_comedy": {
-      "sample_size": 2,
+      "sample_size": 6,
       "views_24h": {
-        "median": 297.0,
-        "sample": 1
+        "median": 168.0,
+        "sample": 3
       }
     },
     "natural": {
@@ -150,23 +150,18 @@
     "sarcastic": {
       "sample_size": 2
     },
-    "unknown": {
-      "sample_size": 5,
-      "views_24h": {
-        "median": 168.0,
-        "sample": 3
-      }
-    },
     "warm": {
       "sample_size": 2
     }
   },
   "top_examples": [
     {
-      "category": "unknown",
+      "category": "neighbors",
       "content_id": "wd-0c710c1f4461e67f5546a88b",
       "duration_seconds": 96.0,
-      "story_tone": "unknown",
+      "premise": "A woman receives repeated condo noise complaints about a dog she does not own, then discovers her neighbor has been playing barking sounds outside her door to manufacture evidence and pressure her to move.",
+      "story_tone": "dramatic",
+      "title": "She Reported My Dog. I Don't Own One.",
       "views_24h": 652
     },
     {
@@ -185,7 +180,7 @@
       "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
       "story_tone": "dramatic_comedy",
       "title": "My Bridesmaid Sold My Wedding Decor",
-      "views_24h": 297
+      "views_24h": 296
     },
     {
       "category": "friends",
