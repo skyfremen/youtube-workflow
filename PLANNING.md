@@ -16,11 +16,10 @@ The count is the only planning difference. Do not change creative behavior based
 1. Read `content/context.json`.
 2. Generate a broad candidate pool internally and compare it with `recent_story_cards`; reject semantic duplicates.
 3. Select exactly `winner_count` strong winners. When `winner_count > 1`, treat them as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, and emotional beats.
-4. Fully author only the selected winners. Do not persist rejected or runner-up ideas.
-5. For every winner choose exactly 4 semantic emoji cues and exactly 1 `background_category` from `background_categories`.
-6. Write exactly one new immutable file under `content/drafts/` containing all selected winners in one `winners[]` array.
-7. Check the **Finalize Draft** workflow triggered by that exact draft commit.
-8. If finalization succeeds, stop. Do not manually perform downstream production.
+4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
+5. Write exactly one new immutable file under `content/drafts/` containing all selected winners in one `winners[]` array.
+6. Check the **Finalize Draft** workflow triggered by that exact draft commit.
+7. If finalization succeeds, stop. Do not manually perform downstream production.
 
 Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
 
@@ -61,20 +60,19 @@ Every winner follows the same creative contract:
 - Use a relatable conflict, clear escalation, and a satisfying payoff/reversal.
 - Use one narrator per winner.
 - Aim for roughly 120-175 seconds of spoken content.
-- `narration` is the story body after the opening hook. Do not deliberately repeat the hook at the start; deterministic code strips one exact repeated prefix if present.
-- `payoff` should be a short exact phrase that appears verbatim in `narration`. If missing or unmatched, deterministic code uses the final narration sentence.
-- `lead_gender` should be `female` or `male`; invalid/missing values default to `female`.
-- `story_tone` should be one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`; invalid/missing values default to `natural`.
-- Choose one supplied `background_category`. Deterministic code owns individual background selection.
+- `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
+- `payoff` must be a short exact phrase that appears verbatim in `narration`.
+- `lead_gender` must be `female` or `male`.
+- `story_tone` must be one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`.
+- Choose exactly four semantic emoji cues from the supported cues below.
+- Choose exactly one supplied `background_category` from `background_categories`.
 - No background music.
 
 ## Emoji cues
 
-Choose exactly four semantic cue words. Supported cues:
+Supported cues:
 
 `shock`, `surprise`, `argument`, `anger`, `betrayal`, `suspicion`, `secret`, `evidence`, `money`, `revenge`, `embarrassment`, `victory`, `funny`, `romance`, `panic`, `confusion`, `disbelief`, `warning`, `celebration`, `awkward`.
-
-Invalid/missing emoji cues are non-blocking and fall back to `😳`, `💬`, `🔥`, `👀`.
 
 ## Draft contract
 
@@ -104,4 +102,4 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
 
 For repair, the root may additionally contain `"supersedes_draft_id": "draft-..."`.
 
-The draft must contain exactly `winner_count` winner objects. `winner_count` is a planner instruction only; deterministic finalization may accept any non-empty `winners[]` array. GitHub owns publication-slot allocation after finalization.
+The draft must contain exactly `winner_count` winner objects.
