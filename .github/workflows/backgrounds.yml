@@ -17,7 +17,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: backgrounds-${{ github.ref }}
+  group: editorial-state-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -27,9 +27,6 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-
-      - name: Run background seeding tests
-        run: python -m unittest discover -s tests -p 'test_background_seed*.py'
 
       - name: Resolve immutable request or approval
         id: target
@@ -84,6 +81,20 @@ jobs:
             echo "Background request/approval was not introduced as a new immutable file: ${path}" >&2
             exit 1
           fi
+
+      - name: Refresh latest serialized state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          if [[ ! -f "${{ steps.target.outputs.path }}" ]]; then
+            echo "Background input disappeared from latest main: ${{ steps.target.outputs.path }}" >&2
+            exit 1
+          fi
+
+      - name: Run background seeding tests
+        run: python -m unittest discover -s tests -p 'test_background_seed*.py'
 
       - name: Validate background state
         run: python background_seed_rejections.py validate
