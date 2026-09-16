@@ -13,16 +13,28 @@
         "sample_size": 1
       },
       "entertainment": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 2.0,
+          "sample": 1
+        }
       },
       "everyday life": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 5.0,
+          "sample": 1
+        }
       },
       "family": {
         "sample_size": 6,
         "views_24h": {
           "median": 375.0,
           "sample": 1
+        },
+        "views_6h": {
+          "median": 4.0,
+          "sample": 3
         }
       },
       "friends": {
@@ -40,7 +52,11 @@
         }
       },
       "home_renovation": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 1.0,
+          "sample": 1
+        }
       },
       "housing": {
         "sample_size": 1
@@ -49,7 +65,11 @@
         "sample_size": 1
       },
       "neighborhood": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 243.0,
+          "sample": 1
+        }
       },
       "neighbors": {
         "sample_size": 3,
@@ -59,7 +79,11 @@
         }
       },
       "pets": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 3.0,
+          "sample": 1
+        }
       },
       "relationship betrayal": {
         "sample_size": 1,
@@ -76,12 +100,16 @@
         }
       },
       "travel": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 8.0,
+          "sample": 1
+        }
       },
       "wedding": {
         "sample_size": 1,
         "views_24h": {
-          "median": 296.0,
+          "median": 297.0,
           "sample": 1
         }
       },
@@ -95,26 +123,49 @@
     },
     "detailed_analytics_available": true,
     "duration_performance": {
-      "120_139": {
+      "under_120": {
         "sample_size": 29,
         "views_24h": {
           "median": 179.0,
           "sample": 10
+        },
+        "views_6h": {
+          "median": 4.0,
+          "sample": 9
         }
       }
     },
-    "generated_at": "2026-09-16T05:25:29Z",
+    "generated_at": "2026-09-16T05:37:32Z",
     "lead_gender_performance": {
       "female": {
         "sample_size": 25,
         "views_24h": {
           "median": 179.0,
           "sample": 10
+        },
+        "views_6h": {
+          "median": 3.0,
+          "sample": 7
         }
       },
       "male": {
-        "sample_size": 4
+        "sample_size": 4,
+        "views_6h": {
+          "median": 4.5,
+          "sample": 2
+        }
       }
+    },
+    "learning": {
+      "analytics_weight": "low",
+      "checkpoint_samples": {
+        "24h": 10,
+        "6h": 9,
+        "72h": 0,
+        "7d": 0
+      },
+      "minimum_pattern_sample": 5,
+      "stage": "cold_start"
     },
     "tone_performance": {
       "comedy": {
@@ -132,6 +183,10 @@
         "views_24h": {
           "median": 275.0,
           "sample": 5
+        },
+        "views_6h": {
+          "median": 3.0,
+          "sample": 4
         }
       },
       "dramatic_comedy": {
@@ -139,6 +194,10 @@
         "views_24h": {
           "median": 168.0,
           "sample": 3
+        },
+        "views_6h": {
+          "median": 1.0,
+          "sample": 1
         }
       },
       "natural": {
@@ -146,13 +205,21 @@
         "views_24h": {
           "median": 190.0,
           "sample": 1
+        },
+        "views_6h": {
+          "median": 4.0,
+          "sample": 2
         }
       },
       "sarcastic": {
         "sample_size": 2
       },
       "warm": {
-        "sample_size": 2
+        "sample_size": 2,
+        "views_6h": {
+          "median": 397.5,
+          "sample": 2
+        }
       }
     },
     "top_examples": [
@@ -181,7 +248,7 @@
         "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
         "story_tone": "dramatic_comedy",
         "title": "My Bridesmaid Sold My Wedding Decor",
-        "views_24h": 296
+        "views_24h": 297
       },
       {
         "category": "friends",
