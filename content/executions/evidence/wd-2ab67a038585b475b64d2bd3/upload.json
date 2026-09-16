@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2ab67a038585b475b64d2bd3",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T00:13:26.288780Z",
+  "request_blob_sha": "14112f399c1700210c2fd044e73296911bbd9f59",
+  "request_path": "content/requests/wd-2ab67a038585b475b64d2bd3.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The parking notes kept getting more threatening—until I caught the person leaving them and learned what the curb space was really for.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9032cbd5780d81c7d45a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Thought My Neighbor Was Trying to Get Me Towed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038617544"
+  },
+  "youtube_video_id": "kMTGHApEH9o"
+}
