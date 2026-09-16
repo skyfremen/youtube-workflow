@@ -21,6 +21,19 @@ Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowe
 
 Treat the winners as one editorial batch. Avoid near-duplicate premises, conflicts, twists, title patterns, and emotional beats inside the same draft. Each winner must still stand alone as a complete Wacky Dramas Short.
 
+## Analytics interpretation
+
+Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
+
+- Read `analytics_summary.learning` first. Respect its `stage`, `analytics_weight`, and `minimum_pattern_sample`.
+- A category, tone, gender, duration bucket, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
+- Prefer more mature evidence when sample sizes are adequate: `7d` > `72h` > `24h` > `6h`. Treat `6h` as an early test signal only.
+- During `cold_start`, prioritize creative quality, diversity, and exploration. Roughly 70-80% of the batch should explore strong varied ideas and only 20-30% should deliberately lean into early positive signals.
+- During `early_learning`, analytics may influence more selections, but preserve meaningful exploration and diversity.
+- During `established`, use repeatable multi-video patterns more confidently while still avoiding formulaic repetition.
+- `top_examples` are clues about hooks, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, or twists.
+- Never sacrifice semantic-duplicate avoidance or batch diversity merely to exploit an analytics signal.
+
 ## Repair path
 
 Use this only when **Finalize Draft** creates `content/failures/<draft_id>.json` for the draft you just wrote.
