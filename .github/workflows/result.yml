@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: result-${{ github.ref }}
+  group: editorial-state-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -36,23 +36,40 @@ jobs:
           fi
           echo "path=${results[0]}" >> "${GITHUB_OUTPUT}"
 
-      - name: Ingest scheduled result and rebuild context
+      - name: Ingest from latest state and commit derived editorial state
         shell: bash
-        run: |
-          set -euo pipefail
-          python pipeline.py ingest-result --result "${{ steps.result.outputs.path }}"
-
-      - name: Commit derived editorial state
-        shell: bash
+        env:
+          RESULT_PATH: ${{ steps.result.outputs.path }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/history.json content/context.json
-          if git diff --cached --quiet; then
-            echo "Result was already ingested."
-            exit 0
-          fi
-          git commit -m "[state] ingest verified scheduled result"
-          git pull --rebase origin main
-          git push origin HEAD:main
+
+          for attempt in 1 2 3; do
+            echo "Editorial-state ingest attempt ${attempt}/3"
+            git fetch origin main
+            git reset --hard origin/main
+
+            if [[ ! -f "${RESULT_PATH}" ]]; then
+              echo "::error::RESULT_MISSING_FROM_MAIN ${RESULT_PATH}"
+              exit 1
+            fi
+
+            python pipeline.py ingest-result --result "${RESULT_PATH}"
+            git add data/history.json content/context.json
+
+            if git diff --cached --quiet; then
+              echo "Result was already ingested and context is current."
+              exit 0
+            fi
+
+            git commit -m "[state] ingest verified scheduled result"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "::warning::main advanced before result state could be pushed; recomputing from latest main"
+          done
+
+          echo "::error::RESULT_STATE_PUSH_RETRY_EXHAUSTED after 3 attempts"
+          exit 1
