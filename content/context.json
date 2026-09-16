@@ -337,13 +337,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The narrator sees a high-profile project removed without explanation and assumes retaliation, while her manager gives only vague instructions not to contact the client directly.",
-      "payoff": "You didn't take my project because I caused a problem. You took me off it because the client was becoming the problem.",
-      "premise": "A woman thinks her new manager is taking away her biggest project as punishment after a difficult meeting, but learns the manager reassigned it because a former client had started contacting her personally and HR was quietly protecting her from escalating harassment.",
-      "title": "My Manager Removed Me From My Biggest Project",
-      "twist": "The client had crossed professional boundaries and begun sending personal messages about the narrator; the project was reassigned while HR documented the behavior and blocked further access to her."
-    },
-    {
       "conflict": "The bride keeps discovering missing decorations while the bridesmaid insists items were misplaced in storage and urges her to stop stressing over small details.",
       "payoff": "You didn't declutter my wedding. You tried to sell it piece by piece.",
       "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
@@ -510,6 +503,13 @@
       "premise": "A bride discovers her venue's expensive floral centerpieces are disappearing after each planning meeting, only to learn the coordinator has been photographing the same sample arrangement for multiple couples and charging each of them a separate design fee.",
       "title": "The Same Broken Leaf Was in Every Wedding Photo",
       "twist": "Metadata and tiny recurring defects in the flowers prove the coordinator reused one arrangement and its photos across several couples while billing each as a newly commissioned sample."
+    },
+    {
+      "conflict": "Finance freezes the narrator's reimbursements after the system shows duplicate taxi receipts under his name across dates when he was not traveling.",
+      "payoff": "I didn't submit the same taxi four times. Someone in finance was spending my receipt four times.",
+      "premise": "An employee is accused of padding taxi expenses until a repeated receipt number reveals a finance clerk has been attaching his legitimate receipts to other employees' fake claims.",
+      "title": "Finance Said I Faked My Taxi Receipts",
+      "twist": "The duplicate receipt IDs trace back to a finance clerk who copied approved receipts into fabricated claims for dormant employee accounts and accidentally reused one too many times."
     }
   ]
 }
