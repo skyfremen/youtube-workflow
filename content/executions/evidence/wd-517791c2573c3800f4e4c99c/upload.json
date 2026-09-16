@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-517791c2573c3800f4e4c99c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-16T00:13:26.798789Z",
+  "request_blob_sha": "b1c58e7fea8c4e278b1d02f9a541700e112bd348",
+  "request_path": "content/requests/wd-517791c2573c3800f4e4c99c.json",
+  "source_commit_sha": "ae398d10ffb7a0aa5c2155fbda0abfd26f54afbc",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My son said he kept sitting alone while the rest of the class worked together. I scheduled a meeting—and learned who chose that desk.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-93cbda74577c668f8d49",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Thought My Son's Teacher Was Isolating Him"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-16T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "fc861c7ea9bc2c2e8f1fb0870730c563e2454d51",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35038631030"
+  },
+  "youtube_video_id": "qGY-X1Qxo6s"
+}
