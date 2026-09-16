@@ -104,6 +104,29 @@ jobs:
           PY
           }
 
+          merge_analytics() {
+            if [[ ! -f content/analytics-summary.json ]]; then
+              return 0
+            fi
+            python - <<'PY'
+          import json
+          from pathlib import Path
+
+          context_path = Path("content/context.json")
+          summary_path = Path("content/analytics-summary.json")
+          context = json.loads(context_path.read_text(encoding="utf-8"))
+          summary = json.loads(summary_path.read_text(encoding="utf-8"))
+          if not isinstance(context, dict) or not isinstance(summary, dict):
+              raise SystemExit("ANALYTICS_CONTEXT_INVALID expected JSON objects")
+          context["context_version"] = max(int(context.get("context_version", 1)), 2)
+          context["analytics_summary"] = summary
+          raw = json.dumps(context, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+          if len(raw.encode()) > 60000:
+              raise SystemExit("ANALYTICS_CONTEXT_TOO_LARGE expected <=60000 bytes")
+          context_path.write_text(raw, encoding="utf-8")
+          PY
+          }
+
           for attempt in 1 2 3; do
             echo "Editorial-state reconciliation attempt ${attempt}/3"
             git fetch origin main
@@ -126,6 +149,7 @@ jobs:
               done
             fi
 
+            merge_analytics
             git add data/history.json content/context.json
             if git diff --cached --quiet; then
               echo "Result history and context are already current."
