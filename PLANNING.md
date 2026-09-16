@@ -45,10 +45,15 @@ Write the complete replacement `winners[]` with root field `supersedes_draft_id`
 
 ## Creative rules
 
-Every winner follows the same creative contract:
+Every winner follows the same creative contract. Tell addictive, relatable everyday dramas like someone excitedly recounting something that happened. Use simple conversational language, fast progression, and natural narration rather than literary prose or screenplay-style scene setting.
 
-- Hook immediately with a clear, compelling situation.
-- Use a relatable conflict, clear escalation, and a satisfying payoff/reversal.
+- Hook immediately with a specific situation that creates curiosity.
+- Build around a relatable human conflict that progressively escalates.
+- Keep earning attention with meaningful complications, revelations, reversals, or changing stakes; avoid filler and repetitive escalation.
+- End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup.
+- Let stories vary naturally in structure, emotion, characters, settings, and conflict. Do not force every story into the same formula.
+- Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
+- Keep titles curiosity-driven and specific without revealing the payoff.
 - Use one narrator per winner.
 - Aim for roughly 120-175 seconds of spoken content.
 - `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
