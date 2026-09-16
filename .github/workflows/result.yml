@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: editorial-state-${{ github.ref }}
+  group: result-state-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
             exit 1
           fi
 
-      - name: Ingest from latest state and commit derived editorial state
+      - name: Reconcile latest result state and commit derived editorial state
         shell: bash
         env:
           INPUT_MODE: ${{ steps.input.outputs.mode }}
@@ -57,48 +57,55 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          resolve_result_paths() {
-            if [[ "${INPUT_MODE}" == "result" ]]; then
-              printf '%s\n' "${INPUT_PATH}"
-              return
-            fi
-
-            python - "${INPUT_PATH}" <<'PY'
+          resolve_missing_results() {
+            python - "${INPUT_MODE}" "${INPUT_PATH}" <<'PY'
           import json
           import re
           import sys
           from pathlib import Path
 
-          request_path = Path(sys.argv[1])
-          with request_path.open(encoding="utf-8") as f:
-              request = json.load(f)
+          mode, input_path = sys.argv[1], Path(sys.argv[2])
+          if mode == "reconcile":
+              with input_path.open(encoding="utf-8") as f:
+                  request = json.load(f)
+              if not isinstance(request, dict) or set(request) != {"content_ids"}:
+                  raise SystemExit("RECONCILIATION_INVALID expected exactly the content_ids field")
+              content_ids = request["content_ids"]
+              if not isinstance(content_ids, list) or not content_ids or len(content_ids) > 100:
+                  raise SystemExit("RECONCILIATION_INVALID content_ids must contain 1..100 items")
+              if len(content_ids) != len(set(content_ids)):
+                  raise SystemExit("RECONCILIATION_INVALID duplicate content_ids")
+              for content_id in content_ids:
+                  if not isinstance(content_id, str) or not re.fullmatch(r"wd-[0-9a-f]{24}", content_id):
+                      raise SystemExit(f"RECONCILIATION_INVALID content_id={content_id!r}")
+                  if not (Path("content/results") / f"{content_id}.json").is_file():
+                      raise SystemExit(f"RECONCILIATION_RESULT_MISSING content/results/{content_id}.json")
 
-          if not isinstance(request, dict) or set(request) != {"content_ids"}:
-              raise SystemExit("RECONCILIATION_INVALID expected exactly the content_ids field")
-          content_ids = request["content_ids"]
-          if not isinstance(content_ids, list) or not content_ids or len(content_ids) > 100:
-              raise SystemExit("RECONCILIATION_INVALID content_ids must contain 1..100 items")
-          if len(content_ids) != len(set(content_ids)):
-              raise SystemExit("RECONCILIATION_INVALID duplicate content_ids")
+          with Path("data/history.json").open(encoding="utf-8") as f:
+              history = json.load(f)
+          if not isinstance(history, list):
+              raise SystemExit("INVALID_HISTORY expected array")
+          ingested = {
+              item.get("content_id")
+              for item in history
+              if isinstance(item, dict) and isinstance(item.get("content_id"), str)
+          }
 
-          resolved = []
-          for content_id in content_ids:
-              if not isinstance(content_id, str) or not re.fullmatch(r"wd-[0-9a-f]{24}", content_id):
-                  raise SystemExit(f"RECONCILIATION_INVALID content_id={content_id!r}")
-              path = Path("content/results") / f"{content_id}.json"
-              if not path.is_file():
-                  raise SystemExit(f"RECONCILIATION_RESULT_MISSING {path}")
+          missing = []
+          for path in sorted(Path("content/results").glob("wd-*.json")):
               with path.open(encoding="utf-8") as f:
                   result = json.load(f)
-              resolved.append((str(result.get("publish_at", "")), content_id, path.as_posix()))
+              content_id = result.get("content_id") if isinstance(result, dict) else None
+              if content_id not in ingested:
+                  missing.append((str(result.get("publish_at", "")), str(content_id), path.as_posix()))
 
-          for _, _, path in sorted(resolved):
+          for _, _, path in sorted(missing):
               print(path)
           PY
           }
 
           for attempt in 1 2 3; do
-            echo "Editorial-state ingest attempt ${attempt}/3"
+            echo "Editorial-state reconciliation attempt ${attempt}/3"
             git fetch origin main
             git reset --hard origin/main
 
@@ -107,27 +114,28 @@ jobs:
               exit 1
             fi
 
-            mapfile -t result_paths < <(resolve_result_paths)
+            mapfile -t result_paths < <(resolve_missing_results)
             if [[ "${#result_paths[@]}" -eq 0 ]]; then
-              echo "::error::RESULT_INPUT_RESOLVED_EMPTY"
-              exit 1
+              echo "No missing result history entries; rebuilding context only."
+              python pipeline.py context
+            else
+              echo "Reconciling ${#result_paths[@]} missing result(s)."
+              for result_path in "${result_paths[@]}"; do
+                echo "Ingesting ${result_path}"
+                python pipeline.py ingest-result --result "${result_path}"
+              done
             fi
-
-            for result_path in "${result_paths[@]}"; do
-              echo "Ingesting ${result_path}"
-              python pipeline.py ingest-result --result "${result_path}"
-            done
 
             git add data/history.json content/context.json
             if git diff --cached --quiet; then
-              echo "All requested results were already ingested and context is current."
+              echo "Result history and context are already current."
               exit 0
             fi
 
             if [[ "${INPUT_MODE}" == "reconcile" ]]; then
               git commit -m "[state] reconcile verified scheduled results"
             else
-              git commit -m "[state] ingest verified scheduled result"
+              git commit -m "[state] ingest verified scheduled results"
             fi
 
             if git push origin HEAD:main; then
