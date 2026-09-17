@@ -26,6 +26,7 @@ EXPECTED_YOUTUBE_CHANNEL_ID="UCvrq2m9G4yrwPfL_X-QPzMA"
 DEFAULT_EMOJIS=["😳","💬","🔥","👀"]
 EMOJI_MAP={"shock":"😳","surprise":"😮","argument":"💢","anger":"😡","betrayal":"💔","suspicion":"🤨","secret":"🤫","evidence":"📱","money":"💰","revenge":"😈","embarrassment":"😬","victory":"😎","funny":"😂","romance":"❤️","panic":"😱","confusion":"😵","disbelief":"🤯","warning":"⚠️","celebration":"🎉","awkward":"🙃"}
 NATURAL={"natural","neutral","conversational","warm","calm"}; EXPRESSIVE={"expressive","dramatic","comedy","sarcastic","dramatic_comedy","absurd"}; TONES=NATURAL|EXPRESSIVE
+HOOK_TYPES={"accusation","discovery","contradiction","money_stakes","social_exposure","urgency","confession","consequence_first"}
 DRAFT_RE=re.compile(r"^draft-[A-Za-z0-9-]{8,96}$"); CID_RE=re.compile(r"^wd-[0-9a-f]{24}$"); RID_RE=re.compile(r"^rq-[0-9a-f]{24}$"); EID_RE=re.compile(r"^ex-[0-9a-f]{24}$"); SHA40=re.compile(r"^[0-9a-f]{40}$")
 CONTRACT={"name":"wacky-dramas-production-v2","request_version":2,"execution_version":2,"result_version":2,"visibility":"private_scheduled","request_path":"content/requests/{request_id}.json","execution_path":"content/executions/{execution_id}.json","result_path":"content/results/{content_id}.json","registry_path":"data/backgrounds.json"}
 CONTRACT_HASH=hashlib.sha256(json.dumps(CONTRACT,sort_keys=True,separators=(",",":")).encode()).hexdigest()
@@ -138,7 +139,7 @@ def build_context():
 def normalize_winner(w,index):
     if not isinstance(w,dict): raise VError("INVALID_WINNER_FIELDS",f"winners[{index}]",type(w).__name__,"winner object")
     hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration")); raw_topic=w.get("trend_topic")
-    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
+    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
 def normalize_draft(x):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
     if "winner" in x: raise VError("LEGACY_DRAFT_SHAPE","winner","present","use winners[] only",False)
@@ -155,6 +156,9 @@ def collect_draft_violations(d):
             value=clean(w.get(field))
             if not value:
                 out.append({"winner_index":index,"winner_title":title,"error_code":"MISSING_TEXT","field":f"winners[{index}].{field}","observed_value":value,"required_constraint":"non-empty text"})
+        hook_type=w.get("hook_type")
+        if hook_type not in HOOK_TYPES:
+            out.append({"winner_index":index,"winner_title":title,"error_code":"INVALID_HOOK_TYPE","field":f"winners[{index}].hook_type","observed_value":hook_type,"required_constraint":"one supported hook type"})
         aware=w.get("trend_aware"); topic=w.get("trend_topic")
         if type(aware) is not bool:
             out.append({"winner_index":index,"winner_title":title,"error_code":"INVALID_TREND_AWARE","field":f"winners[{index}].trend_aware","observed_value":aware,"required_constraint":"boolean true or false"})
@@ -237,17 +241,18 @@ def allocate_publish_slots(count,now=None,occupied=None):
 def content_id_for(did,index,w): return "wd-"+hashlib.sha256(canonical({"source_draft_id":did,"winner_index":index,"winner":w})).hexdigest()[:24]
 def make_item(did,index,w,r,publish_at):
     cid=content_id_for(did,index,w); g=w["lead_gender"]; t=w["story_tone"]
-    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":{"category":w["category"],"premise":w["premise"],"conflict":w["conflict"],"twist":w["twist"],"hook":w["hook"],"script":w["narration"],"lead_gender":g,"story_tone":t,"punchline":w["payoff"],"card_emojis":resolve_emojis(w.get("emoji_cues")),"trend_aware":w["trend_aware"],"trend_topic":w["trend_topic"]},"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
+    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":{"category":w["category"],"premise":w["premise"],"conflict":w["conflict"],"twist":w["twist"],"hook":w["hook"],"hook_type":w["hook_type"],"script":w["narration"],"lead_gender":g,"story_tone":t,"punchline":w["payoff"],"card_emojis":resolve_emojis(w.get("emoji_cues")),"trend_aware":w["trend_aware"],"trend_topic":w["trend_topic"]},"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
 def validate_item(x,r=None):
     top={"request_version","content_id","source_draft_id","channel","story","narration","background","youtube","publication","visibility","render"}
     if not isinstance(x,dict) or set(x)!=top: raise VError("INVALID_REQUEST_ITEM_FIELDS","item",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V2 item fields",False)
     if x["request_version"]!=2 or not CID_RE.fullmatch(str(x["content_id"])): raise VError("INVALID_REQUEST_IDENTITY","item",x.get("content_id"),"request_version=2 and valid content_id",False)
     if not DRAFT_RE.fullmatch(str(x["source_draft_id"])): raise VError("INVALID_SOURCE_DRAFT_ID","source_draft_id",x["source_draft_id"],"valid draft id",False)
     if x["channel"]!={"name":"Wacky Dramas","handle":"@WACKYDRAMAS"}: raise VError("INVALID_CHANNEL","channel",x["channel"],"canonical channel",False)
-    s=x["story"]; required_sk={"category","premise","conflict","twist","hook","script","lead_gender","story_tone","punchline","card_emojis"}; optional_sk={"trend_aware","trend_topic"}
-    if not isinstance(s,dict) or not required_sk<=set(s) or set(s)-(required_sk|optional_sk): raise VError("INVALID_STORY_FIELDS","story",s,"required story fields plus optional trend provenance")
+    s=x["story"]; required_sk={"category","premise","conflict","twist","hook","script","lead_gender","story_tone","punchline","card_emojis"}; optional_sk={"hook_type","trend_aware","trend_topic"}
+    if not isinstance(s,dict) or not required_sk<=set(s) or set(s)-(required_sk|optional_sk): raise VError("INVALID_STORY_FIELDS","story",s,"required story fields plus optional creative provenance")
     if ("trend_aware" in s) != ("trend_topic" in s): raise VError("INVALID_TREND_FIELDS","story",s,"both trend_aware and trend_topic or neither")
     for k in required_sk-{"card_emojis"}: text(s[k],"story."+k)
+    if "hook_type" in s and s["hook_type"] not in HOOK_TYPES: raise VError("INVALID_HOOK_TYPE","story.hook_type",s["hook_type"],"supported hook type",False)
     if "trend_aware" in s:
         aware=s["trend_aware"]; topic=s["trend_topic"]
         if type(aware) is not bool: raise VError("INVALID_TREND_AWARE","story.trend_aware",aware,"boolean",False)
@@ -371,7 +376,7 @@ def self_test():
     r=registry(); c=build_context(); groups=category_assets(r)
     ok("1 context compact",len(pretty(c))<=40000); ok("2 viable backgrounds",bool(c["background_categories"]) and all(len(groups.get(x,[]))>=3 for x in c["background_categories"]))
     filler=" ".join(["Then everything changed when the truth finally came out."]*47); payoff="I had the receipts"; bgcat=c["background_categories"][0]
-    winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
+    winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","hook_type":"accusation","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
     raw={"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3)
     try: normalize_draft({"winner":winner})
     except VError as e: ok("4 legacy singular rejected",e.code=="LEGACY_DRAFT_SHAPE")
@@ -389,8 +394,10 @@ def self_test():
     ok("16 daily test count","DAILY_WINNER_COUNT = 3" in (ROOT/"DAILY.md").read_text(encoding="utf-8")); ok("17 no old adhoc pipeline",not (ROOT/"adhoc.py").exists()); ok("18 no old adhoc workflow",not (ROOT/".github/workflows/adhoc-draft.yml").exists())
     source=Path(__file__).read_text(encoding="utf-8"); legacy_mode_key="planning_"+"mode"; ok("19 mode agnostic",legacy_mode_key not in source)
     short=dict(d["winners"][0]); short["narration"]="too short"; violations=collect_draft_violations({"winners":[short,dict(short)]}); ok("20 aggregate draft violations",[v["winner_index"] for v in violations if v["error_code"]=="NARRATION_TOO_SHORT"]==[0,1])
-    trend=dict(winner); trend["trend_aware"]=True; trend["trend_topic"]="GTA 6"; trend_d=normalize_draft({"winners":[trend]}); trend_item=make_item("draft-selftest02",0,trend_d["winners"][0],r,"2030-01-01T03:00:00Z"); validate_item(trend_item,r); ok("21 trend provenance propagated",trend_item["story"]["trend_aware"] is True and trend_item["story"]["trend_topic"]=="GTA 6")
-    legacy=json.loads(json.dumps(trend_item)); legacy["story"].pop("trend_aware"); legacy["story"].pop("trend_topic"); validate_item(legacy,r); ok("22 legacy request remains valid")
+    trend=dict(winner); trend["trend_aware"]=True; trend["trend_topic"]="GTA 6"; trend["hook_type"]="money_stakes"; trend_d=normalize_draft({"winners":[trend]}); trend_item=make_item("draft-selftest02",0,trend_d["winners"][0],r,"2030-01-01T03:00:00Z"); validate_item(trend_item,r); ok("21 creative provenance propagated",trend_item["story"]["hook_type"]=="money_stakes" and trend_item["story"]["trend_aware"] is True and trend_item["story"]["trend_topic"]=="GTA 6")
+    no_hook=json.loads(json.dumps(trend_item)); no_hook["story"].pop("hook_type"); validate_item(no_hook,r); ok("22 request without hook type remains valid")
+    legacy=json.loads(json.dumps(trend_item)); legacy["story"].pop("hook_type"); legacy["story"].pop("trend_aware"); legacy["story"].pop("trend_topic"); validate_item(legacy,r); ok("23 legacy request remains valid")
+    bad_hook=dict(winner); bad_hook["hook_type"]="mystery"; violations=collect_draft_violations(normalize_draft({"winners":[bad_hook]})); ok("24 invalid hook type rejected",any(v["error_code"]=="INVALID_HOOK_TYPE" for v in violations))
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
