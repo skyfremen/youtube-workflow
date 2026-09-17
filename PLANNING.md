@@ -15,7 +15,7 @@ The count is the only planning difference. Do not change creative behavior based
 
 1. Read `content/context.json`.
 2. Generate a broad, varied candidate pool internally; reject semantic duplicates against `recent_story_cards`, then select exactly `winner_count` strong winners.
-3. When `winner_count > 1`, treat the winners as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, and emotional beats.
+3. When `winner_count > 1`, treat the winners as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, opening-hook mechanisms, and emotional beats.
 4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
 5. Write exactly one new immutable file under `content/drafts/` containing all selected winners in one `winners[]` array.
 6. Check the **Finalize Draft** workflow triggered by that exact draft commit. If it succeeds, stop.
@@ -27,12 +27,13 @@ Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowe
 Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
 
 - Read `analytics_summary.learning` first. Respect its `stage`, `analytics_weight`, and `minimum_pattern_sample`.
-- A category, tone, gender, duration bucket, trend lane, trend topic, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
+- A category, tone, gender, duration bucket, trend lane, trend topic, hook type, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
 - Prefer more mature evidence when sample sizes are adequate: `7d` > `72h` > `24h` > `6h`. Treat `6h` as an early test signal only.
 - During `cold_start`, prioritize creative quality, originality, diversity, and exploration. Early analytics should be a light influence rather than the primary selection rule.
 - During `early_learning`, analytics may influence selections more strongly, while continuing to test strong ideas outside current leaders.
 - During `established`, use repeatable multi-video patterns more confidently while still avoiding formulaic repetition.
-- `top_examples` are clues about hooks, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, or twists.
+- `top_examples` are clues about hooks, hook mechanisms, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, twists, or exact hooks.
+- Use `hook_type_performance` only when samples are adequate. Reuse a successful hook mechanism only when it naturally fits a genuinely different story; do not force every winner into the current leading hook type.
 - Use `trend_performance` to compare the trend-aware lane with evergreen only when samples are adequate. Treat `trend_topic_performance` as historical evidence only; never reuse a topic merely because it performed before.
 - Never sacrifice semantic-duplicate avoidance or batch diversity merely to exploit an analytics signal.
 
@@ -62,7 +63,8 @@ Write the complete replacement `winners[]` with root field `supersedes_draft_id`
 
 Every winner follows the same creative contract. Tell addictive, relatable everyday dramas like someone excitedly recounting something that happened. Use simple conversational language, fast progression, and natural narration rather than literary prose or screenplay-style scene setting.
 
-- Hook immediately with a specific situation that creates curiosity.
+- Hook immediately with a specific situation that creates curiosity or tension. Prefer concrete conflict, consequence, contradiction, discovery, confession, exposure, urgency, or meaningful stakes over generic setup.
+- Choose exactly one `hook_type` from the supported mechanisms below based on how the opening earns attention, not merely the overall story conflict.
 - Build around a relatable human conflict that progressively escalates.
 - Keep earning attention with meaningful complications, revelations, reversals, or changing stakes; avoid filler and repetitive escalation.
 - End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup.
@@ -78,6 +80,19 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Choose exactly four semantic emoji cues from the supported cues below.
 - Choose exactly one supplied `background_category` from `background_categories`.
 - No background music.
+
+## Hook types
+
+Supported opening mechanisms:
+
+- `accusation` — opens with someone being blamed, confronted, or called out.
+- `discovery` — opens with finding evidence, an object, a message, or a hidden fact.
+- `contradiction` — opens with something that clearly does not add up or conflicts with what was expected.
+- `money_stakes` — opens with a concrete financial loss, price, debt, purchase, or valuable item at risk.
+- `social_exposure` — opens with public embarrassment, a group chat, a crowd, coworkers, family, or friends witnessing the problem.
+- `urgency` — opens with a deadline, immediate threat, time pressure, or situation that must be handled now.
+- `confession` — opens with someone admitting something consequential or revealing what they did.
+- `consequence_first` — opens with the surprising result or fallout first, creating curiosity about how it happened.
 
 ## Emoji cues
 
@@ -98,6 +113,7 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
       "conflict": "...",
       "twist": "...",
       "hook": "...",
+      "hook_type": "discovery",
       "narration": "...",
       "title": "...",
       "description": "...",
