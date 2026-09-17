@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-7a6bc83cc4daeedb529db10c",
+  "created_at": "2026-09-17T00:40:59.898562Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "ae2673ee719f3bbecd62fbc32a8490c586532897",
+  "request_path": "content/requests/wd-7a6bc83cc4daeedb529db10c.json",
+  "source_commit_sha": "b24d6d807dc032d3b19573e1d780d3f0a26dd145",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He presented the cost-saving idea as his own strategy. Then an executive opened the original document during the meeting.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-adb44df5596384baabe7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Stole an Anonymous Suggestion"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35166873297"
+  }
+}
