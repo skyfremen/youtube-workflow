@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-921aa0363a61fa4f8bfcbb5f",
+  "created_at": "2026-09-17T12:09:05.861044Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "2c119b6b0b4bff31c36030e13f2eb5064d3e6e6c",
+  "request_path": "content/requests/wd-921aa0363a61fa4f8bfcbb5f.json",
+  "source_commit_sha": "a1d7ca2d78a579a4f5dffd8fa04c9bc1029ae7ec",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A new phone problem turns out to be hiding around the phone. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-91df7d9bb15d7710c506",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Phone Kept Calling for Help by Itself"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35218909000"
+  }
+}
