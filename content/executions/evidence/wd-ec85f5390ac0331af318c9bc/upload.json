@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ec85f5390ac0331af318c9bc",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T00:39:14.758220Z",
+  "request_blob_sha": "9406c8e7e0b88d6518c52f1dff52936afbd2cf66",
+  "request_path": "content/requests/wd-ec85f5390ac0331af318c9bc.json",
+  "source_commit_sha": "b24d6d807dc032d3b19573e1d780d3f0a26dd145",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The requests were always small and always sounded reasonable. Then the coaches started asking what gifts we were talking about.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0906684660e72faa26b5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Team Gift Fund Had No Gifts"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35166862050"
+  },
+  "youtube_video_id": "JU2kYmYH2fs"
+}
