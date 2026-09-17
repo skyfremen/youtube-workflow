@@ -583,13 +583,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "Finance freezes the narrator's reimbursements after the system shows duplicate taxi receipts under his name across dates when he was not traveling.",
-      "payoff": "I didn't submit the same taxi four times. Someone in finance was spending my receipt four times.",
-      "premise": "An employee is accused of padding taxi expenses until a repeated receipt number reveals a finance clerk has been attaching his legitimate receipts to other employees' fake claims.",
-      "title": "Finance Said I Faked My Taxi Receipts",
-      "twist": "The duplicate receipt IDs trace back to a finance clerk who copied approved receipts into fabricated claims for dormant employee accounts and accidentally reused one too many times."
-    },
-    {
       "conflict": "Key slides keep being reformatted without permission, making the narrator look inconsistent and putting suspicion on a coworker with access to the shared deck.",
       "payoff": "I thought someone was making my work worse behind my back. You were making sure the person at the front of the room could actually see it.",
       "premise": "A woman thinks a coworker is sabotaging her presentations by changing slides minutes before meetings until version history reveals an executive assistant is quietly simplifying decks because the director cannot read small text after refusing to admit his eyesight has worsened.",
@@ -756,6 +749,13 @@
       "premise": "A retail worker becomes suspicious when a coworker using new smart glasses seems to know inventory locations instantly.",
       "title": "His Smart Glasses Knew Where Everything Was",
       "twist": "He is testing an approved visual inventory assistant for accessibility because a recent hand injury makes using the handheld scanner painful."
+    },
+    {
+      "conflict": "Staff threaten to cancel his membership and charge a penalty.",
+      "payoff": "You weren't sharing anything. Our gate was copying you.",
+      "premise": "A man is accused of sharing his gym membership because his account logs two entries each morning.",
+      "title": "The Gym Said I Was Sharing My Membership",
+      "twist": "A faulty side-gate scanner has been replaying his successful tap whenever the maintenance worker tests the gate minutes later."
     }
   ]
 }
