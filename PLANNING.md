@@ -27,12 +27,13 @@ Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowe
 Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
 
 - Read `analytics_summary.learning` first. Respect its `stage`, `analytics_weight`, and `minimum_pattern_sample`.
-- A category, tone, gender, duration bucket, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
+- A category, tone, gender, duration bucket, trend lane, trend topic, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
 - Prefer more mature evidence when sample sizes are adequate: `7d` > `72h` > `24h` > `6h`. Treat `6h` as an early test signal only.
 - During `cold_start`, prioritize creative quality, originality, diversity, and exploration. Early analytics should be a light influence rather than the primary selection rule.
 - During `early_learning`, analytics may influence selections more strongly, while continuing to test strong ideas outside current leaders.
 - During `established`, use repeatable multi-video patterns more confidently while still avoiding formulaic repetition.
 - `top_examples` are clues about hooks, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, or twists.
+- Use `trend_performance` to compare the trend-aware lane with evergreen only when samples are adequate. Treat `trend_topic_performance` as historical evidence only; never reuse a topic merely because it performed before.
 - Never sacrifice semantic-duplicate avoidance or batch diversity merely to exploit an analytics signal.
 
 ## Trend-aware stories
@@ -47,6 +48,7 @@ During each planning run, use current web search to privately identify a small s
 - Preserve the same originality, semantic-duplicate avoidance, batch diversity, and creative-quality standards as evergreen stories.
 - Every winner must record its lane. Set `trend_aware` to `true` only when a current trend materially inspired the story and set `trend_topic` to one concise topic label such as `GTA 6` or `Pokemon cards`. For evergreen stories set `trend_aware` to `false` and `trend_topic` to `null`.
 - `trend_topic` is immutable story provenance for later analytics, not a maintained keyword list. Record only the trend actually used by that winner.
+- A historical `trend_topic` may inspire another story only if the current web search independently confirms that the topic is still timely now.
 
 ## Repair path
 
