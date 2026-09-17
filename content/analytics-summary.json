@@ -3,6 +3,10 @@
   "category_performance": {
     "cars": {
       "sample_size": 1,
+      "views_24h": {
+        "median": 180.0,
+        "sample": 1
+      },
       "views_6h": {
         "median": 60.0,
         "sample": 1
@@ -19,7 +23,11 @@
       "sample_size": 1
     },
     "couple_comedy": {
-      "sample_size": 1
+      "sample_size": 1,
+      "views_6h": {
+        "median": 1.0,
+        "sample": 1
+      }
     },
     "entertainment": {
       "sample_size": 1,
@@ -44,21 +52,28 @@
       }
     },
     "family": {
-      "sample_size": 9,
+      "sample_size": 11,
       "views_24h": {
-        "median": 3.0,
-        "sample": 6
+        "median": 4.0,
+        "sample": 7
       },
       "views_6h": {
-        "median": 2.5,
-        "sample": 6
+        "median": 1.0,
+        "sample": 7
+      }
+    },
+    "family_comedy": {
+      "sample_size": 1,
+      "views_6h": {
+        "median": 1.0,
+        "sample": 1
       }
     },
     "friends": {
       "sample_size": 3,
       "views_24h": {
-        "median": 140.0,
-        "sample": 2
+        "median": 276.0,
+        "sample": 3
       },
       "views_6h": {
         "median": 144.0,
@@ -104,7 +119,7 @@
     "neighborhood": {
       "sample_size": 1,
       "views_24h": {
-        "median": 571.0,
+        "median": 609.0,
         "sample": 1
       },
       "views_6h": {
@@ -113,20 +128,20 @@
       }
     },
     "neighbors": {
-      "sample_size": 3,
+      "sample_size": 4,
       "views_24h": {
-        "median": 327.5,
-        "sample": 2
+        "median": 142.0,
+        "sample": 3
       },
       "views_6h": {
-        "median": 60.0,
-        "sample": 1
+        "median": 30.0,
+        "sample": 2
       }
     },
     "parenting": {
       "sample_size": 1,
       "views_6h": {
-        "median": 3.0,
+        "median": 4.0,
         "sample": 1
       }
     },
@@ -179,19 +194,19 @@
     "travel": {
       "sample_size": 2,
       "views_24h": {
-        "median": 14.0,
+        "median": 15.0,
         "sample": 1
       },
       "views_6h": {
-        "median": 5.0,
+        "median": 6.5,
         "sample": 2
       }
     },
     "wedding": {
       "sample_size": 2,
       "views_24h": {
-        "median": 297.0,
-        "sample": 1
+        "median": 504.5,
+        "sample": 2
       },
       "views_6h": {
         "median": 314.0,
@@ -206,61 +221,61 @@
       }
     },
     "workplace": {
-      "sample_size": 5,
+      "sample_size": 6,
       "views_24h": {
         "median": 135.5,
         "sample": 2
       },
       "views_6h": {
         "median": 1.0,
-        "sample": 1
+        "sample": 2
       }
     }
   },
   "detailed_analytics_available": true,
   "duration_performance": {
     "under_120": {
-      "sample_size": 44,
+      "sample_size": 49,
       "views_24h": {
-        "median": 7.0,
+        "median": 47.5,
+        "sample": 30
+      },
+      "views_6h": {
+        "median": 2.0,
+        "sample": 29
+      }
+    }
+  },
+  "generated_at": "2026-09-17T01:37:49Z",
+  "lead_gender_performance": {
+    "female": {
+      "sample_size": 37,
+      "views_24h": {
+        "median": 60.0,
         "sample": 25
       },
       "views_6h": {
         "median": 3.0,
-        "sample": 24
-      }
-    }
-  },
-  "generated_at": "2026-09-16T20:21:10Z",
-  "lead_gender_performance": {
-    "female": {
-      "sample_size": 34,
-      "views_24h": {
-        "median": 24.5,
-        "sample": 22
-      },
-      "views_6h": {
-        "median": 3.0,
-        "sample": 16
+        "sample": 19
       }
     },
     "male": {
-      "sample_size": 10,
+      "sample_size": 12,
       "views_24h": {
-        "median": 4.0,
-        "sample": 3
+        "median": 6.0,
+        "sample": 5
       },
       "views_6h": {
-        "median": 2.5,
-        "sample": 8
+        "median": 1.0,
+        "sample": 10
       }
     }
   },
   "learning": {
     "analytics_weight": "low",
     "checkpoint_samples": {
-      "24h": 25,
-      "6h": 24,
+      "24h": 30,
+      "6h": 29,
       "72h": 0,
       "7d": 0
     },
@@ -271,26 +286,26 @@
     "calm": {
       "sample_size": 1,
       "views_6h": {
-        "median": 2.0,
+        "median": 5.0,
         "sample": 1
       }
     },
     "comedy": {
-      "sample_size": 4,
+      "sample_size": 5,
       "views_24h": {
-        "median": 2.0,
-        "sample": 2
+        "median": 4.0,
+        "sample": 3
       },
       "views_6h": {
-        "median": 144.0,
-        "sample": 1
+        "median": 1.0,
+        "sample": 3
       }
     },
     "conversational": {
       "sample_size": 4,
       "views_24h": {
-        "median": 60.0,
-        "sample": 1
+        "median": 164.5,
+        "sample": 2
       },
       "views_6h": {
         "median": 1.0,
@@ -298,14 +313,14 @@
       }
     },
     "dramatic": {
-      "sample_size": 16,
+      "sample_size": 19,
       "views_24h": {
-        "median": 14.0,
-        "sample": 11
+        "median": 69.0,
+        "sample": 14
       },
       "views_6h": {
-        "median": 6.0,
-        "sample": 8
+        "median": 2.0,
+        "sample": 11
       }
     },
     "dramatic_comedy": {
@@ -338,13 +353,13 @@
       }
     },
     "warm": {
-      "sample_size": 7,
+      "sample_size": 8,
       "views_24h": {
-        "median": 825.0,
+        "median": 854.0,
         "sample": 2
       },
       "views_6h": {
-        "median": 3.0,
+        "median": 4.0,
         "sample": 7
       }
     }
@@ -357,8 +372,18 @@
       "premise": "A woman discovers her cousin has been quietly changing the delivery address on their grandmother's online grocery orders and keeping the expensive items while delivering only basics.",
       "story_tone": "warm",
       "title": "She Made Grandma Think She Was Forgetful",
-      "views_24h": 1079,
+      "views_24h": 1099,
       "views_6h": 1061
+    },
+    {
+      "category": "wedding",
+      "content_id": "wd-3a96ca7d6aa02c0cb8ee10e5",
+      "duration_seconds": 79.0,
+      "premise": "A woman discovers the bakery making her wedding cake has secretly replaced her paid premium tasting selections with cheaper flavors for another couple willing to pay a rush fee.",
+      "story_tone": "dramatic",
+      "title": "The Bakery Changed My Wedding Cake Order",
+      "views_24h": 712,
+      "views_6h": 314
     },
     {
       "category": "neighbors",
@@ -376,28 +401,20 @@
       "premise": "A woman thinks her new neighbor is deliberately trying to get her car towed with increasingly hostile parking notes, until she learns the notes were written by the neighbor's teenage son to keep one curb space empty for a surprise mobility ramp being installed for his injured father.",
       "story_tone": "warm",
       "title": "I Thought My Neighbor Was Trying to Get Me Towed",
-      "views_24h": 571,
+      "views_24h": 609,
       "views_6h": 474
     },
     {
-      "category": "family",
-      "content_id": "wd-e108a097c17cd98099e399b7",
-      "duration_seconds": 85.0,
-      "premise": "A bride discovers that her future mother-in-law secretly rewrote the wedding seating chart to push the bride's parents to the back of the room and give the best tables to her own friends, while insisting the venue made the changes.",
-      "story_tone": "dramatic",
-      "title": "She Rewrote My Wedding Seating Chart",
-      "views_24h": 375
-    },
-    {
-      "category": "wedding",
-      "content_id": "wd-66bd242a6ff97f146a3376aa",
-      "duration_seconds": 83.0,
-      "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
-      "story_tone": "dramatic_comedy",
-      "title": "My Bridesmaid Sold My Wedding Decor",
-      "views_24h": 297
+      "category": "friends",
+      "content_id": "wd-1fc11ce90c60ca4eb5758f2c",
+      "duration_seconds": 82.0,
+      "premise": "A man discovers his friend has been using his streaming account's watch history to pretend they share obscure interests with someone they are trying to date.",
+      "story_tone": "comedy",
+      "title": "My Friend Used My Netflix History to Impress a Date",
+      "views_24h": 501,
+      "views_6h": 144
     }
   ],
-  "videos_analyzed": 44,
+  "videos_analyzed": 49,
   "window_days": 30
 }
