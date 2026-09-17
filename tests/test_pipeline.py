@@ -14,6 +14,7 @@ def winner(narration, title="A Valid Story Title", **overrides):
         "conflict": "The mistake keeps causing problems.",
         "twist": "The narrator finds the receipts.",
         "hook": "My friend thought nobody would notice.",
+        "hook_type": "discovery",
         "narration": narration,
         "title": title,
         "description": "A small lie turns into a much bigger problem.",
@@ -93,6 +94,14 @@ class DraftValidationTests(unittest.TestCase):
         self.assertEqual(by_code["TITLE_TOO_LONG"]["field"], "winners[0].title")
         self.assertEqual(by_code["TITLE_TOO_LONG"]["observed_value"], 101)
 
+    def test_hook_type_validation_reports_invalid_value(self):
+        raw = {"winners": [winner(valid_narration(), hook_type="mystery")]}
+        violations = p.collect_draft_violations(p.normalize_draft(raw))
+        self.assertEqual(
+            [v["error_code"] for v in violations if v["winner_index"] == 0],
+            ["INVALID_HOOK_TYPE"],
+        )
+
     def test_trend_metadata_validation_reports_bad_combinations(self):
         raw = {
             "winners": [
@@ -110,12 +119,13 @@ class DraftValidationTests(unittest.TestCase):
         self.assertIn("TREND_TOPIC_FORBIDDEN", by_index[1])
         self.assertIn("INVALID_TREND_AWARE", by_index[2])
 
-    def test_trend_metadata_propagates_and_legacy_request_remains_valid(self):
+    def test_hook_type_and_trend_metadata_propagate_and_legacy_request_remains_valid(self):
         draft = p.normalize_draft(
             {
                 "winners": [
                     winner(
                         valid_narration(),
+                        hook_type="money_stakes",
                         trend_aware=True,
                         trend_topic="GTA 6",
                     )
@@ -131,11 +141,17 @@ class DraftValidationTests(unittest.TestCase):
                 "2030-01-01T00:00:00Z",
             )
 
+        self.assertEqual(item["story"]["hook_type"], "money_stakes")
         self.assertTrue(item["story"]["trend_aware"])
         self.assertEqual(item["story"]["trend_topic"], "GTA 6")
         p.validate_item(item, None)
 
+        no_hook = json.loads(json.dumps(item))
+        no_hook["story"].pop("hook_type")
+        p.validate_item(no_hook, None)
+
         legacy = json.loads(json.dumps(item))
+        legacy["story"].pop("hook_type")
         legacy["story"].pop("trend_aware")
         legacy["story"].pop("trend_topic")
         p.validate_item(legacy, None)
