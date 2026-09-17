@@ -1,0 +1,34 @@
+{
+  "draft_id": "draft-20260918T075900-a4e7c219",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=3",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[0].narration",
+      "observed_value": "estimated_seconds=113.0",
+      "required_constraint": "120-178s",
+      "winner_index": 0,
+      "winner_title": "My Neighbor Rented Out My Parking Space"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[9].narration",
+      "observed_value": "estimated_seconds=119.0",
+      "required_constraint": "120-178s",
+      "winner_index": 9,
+      "winner_title": "His Wolverine Win Streak Survived a Dead Controller"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[10].narration",
+      "observed_value": "estimated_seconds=117.67",
+      "required_constraint": "120-178s",
+      "winner_index": 10,
+      "winner_title": "One Extension Cord Tripled My Power Bill"
+    }
+  ]
+}
