@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7c2d0a91e23c3add6a83c94a",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T12:12:54.704364Z",
+  "request_blob_sha": "e2ce620dd8ac2d55f1d64b01605823b6957c8e78",
+  "request_path": "content/requests/wd-7c2d0a91e23c3add6a83c94a.json",
+  "source_commit_sha": "a1d7ca2d78a579a4f5dffd8fa04c9bc1029ae7ec",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three impossible refunds expose misuse of a loyalty account. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-83dcd8da05dbf468d923",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Store Said I Returned Three Blenders"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35218914523"
+  },
+  "youtube_video_id": "Wjq4ZJmh1kU"
+}
