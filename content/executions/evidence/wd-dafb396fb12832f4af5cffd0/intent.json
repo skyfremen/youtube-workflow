@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-dafb396fb12832f4af5cffd0",
+  "created_at": "2026-09-17T00:37:45.556966Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "29fa447acd2d85846cac3c712f6652c3dd4962e3",
+  "request_path": "content/requests/wd-dafb396fb12832f4af5cffd0.json",
+  "source_commit_sha": "b24d6d807dc032d3b19573e1d780d3f0a26dd145",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She kept borrowing outfits for special events. Then the store told me my account had been flagged for returns I never made.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-899ea00669d37fa6a082",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Turned My Closet Into Store Credit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T11:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35166857231"
+  }
+}
