@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1998d25047d3ea7e44ce26c7",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T00:38:29.829342Z",
+  "request_blob_sha": "3c2e5b2bebad5d87ab51c0f9aeb059383b3329a7",
+  "request_path": "content/requests/wd-1998d25047d3ea7e44ce26c7.json",
+  "source_commit_sha": "b24d6d807dc032d3b19573e1d780d3f0a26dd145",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The smart lock batteries kept dying, towels vanished, and then a stranger walked in with a gym bag and asked if the shower was free.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8f3b1a1e955d1e94df84",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Strangers Kept Using Our Shower While I Was at Work"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35166863407"
+  },
+  "youtube_video_id": "JJLwVJ7mi6Y"
+}
