@@ -35,6 +35,12 @@ jobs:
           echo "path=${drafts[0]}" >> "${GITHUB_OUTPUT}"
           echo "id=$(basename "${drafts[0]}" .json)" >> "${GITHUB_OUTPUT}"
 
+      - name: Preflight draft JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python pipeline.py preflight-draft --draft "${{ steps.draft.outputs.path }}"
+
       - name: Finalize draft and allocate YouTube slots
         id: finalize
         env:
