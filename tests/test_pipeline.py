@@ -22,6 +22,8 @@ def winner(narration, title="A Valid Story Title", **overrides):
         "payoff": "word",
         "emoji_cues": ["shock", "evidence", "panic", "victory"],
         "background_category": "crafting",
+        "trend_aware": False,
+        "trend_topic": None,
     }
     value.update(overrides)
     return value
@@ -29,6 +31,29 @@ def winner(narration, title="A Valid Story Title", **overrides):
 
 def valid_narration():
     return " ".join(["word"] * 400)
+
+
+def valid_background_contract():
+    return {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+            {
+                "background_id": "a",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 60.0,
+            },
+            {
+                "background_id": "b",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 60.0,
+            },
+            {
+                "background_id": "c",
+                "segment_start_seconds": 0.0,
+                "segment_duration_seconds": 60.0,
+            },
+        ],
+    }
 
 
 class DraftValidationTests(unittest.TestCase):
@@ -67,6 +92,53 @@ class DraftValidationTests(unittest.TestCase):
         self.assertEqual(by_code["MISSING_TEXT"]["field"], "winners[0].conflict")
         self.assertEqual(by_code["TITLE_TOO_LONG"]["field"], "winners[0].title")
         self.assertEqual(by_code["TITLE_TOO_LONG"]["observed_value"], 101)
+
+    def test_trend_metadata_validation_reports_bad_combinations(self):
+        raw = {
+            "winners": [
+                winner(valid_narration(), trend_aware=True, trend_topic=None),
+                winner(valid_narration(), trend_aware=False, trend_topic="GTA 6"),
+                winner(valid_narration(), trend_aware="true", trend_topic="GTA 6"),
+            ]
+        }
+        violations = p.collect_draft_violations(p.normalize_draft(raw))
+        by_index = {}
+        for violation in violations:
+            by_index.setdefault(violation["winner_index"], []).append(violation["error_code"])
+
+        self.assertIn("TREND_TOPIC_REQUIRED", by_index[0])
+        self.assertIn("TREND_TOPIC_FORBIDDEN", by_index[1])
+        self.assertIn("INVALID_TREND_AWARE", by_index[2])
+
+    def test_trend_metadata_propagates_and_legacy_request_remains_valid(self):
+        draft = p.normalize_draft(
+            {
+                "winners": [
+                    winner(
+                        valid_narration(),
+                        trend_aware=True,
+                        trend_topic="GTA 6",
+                    )
+                ]
+            }
+        )
+        with patch.object(p, "bg_contract", return_value=valid_background_contract()):
+            item = p.make_item(
+                "draft-testtrend01",
+                0,
+                draft["winners"][0],
+                {},
+                "2030-01-01T00:00:00Z",
+            )
+
+        self.assertTrue(item["story"]["trend_aware"])
+        self.assertEqual(item["story"]["trend_topic"], "GTA 6")
+        p.validate_item(item, None)
+
+        legacy = json.loads(json.dumps(item))
+        legacy["story"].pop("trend_aware")
+        legacy["story"].pop("trend_topic")
+        p.validate_item(legacy, None)
 
     def test_finalize_fails_before_youtube_slot_allocation_and_persists_all_violations(self):
         with tempfile.TemporaryDirectory() as tmp:
