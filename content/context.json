@@ -583,13 +583,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "Key slides keep being reformatted without permission, making the narrator look inconsistent and putting suspicion on a coworker with access to the shared deck.",
-      "payoff": "I thought someone was making my work worse behind my back. You were making sure the person at the front of the room could actually see it.",
-      "premise": "A woman thinks a coworker is sabotaging her presentations by changing slides minutes before meetings until version history reveals an executive assistant is quietly simplifying decks because the director cannot read small text after refusing to admit his eyesight has worsened.",
-      "title": "Someone Changed My Slides Before Every Meeting",
-      "twist": "Version history identifies the director's assistant, who has been enlarging text and removing dense charts so the director can follow meetings without revealing a recent vision problem."
-    },
-    {
       "conflict": "The dog keeps gaining weight and food disappears while the narrator is away, making her suspect a well-meaning neighbor with a spare key is ignoring feeding instructions.",
       "payoff": "I thought someone with a spare key was secretly feeding my dog. Milo had simply invented contactless payment with a rubber ball.",
       "premise": "A dog owner thinks a neighbor is feeding her pet despite repeated warnings until a smart feeder log shows her own dog has learned to trigger the dispenser by bouncing a toy against its manual button.",
@@ -756,6 +749,13 @@
       "premise": "A man is accused of sharing his gym membership because his account logs two entries each morning.",
       "title": "The Gym Said I Was Sharing My Membership",
       "twist": "A faulty side-gate scanner has been replaying his successful tap whenever the maintenance worker tests the gate minutes later."
+    },
+    {
+      "conflict": "The hotel system shows a signed early-checkout request and staff initially refuse to restore the room.",
+      "payoff": "We checked out the wrong person.",
+      "premise": "A traveler returns from sightseeing to find his room deactivated and luggage moved.",
+      "title": "The Hotel Checked Me Out While I Was Sightseeing",
+      "twist": "Another guest with the same surname and first initial was checked out by a rushed desk clerk, and the signature belongs to that guest."
     }
   ]
 }
