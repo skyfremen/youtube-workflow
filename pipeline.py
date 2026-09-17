@@ -43,6 +43,9 @@ class DraftValidationError(VError):
 def pretty(x): return (json.dumps(x,ensure_ascii=False,sort_keys=True,indent=2)+"\n").encode()
 def canonical(x): return (json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode()
 def read(p): return json.loads(Path(p).read_text(encoding="utf-8"))
+def read_draft(p):
+    try: return read(p)
+    except json.JSONDecodeError as e: raise VError("DRAFT_JSON_INVALID","$",f"{e.msg}; line={e.lineno}; column={e.colno}; char={e.pos}","valid JSON syntax",True) from None
 def write(p,x): p=Path(p); p.parent.mkdir(parents=True,exist_ok=True); p.write_bytes(pretty(x))
 def blob(raw): return hashlib.sha1(f"blob {len(raw)}\0".encode()+raw).hexdigest()
 def clean(v): return str(v or "").strip()
@@ -294,10 +297,15 @@ def fail(did,e):
     payload={"draft_id":did,"error_code":e.code,"field":e.field,"observed_value":e.observed,"required_constraint":e.required,"repairable":e.repairable}
     if isinstance(e,DraftValidationError): payload["violations"]=e.violations
     write(FAILS/(did+".json"),payload)
+def preflight_draft(path):
+    path=Path(path).resolve(); did=draft_id(path)
+    try: read_draft(path)
+    except VError as e: fail(did,e); raise
+    return path
 def finalize(path):
     path=Path(path).resolve(); did=draft_id(path)
     try:
-        raw=read(path); d=normalize_draft(raw); r=registry(); violations=collect_draft_violations(d)
+        raw=read_draft(path); d=normalize_draft(raw); r=registry(); violations=collect_draft_violations(d)
         if violations: raise DraftValidationError(violations)
         slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); target=REQS/(q["request_id"]+".json"); validate_batch(q,target,r)
     except VError as e: fail(did,e); raise
@@ -370,10 +378,11 @@ def self_test():
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
-    ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True); sub.add_parser("context"); p=sub.add_parser("finalize"); p.add_argument("--draft",required=True); p=sub.add_parser("validate"); p.add_argument("--request",required=True); p=sub.add_parser("executions"); p.add_argument("--request",required=True); p.add_argument("--request-source-sha",required=True); p=sub.add_parser("ingest-result"); p.add_argument("--result",required=True); sub.add_parser("contract-hash"); sub.add_parser("self-test"); a=ap.parse_args()
+    ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True); sub.add_parser("context"); p=sub.add_parser("preflight-draft"); p.add_argument("--draft",required=True); p=sub.add_parser("finalize"); p.add_argument("--draft",required=True); p=sub.add_parser("validate"); p.add_argument("--request",required=True); p=sub.add_parser("executions"); p.add_argument("--request",required=True); p.add_argument("--request-source-sha",required=True); p=sub.add_parser("ingest-result"); p.add_argument("--result",required=True); sub.add_parser("contract-hash"); sub.add_parser("self-test"); a=ap.parse_args()
     try:
         if a.cmd=="context":
             c=build_context(); print(f"Context rebuilt: recent={len(c['recent_story_cards'])} background_categories={len(c['background_categories'])}")
+        elif a.cmd=="preflight-draft": preflight_draft(a.draft); print("Draft JSON valid")
         elif a.cmd=="finalize": print(finalize(a.draft).relative_to(ROOT).as_posix())
         elif a.cmd=="validate": validate_file(a.request)
         elif a.cmd=="executions":
