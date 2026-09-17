@@ -45,6 +45,8 @@ During each planning run, use current web search to privately identify a small s
 - Keep fictional drama centered on ordinary characters. When a trend involves a real person, creator, artist, athlete, team, brand, product, event, or other real entity, do not invent misconduct, private events, statements, scandals, or other claims about that entity.
 - Do not use political figures, parties, elections, legislation, or political controversies as fictional trend-aware story material.
 - Preserve the same originality, semantic-duplicate avoidance, batch diversity, and creative-quality standards as evergreen stories.
+- Every winner must record its lane. Set `trend_aware` to `true` only when a current trend materially inspired the story and set `trend_topic` to one concise topic label such as `GTA 6` or `Pokemon cards`. For evergreen stories set `trend_aware` to `false` and `trend_topic` to `null`.
+- `trend_topic` is immutable story provenance for later analytics, not a maintained keyword list. Record only the trend actually used by that winner.
 
 ## Repair path
 
@@ -101,7 +103,9 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
       "story_tone": "dramatic",
       "payoff": "...",
       "emoji_cues": ["shock", "evidence", "panic", "victory"],
-      "background_category": "crafting"
+      "background_category": "crafting",
+      "trend_aware": false,
+      "trend_topic": null
     }
   ]
 }
