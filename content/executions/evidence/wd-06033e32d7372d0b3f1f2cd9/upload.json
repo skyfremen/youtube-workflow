@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-06033e32d7372d0b3f1f2cd9",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T00:38:17.904958Z",
+  "request_blob_sha": "5d4686cf817592d3ebc0fbd6dfe7d36d85036c92",
+  "request_path": "content/requests/wd-06033e32d7372d0b3f1f2cd9.json",
+  "source_commit_sha": "b24d6d807dc032d3b19573e1d780d3f0a26dd145",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She volunteered to take every vacation photo, delayed sharing them for weeks, and then one of us recognized his birthday cake in a sponsored travel post.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-119711748555f1220de5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Group Vacation Became Her Sponsored Content"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-17T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "61bb7e2a2a3cd08443a180ca7ff153274c725da2",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35166860524"
+  },
+  "youtube_video_id": "FBcsXQw6N3g"
+}
