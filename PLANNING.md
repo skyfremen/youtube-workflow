@@ -35,6 +35,17 @@ Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
 - `top_examples` are clues about hooks, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, or twists.
 - Never sacrifice semantic-duplicate avoidance or batch diversity merely to exploit an analytics signal.
 
+## Trend-aware stories
+
+During each planning run, use current web search to privately identify a small set of timely non-political topics from areas such as entertainment, gaming, technology and consumer products, sports fandom, memes, collectibles, and internet culture. Treat this research as ephemeral planning context only: do not persist, cache, or maintain a trend or keyword list in the repository.
+
+- Trend-aware candidates compete normally with evergreen candidates and are never guaranteed a winner slot.
+- For `winner_count = 12`, select at most 5 trend-aware winners. Use fewer, including zero, when current trends do not naturally support strong Wacky Dramas stories.
+- A trend may be used only when it naturally drives the premise, conflict, stakes, escalation, reveal, or payoff. Never insert a trend merely into a title, description, or dialogue for discovery.
+- Keep fictional drama centered on ordinary characters. When a trend involves a real person, creator, artist, athlete, team, brand, product, event, or other real entity, do not invent misconduct, private events, statements, scandals, or other claims about that entity.
+- Do not use political figures, parties, elections, legislation, or political controversies as fictional trend-aware story material.
+- Preserve the same originality, semantic-duplicate avoidance, batch diversity, and creative-quality standards as evergreen stories.
+
 ## Repair path
 
 If **Finalize Draft** creates `content/failures/<draft_id>.json`, stay in the same invocation and read only the failed draft and its matching failure file. If `repairable` is false, stop and report the failure.
