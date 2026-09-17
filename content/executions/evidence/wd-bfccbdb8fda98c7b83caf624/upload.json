@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-bfccbdb8fda98c7b83caf624",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T12:13:05.313051Z",
+  "request_blob_sha": "3d067ad777d92ad906e94e2dea54a0b618f9ea9c",
+  "request_path": "content/requests/wd-bfccbdb8fda98c7b83caf624.json",
+  "source_commit_sha": "a1d7ca2d78a579a4f5dffd8fa04c9bc1029ae7ec",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing family camera hides a birthday surprise. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-23a9c23e0a75f8bb386b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Said Our Old Camera Was Gone"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35218903627"
+  },
+  "youtube_video_id": "Re04iw_dBME"
+}
