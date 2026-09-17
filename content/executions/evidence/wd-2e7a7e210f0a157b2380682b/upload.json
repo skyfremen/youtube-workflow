@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2e7a7e210f0a157b2380682b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-17T12:09:46.114131Z",
+  "request_blob_sha": "9fc7e658b3a663cd6ccb1feb23c8d94c2d042dc1",
+  "request_path": "content/requests/wd-2e7a7e210f0a157b2380682b.json",
+  "source_commit_sha": "a1d7ca2d78a579a4f5dffd8fa04c9bc1029ae7ec",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Repeated cancellations hide a surprisingly thoughtful reason. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-fd7abf1e5d4434ca20bc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Cancelled Every Dinner at the Last Minute"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35218910612"
+  },
+  "youtube_video_id": "gAr6rIUtxFo"
+}
