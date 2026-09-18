@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0e08d01f3d6fd093e1f52b3f",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T12:12:27.855245Z",
+  "request_blob_sha": "58c5ff9ddf64f4330df9b2c5515af324e650cbf5",
+  "request_path": "content/requests/wd-0e08d01f3d6fd093e1f52b3f.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing special meal turns one wedding table into a courtroom until someone checks the labels. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-50f74d7c1bade2ef5595",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Everyone Thought I Ate Grandpa's Wedding Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342872120"
+  },
+  "youtube_video_id": "-_lhaVv6DlI"
+}
