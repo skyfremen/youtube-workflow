@@ -14,14 +14,18 @@
         }
       },
       "consumer": {
-        "sample_size": 3,
+        "sample_size": 4,
         "views_24h": {
-          "median": 175.0,
-          "sample": 2
+          "median": 159.0,
+          "sample": 3
         },
         "views_6h": {
-          "median": 32.5,
-          "sample": 2
+          "median": 8.0,
+          "sample": 3
+        },
+        "views_72h": {
+          "median": 193.0,
+          "sample": 1
         }
       },
       "couple": {
@@ -71,14 +75,24 @@
         }
       },
       "family": {
+        "mature": {
+          "average_view_percentage": 86.13,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 14,
         "views_24h": {
-          "median": 3.5,
-          "sample": 12
+          "median": 3.0,
+          "sample": 13
         },
         "views_6h": {
-          "median": 1.0,
-          "sample": 9
+          "median": 2.5,
+          "sample": 10
+        },
+        "views_72h": {
+          "median": 12.0,
+          "sample": 3
         }
       },
       "family_comedy": {
@@ -93,14 +107,20 @@
         }
       },
       "friends": {
-        "sample_size": 5,
+        "mature": {
+          "average_view_percentage": 77.42,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
+        "sample_size": 6,
         "views_24h": {
-          "median": 276.0,
-          "sample": 3
+          "median": 4.0,
+          "sample": 5
         },
         "views_6h": {
-          "median": 2.0,
-          "sample": 3
+          "median": 7.0,
+          "sample": 4
         },
         "views_72h": {
           "median": 280.0,
@@ -116,6 +136,17 @@
         "views_6h": {
           "median": 2.0,
           "sample": 2
+        },
+        "views_72h": {
+          "median": 63.0,
+          "sample": 1
+        }
+      },
+      "gym": {
+        "sample_size": 1,
+        "views_6h": {
+          "median": 275.0,
+          "sample": 1
         }
       },
       "home_renovation": {
@@ -134,6 +165,10 @@
         "views_24h": {
           "median": 1.0,
           "sample": 1
+        },
+        "views_72h": {
+          "median": 3.0,
+          "sample": 1
         }
       },
       "marketplace": {
@@ -141,10 +176,14 @@
         "views_24h": {
           "median": 0.0,
           "sample": 1
+        },
+        "views_72h": {
+          "median": 0.0,
+          "sample": 1
         }
       },
       "neighborhood": {
-        "sample_size": 2,
+        "sample_size": 3,
         "views_24h": {
           "median": 609.0,
           "sample": 1
@@ -155,6 +194,12 @@
         }
       },
       "neighbors": {
+        "mature": {
+          "average_view_percentage": 79.05,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 1.0
+        },
         "sample_size": 5,
         "views_24h": {
           "median": 72.5,
@@ -172,8 +217,8 @@
       "parenting": {
         "sample_size": 2,
         "views_24h": {
-          "median": 8.0,
-          "sample": 1
+          "median": 5.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 2.5,
@@ -181,13 +226,17 @@
         }
       },
       "parking": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 1.0,
+          "sample": 1
+        }
       },
       "pets": {
         "sample_size": 3,
         "views_24h": {
-          "median": 3.0,
-          "sample": 1
+          "median": 133.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 3.0,
@@ -195,7 +244,7 @@
         }
       },
       "relationship": {
-        "sample_size": 3,
+        "sample_size": 4,
         "views_24h": {
           "median": 568.0,
           "sample": 2
@@ -206,6 +255,12 @@
         }
       },
       "relationship betrayal": {
+        "mature": {
+          "average_view_percentage": 78.29,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 1,
         "views_24h": {
           "median": 35.0,
@@ -240,8 +295,8 @@
       "roommates": {
         "sample_size": 2,
         "views_24h": {
-          "median": 3.0,
-          "sample": 1
+          "median": 1.5,
+          "sample": 2
         },
         "views_6h": {
           "median": 0.5,
@@ -249,25 +304,25 @@
         }
       },
       "shopping": {
-        "sample_size": 1,
+        "sample_size": 2,
         "views_24h": {
           "median": 1.0,
           "sample": 1
         },
         "views_6h": {
-          "median": 1.0,
-          "sample": 1
+          "median": 56.0,
+          "sample": 2
         }
       },
       "travel": {
-        "sample_size": 3,
+        "sample_size": 4,
         "views_24h": {
           "median": 15.0,
           "sample": 3
         },
         "views_6h": {
-          "median": 8.0,
-          "sample": 3
+          "median": 21.0,
+          "sample": 4
         }
       },
       "wedding": {
@@ -279,12 +334,16 @@
         "views_6h": {
           "median": 160.0,
           "sample": 3
+        },
+        "views_72h": {
+          "median": 305.0,
+          "sample": 1
         }
       },
       "work": {
         "sample_size": 3,
         "views_24h": {
-          "median": 65.0,
+          "median": 141.5,
           "sample": 2
         },
         "views_6h": {
@@ -295,18 +354,18 @@
       "workplace": {
         "mature": {
           "average_view_percentage": 70.67,
-          "sample": 1,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 3.0
+          "subscribers_gained": 0.0
         },
-        "sample_size": 7,
+        "sample_size": 8,
         "views_24h": {
-          "median": 103.0,
-          "sample": 5
+          "median": 53.5,
+          "sample": 6
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 4
+          "sample": 5
         },
         "views_72h": {
           "median": 169.0,
@@ -318,100 +377,140 @@
     "duration_performance": {
       "under_120": {
         "mature": {
-          "average_view_percentage": 70.67,
-          "sample": 3,
+          "average_view_percentage": 77.42,
+          "sample": 9,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 73,
+        "sample_size": 81,
         "views_24h": {
-          "median": 7.5,
-          "sample": 54
+          "median": 4.5,
+          "sample": 62
         },
         "views_6h": {
-          "median": 2.0,
-          "sample": 52
+          "median": 3.0,
+          "sample": 60
         },
         "views_72h": {
-          "median": 224.5,
-          "sample": 8
+          "median": 138.5,
+          "sample": 16
         }
       }
     },
-    "generated_at": "2026-09-18T01:23:53Z",
+    "generated_at": "2026-09-18T09:58:49Z",
     "hook_type_performance": {
+      "accusation": {
+        "sample_size": 2,
+        "views_6h": {
+          "median": 193.0,
+          "sample": 2
+        }
+      },
+      "consequence_first": {
+        "sample_size": 1,
+        "views_6h": {
+          "median": 12.0,
+          "sample": 1
+        }
+      },
+      "contradiction": {
+        "sample_size": 2,
+        "views_6h": {
+          "median": 146.0,
+          "sample": 2
+        }
+      },
       "discovery": {
-        "sample_size": 1
+        "sample_size": 3,
+        "views_6h": {
+          "median": 409.0,
+          "sample": 1
+        }
       },
       "money_stakes": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 1.0,
+          "sample": 1
+        }
       },
       "untracked": {
         "mature": {
-          "average_view_percentage": 70.67,
-          "sample": 3,
+          "average_view_percentage": 77.42,
+          "sample": 9,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
         "sample_size": 71,
         "views_24h": {
-          "median": 7.5,
-          "sample": 54
+          "median": 4.5,
+          "sample": 62
         },
         "views_6h": {
           "median": 2.0,
           "sample": 52
         },
         "views_72h": {
-          "median": 224.5,
-          "sample": 8
+          "median": 138.5,
+          "sample": 16
+        }
+      },
+      "urgency": {
+        "sample_size": 1,
+        "views_6h": {
+          "median": 8.0,
+          "sample": 1
         }
       }
     },
     "lead_gender_performance": {
       "female": {
         "mature": {
-          "average_view_percentage": 70.67,
-          "sample": 3,
+          "average_view_percentage": 77.42,
+          "sample": 9,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 52,
+        "sample_size": 57,
         "views_24h": {
-          "median": 35.0,
-          "sample": 39
+          "median": 11.5,
+          "sample": 44
         },
         "views_6h": {
           "median": 3.0,
-          "sample": 32
+          "sample": 37
         },
         "views_72h": {
-          "median": 224.5,
-          "sample": 8
+          "median": 169.0,
+          "sample": 15
         }
       },
       "male": {
-        "sample_size": 21,
+        "sample_size": 24,
         "views_24h": {
-          "median": 4.0,
-          "sample": 15
+          "median": 3.5,
+          "sample": 18
         },
         "views_6h": {
-          "median": 1.0,
-          "sample": 20
+          "median": 2.0,
+          "sample": 23
+        },
+        "views_72h": {
+          "median": 0.0,
+          "sample": 1
         }
       }
     },
     "learning": {
-      "analytics_weight": "low",
+      "analytics_weight": "medium",
       "checkpoint_samples": {
-        "24h": 54,
-        "6h": 52,
-        "72h": 8,
+        "24h": 62,
+        "6h": 60,
+        "72h": 16,
         "7d": 0
       },
-      "minimum_pattern_sample": 5,
-      "stage": "cold_start"
+      "minimum_pattern_sample": 8,
+      "stage": "early_learning"
     },
     "tone_performance": {
       "calm": {
@@ -426,94 +525,116 @@
         }
       },
       "comedy": {
-        "sample_size": 9,
+        "sample_size": 10,
         "views_24h": {
-          "median": 3.5,
-          "sample": 6
+          "median": 4.0,
+          "sample": 7
         },
         "views_6h": {
-          "median": 3.0,
-          "sample": 7
+          "median": 3.5,
+          "sample": 8
+        },
+        "views_72h": {
+          "median": 12.0,
+          "sample": 1
         }
       },
       "conversational": {
         "sample_size": 5,
         "views_24h": {
-          "median": 31.5,
-          "sample": 4
+          "median": 3.0,
+          "sample": 5
         },
         "views_6h": {
           "median": 1.0,
           "sample": 4
+        },
+        "views_72h": {
+          "median": 63.0,
+          "sample": 1
         }
       },
       "dramatic": {
-        "sample_size": 25,
+        "mature": {
+          "average_view_percentage": 78.29,
+          "sample": 5,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
+        "sample_size": 28,
         "views_24h": {
-          "median": 35.0,
-          "sample": 21
+          "median": 25.0,
+          "sample": 22
         },
         "views_6h": {
-          "median": 3.0,
-          "sample": 17
+          "median": 4.0,
+          "sample": 21
         },
         "views_72h": {
-          "median": 194.0,
-          "sample": 4
+          "median": 108.0,
+          "sample": 7
         }
       },
       "dramatic_comedy": {
         "mature": {
-          "average_view_percentage": 70.67,
-          "sample": 3,
+          "average_view_percentage": 72.09,
+          "sample": 4,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 12,
+        "sample_size": 13,
         "views_24h": {
-          "median": 60.0,
-          "sample": 6
+          "median": 5.5,
+          "sample": 8
         },
         "views_6h": {
-          "median": 1.0,
-          "sample": 7
+          "median": 1.5,
+          "sample": 8
         },
         "views_72h": {
-          "median": 233.5,
-          "sample": 4
+          "median": 298.0,
+          "sample": 5
         }
       },
       "natural": {
         "sample_size": 5,
         "views_24h": {
-          "median": 67.5,
-          "sample": 4
+          "median": 6.0,
+          "sample": 5
         },
         "views_6h": {
           "median": 4.0,
           "sample": 4
+        },
+        "views_72h": {
+          "median": 193.0,
+          "sample": 1
         }
       },
       "sarcastic": {
         "sample_size": 5,
         "views_24h": {
-          "median": 3.0,
-          "sample": 3
+          "median": 1.5,
+          "sample": 4
         },
         "views_6h": {
           "median": 1.0,
           "sample": 3
+        },
+        "views_72h": {
+          "median": 0.0,
+          "sample": 1
         }
       },
       "warm": {
-        "sample_size": 11,
+        "sample_size": 14,
         "views_24h": {
-          "median": 221.0,
-          "sample": 9
+          "median": 114.5,
+          "sample": 10
         },
         "views_6h": {
-          "median": 4.0,
-          "sample": 9
+          "median": 12.0,
+          "sample": 11
         }
       }
     },
@@ -532,6 +653,7 @@
         "views_72h": 1029
       },
       {
+        "average_view_percentage": 79.05,
         "category": "neighbors",
         "content_id": "wd-0c710c1f4461e67f5546a88b",
         "duration_seconds": 96.0,
@@ -545,6 +667,33 @@
         "views_72h": 739
       },
       {
+        "average_view_percentage": 86.13,
+        "category": "family",
+        "content_id": "wd-e108a097c17cd98099e399b7",
+        "duration_seconds": 85.0,
+        "hook": "My future mother-in-law moved my parents to the worst table at my wedding and blamed the venue.",
+        "hook_type": "untracked",
+        "premise": "A bride discovers that her future mother-in-law secretly rewrote the wedding seating chart to push the bride's parents to the back of the room and give the best tables to her own friends, while insisting the venue made the changes.",
+        "story_tone": "dramatic",
+        "title": "She Rewrote My Wedding Seating Chart",
+        "trend_lane": "untracked",
+        "views_24h": 375,
+        "views_72h": 377
+      },
+      {
+        "category": "wedding",
+        "content_id": "wd-66bd242a6ff97f146a3376aa",
+        "duration_seconds": 83.0,
+        "hook": "My bridesmaid sold my wedding decorations before I even got married.",
+        "hook_type": "untracked",
+        "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
+        "story_tone": "dramatic_comedy",
+        "title": "My Bridesmaid Sold My Wedding Decor",
+        "trend_lane": "untracked",
+        "views_24h": 297,
+        "views_72h": 305
+      },
+      {
         "average_view_percentage": 68.09,
         "category": "couple",
         "content_id": "wd-5c0c2536a8623156d5780b7a",
@@ -556,62 +705,61 @@
         "title": "I Thought He Was About to Propose",
         "trend_lane": "untracked",
         "views_72h": 298
-      },
-      {
-        "category": "friends",
-        "content_id": "wd-900c22d9856ba75f786c28e2",
-        "duration_seconds": 103.0,
-        "hook": "I left my best friend one key to feed my dog for four days. On night two, my smart lock said six strangers had entered my apartment.",
-        "hook_type": "untracked",
-        "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
-        "story_tone": "dramatic",
-        "title": "My Best Friend Rented Out My Apartment While I Was Away",
-        "trend_lane": "untracked",
-        "views_24h": 276,
-        "views_72h": 280
-      },
-      {
-        "category": "workplace",
-        "content_id": "wd-c0945702a7419f9e7df0343b",
-        "duration_seconds": 83.0,
-        "hook": "My manager stole my entire presentation, but he forgot to check the last slide.",
-        "hook_type": "untracked",
-        "premise": "A woman spends weeks building a client presentation, only for her manager to remove her name and present it as his own, until the client asks about a hidden appendix slide he never bothered to read.",
-        "story_tone": "dramatic_comedy",
-        "title": "My Manager Stole My Presentation—Then the Client Opened the Last Slide",
-        "trend_lane": "untracked",
-        "views_24h": 168,
-        "views_72h": 169
       }
     ],
     "trend_performance": {
       "evergreen": {
-        "sample_size": 2
+        "sample_size": 9,
+        "views_6h": {
+          "median": 111.0,
+          "sample": 7
+        }
+      },
+      "trend_aware": {
+        "sample_size": 1,
+        "views_6h": {
+          "median": 8.0,
+          "sample": 1
+        }
       },
       "untracked": {
         "mature": {
-          "average_view_percentage": 70.67,
-          "sample": 3,
+          "average_view_percentage": 77.42,
+          "sample": 9,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
         "sample_size": 71,
         "views_24h": {
-          "median": 7.5,
-          "sample": 54
+          "median": 4.5,
+          "sample": 62
         },
         "views_6h": {
           "median": 2.0,
           "sample": 52
         },
         "views_72h": {
-          "median": 224.5,
-          "sample": 8
+          "median": 138.5,
+          "sample": 16
         }
       }
     },
-    "videos_analyzed": 73,
+    "videos_analyzed": 81,
     "weak_retention_examples": [
+      {
+        "average_view_percentage": 26.51,
+        "category": "workplace",
+        "content_id": "wd-67053c0892359102518ef0f1",
+        "duration_seconds": 94.0,
+        "hook": "I got a final warning for trashing a meeting room I had left spotless twenty minutes earlier.",
+        "hook_type": "untracked",
+        "premise": "A woman is repeatedly blamed for leaving the office meeting room filthy after late client calls, until the cleaner's timestamped photos reveal her coworker has been using her calendar bookings to hide his own after-hours side business.",
+        "story_tone": "dramatic",
+        "title": "He Used My Meeting Room Booking as His Alibi",
+        "trend_lane": "untracked",
+        "views_24h": 103,
+        "views_72h": 108
+      },
       {
         "average_view_percentage": 68.09,
         "category": "couple",
@@ -639,18 +787,32 @@
         "views_72h": 1029
       },
       {
-        "average_view_percentage": 86.08,
-        "category": "roommate_drama",
-        "content_id": "wd-425f8a634e97747168148f28",
-        "duration_seconds": 91.0,
-        "hook": "My roommate charged us a fake building fee for six months—then the landlord knocked on our door asking why the rent was late.",
+        "average_view_percentage": 73.52,
+        "category": "workplace",
+        "content_id": "wd-c0945702a7419f9e7df0343b",
+        "duration_seconds": 83.0,
+        "hook": "My manager stole my entire presentation, but he forgot to check the last slide.",
         "hook_type": "untracked",
-        "premise": "A woman discovers that the roommate who handles the apartment bills has been collecting a fake monthly maintenance fee from everyone while repeatedly paying the real rent late.",
+        "premise": "A woman spends weeks building a client presentation, only for her manager to remove her name and present it as his own, until the client asks about a hidden appendix slide he never bothered to read.",
         "story_tone": "dramatic_comedy",
-        "title": "My Roommate Invented a Fake Rent Fee",
+        "title": "My Manager Stole My Presentation—Then the Client Opened the Last Slide",
         "trend_lane": "untracked",
-        "views_24h": 7,
-        "views_72h": 8
+        "views_24h": 168,
+        "views_72h": 169
+      },
+      {
+        "average_view_percentage": 77.42,
+        "category": "friends",
+        "content_id": "wd-900c22d9856ba75f786c28e2",
+        "duration_seconds": 103.0,
+        "hook": "I left my best friend one key to feed my dog for four days. On night two, my smart lock said six strangers had entered my apartment.",
+        "hook_type": "untracked",
+        "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
+        "story_tone": "dramatic",
+        "title": "My Best Friend Rented Out My Apartment While I Was Away",
+        "trend_lane": "untracked",
+        "views_24h": 276,
+        "views_72h": 280
       }
     ],
     "window_days": 30
