@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8e2f1b3434e63efce2cd8c9d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T12:14:13.579555Z",
+  "request_blob_sha": "500e6ffd3aa893d6c9d01ac7041614845706babc",
+  "request_path": "content/requests/wd-8e2f1b3434e63efce2cd8c9d.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Launch-day excitement stops instantly when the wrong old phone ends up prepared for trade-in. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a3db3fd9fb98ec0cb426",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Wrong Phone Was in My iPhone Trade-In Box"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342874133"
+  },
+  "youtube_video_id": "xMyFQE29D8Q"
+}
