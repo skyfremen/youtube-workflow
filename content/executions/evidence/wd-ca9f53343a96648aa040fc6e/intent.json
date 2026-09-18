@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-ca9f53343a96648aa040fc6e",
+  "created_at": "2026-09-18T00:08:14.424132Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "f82731cf6ed8d404ab285371ea07112cbb691c94",
+  "request_path": "content/requests/wd-ca9f53343a96648aa040fc6e.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One dating profile, two strangers, and a roommate with a terrible idea. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-fcf2a09716c6752d0a1c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Accidentally Booked Me Two Dates"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289363759"
+  }
+}
