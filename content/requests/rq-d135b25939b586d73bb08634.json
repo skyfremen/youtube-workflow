@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-39192747",
+            "segment_duration_seconds": 60.967,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-2651544",
+            "segment_duration_seconds": 73.748,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-11067515",
+            "segment_duration_seconds": 60.792,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-e94f815a9d19179c0cb0e981",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-18T21:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260918T110300-7b41e9ac",
+      "story": {
+        "card_emojis": [
+          "💰",
+          "😮",
+          "💔",
+          "🙃"
+        ],
+        "category": "friends",
+        "conflict": "Six friends have already transferred their share, and the organizer insists the charge covers accommodation until the aunt casually mentions she never asked for any rent.",
+        "hook": "We each paid my friend for the holiday apartment. Then the owner called her 'niece.'",
+        "hook_type": "money_stakes",
+        "lead_gender": "female",
+        "premise": "A woman joins a friends' weekend and discovers the organizer charged everyone for a holiday apartment that her aunt had actually lent them for free.",
+        "punchline": "You didn't split the trip. You invoiced your friends for your vacation.",
+        "script": "There were six of us on the trip, and one friend, Mia, organized everything. She found the apartment, collected our payments, made the group chat, and somehow became the person everyone trusted because she had a spreadsheet. Two weeks before we left, she told us the apartment cost seven hundred and twenty dollars, so we each transferred our share. Nobody questioned it. The place looked great in the photos, the price seemed reasonable, and honestly I was just happy someone else was doing the planning. We arrived on Friday night and an older woman was waiting outside with the keys. Mia hugged her and said, 'Auntie, you didn't have to wait for us.' I thought that was cute. Then her aunt looked at the rest of us and said, 'I'm glad the flat is finally being used. I told Mia you kids could stay here for free anytime.' Every person holding a suitcase went silent. Mia immediately said her aunt meant free after cleaning and utilities. Her aunt looked confused and said there was no cleaning charge because she had cleaned it herself that morning. One of my friends pulled out her phone and asked Mia, very calmly, what exactly our seven hundred and twenty dollars had paid for. Mia said there were booking expenses. Her aunt said there was no booking. It was her apartment. At that point the spreadsheet started looking less impressive. We went upstairs, put our bags down, and opened the group payment history. Six transfers, all sent directly to Mia. No host invoice. No receipt. No platform fee. She kept saying she had planned to explain everything after the trip, which is never a comforting sentence when money is involved. Eventually she admitted the apartment itself was free. She had been short on money after buying her train ticket late, so she invented an accommodation price and used what we sent to cover most of her transport and spending budget. She said she was still giving us a cheap weekend, as if secretly charging friends for a free apartment became fine because hotels cost more. Her aunt heard the argument from the kitchen. She did not shout. Somehow that was worse. She asked Mia to refund everyone before dinner and said the apartment was available because she wanted to help her niece and her friends, not because she wanted to become part of a fake invoice. Mia sent the money back one transfer at a time while all six of us watched the notifications appear. I told her, 'You didn't split the trip. You invoiced your friends for your vacation.' We still stayed for the weekend. Her aunt even brought breakfast the next morning. Mia had to sit through six people thanking the actual host while her beautiful spreadsheet was never trusted again.",
+        "story_tone": "dramatic_comedy",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The organizer admits she invented the accommodation cost to quietly make the group pay for most of her own transport and spending money."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "Six friends pay for a weekend stay until the actual owner casually reveals the apartment was free. #WackyDramas #Shorts",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Friend Charged Us for a Free Holiday Apartment"
+      }
+    }
+  ],
+  "request_id": "rq-d135b25939b586d73bb08634",
+  "request_version": 2,
+  "source_draft_id": "draft-20260918T110300-7b41e9ac"
+}
