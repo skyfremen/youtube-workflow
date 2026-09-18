@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ca986fed34f850caed67f925",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:11:08.621713Z",
+  "request_blob_sha": "aa0b8c5c2fd5622977610b2bdd52ffd742eea1c0",
+  "request_path": "content/requests/wd-ca986fed34f850caed67f925.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A badge report says she stole premium coffee, but the machine is hiding the evidence. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9c20819e29d84ece62d9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Office Coffee Machine Framed Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289362364"
+  },
+  "youtube_video_id": "MV9FcqRhHb0"
+}
