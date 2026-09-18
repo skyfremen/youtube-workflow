@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-e94f815a9d19179c0cb0e981",
+  "created_at": "2026-09-18T03:13:08.089458Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "8efe5bb977c399065a96ca642e916ec346a484e4",
+  "request_path": "content/requests/wd-e94f815a9d19179c0cb0e981.json",
+  "source_commit_sha": "c639596c54a63b195c6b97bb1fc4f271564d06b8",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Six friends pay for a weekend stay until the actual owner casually reveals the apartment was free. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-65a8381067c089b76b8e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Charged Us for a Free Holiday Apartment"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35301905904"
+  }
+}
