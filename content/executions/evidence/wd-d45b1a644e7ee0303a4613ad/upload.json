@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d45b1a644e7ee0303a4613ad",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:10:38.583404Z",
+  "request_blob_sha": "518681aaced2e8d6e3a4da989c12ca5113a3b45e",
+  "request_path": "content/requests/wd-d45b1a644e7ee0303a4613ad.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The family suspects an argument, but the black screen hides something much softer. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2dfc07edc0590f49d346",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Why Mum Refused Every Video Call"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289358284"
+  },
+  "youtube_video_id": "CCg3xfI33LM"
+}
