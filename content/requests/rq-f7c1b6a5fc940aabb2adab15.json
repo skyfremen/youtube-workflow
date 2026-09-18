@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-35556759",
+            "segment_duration_seconds": 100.0,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-2651544",
+            "segment_duration_seconds": 73.748,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-14551003",
+            "segment_duration_seconds": 63.38,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-588205a2d5df133d099c847b",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-18T20:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260918T094000-10fcce62",
+      "story": {
+        "card_emojis": [
+          "⚠️",
+          "😡",
+          "📱",
+          "😎"
+        ],
+        "category": "workplace",
+        "conflict": "Her leave is still marked approved in the HR system, but the team rota shows her working and her manager tells coworkers she volunteered to give the day back.",
+        "hook": "I booked November 19 off for GTA 6. My boss decided gaming leave didn't count.",
+        "hook_type": "contradiction",
+        "lead_gender": "female",
+        "premise": "A woman books November 19 off work well in advance for the upcoming GTA 6 release, then discovers her manager has scheduled her to cover the same day because he decided gaming was not a serious reason for leave.",
+        "punchline": "Approved leave doesn't become optional because you don't like the reason.",
+        "script": "The game is not out yet. That was the whole point: I was planning early. Once November 19 was confirmed as the release date, I put in one day of annual leave and got the approval weeks ahead of time. I did not even write GTA 6 on the leave form. I just selected personal leave like everyone else. A few days later, during lunch, someone asked what I was doing with the day off and I joked that I planned to disappear into my living room when the game finally launched. My manager heard me and laughed. I thought that was the end of it. Then the next rota came out. I was scheduled to cover a client handover on November 19. I messaged my manager and reminded him that my leave was already approved. He replied that he had assumed I would be flexible because it was 'only for a game.' I opened the HR portal. My request still said APPROVED. Nothing had been cancelled. I sent him the screenshot. He told me the rota had priority and said the team needed adults to make sensible compromises. That annoyed me, but the next part annoyed me more. In our group chat he wrote that I had agreed to help with coverage, so suddenly saying no made me look like I was abandoning everyone. I replied that I had agreed to nothing. A coworker immediately messaged me privately. She sent a screenshot from three months earlier when the same manager scheduled her over approved leave for a concert because he thought she could 'just go another time.' Another teammate had the same thing happen before a marathon. We compared the screenshots and realized the pattern was not cancelled leave. He simply left the official approvals untouched and manually put people back onto the rota whenever he did not respect their reason. So I stopped arguing about GTA 6 entirely and emailed HR one question: if approved annual leave and a manager's rota conflict, which one is valid? They checked the audit trail. My leave had never been withdrawn. Neither had the others. The rota was corrected that afternoon, and the manager had to send the team a message admitting I had never volunteered. HR also reminded managers that employees did not have to justify personal annual leave once it was approved. I told him, 'Approved leave doesn't become optional because you don't like the reason.' November 19 stayed blocked on my calendar. I still have not played GTA 6, because it has not launched yet. Apparently planning two months early was enough to create the drama before the game even arrived.",
+        "story_tone": "sarcastic",
+        "trend_aware": true,
+        "trend_topic": "GTA 6",
+        "twist": "A coworker sends screenshots showing the manager has repeatedly scheduled people over approved personal leave whenever he personally judged their reason as unimportant, without actually cancelling the leave in HR."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "An approved day off becomes a workplace argument when a manager decides some personal plans count more than others. #WackyDramas #Shorts",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Boss Tried to Cancel My GTA 6 Leave"
+      }
+    }
+  ],
+  "request_id": "rq-f7c1b6a5fc940aabb2adab15",
+  "request_version": 2,
+  "source_draft_id": "draft-20260918T094000-10fcce62"
+}
