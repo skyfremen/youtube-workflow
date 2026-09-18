@@ -627,13 +627,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The manager publicly presents the proposal as his initiative while privately telling the narrator that anonymous suggestions belong to the company, not the person who submitted them.",
-      "payoff": "He took credit for my idea and forgot to remove my name from the evidence.",
-      "premise": "A man's manager praises an anonymous employee suggestion that saves the department money, then claims it as his own idea after learning it came from the narrator.",
-      "title": "My Manager Stole an Anonymous Suggestion",
-      "twist": "During an executive presentation, the manager cannot answer a technical question and opens the original suggestion attachment, which still contains the narrator's name in the document metadata and revision comments."
-    },
-    {
       "conflict": "The boyfriend dismisses each reservation as a canceled work booking while points disappear from the narrator's account and staff greet him like a regular.",
       "payoff": "I thought he was secretly planning romance. He was secretly farming loyalty points.",
       "premise": "A woman thinks her boyfriend is secretly planning romantic surprises because restaurant confirmations keep appearing on their shared tablet, but discovers he is using her loyalty account to take clients out and collect rewards personally.",
@@ -800,6 +793,13 @@
       "premise": "A man volunteers to collect everyone's phones before a surprise proposal dinner, then accidentally exposes that his best friend has been secretly using an old phone to keep the proposal plan from appearing in shared photo backups.",
       "title": "She Found His Secret Phone Before the Proposal",
       "twist": "The hidden phone contains only proposal planning chats and ring photos because the boyfriend's normal phone automatically syncs pictures to the couple's shared tablet."
+    },
+    {
+      "conflict": "The friend boasts that he can clear every sequence first try and starts mocking everyone else, but his controller inputs do not match what appears on screen.",
+      "payoff": "Your best move was low battery.",
+      "premise": "A man brings a new Wolverine game to a friends' weekend, and a playful challenge over its heavily guided sequences turns into proof that one friend has been secretly pretending to play while using accessibility assists to impress the group.",
+      "title": "His Wolverine Win Streak Survived a Dead Controller",
+      "twist": "When the controller batteries die mid-sequence, the character continues successfully because a full assist setting is still enabled from an earlier player."
     }
   ]
 }
