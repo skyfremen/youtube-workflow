@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-331d7c6495a91e221d7b9cbc",
+  "created_at": "2026-09-18T12:12:04.990101Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "08513335780f2bb7f758dd780fec6e3d4baab252",
+  "request_path": "content/requests/wd-331d7c6495a91e221d7b9cbc.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A launch-day camera test catches one tiny detail under a supposedly homemade cake. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2e1644d8cf03fcff2444",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My New Phone Camera Exposed the Family Cake Expert"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342881656"
+  }
+}
