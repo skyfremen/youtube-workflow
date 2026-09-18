@@ -16,7 +16,7 @@
       "consumer": {
         "sample_size": 3,
         "views_24h": {
-          "median": 149.0,
+          "median": 175.0,
           "sample": 2
         },
         "views_6h": {
@@ -71,10 +71,10 @@
         }
       },
       "family": {
-        "sample_size": 13,
+        "sample_size": 14,
         "views_24h": {
-          "median": 3.0,
-          "sample": 11
+          "median": 3.5,
+          "sample": 12
         },
         "views_6h": {
           "median": 1.0,
@@ -101,6 +101,10 @@
         "views_6h": {
           "median": 2.0,
           "sample": 3
+        },
+        "views_72h": {
+          "median": 280.0,
+          "sample": 1
         }
       },
       "friendship": {
@@ -146,8 +150,8 @@
           "sample": 1
         },
         "views_6h": {
-          "median": 474.0,
-          "sample": 1
+          "median": 237.5,
+          "sample": 2
         }
       },
       "neighbors": {
@@ -176,26 +180,29 @@
           "sample": 2
         }
       },
+      "parking": {
+        "sample_size": 1
+      },
       "pets": {
-        "sample_size": 2,
+        "sample_size": 3,
         "views_24h": {
           "median": 3.0,
           "sample": 1
         },
         "views_6h": {
-          "median": 62.0,
-          "sample": 2
+          "median": 3.0,
+          "sample": 3
         }
       },
       "relationship": {
         "sample_size": 3,
         "views_24h": {
-          "median": 547.0,
+          "median": 568.0,
           "sample": 2
         },
         "views_6h": {
-          "median": 180.5,
-          "sample": 2
+          "median": 19.0,
+          "sample": 3
         }
       },
       "relationship betrayal": {
@@ -203,13 +210,23 @@
         "views_24h": {
           "median": 35.0,
           "sample": 1
+        },
+        "views_72h": {
+          "median": 37.0,
+          "sample": 1
         }
       },
       "roommate_drama": {
+        "mature": {
+          "average_view_percentage": 86.08,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 2,
         "views_24h": {
-          "median": 7.0,
-          "sample": 1
+          "median": 5.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 1.0,
@@ -245,8 +262,8 @@
       "travel": {
         "sample_size": 3,
         "views_24h": {
-          "median": 10.0,
-          "sample": 2
+          "median": 15.0,
+          "sample": 3
         },
         "views_6h": {
           "median": 8.0,
@@ -254,25 +271,25 @@
         }
       },
       "wedding": {
-        "sample_size": 3,
+        "sample_size": 4,
         "views_24h": {
-          "median": 618.5,
-          "sample": 2
+          "median": 297.0,
+          "sample": 3
         },
         "views_6h": {
-          "median": 237.0,
-          "sample": 2
+          "median": 160.0,
+          "sample": 3
         }
       },
       "work": {
-        "sample_size": 2,
+        "sample_size": 3,
         "views_24h": {
-          "median": 1.0,
-          "sample": 1
+          "median": 65.0,
+          "sample": 2
         },
         "views_6h": {
-          "median": 48.0,
-          "sample": 2
+          "median": 2.0,
+          "sample": 3
         }
       },
       "workplace": {
@@ -292,8 +309,8 @@
           "sample": 4
         },
         "views_72h": {
-          "median": 599.0,
-          "sample": 2
+          "median": 169.0,
+          "sample": 3
         }
       }
     },
@@ -301,90 +318,96 @@
     "duration_performance": {
       "under_120": {
         "mature": {
-          "average_view_percentage": 69.38,
-          "sample": 2,
+          "average_view_percentage": 70.67,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 1.5
+          "subscribers_gained": 0.0
         },
-        "sample_size": 68,
+        "sample_size": 73,
         "views_24h": {
-          "median": 6.0,
-          "sample": 49
+          "median": 7.5,
+          "sample": 54
         },
         "views_6h": {
           "median": 2.0,
-          "sample": 47
+          "sample": 52
         },
         "views_72h": {
-          "median": 298.0,
-          "sample": 5
+          "median": 224.5,
+          "sample": 8
         }
       }
     },
-    "generated_at": "2026-09-17T20:29:22Z",
+    "generated_at": "2026-09-18T01:23:53Z",
     "hook_type_performance": {
+      "discovery": {
+        "sample_size": 1
+      },
+      "money_stakes": {
+        "sample_size": 1
+      },
       "untracked": {
         "mature": {
-          "average_view_percentage": 69.38,
-          "sample": 2,
+          "average_view_percentage": 70.67,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 1.5
+          "subscribers_gained": 0.0
         },
-        "sample_size": 68,
+        "sample_size": 71,
         "views_24h": {
-          "median": 6.0,
-          "sample": 49
+          "median": 7.5,
+          "sample": 54
         },
         "views_6h": {
           "median": 2.0,
-          "sample": 47
+          "sample": 52
         },
         "views_72h": {
-          "median": 298.0,
-          "sample": 5
+          "median": 224.5,
+          "sample": 8
         }
       }
     },
     "lead_gender_performance": {
       "female": {
         "mature": {
-          "average_view_percentage": 69.38,
-          "sample": 2,
+          "average_view_percentage": 70.67,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 1.5
+          "subscribers_gained": 0.0
         },
-        "sample_size": 48,
+        "sample_size": 52,
         "views_24h": {
-          "median": 15.0,
-          "sample": 37
+          "median": 35.0,
+          "sample": 39
         },
         "views_6h": {
           "median": 3.0,
-          "sample": 29
+          "sample": 32
         },
         "views_72h": {
-          "median": 298.0,
-          "sample": 5
+          "median": 224.5,
+          "sample": 8
         }
       },
       "male": {
-        "sample_size": 20,
+        "sample_size": 21,
         "views_24h": {
           "median": 4.0,
-          "sample": 12
+          "sample": 15
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 18
+          "sample": 20
         }
       }
     },
     "learning": {
       "analytics_weight": "low",
       "checkpoint_samples": {
-        "24h": 49,
-        "6h": 47,
-        "72h": 5,
+        "24h": 54,
+        "6h": 52,
+        "72h": 8,
         "7d": 0
       },
       "minimum_pattern_sample": 5,
@@ -403,14 +426,14 @@
         }
       },
       "comedy": {
-        "sample_size": 8,
+        "sample_size": 9,
         "views_24h": {
-          "median": 4.0,
-          "sample": 5
+          "median": 3.5,
+          "sample": 6
         },
         "views_6h": {
-          "median": 2.5,
-          "sample": 6
+          "median": 3.0,
+          "sample": 7
         }
       },
       "conversational": {
@@ -425,35 +448,35 @@
         }
       },
       "dramatic": {
-        "sample_size": 23,
+        "sample_size": 25,
         "views_24h": {
-          "median": 15.0,
-          "sample": 19
+          "median": 35.0,
+          "sample": 21
         },
         "views_6h": {
           "median": 3.0,
-          "sample": 16
+          "sample": 17
         },
         "views_72h": {
-          "median": 739.0,
-          "sample": 1
+          "median": 194.0,
+          "sample": 4
         }
       },
       "dramatic_comedy": {
         "mature": {
-          "average_view_percentage": 69.38,
-          "sample": 2,
+          "average_view_percentage": 70.67,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 1.5
+          "subscribers_gained": 0.0
         },
-        "sample_size": 11,
+        "sample_size": 12,
         "views_24h": {
-          "median": 39.0,
+          "median": 60.0,
           "sample": 6
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 5
+          "sample": 7
         },
         "views_72h": {
           "median": 233.5,
@@ -463,8 +486,8 @@
       "natural": {
         "sample_size": 5,
         "views_24h": {
-          "median": 6.0,
-          "sample": 3
+          "median": 67.5,
+          "sample": 4
         },
         "views_6h": {
           "median": 4.0,
@@ -478,15 +501,15 @@
           "sample": 3
         },
         "views_6h": {
-          "median": 32.0,
-          "sample": 2
+          "median": 1.0,
+          "sample": 3
         }
       },
       "warm": {
-        "sample_size": 10,
+        "sample_size": 11,
         "views_24h": {
-          "median": 308.5,
-          "sample": 8
+          "median": 221.0,
+          "sample": 9
         },
         "views_6h": {
           "median": 4.0,
@@ -535,6 +558,19 @@
         "views_72h": 298
       },
       {
+        "category": "friends",
+        "content_id": "wd-900c22d9856ba75f786c28e2",
+        "duration_seconds": 103.0,
+        "hook": "I left my best friend one key to feed my dog for four days. On night two, my smart lock said six strangers had entered my apartment.",
+        "hook_type": "untracked",
+        "premise": "A woman leaves her best friend one key to feed her dog during a four-day trip, then discovers the friend has secretly listed her apartment as a short-term rental while pretending the unexpected smart-lock alerts are glitches.",
+        "story_tone": "dramatic",
+        "title": "My Best Friend Rented Out My Apartment While I Was Away",
+        "trend_lane": "untracked",
+        "views_24h": 276,
+        "views_72h": 280
+      },
+      {
         "category": "workplace",
         "content_id": "wd-c0945702a7419f9e7df0343b",
         "duration_seconds": 83.0,
@@ -546,45 +582,35 @@
         "trend_lane": "untracked",
         "views_24h": 168,
         "views_72h": 169
-      },
-      {
-        "category": "roommate_drama",
-        "content_id": "wd-425f8a634e97747168148f28",
-        "duration_seconds": 91.0,
-        "hook": "My roommate charged us a fake building fee for six months—then the landlord knocked on our door asking why the rent was late.",
-        "hook_type": "untracked",
-        "premise": "A woman discovers that the roommate who handles the apartment bills has been collecting a fake monthly maintenance fee from everyone while repeatedly paying the real rent late.",
-        "story_tone": "dramatic_comedy",
-        "title": "My Roommate Invented a Fake Rent Fee",
-        "trend_lane": "untracked",
-        "views_24h": 7,
-        "views_72h": 8
       }
     ],
     "trend_performance": {
+      "evergreen": {
+        "sample_size": 2
+      },
       "untracked": {
         "mature": {
-          "average_view_percentage": 69.38,
-          "sample": 2,
+          "average_view_percentage": 70.67,
+          "sample": 3,
           "shares": 0.0,
-          "subscribers_gained": 1.5
+          "subscribers_gained": 0.0
         },
-        "sample_size": 68,
+        "sample_size": 71,
         "views_24h": {
-          "median": 6.0,
-          "sample": 49
+          "median": 7.5,
+          "sample": 54
         },
         "views_6h": {
           "median": 2.0,
-          "sample": 47
+          "sample": 52
         },
         "views_72h": {
-          "median": 298.0,
-          "sample": 5
+          "median": 224.5,
+          "sample": 8
         }
       }
     },
-    "videos_analyzed": 68,
+    "videos_analyzed": 73,
     "weak_retention_examples": [
       {
         "average_view_percentage": 68.09,
@@ -611,6 +637,20 @@
         "title": "She Stole My Lunch, Then Reported Me to HR",
         "trend_lane": "untracked",
         "views_72h": 1029
+      },
+      {
+        "average_view_percentage": 86.08,
+        "category": "roommate_drama",
+        "content_id": "wd-425f8a634e97747168148f28",
+        "duration_seconds": 91.0,
+        "hook": "My roommate charged us a fake building fee for six months—then the landlord knocked on our door asking why the rent was late.",
+        "hook_type": "untracked",
+        "premise": "A woman discovers that the roommate who handles the apartment bills has been collecting a fake monthly maintenance fee from everyone while repeatedly paying the real rent late.",
+        "story_tone": "dramatic_comedy",
+        "title": "My Roommate Invented a Fake Rent Fee",
+        "trend_lane": "untracked",
+        "views_24h": 7,
+        "views_72h": 8
       }
     ],
     "window_days": 30
