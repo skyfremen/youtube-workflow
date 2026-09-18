@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-86662e0e6363d4550556c566",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:08:31.779132Z",
+  "request_blob_sha": "fa814aa419ef56fa9011eade5aec80797d44fa03",
+  "request_path": "content/requests/wd-86662e0e6363d4550556c566.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A borrowed parking bay quietly turns into a commuter side business. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-531fbe9342fc7563de51",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Rented Out My Parking Space"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T12:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289356770"
+  },
+  "youtube_video_id": "Fv-ZOYTKalw"
+}
