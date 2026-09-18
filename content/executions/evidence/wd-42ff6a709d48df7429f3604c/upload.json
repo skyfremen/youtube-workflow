@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-42ff6a709d48df7429f3604c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:10:54.297897Z",
+  "request_blob_sha": "4185d93122161ce45ef5261dfff0fb8668253476",
+  "request_path": "content/requests/wd-42ff6a709d48df7429f3604c.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A gaming brag falls apart the moment the controller loses power. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b09a17ecee0eb3d9ab58",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "His Wolverine Win Streak Survived a Dead Controller"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289368923"
+  },
+  "youtube_video_id": "38i8oqpZ41k"
+}
