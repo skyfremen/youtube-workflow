@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-681277b543891b788a4fe748",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T12:12:37.032790Z",
+  "request_blob_sha": "fe42ed7dbf81ef015511f55fe717769192d54f91",
+  "request_path": "content/requests/wd-681277b543891b788a4fe748.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Six mysterious transfers look terrible until she follows them to a repair workshop. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ec369570859eb4fa5676",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Found My Boyfriend's Secret Transfers to My Brother"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342870365"
+  },
+  "youtube_video_id": "DKZF20PRZZo"
+}
