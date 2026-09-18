@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8578ed7b5b85b07c3fc080b2",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T12:10:00.322911Z",
+  "request_blob_sha": "bf4ae10388527ce56d330eeb98a26ef391aca690",
+  "request_path": "content/requests/wd-8578ed7b5b85b07c3fc080b2.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A basic used bicycle returns online as a suspiciously expensive 'performance' machine. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-73d6867c02c5cd47f0a5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Old Bicycle Came Back With Fake Upgrades"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342868464"
+  },
+  "youtube_video_id": "P5fg5TqHZqM"
+}
