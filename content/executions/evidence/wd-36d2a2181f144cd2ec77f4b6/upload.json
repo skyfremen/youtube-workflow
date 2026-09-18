@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-36d2a2181f144cd2ec77f4b6",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:10:36.502468Z",
+  "request_blob_sha": "29d6aa13981c47f21a59802ffb1190f4cfeae20c",
+  "request_path": "content/requests/wd-36d2a2181f144cd2ec77f4b6.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden phone looks disastrous until she finally sees what is inside. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-92698cc39bc8bc644529",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Found His Secret Phone Before the Proposal"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T23:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289371439"
+  },
+  "youtube_video_id": "5VCIcy7z1Cw"
+}
