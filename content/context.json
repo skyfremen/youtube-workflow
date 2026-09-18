@@ -829,13 +829,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "Staff threaten to cancel his membership and charge a penalty.",
-      "payoff": "You weren't sharing anything. Our gate was copying you.",
-      "premise": "A man is accused of sharing his gym membership because his account logs two entries each morning.",
-      "title": "The Gym Said I Was Sharing My Membership",
-      "twist": "A faulty side-gate scanner has been replaying his successful tap whenever the maintenance worker tests the gate minutes later."
-    },
-    {
       "conflict": "The hotel system shows a signed early-checkout request and staff initially refuse to restore the room.",
       "payoff": "We checked out the wrong person.",
       "premise": "A traveler returns from sightseeing to find his room deactivated and luggage moved.",
@@ -1002,6 +995,13 @@
       "premise": "A man queues for new Pokémon 30th Celebration cards with his nephew, then realizes another parent has been holding places for an entire group.",
       "title": "One Person in the Pokémon Queue Became Eight",
       "twist": "The store's limit applies per customer present at opening, so the absent friends cannot inherit saved queue positions and everyone already there keeps their real place."
+    },
+    {
+      "conflict": "Small monthly transfers seem harmless until a new employee asks why the team pays privately for coffee that facilities says is free.",
+      "payoff": "Free. Actually free.",
+      "premise": "A woman discovers her coworker has been using a shared office snack spreadsheet to quietly charge everyone for items the company already provides.",
+      "title": "We Were Paying for Free Office Coffee",
+      "twist": "The coworker created a fake snack reimbursement system and has been pocketing the pooled payments while restocking almost entirely from the company pantry."
     }
   ]
 }
