@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cde15eeba42e48349c755297",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T00:09:17.766918Z",
+  "request_blob_sha": "2b2e2d6f02e630bc3dab1c2e07e4c0cc85c68c80",
+  "request_path": "content/requests/wd-cde15eeba42e48349c755297.json",
+  "source_commit_sha": "c8c790ecbcf3ebebd24f4562b8c5a399dcd98525",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing family keepsake leads to an accusation, then a much better explanation. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a22b4c1beb1fad6d53a0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad's Priceless Baseball Was Suddenly Fake"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-18T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c73401d0908932c6d6172fb1c745a44e6a232fa6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35289365008"
+  },
+  "youtube_video_id": "Ip2DWLPJgXs"
+}
