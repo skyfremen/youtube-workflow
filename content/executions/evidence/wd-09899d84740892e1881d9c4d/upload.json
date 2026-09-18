@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-09899d84740892e1881d9c4d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-18T12:14:18.015445Z",
+  "request_blob_sha": "a4ede5e6e4b4ed36d166108233ee4c451b6064d7",
+  "request_path": "content/requests/wd-09899d84740892e1881d9c4d.json",
+  "source_commit_sha": "e858c40b0e9ca7a5e91ee0441f083c3b73da5c19",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One receipt turns a harmless office birthday tradition into a very awkward accounting exercise. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2d2cb585511d7b30d6d6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Office Birthday Fund Didn't Add Up"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35342862636"
+  },
+  "youtube_video_id": "dxRa9qjcIs4"
+}
