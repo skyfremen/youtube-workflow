@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d603bf2390e6daad7b7f9da6",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T00:27:57.790293Z",
+  "request_blob_sha": "8ea458c5af3775d23e8f5c3d981ee59864b47579",
+  "request_path": "content/requests/wd-d603bf2390e6daad7b7f9da6.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A brand-new foldable phone becomes the center of a roommate mystery with a very human explanation. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9993c7bf9f4fed762ed4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Kept Forgetting He Moved His Foldable iPhone"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409088759"
+  },
+  "youtube_video_id": "ynmw34JmNrk"
+}
