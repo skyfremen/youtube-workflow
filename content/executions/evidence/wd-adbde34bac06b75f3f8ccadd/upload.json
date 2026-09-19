@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-adbde34bac06b75f3f8ccadd",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T12:13:50.315786Z",
+  "request_blob_sha": "59d7ca1cd34a1eb301c4cf4c48855325dc9bd334",
+  "request_path": "content/requests/wd-adbde34bac06b75f3f8ccadd.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family group chat starts exposing forgotten chores with impossible accuracy, until an old app explains everything. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-54bb48cbd29f355c4d75",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Family Chat Knew Everything I Forgot"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441740967"
+  },
+  "youtube_video_id": "JNJuN6hjDnU"
+}
