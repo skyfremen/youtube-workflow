@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-56c3ee3392c96fb89e10dc80",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T03:49:59.421324Z",
+  "request_blob_sha": "5876d7106d443d3821b350b9b215a15508f57aaf",
+  "request_path": "content/requests/wd-56c3ee3392c96fb89e10dc80.json",
+  "source_commit_sha": "95ffc573ed15327e7a194d604679a3e4ce1273bd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A shared laundry room turns into a neighbor dispute when two phones somehow control the same washer. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c2fc11137554cf97a0b3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Else Kept Taking Over My Washing Machine"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35419338444"
+  },
+  "youtube_video_id": "Kq7qV8Pys_c"
+}
