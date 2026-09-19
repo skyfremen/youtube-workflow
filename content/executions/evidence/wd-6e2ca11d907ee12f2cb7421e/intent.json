@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-6e2ca11d907ee12f2cb7421e",
+  "created_at": "2026-09-19T00:29:08.882766Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "38973ce61032e8e3e3c1fe39911a83558d2667b9",
+  "request_path": "content/requests/wd-6e2ca11d907ee12f2cb7421e.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A launch-day pickup turns into a theft scare until two nearly identical orders collide. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-059c1d0e0bffc8de49fe",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My New iPhone Was Collected by Someone Else"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409087637"
+  }
+}
