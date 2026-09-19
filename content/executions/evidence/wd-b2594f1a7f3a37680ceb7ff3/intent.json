@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-b2594f1a7f3a37680ceb7ff3",
+  "created_at": "2026-09-19T12:11:44.597400Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "edf26ac7f98c374b88492abec7d60a382ce1d853",
+  "request_path": "content/requests/wd-b2594f1a7f3a37680ceb7ff3.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A veteran gamer starts writing suspiciously basic MMO notes before World of Warcraft: Forever launches, and the reason is unexpectedly wholesome. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-43fd2af12ccde2acbc9d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Was Secretly Training Someone for WoW Forever"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T09:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441744818"
+  }
+}
