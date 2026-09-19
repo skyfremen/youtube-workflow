@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-de47d12aadecd355445809a3",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T00:27:15.686189Z",
+  "request_blob_sha": "618513b6ed5d8428d29f0fde6d6e9725394aafc9",
+  "request_path": "content/requests/wd-de47d12aadecd355445809a3.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One blurry clip turns a helpful neighbor into the suspect until the second camera tells the rest. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ef4af91b37f086dcce98",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Group Chat Thought I Stole the Fundraiser"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409081368"
+  },
+  "youtube_video_id": "4eLcVZOchMw"
+}
