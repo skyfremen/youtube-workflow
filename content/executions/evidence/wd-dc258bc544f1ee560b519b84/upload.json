@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-dc258bc544f1ee560b519b84",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T12:12:54.268553Z",
+  "request_blob_sha": "44708e76a3810b2fbc669ec9ff9c8743607558c2",
+  "request_path": "content/requests/wd-dc258bc544f1ee560b519b84.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An employee looks like the office room hoarder until the booking timestamps reveal something stranger. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e1d02308a4a9124ca03b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone at Work Was Booking Rooms Under My Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441737858"
+  },
+  "youtube_video_id": "zsUOxxodPNU"
+}
