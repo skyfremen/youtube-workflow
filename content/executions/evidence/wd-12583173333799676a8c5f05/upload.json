@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-12583173333799676a8c5f05",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T12:09:20.700411Z",
+  "request_blob_sha": "8986774ef75c4856bd2074d6a02674d6e6db5ed1",
+  "request_path": "content/requests/wd-12583173333799676a8c5f05.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two sealed copies of a newly released game look like collector behavior until a friend's real plan comes out. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2a85d8eedceeaaf9735b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Bought the New Game Twice and Wouldn't Open It"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T11:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441746501"
+  },
+  "youtube_video_id": "e5kZVlwpk0U"
+}
