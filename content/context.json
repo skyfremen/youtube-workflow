@@ -11,10 +11,18 @@
         "views_6h": {
           "median": 60.0,
           "sample": 1
+        },
+        "views_72h": {
+          "median": 480.0,
+          "sample": 1
         }
       },
       "collectibles": {
-        "sample_size": 1
+        "sample_size": 1,
+        "views_6h": {
+          "median": 2.0,
+          "sample": 1
+        }
       },
       "consumer": {
         "mature": {
@@ -25,8 +33,8 @@
         },
         "sample_size": 4,
         "views_24h": {
-          "median": 159.0,
-          "sample": 3
+          "median": 93.0,
+          "sample": 4
         },
         "views_6h": {
           "median": 8.0,
@@ -62,6 +70,12 @@
         }
       },
       "entertainment": {
+        "mature": {
+          "average_view_percentage": 115.3,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 1,
         "views_24h": {
           "median": 2.0,
@@ -77,6 +91,12 @@
         }
       },
       "everyday life": {
+        "mature": {
+          "average_view_percentage": 4.39,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 1,
         "views_24h": {
           "median": 6.0,
@@ -93,8 +113,8 @@
       },
       "family": {
         "mature": {
-          "average_view_percentage": 54.23,
-          "sample": 3,
+          "average_view_percentage": 31.79,
+          "sample": 4,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
@@ -105,11 +125,11 @@
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 11
+          "sample": 12
         },
         "views_72h": {
-          "median": 9.5,
-          "sample": 6
+          "median": 13.0,
+          "sample": 7
         }
       },
       "family_comedy": {
@@ -130,18 +150,18 @@
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 7,
+        "sample_size": 8,
         "views_24h": {
-          "median": 4.0,
-          "sample": 5
+          "median": 12.0,
+          "sample": 6
         },
         "views_6h": {
-          "median": 2.0,
-          "sample": 5
+          "median": 1.0,
+          "sample": 6
         },
         "views_72h": {
-          "median": 142.0,
-          "sample": 2
+          "median": 280.0,
+          "sample": 3
         }
       },
       "friendship": {
@@ -174,12 +194,22 @@
       },
       "gym": {
         "sample_size": 1,
+        "views_24h": {
+          "median": 344.0,
+          "sample": 1
+        },
         "views_6h": {
           "median": 275.0,
           "sample": 1
         }
       },
       "home_renovation": {
+        "mature": {
+          "average_view_percentage": 0.0,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 1,
         "views_24h": {
           "median": 1.0,
@@ -201,9 +231,13 @@
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 1,
+        "sample_size": 2,
         "views_24h": {
           "median": 1.0,
+          "sample": 1
+        },
+        "views_6h": {
+          "median": 0.0,
           "sample": 1
         },
         "views_72h": {
@@ -231,6 +265,10 @@
         "views_6h": {
           "median": 265.0,
           "sample": 3
+        },
+        "views_72h": {
+          "median": 844.0,
+          "sample": 1
         }
       },
       "neighbors": {
@@ -250,8 +288,8 @@
           "sample": 4
         },
         "views_72h": {
-          "median": 374.0,
-          "sample": 2
+          "median": 241.0,
+          "sample": 3
         }
       },
       "parenting": {
@@ -268,7 +306,7 @@
       "parking": {
         "sample_size": 1,
         "views_24h": {
-          "median": 3.0,
+          "median": 4.0,
           "sample": 1
         },
         "views_6h": {
@@ -277,6 +315,12 @@
         }
       },
       "pets": {
+        "mature": {
+          "average_view_percentage": 100.4,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 3,
         "views_24h": {
           "median": 9.0,
@@ -292,14 +336,14 @@
         }
       },
       "relationship": {
-        "sample_size": 4,
+        "sample_size": 5,
         "views_24h": {
-          "median": 113.0,
-          "sample": 3
+          "median": 58.5,
+          "sample": 4
         },
         "views_6h": {
-          "median": 11.5,
-          "sample": 4
+          "median": 4.0,
+          "sample": 5
         }
       },
       "relationship betrayal": {
@@ -354,8 +398,8 @@
       "shopping": {
         "sample_size": 3,
         "views_24h": {
-          "median": 1.0,
-          "sample": 1
+          "median": 68.0,
+          "sample": 2
         },
         "views_6h": {
           "median": 1.0,
@@ -370,10 +414,16 @@
         }
       },
       "travel": {
+        "mature": {
+          "average_view_percentage": 59.73,
+          "sample": 1,
+          "shares": 0.0,
+          "subscribers_gained": 0.0
+        },
         "sample_size": 4,
         "views_24h": {
-          "median": 15.0,
-          "sample": 3
+          "median": 97.5,
+          "sample": 4
         },
         "views_6h": {
           "median": 21.0,
@@ -401,8 +451,8 @@
           "sample": 3
         },
         "views_72h": {
-          "median": 305.0,
-          "sample": 1
+          "median": 660.5,
+          "sample": 2
         }
       },
       "work": {
@@ -423,14 +473,14 @@
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 9,
+        "sample_size": 11,
         "views_24h": {
           "median": 4.0,
           "sample": 7
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 6
+          "sample": 7
         },
         "views_72h": {
           "median": 169.0,
@@ -442,30 +492,34 @@
     "duration_performance": {
       "under_120": {
         "mature": {
-          "average_view_percentage": 73.52,
-          "sample": 17,
+          "average_view_percentage": 70.6,
+          "sample": 23,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 91,
+        "sample_size": 96,
         "views_24h": {
-          "median": 4.0,
-          "sample": 72
+          "median": 4.5,
+          "sample": 78
         },
         "views_6h": {
-          "median": 2.5,
-          "sample": 70
+          "median": 2.0,
+          "sample": 76
         },
         "views_72h": {
-          "median": 14.5,
-          "sample": 26
+          "median": 85.5,
+          "sample": 32
         }
       }
     },
-    "generated_at": "2026-09-18T19:53:05Z",
+    "generated_at": "2026-09-19T01:26:45Z",
     "hook_type_performance": {
       "accusation": {
         "sample_size": 3,
+        "views_24h": {
+          "median": 239.5,
+          "sample": 2
+        },
         "views_6h": {
           "median": 141.0,
           "sample": 3
@@ -473,55 +527,59 @@
       },
       "consequence_first": {
         "sample_size": 2,
+        "views_24h": {
+          "median": 20.0,
+          "sample": 1
+        },
         "views_6h": {
           "median": 6.0,
           "sample": 2
         }
       },
       "contradiction": {
+        "sample_size": 5,
+        "views_24h": {
+          "median": 225.0,
+          "sample": 2
+        },
+        "views_6h": {
+          "median": 3.0,
+          "sample": 5
+        }
+      },
+      "discovery": {
+        "sample_size": 5,
+        "views_24h": {
+          "median": 217.5,
+          "sample": 2
+        },
+        "views_6h": {
+          "median": 134.5,
+          "sample": 4
+        }
+      },
+      "money_stakes": {
         "sample_size": 4,
         "views_24h": {
           "median": 4.0,
           "sample": 1
         },
         "views_6h": {
-          "median": 3.5,
+          "median": 0.5,
           "sample": 4
-        }
-      },
-      "discovery": {
-        "sample_size": 4,
-        "views_24h": {
-          "median": 430.0,
-          "sample": 1
-        },
-        "views_6h": {
-          "median": 265.0,
-          "sample": 3
-        }
-      },
-      "money_stakes": {
-        "sample_size": 2,
-        "views_24h": {
-          "median": 3.0,
-          "sample": 1
-        },
-        "views_6h": {
-          "median": 1.0,
-          "sample": 2
         }
       },
       "social_exposure": {
         "sample_size": 2,
         "views_6h": {
-          "median": 0.0,
-          "sample": 1
+          "median": 1.0,
+          "sample": 2
         }
       },
       "untracked": {
         "mature": {
-          "average_view_percentage": 73.52,
-          "sample": 17,
+          "average_view_percentage": 70.6,
+          "sample": 23,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
@@ -535,68 +593,72 @@
           "sample": 52
         },
         "views_72h": {
-          "median": 14.5,
-          "sample": 26
+          "median": 85.5,
+          "sample": 32
         }
       },
       "urgency": {
-        "sample_size": 3,
+        "sample_size": 4,
+        "views_24h": {
+          "median": 27.0,
+          "sample": 1
+        },
         "views_6h": {
-          "median": 2.0,
-          "sample": 3
+          "median": 1.0,
+          "sample": 4
         }
       }
     },
     "lead_gender_performance": {
       "female": {
         "mature": {
-          "average_view_percentage": 75.25,
-          "sample": 16,
+          "average_view_percentage": 73.52,
+          "sample": 21,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 62,
+        "sample_size": 66,
         "views_24h": {
-          "median": 7.5,
-          "sample": 50
+          "median": 8.5,
+          "sample": 54
         },
         "views_6h": {
           "median": 3.0,
-          "sample": 43
+          "sample": 47
         },
         "views_72h": {
-          "median": 37.0,
-          "sample": 23
+          "median": 108.0,
+          "sample": 27
         }
       },
       "male": {
         "mature": {
-          "average_view_percentage": 54.23,
-          "sample": 1,
+          "average_view_percentage": 29.31,
+          "sample": 2,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 29,
+        "sample_size": 30,
         "views_24h": {
           "median": 3.5,
-          "sample": 22
+          "sample": 24
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 27
+          "sample": 29
         },
         "views_72h": {
-          "median": 6.0,
-          "sample": 3
+          "median": 11.0,
+          "sample": 5
         }
       }
     },
     "learning": {
       "analytics_weight": "medium",
       "checkpoint_samples": {
-        "24h": 72,
-        "6h": 70,
-        "72h": 26,
+        "24h": 78,
+        "6h": 76,
+        "72h": 32,
         "7d": 0
       },
       "minimum_pattern_sample": 8,
@@ -623,16 +685,16 @@
         },
         "sample_size": 12,
         "views_24h": {
-          "median": 4.0,
-          "sample": 9
+          "median": 5.0,
+          "sample": 10
         },
         "views_6h": {
           "median": 2.0,
           "sample": 10
         },
         "views_72h": {
-          "median": 8.5,
-          "sample": 2
+          "median": 13.0,
+          "sample": 3
         }
       },
       "conversational": {
@@ -652,46 +714,46 @@
           "sample": 5
         },
         "views_72h": {
-          "median": 63.0,
-          "sample": 1
+          "median": 442.5,
+          "sample": 2
         }
       },
       "dramatic": {
         "mature": {
-          "average_view_percentage": 65.66,
-          "sample": 8,
+          "average_view_percentage": 59.73,
+          "sample": 11,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 29,
+        "sample_size": 30,
         "views_24h": {
-          "median": 4.0,
-          "sample": 26
+          "median": 9.5,
+          "sample": 28
         },
         "views_6h": {
-          "median": 4.0,
-          "sample": 21
+          "median": 3.0,
+          "sample": 23
         },
         "views_72h": {
-          "median": 16.0,
-          "sample": 11
+          "median": 72.5,
+          "sample": 14
         }
       },
       "dramatic_comedy": {
         "mature": {
-          "average_view_percentage": 73.52,
-          "sample": 5,
+          "average_view_percentage": 72.06,
+          "sample": 6,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 16,
+        "sample_size": 18,
         "views_24h": {
           "median": 4.0,
-          "sample": 10
+          "sample": 11
         },
         "views_6h": {
           "median": 1.0,
-          "sample": 11
+          "sample": 12
         },
         "views_72h": {
           "median": 233.5,
@@ -701,7 +763,7 @@
       "natural": {
         "mature": {
           "average_view_percentage": 69.09,
-          "sample": 1,
+          "sample": 3,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
@@ -726,14 +788,14 @@
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
-        "sample_size": 6,
+        "sample_size": 7,
         "views_24h": {
           "median": 1.0,
           "sample": 5
         },
         "views_6h": {
-          "median": 0.5,
-          "sample": 4
+          "median": 1.0,
+          "sample": 5
         },
         "views_72h": {
           "median": 4.5,
@@ -741,18 +803,18 @@
         }
       },
       "warm": {
-        "sample_size": 16,
+        "sample_size": 17,
         "views_24h": {
-          "median": 221.0,
-          "sample": 11
+          "median": 20.0,
+          "sample": 13
         },
         "views_6h": {
-          "median": 8.0,
-          "sample": 14
+          "median": 4.0,
+          "sample": 16
         },
         "views_72h": {
-          "median": 1141.0,
-          "sample": 1
+          "median": 994.5,
+          "sample": 2
         }
       }
     },
@@ -769,7 +831,7 @@
         "trend_lane": "untracked",
         "views_24h": 1099,
         "views_6h": 1061,
-        "views_72h": 1141
+        "views_72h": 1145
       },
       {
         "average_view_percentage": 70.6,
@@ -785,71 +847,75 @@
         "views_72h": 1029
       },
       {
-        "average_view_percentage": 78.81,
-        "category": "neighbors",
-        "content_id": "wd-0c710c1f4461e67f5546a88b",
-        "duration_seconds": 96.0,
-        "hook": "My neighbor filed three noise complaints about my dog. I don't own a dog.",
-        "hook_type": "untracked",
-        "premise": "A woman receives repeated condo noise complaints about a dog she does not own, then discovers her neighbor has been playing barking sounds outside her door to manufacture evidence and pressure her to move.",
-        "story_tone": "dramatic",
-        "title": "She Reported My Dog. I Don't Own One.",
-        "trend_lane": "untracked",
-        "views_24h": 652,
-        "views_72h": 739
-      },
-      {
-        "average_view_percentage": 86.3,
-        "category": "family",
-        "content_id": "wd-e108a097c17cd98099e399b7",
-        "duration_seconds": 85.0,
-        "hook": "My future mother-in-law moved my parents to the worst table at my wedding and blamed the venue.",
-        "hook_type": "untracked",
-        "premise": "A bride discovers that her future mother-in-law secretly rewrote the wedding seating chart to push the bride's parents to the back of the room and give the best tables to her own friends, while insisting the venue made the changes.",
-        "story_tone": "dramatic",
-        "title": "She Rewrote My Wedding Seating Chart",
-        "trend_lane": "untracked",
-        "views_24h": 375,
-        "views_72h": 377
-      },
-      {
-        "average_view_percentage": 95.7,
         "category": "wedding",
-        "content_id": "wd-66bd242a6ff97f146a3376aa",
-        "duration_seconds": 83.0,
-        "hook": "My bridesmaid sold my wedding decorations before I even got married.",
+        "content_id": "wd-3a96ca7d6aa02c0cb8ee10e5",
+        "duration_seconds": 79.0,
+        "hook": "Two weeks before my wedding, the bakery told me I had apparently chosen a cake flavor I can't even eat.",
         "hook_type": "untracked",
-        "premise": "A bridesmaid volunteers to store the wedding decorations, then secretly lists several of them for sale before the ceremony and is exposed when a marketplace buyer arrives during setup to collect the bride's welcome sign.",
-        "story_tone": "dramatic_comedy",
-        "title": "My Bridesmaid Sold My Wedding Decor",
+        "premise": "A woman discovers the bakery making her wedding cake has secretly replaced her paid premium tasting selections with cheaper flavors for another couple willing to pay a rush fee.",
+        "story_tone": "dramatic",
+        "title": "The Bakery Changed My Wedding Cake Order",
         "trend_lane": "untracked",
-        "views_24h": 297,
-        "views_72h": 305
+        "views_24h": 940,
+        "views_6h": 314,
+        "views_72h": 1016
+      },
+      {
+        "category": "friends",
+        "content_id": "wd-1fc11ce90c60ca4eb5758f2c",
+        "duration_seconds": 82.0,
+        "hook": "My streaming account suddenly thought I loved Korean pottery documentaries. Apparently, so did the girl my friend was trying to impress.",
+        "hook_type": "untracked",
+        "premise": "A man discovers his friend has been using his streaming account's watch history to pretend they share obscure interests with someone they are trying to date.",
+        "story_tone": "comedy",
+        "title": "My Friend Used My Netflix History to Impress a Date",
+        "trend_lane": "untracked",
+        "views_24h": 501,
+        "views_6h": 144,
+        "views_72h": 991
+      },
+      {
+        "category": "neighborhood",
+        "content_id": "wd-2ab67a038585b475b64d2bd3",
+        "duration_seconds": 80.0,
+        "hook": "Someone kept leaving angry notes on my car, and I was ready to start a neighborhood war.",
+        "hook_type": "untracked",
+        "premise": "A woman thinks her new neighbor is deliberately trying to get her car towed with increasingly hostile parking notes, until she learns the notes were written by the neighbor's teenage son to keep one curb space empty for a surprise mobility ramp being installed for his injured father.",
+        "story_tone": "warm",
+        "title": "I Thought My Neighbor Was Trying to Get Me Towed",
+        "trend_lane": "untracked",
+        "views_24h": 609,
+        "views_6h": 474,
+        "views_72h": 844
       }
     ],
     "trend_performance": {
       "evergreen": {
-        "sample_size": 16,
+        "sample_size": 20,
         "views_24h": {
-          "median": 4.0,
-          "sample": 3
+          "median": 77.5,
+          "sample": 8
         },
         "views_6h": {
-          "median": 4.0,
-          "sample": 15
+          "median": 1.0,
+          "sample": 19
         }
       },
       "trend_aware": {
-        "sample_size": 4,
+        "sample_size": 5,
+        "views_24h": {
+          "median": 27.0,
+          "sample": 1
+        },
         "views_6h": {
-          "median": 3.0,
-          "sample": 3
+          "median": 2.0,
+          "sample": 5
         }
       },
       "untracked": {
         "mature": {
-          "average_view_percentage": 73.52,
-          "sample": 17,
+          "average_view_percentage": 70.6,
+          "sample": 23,
           "shares": 0.0,
           "subscribers_gained": 0.0
         },
@@ -863,13 +929,43 @@
           "sample": 52
         },
         "views_72h": {
-          "median": 14.5,
-          "sample": 26
+          "median": 85.5,
+          "sample": 32
         }
       }
     },
-    "videos_analyzed": 91,
+    "videos_analyzed": 96,
     "weak_retention_examples": [
+      {
+        "average_view_percentage": 0,
+        "category": "home_renovation",
+        "content_id": "wd-1320eff9f6df7c961ee88eb4",
+        "duration_seconds": 88.0,
+        "hook": "My contractor installed cheap tiles and sent the ones I paid for to someone else's house.",
+        "hook_type": "untracked",
+        "premise": "A homeowner pays for premium imported tiles during a renovation, but the contractor installs cheaper lookalikes and sends the expensive boxes to another project.",
+        "story_tone": "dramatic",
+        "title": "My Contractor Gave My Tiles to Another Client",
+        "trend_lane": "untracked",
+        "views_24h": 1,
+        "views_6h": 1,
+        "views_72h": 1
+      },
+      {
+        "average_view_percentage": 4.39,
+        "category": "everyday life",
+        "content_id": "wd-eb732720ec81715a28fd74cb",
+        "duration_seconds": 76.0,
+        "hook": "My gym accused me of sneaking strangers inside. Their own scanner eventually showed I was somehow entering twice at the same time.",
+        "hook_type": "untracked",
+        "premise": "A man is accused by his gym of repeatedly lending his membership card to strangers, until access logs reveal a staff member has been cloning member QR codes to sell unauthorized entries.",
+        "story_tone": "natural",
+        "title": "My Gym Said I Was Sharing My Membership",
+        "trend_lane": "untracked",
+        "views_24h": 6,
+        "views_6h": 5,
+        "views_72h": 11
+      },
       {
         "average_view_percentage": 7.46,
         "category": "family",
@@ -899,47 +995,19 @@
         "views_72h": 3
       },
       {
-        "average_view_percentage": 26.51,
-        "category": "workplace",
-        "content_id": "wd-67053c0892359102518ef0f1",
-        "duration_seconds": 94.0,
-        "hook": "I got a final warning for trashing a meeting room I had left spotless twenty minutes earlier.",
-        "hook_type": "untracked",
-        "premise": "A woman is repeatedly blamed for leaving the office meeting room filthy after late client calls, until the cleaner's timestamped photos reveal her coworker has been using her calendar bookings to hide his own after-hours side business.",
-        "story_tone": "dramatic",
-        "title": "He Used My Meeting Room Booking as His Alibi",
-        "trend_lane": "untracked",
-        "views_24h": 103,
-        "views_72h": 108
-      },
-      {
-        "average_view_percentage": 54.230000000000004,
+        "average_view_percentage": 9.34,
         "category": "family",
-        "content_id": "wd-182534246696f02ead24019c",
-        "duration_seconds": 77.0,
-        "hook": "I lent my brother my car for job interviews. He rented it to strangers.",
+        "content_id": "wd-015a3e2d91171f2411e0643b",
+        "duration_seconds": 87.0,
+        "hook": "My sister canceled our parents' anniversary dinner so she could use their private room for her own proposal.",
         "hook_type": "untracked",
-        "premise": "A man lends his car to his brother for job interviews, then discovers the brother has been secretly listing it on a peer-to-peer car rental app for cash.",
-        "story_tone": "dramatic",
-        "title": "My Brother Rented Out My Car",
+        "premise": "A woman plans an anniversary dinner for her parents, but her sister secretly changes the reservation and takes over the restaurant's private room for her own proposal.",
+        "story_tone": "dramatic_comedy",
+        "title": "My Sister Stole Our Parents' Anniversary Reservation",
         "trend_lane": "untracked",
-        "views_24h": 4,
-        "views_6h": 4,
-        "views_72h": 6
-      },
-      {
-        "average_view_percentage": 64.25,
-        "category": "friends",
-        "content_id": "wd-d526d39afd2491725aa5481f",
-        "duration_seconds": 83.0,
-        "hook": "My friend was making us split the bill for food she secretly took home.",
-        "hook_type": "untracked",
-        "premise": "A friend repeatedly orders expensive dishes 'for the table' at group dinners, then quietly has extra premium meals boxed to take home while insisting the entire bill be split evenly.",
-        "story_tone": "comedy",
-        "title": "She Made Us Pay for Her Takeaway Meals",
-        "trend_lane": "untracked",
-        "views_24h": 4,
-        "views_72h": 4
+        "views_24h": 1,
+        "views_6h": 1,
+        "views_72h": 1
       }
     ],
     "window_days": 30
