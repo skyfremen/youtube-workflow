@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1fbfa8592783119b1e228740",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T00:31:00.212537Z",
+  "request_blob_sha": "659768ecf9ef48c284c1543acdebe4aedcf62dec",
+  "request_path": "content/requests/wd-1fbfa8592783119b1e228740.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A sold-out ticket vanishes hours before the show and lands with the last person she expected. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3938239d0d80c70f044a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Concert Ticket Went to My Sister"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409083773"
+  },
+  "youtube_video_id": "p2aT-UUZvfU"
+}
