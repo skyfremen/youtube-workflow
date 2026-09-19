@@ -1,0 +1,46 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "city_motion",
+        "category": "travel",
+        "conflict": "She faces a large excess-baggage charge and insists she weighed the suitcase twice before leaving the hotel.",
+        "description": "A traveler is sure her suitcase became heavier in the taxi, but the real problem started at the hotel. #WackyDramas #Shorts",
+        "emoji_cues": [
+          "panic",
+          "money",
+          "confusion",
+          "funny"
+        ],
+        "hook": "My suitcase somehow gained six kilos during a twenty-minute ride to the airport.",
+        "hook_type": "money_stakes",
+        "lead_gender": "female",
+        "narration": "At the hotel my suitcase looked dangerously full, so I borrowed the luggage scale from reception. It showed 17. I checked twice because my airline limit was 20 kilograms. Perfect. I even bought a snack at the airport because I thought I had room to spare. Then I put the bag on the check-in scale. Twenty-three point four kilograms. The agent said I either had to repack or pay the excess fee. I genuinely thought their scale was broken. I hadn't opened the suitcase since leaving the hotel. The taxi driver hadn't touched it except to move it from the trunk. How could a bag gain more than six kilos in twenty minutes? I pulled out my small backpack and started moving clothes while a line formed behind me. The suitcase was still over the limit. Then my friend, who had used the hotel scale after me, sent a message saying her bag was mysteriously heavy too. That was too much coincidence. I called the hotel. The receptionist checked the scale and started laughing. It wasn't set to kilograms. A guest had switched it to pounds the night before. We had seen numbers like 17 and assumed kilograms because nobody noticed the tiny 'lb' indicator on the screen. My bag had never weighed 17 kilograms. It was far heavier, and the cheap handheld scale wasn't even being held steadily enough to give a sensible pound reading. The airline scale was correct. I repacked properly, wore the heaviest jacket I owned in warm weather, and got the suitcase under the limit without paying. My friend was checking in later, so I warned her before she left the hotel. She redistributed her luggage there instead of doing the airport-floor suitcase shuffle I had just performed in front of a growing queue. When I returned home, the hotel had already added a giant label beside the scale explaining how to check the unit. I didn't discover a luggage mystery. I discovered that one tiny abbreviation can become extremely expensive at an airport.",
+        "payoff": "I discovered that one tiny abbreviation can become extremely expensive at an airport.",
+        "premise": "A woman discovers her luggage has gained several kilograms between the hotel room and the airport check-in counter.",
+        "story_tone": "dramatic_comedy",
+        "title": "My Suitcase Gained Six Kilos on the Way to the Airport",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The hotel's portable luggage scale was displaying pounds while everyone read the number as kilograms after another guest changed its unit setting."
+      },
+      "winner_index": 6
+    }
+  ],
+  "draft_id": "draft-20260919T120600-2f8c6d31",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[6].narration",
+      "observed_value": "estimated_seconds=117.33",
+      "required_constraint": "120-178s",
+      "winner_index": 6,
+      "winner_title": "My Suitcase Gained Six Kilos on the Way to the Airport"
+    }
+  ]
+}
