@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2036d12145edd6e47d48dcc0",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T12:09:47.476363Z",
+  "request_blob_sha": "59e4cebc1625ac90048ed3cbbdbf305e9645a74c",
+  "request_path": "content/requests/wd-2036d12145edd6e47d48dcc0.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A normal secondhand gadget suddenly becomes a rare prototype online, until one old photo gives the story away. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d9fb866b9916155f35e7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Used Headphones Became a $900 Secret Prototype"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441738864"
+  },
+  "youtube_video_id": "MJLKWNmiUrk"
+}
