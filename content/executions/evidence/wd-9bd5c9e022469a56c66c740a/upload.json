@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9bd5c9e022469a56c66c740a",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T12:10:22.759806Z",
+  "request_blob_sha": "75f42dc51cfae7bcf8f216dde85632cf869e502c",
+  "request_path": "content/requests/wd-9bd5c9e022469a56c66c740a.json",
+  "source_commit_sha": "354e1d33c0a384127c48b8dceea896163dfa5da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three days before a wedding, the venue quietly changes the reception room until one forgotten attachment changes everything. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d805ba9cd70ea4153d1f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Ballroom Suddenly Belonged to Someone Else"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35441734694"
+  },
+  "youtube_video_id": "XNgjTmpAztc"
+}
