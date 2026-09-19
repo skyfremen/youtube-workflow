@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-aae9a651c6ba1e1100fad131",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T00:27:23.826228Z",
+  "request_blob_sha": "a3a485ea82c75a671942d1944502be44831996c2",
+  "request_path": "content/requests/wd-aae9a651c6ba1e1100fad131.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden date spreadsheet looks brutal until the final columns reveal what it was really measuring. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d548d619ee521333c93f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Secretly Rated Every Date We Had"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409079996"
+  },
+  "youtube_video_id": "tyMqRwm7mFk"
+}
