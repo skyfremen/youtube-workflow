@@ -54,11 +54,27 @@ During each planning run, use current web search to privately identify a small s
 
 ## Repair path
 
-If **Finalize Draft** creates `content/failures/<draft_id>.json`, stay in the same invocation and read only the failed draft and its matching failure file. If `repairable` is false, stop and report the failure.
+If **Finalize Draft** creates `content/failures/<draft_id>.json`, stay in the same invocation and read that matching failure file. If `repairable` is false, stop and report the failure.
 
-Otherwise repair every listed `violations[]` entry in one replacement draft, using `winner_index` to identify affected winners. Change only affected winners and preserve all others exactly. If `violations[]` is absent, follow the top-level `field`, `observed_value`, and `required_constraint` exactly. Make only the minimum creative correction required.
+For planner-repairable winner violations, use `affected_winners[]` from the failure file as the complete source for the affected winners. Do not retrieve or reproduce unaffected winners. Repair every listed `violations[]` entry, using `winner_index` to identify the affected winner and making only the minimum creative correction required.
 
-Write the complete replacement `winners[]` with root field `supersedes_draft_id` pointing to the immediately failed draft, then recheck **Finalize Draft**. Repeat only if needed, up to 5 repair drafts after the initial draft. If workflow failure occurs without a matching deterministic failure file, stop and report it rather than guessing.
+Write one new immutable repair draft containing only:
+
+```json
+{
+  "supersedes_draft_id": "draft-...",
+  "replacements": [
+    {
+      "winner_index": 11,
+      "winner": { "...complete repaired affected winner..." }
+    }
+  ]
+}
+```
+
+Deterministic code loads the superseded immutable draft, preserves every unaffected winner exactly, applies only the supplied affected-winner replacements, and validates that the replacement indexes exactly match the deterministic failure. Never copy the complete batch into a repair draft.
+
+Recheck **Finalize Draft** for the repair draft. If it fails with another matching deterministic failure file, repeat from that new failure file. Create at most 5 repair drafts after the initial draft. If workflow failure occurs without a matching deterministic failure file, stop and report it rather than guessing.
 
 ## Creative rules
 
@@ -130,6 +146,6 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
 }
 ```
 
-For repair, the root may additionally contain `"supersedes_draft_id": "draft-..."`.
+Normal drafts use the complete `winners[]` shape above. Repair drafts instead use `supersedes_draft_id` plus `replacements[]` as defined in the Repair path; deterministic code reconstructs the complete batch from immutable drafts.
 
 The draft must contain exactly `winner_count` winner objects.
