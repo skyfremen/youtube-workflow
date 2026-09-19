@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c7aea6e15a874f2d06d8a665",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-19T00:27:53.437978Z",
+  "request_blob_sha": "da70cd9d2e685d45f3cc41b9ec8258ce763a8312",
+  "request_path": "content/requests/wd-c7aea6e15a874f2d06d8a665.json",
+  "source_commit_sha": "e08510e7b1851fdacd59f3f3e43899353e19a90c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Mystery prepaid meals keep appearing until one forgotten setup detail explains everything. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-17844700f01be66f6d66",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dinner Kept Arriving at the Wrong Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-19T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35409078386"
+  },
+  "youtube_video_id": "nc4lkE5b58E"
+}
