@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"
-REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"
+REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"
 REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=1
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
 MIN_NARR=120.0; MAX_NARR=178.0; WORDS_PER_SEC=3.0; TTS_SPEED=1.75
@@ -140,13 +140,44 @@ def normalize_winner(w,index):
     if not isinstance(w,dict): raise VError("INVALID_WINNER_FIELDS",f"winners[{index}]",type(w).__name__,"winner object")
     hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration")); raw_topic=w.get("trend_topic")
     return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
-def normalize_draft(x):
+def materialize_draft(x,seen=None):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
     if "winner" in x: raise VError("LEGACY_DRAFT_SHAPE","winner","present","use winners[] only",False)
-    if x.get("supersedes_draft_id") is not None and not DRAFT_RE.fullmatch(str(x["supersedes_draft_id"])): raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",x["supersedes_draft_id"],"valid prior draft id")
-    winners=x.get("winners")
-    if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
-    return {"winners":[normalize_winner(w,i) for i,w in enumerate(winners)]}
+    supersedes=x.get("supersedes_draft_id")
+    if supersedes is not None and not DRAFT_RE.fullmatch(str(supersedes)): raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",supersedes,"valid prior draft id")
+    if "replacements" not in x:
+        winners=x.get("winners")
+        if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
+        return {"winners":winners}
+    if "winners" in x or not supersedes: raise VError("INVALID_REPAIR_SHAPE","$","mixed or missing supersedes","supersedes_draft_id plus replacements[] only")
+    replacements=x.get("replacements")
+    if not isinstance(replacements,list) or not replacements: raise VError("INVALID_REPLACEMENTS","replacements",replacements,"non-empty replacements array")
+    seen=set(seen or ())
+    if supersedes in seen: raise VError("REPAIR_CYCLE","supersedes_draft_id",supersedes,"acyclic repair chain",False)
+    seen.add(supersedes)
+    source_path=DRAFTS/(supersedes+".json")
+    if not source_path.exists(): raise VError("SUPERSEDED_DRAFT_NOT_FOUND","supersedes_draft_id",supersedes,"existing immutable draft",False)
+    source=materialize_draft(read_draft(source_path),seen)
+    winners=list(source["winners"])
+    failure_path=FAILS/(supersedes+".json")
+    if not failure_path.exists(): raise VError("REPAIR_FAILURE_NOT_FOUND","supersedes_draft_id",supersedes,"matching deterministic failure file",False)
+    failure=read(failure_path)
+    if failure.get("repairable") is not True: raise VError("REPAIR_NOT_ALLOWED","supersedes_draft_id",supersedes,"repairable deterministic failure",False)
+    violations=failure.get("violations") or []
+    expected={v.get("winner_index") for v in violations if isinstance(v,dict) and isinstance(v.get("winner_index"),int)}
+    supplied=set()
+    for n,replacement in enumerate(replacements):
+        if not isinstance(replacement,dict) or set(replacement)!={"winner_index","winner"}: raise VError("INVALID_REPLACEMENT",f"replacements[{n}]",replacement,"winner_index and winner")
+        index=replacement["winner_index"]
+        if not isinstance(index,int) or index<0 or index>=len(winners): raise VError("INVALID_REPLACEMENT_INDEX",f"replacements[{n}].winner_index",index,f"0-{len(winners)-1}")
+        if index in supplied: raise VError("DUPLICATE_REPLACEMENT_INDEX","replacements",index,"one replacement per affected winner")
+        supplied.add(index); winners[index]=replacement["winner"]
+    if expected and supplied!=expected: raise VError("REPAIR_INDEX_MISMATCH","replacements",sorted(supplied),f"exact affected winner indexes {sorted(expected)}")
+    return {"winners":winners}
+
+def normalize_draft(x):
+    materialized=materialize_draft(x)
+    return {"winners":[normalize_winner(w,i) for i,w in enumerate(materialized["winners"])]}
 
 def collect_draft_violations(d):
     out=[]; required=("premise","category","conflict","twist","hook","narration","title","description")
@@ -312,9 +343,17 @@ def validate_batch(x,path=None,r=None):
     if len(set(slots))!=len(slots): raise VError("DUPLICATE_BATCH_SLOT","items",slots,"unique slots within this batch",False)
     return x
 
-def fail(did,e):
+def fail(did,e,raw=None):
     payload={"draft_id":did,"error_code":e.code,"field":e.field,"observed_value":e.observed,"required_constraint":e.required,"repairable":e.repairable}
-    if isinstance(e,DraftValidationError): payload["violations"]=e.violations
+    if isinstance(e,DraftValidationError):
+        payload["violations"]=e.violations
+        if isinstance(raw,dict):
+            try:
+                materialized=materialize_draft(raw)
+                indexes=sorted({v.get("winner_index") for v in e.violations if isinstance(v,dict) and isinstance(v.get("winner_index"),int)})
+                payload["affected_winners"]=[{"winner_index":i,"winner":materialized["winners"][i]} for i in indexes if 0<=i<len(materialized["winners"])]
+            except VError:
+                pass
     write(FAILS/(did+".json"),payload)
 def preflight_draft(path):
     path=Path(path).resolve(); did=draft_id(path)
@@ -327,7 +366,7 @@ def finalize(path):
         raw=read_draft(path); d=normalize_draft(raw); r=registry(); violations=collect_draft_violations(d)
         if violations: raise DraftValidationError(violations)
         slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); target=REQS/(q["request_id"]+".json"); validate_batch(q,target,r)
-    except VError as e: fail(did,e); raise
+    except VError as e: fail(did,e,raw if "raw" in locals() else None); raise
     rawq=pretty(q)
     if target.exists() and target.read_bytes()!=rawq: raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(rawq),False)
     target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(rawq); return target
