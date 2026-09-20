@@ -1171,13 +1171,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The deliveries become more expensive and the drivers insist the orders are prepaid under her unit number.",
-      "payoff": "Apparently the delivery problem was solved, but I had accidentally unlocked a dinner subscription with my neighbor.",
-      "premise": "A woman receives repeated food-delivery orders she never placed, all addressed to her apartment.",
-      "title": "Dinner Kept Arriving at the Wrong Door",
-      "twist": "Her elderly neighbor has been using voice ordering on a smart speaker that still contains the narrator's apartment number from when she helped set it up."
-    },
-    {
       "conflict": "The roommate accuses her of touching the expensive new device while she insists she never has.",
       "payoff": "YOU MOVED IT YOURSELF.",
       "premise": "A woman notices her roommate's new foldable iPhone keeps appearing in increasingly strange half-open positions around the apartment.",
@@ -1344,6 +1337,13 @@
       "premise": "A woman realizes the expensive birthday gift her friends bought her has been quietly circulating through the same friend group for years.",
       "title": "My Birthday Gift Had Been Given Away Three Times",
       "twist": "The group has a private tradition of passing one luxury wallet to whoever is having the hardest financial year, with cash hidden inside, and they avoided explaining it because the recipient is supposed to discover the money privately."
+    },
+    {
+      "conflict": "The parking operator says every entry was authenticated with his license plate and refuses the refund.",
+      "payoff": "The camera was completely certain. It was also completely wrong twelve times.",
+      "premise": "A man is charged for twelve parking sessions in one weekend even though his car never left home.",
+      "title": "My Car Went Parking Without Me",
+      "twist": "A decorative bicycle rack on another vehicle partially blocks its plate, making the camera repeatedly misread that car as the narrator's nearly identical registration."
     }
   ]
 }
