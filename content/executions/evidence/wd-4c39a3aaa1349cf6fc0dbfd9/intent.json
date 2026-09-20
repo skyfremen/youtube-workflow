@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-4c39a3aaa1349cf6fc0dbfd9",
+  "created_at": "2026-09-20T12:11:18.298861Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "9ffac68c198bc91a4068765591d4b291b8012299",
+  "request_path": "content/requests/wd-4c39a3aaa1349cf6fc0dbfd9.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A permanently booked meeting room looks suspicious until the real reason comes out. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-44e990673a726312922d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Office Meeting Room Was Booked by Fake People"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509439088"
+  }
+}
