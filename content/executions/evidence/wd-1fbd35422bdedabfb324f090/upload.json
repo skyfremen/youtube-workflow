@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1fbd35422bdedabfb324f090",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:09:08.655605Z",
+  "request_blob_sha": "1d07d9afae9c35cdda9a0ac9b3a7937d528d396e",
+  "request_path": "content/requests/wd-1fbd35422bdedabfb324f090.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A marketplace bargain starts attracting drink orders from complete strangers. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c6a5fa840a11fe687b6f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Used Coffee Machine Came With Customers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509440115"
+  },
+  "youtube_video_id": "wZScXWWjx5U"
+}
