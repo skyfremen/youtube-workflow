@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-2c25cd2647df91311e8545d7",
+  "created_at": "2026-09-20T12:10:17.598852Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "e076f817e590f4b8c16b95c1c18d904b2a59c872",
+  "request_path": "content/requests/wd-2c25cd2647df91311e8545d7.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two roommates start collecting evidence when neither admits changing the temperature. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a1b7e3f1e2608882e176",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Thermostat Changed Itself Every Night"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509448628"
+  }
+}
