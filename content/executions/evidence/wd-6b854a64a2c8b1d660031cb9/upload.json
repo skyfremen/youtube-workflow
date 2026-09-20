@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6b854a64a2c8b1d660031cb9",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:11:39.609558Z",
+  "request_blob_sha": "abead95de1d313af4dd1f2896b00888184946909",
+  "request_path": "content/requests/wd-6b854a64a2c8b1d660031cb9.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden group chat appears right before a big gaming showcase. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-48f4350c145a5006a847",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friends Made a Secret Chat Before Our Gaming Watch Party"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509451980"
+  },
+  "youtube_video_id": "4ShfSTPIiVA"
+}
