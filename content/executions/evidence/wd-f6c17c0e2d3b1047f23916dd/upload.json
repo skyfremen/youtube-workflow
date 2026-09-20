@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f6c17c0e2d3b1047f23916dd",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:10:54.143514Z",
+  "request_blob_sha": "57edd11713a6b71c7a49b9ff6863d8d3717830de",
+  "request_path": "content/requests/wd-f6c17c0e2d3b1047f23916dd.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A delivery app starts adding a baby, a dog, and a blue plant pot to the wrong apartment. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a158ce8a892f02213673",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Delivery Notes Described Someone Else's Home"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T23:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509450825"
+  },
+  "youtube_video_id": "jxWhNGo_-N0"
+}
