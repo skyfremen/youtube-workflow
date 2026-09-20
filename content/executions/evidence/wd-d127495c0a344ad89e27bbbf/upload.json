@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d127495c0a344ad89e27bbbf",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:07:46.236157Z",
+  "request_blob_sha": "1894e78083fa72e9a98808a547a7c12fbe65b918",
+  "request_path": "content/requests/wd-d127495c0a344ad89e27bbbf.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The evidence in an office food mystery points to exactly the wrong person. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b04e39533ad22ccef8d4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Name Was on Every Missing Office Lunch"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509443918"
+  },
+  "youtube_video_id": "OKxrL4wjBNQ"
+}
