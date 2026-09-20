@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3b419ca148420853d2b7cccf",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:08:56.347837Z",
+  "request_blob_sha": "ffb83c5961c2f2db7212bbaf90d8bef96b9cbdaf",
+  "request_path": "content/requests/wd-3b419ca148420853d2b7cccf.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Twelve parking charges appear while the car never leaves home. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7087fd7d423b578c5936",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Car Went Parking Without Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509442233"
+  },
+  "youtube_video_id": "FenbNrwzcWc"
+}
