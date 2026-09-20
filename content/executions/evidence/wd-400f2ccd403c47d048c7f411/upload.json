@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-400f2ccd403c47d048c7f411",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-20T12:09:57.996673Z",
+  "request_blob_sha": "a434d3be3bc7c68f30d86a09e5b5be264f77d859",
+  "request_path": "content/requests/wd-400f2ccd403c47d048c7f411.json",
+  "source_commit_sha": "e254ec114e1b4c2fca7db665c99d1cbf8d81709c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A suspicious pause on a dog-walking tracker turns out to have a completely different reason. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-44c0df1afd12b315e091",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Dog Walker Stopped at the Same Bench Every Day"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-20T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35509449902"
+  },
+  "youtube_video_id": "RXFysva6XaM"
+}
