@@ -89,7 +89,7 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
 - Keep titles curiosity-driven and specific without revealing the payoff.
 - Use one narrator per winner.
-- Aim for roughly 120-175 seconds of spoken content.
+- Aim for a fuller 135-150 second story, with enough meaningful escalation, complications, reactions, and payoff development. Do not pad with repetitive or filler narration.
 - `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
 - `payoff` must be a short exact phrase that appears verbatim in `narration`.
 - `lead_gender` must be `female` or `male`.
