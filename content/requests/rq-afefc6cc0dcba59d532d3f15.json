@@ -1,0 +1,92 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-9736342",
+            "segment_duration_seconds": 88.417,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-6660940",
+            "segment_duration_seconds": 100.0,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-7480066",
+            "segment_duration_seconds": 69.482,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-e583ab73b50c1d7b59d2de2a",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "am_echo"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-21T14:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260921T182600-f2a7c91b",
+      "story": {
+        "card_emojis": [
+          "🤨",
+          "📱",
+          "💔",
+          "🎉"
+        ],
+        "category": "collectibles",
+        "conflict": "His sister repeatedly denies taking the missing Pikachu cards even after he finds empty sleeves and sees messages proving she has been arranging trades with local collectors.",
+        "hook": "My sister kept stealing the Pikachu cards from our new Pokémon 30th Celebration packs, and she lied every time I asked where they went.",
+        "hook_type": "accusation",
+        "lead_gender": "male",
+        "like_cta": "LIKE IF YOU'D FORGIVE HER",
+        "premise": "A man realizes his sister is secretly removing Pikachu cards from the Pokémon TCG: 30th Celebration packs they agreed to collect together.",
+        "punchline": "She was building Dad a thirty-card time machine.",
+        "script": "We bought the new set that weekend because Pokémon was basically our childhood language. Dad used to bring us one cheap pack after Saturday errands, then sit at the kitchen table pretending he understood why one shiny card could make two kids scream.\n\nMy sister and I made one rule: every Pikachu went into a shared binder until we could see how many of the thirty versions we could collect.\n\nBy Sunday night, something was wrong. We had opened twelve packs, but only five Pikachus were in the binder.\n\nI asked where the others were. She said, way too casually, “Probably mixed into the bulk.”\n\nThey were not.\n\nI sorted every card twice. Then I found three empty sleeves inside her tote bag.\n\nThe next day, another Pikachu disappeared less than ten minutes after we pulled it. She still denied touching it.\n\nNow I was angry. One missing card was my favorite artwork, and we'd promised not to trade anything until we checked together.\n\nThen her phone lit up while she was showering. The preview said, “I can trade you Pikachu 14 for Pikachu 22.”\n\nThere was a whole chat with local collectors. She had been trading our duplicates all week. Photos, meeting spots, card numbers, everything.\n\nWhen she came out, I put the phone on the table and asked what she was doing.\n\nShe sighed and said, “Fine. Come with me.”\n\nShe drove us to Dad's house.\n\nOn his dining table was the old blue binder that once held our childhood cards. The cracked pages were gone. In the middle was a grid with thirty labeled spaces.\n\nShe had already filled nineteen.\n\nDad's birthday was next month. My sister had found our old childhood photos and started trading only our duplicate Pikachus to build him one anniversary page.\n\nShe wasn't selling anything. She wasn't keeping the best pulls.\n\nShe was building Dad a thirty-card time machine.\n\nI stood there holding the card I'd accused her of stealing while she pointed to the empty slot she'd saved for it.\n\nSo I put it in myself.\n\nThen we made one new rule.\n\nNo more secret trades.\n\nUnless Dad was in the room.",
+        "story_tone": "warm",
+        "trend_aware": true,
+        "trend_topic": "Pokemon TCG 30th Celebration",
+        "twist": "She has been trading only their duplicate Pikachu cards to build a thirty-card anniversary binder page for their father's upcoming birthday, using the new set to recreate a childhood collecting ritual they shared with him."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "The missing Pikachu cards looked like a betrayal until one old family binder explained exactly where they were going.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Sister Kept Hiding Every Pikachu We Pulled"
+      }
+    }
+  ],
+  "request_id": "rq-afefc6cc0dcba59d532d3f15",
+  "request_version": 2,
+  "source_draft_id": "draft-20260921T182600-f2a7c91b"
+}
