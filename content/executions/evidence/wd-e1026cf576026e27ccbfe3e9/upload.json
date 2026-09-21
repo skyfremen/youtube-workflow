@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e1026cf576026e27ccbfe3e9",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:09:54.601027Z",
+  "request_blob_sha": "2bfbaf322312249bba451f40a13f55f43bc67055",
+  "request_path": "content/requests/wd-e1026cf576026e27ccbfe3e9.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An ergonomic chair keeps vanishing from one desk and turning up under the same suspicious coworker. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1be9891931f90427af73",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Office Chair Kept Getting Repossessed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597288977"
+  },
+  "youtube_video_id": "6IxCkUZE20I"
+}
