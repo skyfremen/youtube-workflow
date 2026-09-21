@@ -1332,13 +1332,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "They start photographing the thermostat before bed, but every morning it shows a lower setting than either person recorded.",
-      "payoff": "We were losing an argument to a tenant who moved out two years ago.",
-      "premise": "A woman and her roommate both think the other has been secretly lowering the air-conditioning temperature every night.",
-      "title": "Our Thermostat Changed Itself Every Night",
-      "twist": "A forgotten energy-saving schedule created by the previous tenant is still active in the smart thermostat and overrides their manual setting at 2 a.m."
-    },
-    {
       "conflict": "Her team keeps losing client-call space while the room sits locked and apparently occupied.",
       "payoff": "I spent three weeks investigating corporate espionage and discovered a calendar privacy setting.",
       "premise": "A woman discovers her coworker has been reserving the best meeting room every afternoon for meetings that do not exist.",
@@ -1505,6 +1498,13 @@
       "premise": "A man keeps receiving restaurant reservation confirmations for romantic dinners he never booked.",
       "title": "My Phone Kept Booking Romantic Dinners",
       "twist": "A restaurant's booking form has been auto-filling an old customer's mistyped phone number, and that customer happens to share the narrator's first name."
+    },
+    {
+      "conflict": "The chair repeatedly turns up in different conference rooms, and a colleague insists he has never touched it despite being seen sitting in it.",
+      "payoff": "I thought someone was stealing my chair. The inventory system was repossessing it every night.",
+      "premise": "A woman thinks her coworker is stealing her expensive ergonomic chair because it keeps disappearing from her desk before important meetings.",
+      "title": "My Office Chair Kept Getting Repossessed",
+      "twist": "Facilities tagged the chair with the wrong asset number, so the room-reset team keeps returning it to whichever conference room the inventory system says owns it."
     }
   ]
 }
