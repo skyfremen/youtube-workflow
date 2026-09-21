@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-e89404863a445c10a261218b",
+  "created_at": "2026-09-21T00:08:30.915717Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "517291e7c29df862768f661a271d4e07da4cc3c4",
+  "request_path": "content/requests/wd-e89404863a445c10a261218b.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family software update makes Dad suspiciously competent until the real household tech expert is revealed. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-bda4ffffd36a77ccbc2d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "iOS 27 Turned My Dad Into a Tech Genius Overnight"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546369719"
+  }
+}
