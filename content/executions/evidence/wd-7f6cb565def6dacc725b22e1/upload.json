@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7f6cb565def6dacc725b22e1",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T09:59:40.120663Z",
+  "request_blob_sha": "fb1309b1f06aa6b193f9680524a6566f5215c19c",
+  "request_path": "content/requests/wd-7f6cb565def6dacc725b22e1.json",
+  "source_commit_sha": "589faabd11405267d868d40f96fb949f11d83a75",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The missing Pikachu cards looked like a betrayal until one old family binder explained exactly where they were going.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-87e566b524b858da063a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Kept Hiding Every Pikachu We Pulled"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "84438535ba5fab92e7e6d08d99dc422decb00dac",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35585630061"
+  },
+  "youtube_video_id": "nR0dP4iAabE"
+}
