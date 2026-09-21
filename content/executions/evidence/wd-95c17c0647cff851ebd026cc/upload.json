@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-95c17c0647cff851ebd026cc",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:07:46.325271Z",
+  "request_blob_sha": "13aaabc9313f2264fc92144f9cf99de82dab8099",
+  "request_path": "content/requests/wd-95c17c0647cff851ebd026cc.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A workout room seems to lose ten minutes every session until the busiest equipment reveals what the clock is doing. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-88107295d30319030895",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Gym Clock Was Stealing Ten Minutes"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597297482"
+  },
+  "youtube_video_id": "ELd8jegr5SY"
+}
