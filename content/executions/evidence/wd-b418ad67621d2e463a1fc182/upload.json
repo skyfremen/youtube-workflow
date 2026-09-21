@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b418ad67621d2e463a1fc182",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:09:01.211896Z",
+  "request_blob_sha": "5c5b3623e488d50b39dfbf0c1d6e2b7fe1967b7c",
+  "request_path": "content/requests/wd-b418ad67621d2e463a1fc182.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Reservation texts make one boyfriend look extremely suspicious until a restaurant finds the tiny mistake behind them. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-78842fefc61db3d07060",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Phone Kept Booking Romantic Dinners"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597282030"
+  },
+  "youtube_video_id": "lv7U0qIwAqI"
+}
