@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d413b1c85e21f2e53eca453d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:12:17.426400Z",
+  "request_blob_sha": "a7aefe948556e8cca3bfed2665f8ca03e1043b6a",
+  "request_path": "content/requests/wd-d413b1c85e21f2e53eca453d.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Expensive wedding presents keep arriving with the wrong person's name on the card. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-16a0470fe636b0c91a01",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Everyone Thanked Me for Gifts I Never Sent"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546367800"
+  },
+  "youtube_video_id": "EdsCSJBkty8"
+}
