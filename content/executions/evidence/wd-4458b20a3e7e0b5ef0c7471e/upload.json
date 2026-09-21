@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4458b20a3e7e0b5ef0c7471e",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:09:09.257610Z",
+  "request_blob_sha": "24952cbd2d23a21a6ac0271398e1e1ff81031e7e",
+  "request_path": "content/requests/wd-4458b20a3e7e0b5ef0c7471e.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Mysterious apology notes keep appearing on a perfectly normal bicycle until the late-night culprit is caught. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3e1e87d5c9028baa7ec1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Apologized to My Bicycle Every Night"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546372977"
+  },
+  "youtube_video_id": "0YWs5CP0Vto"
+}
