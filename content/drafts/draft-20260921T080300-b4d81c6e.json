@@ -1,0 +1,47 @@
+{
+  "supersedes_draft_id": "draft-20260921T080100-7ac4e219",
+  "replacements": [
+    {
+      "winner_index": 5,
+      "winner": {
+        "premise": "A man becomes convinced his office vending machine is targeting him because it charges him twice only on days when he buys lunch for a coworker.",
+        "category": "work",
+        "conflict": "His bank shows repeated duplicate charges, but the vending company says every transaction came from a separate tap.",
+        "twist": "His access badge and payment card sit together in his phone wallet, and a newly installed reader wakes twice when he taps slowly while holding two items.",
+        "hook": "Our office vending machine charged me twice every time I bought food for one specific coworker.",
+        "hook_type": "money_stakes",
+        "narration": "I didn't notice the pattern until my coworker joked that lunch with her was becoming expensive. Whenever I bought only my own snack, the charge was normal. Whenever she asked me to grab something too, my banking app showed two payments. Same machine, same amount, seconds apart. I showed facilities. They said the vending company had no reports of duplicate billing. The company checked its records and insisted each payment came from a separate contactless tap. I knew I wasn't tapping twice. I started treating the machine like a science experiment. Monday: one sandwich, one charge. Tuesday: sandwich plus her drink, two charges. Wednesday: one drink, one charge. Thursday: two items, two charges. My coworker said maybe the machine hated generosity. I filmed myself buying two items. I tapped my phone once, the machine beeped, and I pulled it away. My bank immediately showed two notifications. We repeated it once with the technician standing beside us, and the second charge appeared again before anyone could touch the reader. Finally the building technician watched the video frame by frame. He asked what was inside my phone case. I kept my office access badge behind the phone because our doors use contactless readers. My payment card was loaded in the phone wallet. The vending machine had recently received a new combined reader that woke when it detected any nearby contactless signal. When I bought one item, I tapped quickly and moved away. When I bought two, I tended to hold the phone against the reader longer while balancing the second item under my arm. The access badge woke the reader, my phone completed payment, then the reader reset while the phone was still touching it and accepted another payment token. It wasn't tied to my coworker at all. It was tied to me standing there awkwardly with too much food. The vendor refunded the duplicates and adjusted the reader timeout. I moved my access badge out of the phone case. My coworker offered to pay for her own snacks after that. I told her she could keep asking. The machine had been cleared of discrimination. Apparently my generosity wasn't expensive. My terrible one-handed vending technique was.",
+        "title": "The Vending Machine Charged Me Extra for Being Nice",
+        "description": "A bizarre double-charge pattern looks personal until one tiny habit explains every payment. #WackyDramas #Shorts",
+        "lead_gender": "male",
+        "story_tone": "comedy",
+        "payoff": "My terrible one-handed vending technique was.",
+        "emoji_cues": ["money", "evidence", "confusion", "funny"],
+        "background_category": "assembly_process",
+        "trend_aware": false,
+        "trend_topic": null
+      }
+    },
+    {
+      "winner_index": 10,
+      "winner": {
+        "premise": "A woman discovers that every cake she orders from the same bakery arrives with one slice already marked by a tiny indentation.",
+        "category": "food",
+        "conflict": "Her family becomes convinced someone at the bakery is touching the cakes before delivery, while the bakery insists every box leaves sealed.",
+        "twist": "The reusable cold pack supplied by the delivery service has a raised corner that presses through the cake box whenever the driver stacks it on top during transport.",
+        "hook": "Every cake I ordered arrived sealed, perfect, and somehow already had the outline of one missing slice.",
+        "hook_type": "contradiction",
+        "narration": "The first time, we thought it was decoration. There was a faint triangular line pressed into the frosting near the edge, almost exactly the shape of a slice. Nobody cared. The second cake had the same mark in the same place. My sister joked that the baker was reserving a piece for later. By the third birthday, the joke became a family investigation. The box seal was intact. The cake wasn't actually cut. But there was always that strange triangle denting the top. I called the bakery and sent photos. They apologized and said nothing in their decorating process should make that shape. They offered a replacement. The replacement arrived with the mark too. Now even the bakery wanted answers. They checked their cooling racks, cake boards, boxes, and decorating tools. Nothing triangular touched the frosting. I started suspecting the delivery driver because all four cakes had come through the same courier service. The bakery manager asked the next driver to wait while we opened a cake at pickup. Perfect surface. They sealed the box in front of us. I followed the delivery in my own car because apparently this was my life now. At one traffic light I could see the insulated bag tilt slightly when the driver moved it, but the sealed cake box itself never opened. At my building, the driver opened his insulated bag and lifted out the box. Sitting on top was a reusable frozen gel pack with one stiff folded corner. The box lid had flexed downward under its weight. When we opened it, there was the triangle. The cold pack wasn't touching the cake directly. It was pressing the cardboard lid just enough for the inside of the lid to kiss the frosting during every bump in the road. The courier company changed how drivers stacked the packs, and the bakery added a small support tab inside taller boxes. Our next cake arrived completely smooth. My family almost looked disappointed because the mystery had become part of birthdays. My sister drew a fake triangle on the frosting so tradition wouldn't die immediately. Nobody was stealing a slice. Our cake was being gently attacked by refrigeration.",
+        "title": "Every Sealed Cake Arrived With a Missing-Slice Mark",
+        "description": "A perfect cake keeps arriving with the same impossible mark until one delivery detail gives itself away. #WackyDramas #Shorts",
+        "lead_gender": "female",
+        "story_tone": "comedy",
+        "payoff": "Our cake was being gently attacked by refrigeration.",
+        "emoji_cues": ["confusion", "evidence", "surprise", "funny"],
+        "background_category": "food_process",
+        "trend_aware": false,
+        "trend_topic": null
+      }
+    }
+  ]
+}
