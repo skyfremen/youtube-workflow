@@ -82,9 +82,12 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 
 - Hook immediately with a specific situation that creates curiosity or tension. Prefer concrete conflict, consequence, contradiction, discovery, confession, exposure, urgency, or meaningful stakes over generic setup.
 - Choose exactly one `hook_type` from the supported mechanisms below based on how the opening earns attention, not merely the overall story conflict.
-- Build around a relatable human conflict that progressively escalates.
+- Build around a meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging.
+- Prefer conflicts where viewers can naturally take sides: reasonable people may disagree about who was right, who crossed the line, whether a reaction was justified, or what should have happened. Do not force artificial 50/50 ambiguity when one character is clearly wrong.
+- Give opposing characters understandable motivations or stakes when natural, so the disagreement comes from the story rather than a bolted-on engagement question.
 - Keep earning attention with meaningful complications, revelations, reversals, or changing stakes; avoid filler and repetitive escalation.
-- End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup.
+- End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup while, when natural, leaving the central judgment open enough for viewers to debate.
+- Do not mechanically end every story with an explicit question such as `Whose side are you on?`; vary the ending and let the conflict itself create the urge to react.
 - Let stories vary naturally in structure, emotion, characters, settings, and conflict. Do not force every story into the same formula.
 - Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
 - Keep titles curiosity-driven and specific without revealing the payoff.
