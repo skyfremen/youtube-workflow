@@ -92,6 +92,8 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Aim for a fuller 135-150 second story, with enough meaningful escalation, complications, reactions, and payoff development. Do not pad with repetitive or filler narration.
 - `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
 - `payoff` must be a short exact phrase that appears verbatim in `narration`.
+- `like_cta` must be a short, story-specific visual reaction prompt, usually 3-8 words, such as `LIKE IF HE DESERVED IT` or `LIKE IF YOU SAW THAT COMING`. Keep it natural to the story rather than using a generic request.
+- `like_cta` is visual only. Never include it in `hook` or `narration`, never account for it in story duration, and do not include an emoji; deterministic rendering always prefixes the heart emoji.
 - `lead_gender` must be `female` or `male`.
 - `story_tone` must be one of `natural`, `neutral`, `conversational`, `warm`, `calm`, `expressive`, `dramatic`, `comedy`, `sarcastic`, `dramatic_comedy`, or `absurd`.
 - Choose exactly four semantic emoji cues from the supported cues below.
@@ -137,6 +139,7 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
       "lead_gender": "female",
       "story_tone": "dramatic",
       "payoff": "...",
+      "like_cta": "LIKE IF HE DESERVED IT",
       "emoji_cues": ["shock", "evidence", "panic", "victory"],
       "background_category": "crafting",
       "trend_aware": false,
