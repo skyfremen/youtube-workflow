@@ -21,6 +21,7 @@ def winner(narration, title="A Valid Story Title", **overrides):
         "lead_gender": "female",
         "story_tone": "natural",
         "payoff": "word",
+        "like_cta": "LIKE IF YOU SAW THAT COMING",
         "emoji_cues": ["shock", "evidence", "panic", "victory"],
         "background_category": "crafting",
         "trend_aware": False,
@@ -144,6 +145,7 @@ class DraftValidationTests(unittest.TestCase):
         self.assertEqual(item["story"]["hook_type"], "money_stakes")
         self.assertTrue(item["story"]["trend_aware"])
         self.assertEqual(item["story"]["trend_topic"], "GTA 6")
+        self.assertEqual(item["story"]["like_cta"], "LIKE IF YOU SAW THAT COMING")
         p.validate_item(item, None)
 
         no_hook = json.loads(json.dumps(item))
@@ -154,6 +156,7 @@ class DraftValidationTests(unittest.TestCase):
         legacy["story"].pop("hook_type")
         legacy["story"].pop("trend_aware")
         legacy["story"].pop("trend_topic")
+        legacy["story"].pop("like_cta")
         p.validate_item(legacy, None)
 
     def test_finalize_fails_before_youtube_slot_allocation_and_persists_all_violations(self):
