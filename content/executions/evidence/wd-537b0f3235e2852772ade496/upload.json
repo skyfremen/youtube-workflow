@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-537b0f3235e2852772ade496",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:09:15.094053Z",
+  "request_blob_sha": "8e6cf517ae462af9fec245f507e79b8e5a06c246",
+  "request_path": "content/requests/wd-537b0f3235e2852772ade496.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A secure locker keeps producing other people's belongings, and the answer is hiding behind the door. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f277916d5ae79833fdb1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Locked Gym Locker Kept Giving Me Free Stuff"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546366915"
+  },
+  "youtube_video_id": "IMXkj8yplLg"
+}
