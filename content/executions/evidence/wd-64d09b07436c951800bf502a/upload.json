@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-64d09b07436c951800bf502a",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:11:14.536888Z",
+  "request_blob_sha": "3750a06c74e1a18632c299e0ca35283f8154be8e",
+  "request_path": "content/requests/wd-64d09b07436c951800bf502a.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mysterious minibar charge arrives months after checkout, complete with a suspiciously convincing receipt. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-051db2444c4843ea69e3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Hotel Charged Me for Someone Else's Champagne"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T20:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597287050"
+  },
+  "youtube_video_id": "u-XdVkwPJl0"
+}
