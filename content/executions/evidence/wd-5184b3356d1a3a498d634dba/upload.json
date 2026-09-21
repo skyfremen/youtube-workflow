@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5184b3356d1a3a498d634dba",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:09:41.852564Z",
+  "request_blob_sha": "22e33ecd3e60743ef600be9b2cf8fd13e2103520",
+  "request_path": "content/requests/wd-5184b3356d1a3a498d634dba.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A ridiculous launch-week spreadsheet looks selfish until one hidden guest changes the whole plan. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-27391bbcfd7b8cf49745",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boyfriend Made an Operations Plan for FC 27"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T09:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546371865"
+  },
+  "youtube_video_id": "89NiT1O4oCQ"
+}
