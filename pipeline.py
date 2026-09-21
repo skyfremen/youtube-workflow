@@ -139,7 +139,7 @@ def build_context():
 def normalize_winner(w,index):
     if not isinstance(w,dict): raise VError("INVALID_WINNER_FIELDS",f"winners[{index}]",type(w).__name__,"winner object")
     hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration")); raw_topic=w.get("trend_topic")
-    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
+    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"like_cta":clean(w.get("like_cta")),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
 def materialize_draft(x,seen=None):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
     if "winner" in x: raise VError("LEGACY_DRAFT_SHAPE","winner","present","use winners[] only",False)
@@ -272,18 +272,23 @@ def allocate_publish_slots(count,now=None,occupied=None):
 def content_id_for(did,index,w): return "wd-"+hashlib.sha256(canonical({"source_draft_id":did,"winner_index":index,"winner":w})).hexdigest()[:24]
 def make_item(did,index,w,r,publish_at):
     cid=content_id_for(did,index,w); g=w["lead_gender"]; t=w["story_tone"]
-    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":{"category":w["category"],"premise":w["premise"],"conflict":w["conflict"],"twist":w["twist"],"hook":w["hook"],"hook_type":w["hook_type"],"script":w["narration"],"lead_gender":g,"story_tone":t,"punchline":w["payoff"],"card_emojis":resolve_emojis(w.get("emoji_cues")),"trend_aware":w["trend_aware"],"trend_topic":w["trend_topic"]},"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
+    story={"category":w["category"],"premise":w["premise"],"conflict":w["conflict"],"twist":w["twist"],"hook":w["hook"],"hook_type":w["hook_type"],"script":w["narration"],"lead_gender":g,"story_tone":t,"punchline":w["payoff"],"card_emojis":resolve_emojis(w.get("emoji_cues")),"trend_aware":w["trend_aware"],"trend_topic":w["trend_topic"]}
+    if clean(w.get("like_cta")): story["like_cta"]=clean(w["like_cta"])
+    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":story,"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
 def validate_item(x,r=None):
     top={"request_version","content_id","source_draft_id","channel","story","narration","background","youtube","publication","visibility","render"}
     if not isinstance(x,dict) or set(x)!=top: raise VError("INVALID_REQUEST_ITEM_FIELDS","item",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V2 item fields",False)
     if x["request_version"]!=2 or not CID_RE.fullmatch(str(x["content_id"])): raise VError("INVALID_REQUEST_IDENTITY","item",x.get("content_id"),"request_version=2 and valid content_id",False)
     if not DRAFT_RE.fullmatch(str(x["source_draft_id"])): raise VError("INVALID_SOURCE_DRAFT_ID","source_draft_id",x["source_draft_id"],"valid draft id",False)
     if x["channel"]!={"name":"Wacky Dramas","handle":"@WACKYDRAMAS"}: raise VError("INVALID_CHANNEL","channel",x["channel"],"canonical channel",False)
-    s=x["story"]; required_sk={"category","premise","conflict","twist","hook","script","lead_gender","story_tone","punchline","card_emojis"}; optional_sk={"hook_type","trend_aware","trend_topic"}
+    s=x["story"]; required_sk={"category","premise","conflict","twist","hook","script","lead_gender","story_tone","punchline","card_emojis"}; optional_sk={"hook_type","trend_aware","trend_topic","like_cta"}
     if not isinstance(s,dict) or not required_sk<=set(s) or set(s)-(required_sk|optional_sk): raise VError("INVALID_STORY_FIELDS","story",s,"required story fields plus optional creative provenance")
     if ("trend_aware" in s) != ("trend_topic" in s): raise VError("INVALID_TREND_FIELDS","story",s,"both trend_aware and trend_topic or neither")
     for k in required_sk-{"card_emojis"}: text(s[k],"story."+k)
     if "hook_type" in s and s["hook_type"] not in HOOK_TYPES: raise VError("INVALID_HOOK_TYPE","story.hook_type",s["hook_type"],"supported hook type",False)
+    if "like_cta" in s:
+        cta=text(s["like_cta"],"story.like_cta")
+        if len(cta)>80 or "\n" in cta or "\r" in cta: raise VError("INVALID_LIKE_CTA","story.like_cta",s["like_cta"],"single line <=80 characters",False)
     if "trend_aware" in s:
         aware=s["trend_aware"]; topic=s["trend_topic"]
         if type(aware) is not bool: raise VError("INVALID_TREND_AWARE","story.trend_aware",aware,"boolean",False)
