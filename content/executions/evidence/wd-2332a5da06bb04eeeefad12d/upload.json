@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2332a5da06bb04eeeefad12d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:09:46.957421Z",
+  "request_blob_sha": "ed7926f40746fa7072dd8f6b8d26f10d606f31c6",
+  "request_path": "content/requests/wd-2332a5da06bb04eeeefad12d.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A perfect cake keeps arriving with the same impossible mark until one delivery detail gives itself away. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ac3af2720d81854d3973",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Every Sealed Cake Arrived With a Missing-Slice Mark"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T11:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546374292"
+  },
+  "youtube_video_id": "Z4-sz1XwAL0"
+}
