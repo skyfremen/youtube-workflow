@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f5859eca3803229e6c2cf6da",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:07:58.588838Z",
+  "request_blob_sha": "6df92fcb4e70be6be7f0eb268a8993cd2d942dc0",
+  "request_path": "content/requests/wd-f5859eca3803229e6c2cf6da.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Sweet lunch messages somehow turn into brutal life advice before lunchtime, and the refrigerator is hiding the reason. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-53d2aca8faf9b55f259b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Replaced My Girlfriend's Lunch Notes"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597294289"
+  },
+  "youtube_video_id": "gsxkkQOpGyk"
+}
