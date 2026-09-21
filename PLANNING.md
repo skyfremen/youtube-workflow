@@ -85,6 +85,9 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Build around a meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging.
 - Prefer conflicts where viewers can naturally take sides: reasonable people may disagree about who was right, who crossed the line, whether a reaction was justified, or what should have happened. Do not force artificial 50/50 ambiguity when one character is clearly wrong.
 - Give opposing characters understandable motivations or stakes when natural, so the disagreement comes from the story rather than a bolted-on engagement question.
+- Prefer character-driven escalation: characters' decisions and reactions should cause the next complication when natural, rather than relying on coincidence.
+- When natural, use revelations that shift sympathy by changing how viewers judge a character or which side they understand; do not force a side-switch into every story.
+- Make important choices and revelations produce visible consequences. Do not end immediately at the reveal when one concise aftermath beat would make the payoff and conflict more satisfying.
 - Keep earning attention with meaningful complications, revelations, reversals, or changing stakes; avoid filler and repetitive escalation.
 - End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup while, when natural, leaving the central judgment open enough for viewers to debate.
 - Do not mechanically end every story with an explicit question such as `Whose side are you on?`; vary the ending and let the conflict itself create the urge to react.
