@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-85c6d4b951b5d94c98c4940a",
+  "created_at": "2026-09-21T00:09:17.174217Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "121b5d80ed04d1544fa68ae3c99ae1f740a6902b",
+  "request_path": "content/requests/wd-85c6d4b951b5d94c98c4940a.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Launch night turns into a suspicious Batman scavenger hunt that seems to know the game too well. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f3c106d1d8c15d4217d1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Spoiled LEGO Batman Without Playing It"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T08:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546370807"
+  }
+}
