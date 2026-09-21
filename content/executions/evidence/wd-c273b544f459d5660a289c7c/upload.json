@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c273b544f459d5660a289c7c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:08:27.173492Z",
+  "request_blob_sha": "a6b80e5a2e19f55946ca1d6b3a5c38794ad501e2",
+  "request_path": "content/requests/wd-c273b544f459d5660a289c7c.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Dozens of tiny vending charges look like payment fraud until an old smartwatch reveals the accidental shopper. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a9cd1f3bc1b07459f54f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother's Wrist Kept Buying Vending Snacks"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T23:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597292603"
+  },
+  "youtube_video_id": "AR_ipk4bbfo"
+}
