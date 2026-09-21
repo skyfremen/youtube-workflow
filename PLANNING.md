@@ -24,30 +24,23 @@ Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowe
 
 ## Analytics interpretation
 
-Use `analytics_summary` as evidence, not as a hard ranking of what to make next.
+Use `analytics_summary` as evidence, not as a hard ranking.
 
-- Read `analytics_summary.learning` first. Respect its `stage`, `analytics_weight`, and `minimum_pattern_sample`.
-- A category, tone, gender, duration bucket, trend lane, trend topic, hook type, or example with fewer checkpoint observations than `minimum_pattern_sample` is anecdotal. Do not treat one breakout Short as proof that its category or pattern is a winner.
-- Prefer more mature evidence when sample sizes are adequate: `7d` > `72h` > `24h` > `6h`. Treat `6h` as an early test signal only.
-- During `cold_start`, prioritize creative quality, originality, diversity, and exploration. Early analytics should be a light influence rather than the primary selection rule.
-- During `early_learning`, analytics may influence selections more strongly, while continuing to test strong ideas outside current leaders.
-- During `established`, use repeatable multi-video patterns more confidently while still avoiding formulaic repetition.
-- `top_examples` are clues about hooks, hook mechanisms, conflicts, escalation, and payoff mechanisms. Do not clone their premises, titles, characters, twists, or exact hooks.
-- Use `hook_type_performance` only when samples are adequate. Reuse a successful hook mechanism only when it naturally fits a genuinely different story; do not force every winner into the current leading hook type.
-- Use `trend_performance` to compare the trend-aware lane with evergreen only when samples are adequate. Treat `trend_topic_performance` as historical evidence only; never reuse a topic merely because it performed before.
-- Never sacrifice semantic-duplicate avoidance or batch diversity merely to exploit an analytics signal.
+- Follow `analytics_summary.learning.stage`, `analytics_weight`, and `minimum_pattern_sample`: explore broadly during `cold_start`, increasingly use supported patterns during `early_learning`, and use repeatable multi-video patterns more confidently during `established`, while preserving originality and diversity.
+- Treat any pattern below `minimum_pattern_sample` as anecdotal. Prefer mature evidence when samples are adequate: `7d` > `72h` > `24h` > `6h`; `6h` is an early signal only.
+- Use `top_examples` to learn from hook, conflict, escalation, and payoff mechanisms without cloning premises, titles, characters, twists, or exact hooks.
+- Use `hook_type_performance`, `trend_performance`, and `trend_topic_performance` only with adequate samples. Reuse mechanisms only when they naturally fit a genuinely different story; historical trend topics must not be reused merely because they performed before.
+- Never sacrifice semantic-duplicate avoidance or batch diversity to exploit analytics.
 
 ## Trend-aware stories
 
 During each planning run, use current web search to privately identify a small set of timely non-political topics from areas such as entertainment, gaming, technology and consumer products, sports fandom, memes, collectibles, and internet culture. Treat this research as ephemeral planning context only: do not persist, cache, or maintain a trend or keyword list in the repository.
 
-- Trend-aware candidates compete normally with evergreen candidates and are never guaranteed a winner slot.
-- For `winner_count = 12`, select at most 5 trend-aware winners. Use fewer, including zero, when current trends do not naturally support strong Wacky Dramas stories.
+- For `winner_count = 12`, select 0-5 trend-aware winners only when they compete successfully with evergreen candidates and current trends naturally support strong Wacky Dramas stories.
 - A trend may be used only when it naturally drives the premise, conflict, stakes, escalation, reveal, or payoff. Never insert a trend merely into a title, description, or dialogue for discovery.
 - Keep fictional drama centered on ordinary characters. When a trend involves a real person, creator, artist, athlete, team, brand, product, event, or other real entity, do not invent misconduct, private events, statements, scandals, or other claims about that entity.
 - Before using a real product, game, event, person, brand, team, or current trend, verify any material time-sensitive fact from a current authoritative source. Fictional ordinary-character drama may be invented, but it must not contradict real-world release status, release dates, availability, event timing, announced features, or published results. For unreleased products or future events, frame the story as anticipation, pre-ordering, planning, waiting, or preparation rather than implying the release or event has already happened.
 - Do not use political figures, parties, elections, legislation, or political controversies as fictional trend-aware story material.
-- Preserve the same originality, semantic-duplicate avoidance, batch diversity, and creative-quality standards as evergreen stories.
 - Every winner must record its lane. Set `trend_aware` to `true` only when a current trend materially inspired the story and set `trend_topic` to one concise topic label such as `GTA 6` or `Pokemon cards`. For evergreen stories set `trend_aware` to `false` and `trend_topic` to `null`.
 - `trend_topic` is immutable story provenance for later analytics, not a maintained keyword list. Record only the trend actually used by that winner.
 - A historical `trend_topic` may inspire another story only if the current web search independently confirms that the topic is still timely now.
@@ -82,14 +75,12 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 
 - Hook immediately with a specific situation that creates curiosity or tension. Prefer concrete conflict, consequence, contradiction, discovery, confession, exposure, urgency, or meaningful stakes over generic setup.
 - Choose exactly one `hook_type` from the supported mechanisms below based on how the opening earns attention, not merely the overall story conflict.
-- Build around a meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging.
-- Prefer conflicts where viewers can naturally take sides: reasonable people may disagree about who was right, who crossed the line, whether a reaction was justified, or what should have happened. Do not force artificial 50/50 ambiguity when one character is clearly wrong.
-- Give opposing characters understandable motivations or stakes when natural, so the disagreement comes from the story rather than a bolted-on engagement question.
+- Build around meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging. Prefer conflicts where viewers can naturally take sides without forcing artificial 50/50 ambiguity when one character is clearly wrong.
+- Give characters understandable motivations and stakes when natural, so disagreement comes from the story rather than a bolted-on engagement question.
 - Prefer character-driven escalation: characters' decisions and reactions should cause the next complication when natural, rather than relying on coincidence.
 - When natural, use revelations that shift sympathy by changing how viewers judge a character or which side they understand; do not force a side-switch into every story.
-- Make important choices and revelations produce visible consequences. Do not end immediately at the reveal when one concise aftermath beat would make the payoff and conflict more satisfying.
 - Keep earning attention with meaningful complications, revelations, reversals, or changing stakes; avoid filler and repetitive escalation.
-- End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution that rewards the setup while, when natural, leaving the central judgment open enough for viewers to debate.
+- End with a satisfying payoff, reversal, consequence, reveal, or emotional resolution. Important choices and revelations should produce visible consequences; when natural, use one concise aftermath beat and leave the central judgment open enough for viewers to debate.
 - Do not mechanically end every story with an explicit question such as `Whose side are you on?`; vary the ending and let the conflict itself create the urge to react.
 - Let stories vary naturally in structure, emotion, characters, settings, and conflict. Do not force every story into the same formula.
 - Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
