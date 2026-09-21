@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5669afe0699012508587b7e3",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T12:10:15.403920Z",
+  "request_blob_sha": "1b67a0900f1a3657dfd472db54a44f37e2afb17e",
+  "request_path": "content/requests/wd-5669afe0699012508587b7e3.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A locked bicycle keeps changing places overnight, but the explanation involves something much bigger than the bike. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2b67b6e96694c493daeb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Locked Bicycle Moved Every Morning"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597284889"
+  },
+  "youtube_video_id": "c7-RG4VgJgQ"
+}
