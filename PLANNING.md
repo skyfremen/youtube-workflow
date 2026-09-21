@@ -89,7 +89,7 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
 - Keep titles curiosity-driven and specific without revealing the payoff.
 - Use one narrator per winner.
-- Aim for a fuller 135-150 second story, with enough meaningful escalation, complications, reactions, and payoff development. Do not pad with repetitive or filler narration.
+- Aim for a fuller 145-160 second story, with enough meaningful escalation, complications, reactions, and payoff development. Do not pad with repetitive or filler narration.
 - `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
 - `payoff` must be a short exact phrase that appears verbatim in `narration`.
 - `like_cta` must be a short, story-specific visual reaction prompt, usually 3-8 words, such as `LIKE IF HE DESERVED IT` or `LIKE IF YOU SAW THAT COMING`. Keep it natural to the story rather than using a generic request.
