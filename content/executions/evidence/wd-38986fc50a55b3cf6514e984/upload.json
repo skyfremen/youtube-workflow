@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-38986fc50a55b3cf6514e984",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-21T00:08:49.501609Z",
+  "request_blob_sha": "e0e78e65535971cd21edd903eafef592c4a2b9f4",
+  "request_path": "content/requests/wd-38986fc50a55b3cf6514e984.json",
+  "source_commit_sha": "896ed6dc64e7613fe8f5bb8006232c58be39a2db",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A loyalty account fills with meals from strangers until one tiny printed mistake explains everything. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-607ffff5dc423dc3fb21",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Somehow Ate 37 Dinners in Another City"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-21T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "2e7e37395eadcadc278fb9b962663cb98594d6e9",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35546364798"
+  },
+  "youtube_video_id": "5IsZlwS82xY"
+}
