@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-2e27458721df1a84de5e0846",
+  "created_at": "2026-09-21T12:10:34.417537Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "b488ea1087ce3788109a9381ea3f87984649d151",
+  "request_path": "content/requests/wd-2e27458721df1a84de5e0846.json",
+  "source_commit_sha": "d087110d2fed7e610e37bcdb36d48f4351f17569",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A secondhand jacket keeps producing fresh coins from an empty pocket until a tailor finds its hidden savings account. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f00af6ff0410957db0f7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Thrift Jacket Kept Making Money"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35597295941"
+  }
+}
