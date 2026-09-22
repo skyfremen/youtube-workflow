@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7a23150acc511811fe872230",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T12:10:37.351576Z",
+  "request_blob_sha": "f7bfe6d22514a10358dba9d08fa63d7dd1a42453",
+  "request_path": "content/requests/wd-7a23150acc511811fe872230.json",
+  "source_commit_sha": "811d4e984631967bfc98e0cba6bb05fcced68e3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A coworker's prepaid lunch order exposed a business using someone else's food photos and labor.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f84d1492f846bae34216",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Sold Lunches I Never Agreed to Cook"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35724860697"
+  },
+  "youtube_video_id": "LOFEuY2Y1mY"
+}
