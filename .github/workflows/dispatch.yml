@@ -97,8 +97,17 @@ jobs:
           while IFS= read -r path; do git add "${path}"; done < /tmp/execution_paths.txt
           if ! git diff --cached --quiet; then
             git commit -m "[execution] prepare production batch"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            for attempt in 1 2 3; do
+              echo "Execution-fence push attempt ${attempt}/3"
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "::warning::main advanced before execution fences could be pushed; rebasing and retrying"
+            done
+            echo "::error::EXECUTION_FENCE_PUSH_RETRY_EXHAUSTED after 3 attempts"
+            exit 1
           fi
 
       - name: Resolve exact execution source
