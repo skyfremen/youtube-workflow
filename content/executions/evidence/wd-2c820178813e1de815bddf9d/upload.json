@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2c820178813e1de815bddf9d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T00:13:49.668187Z",
+  "request_blob_sha": "8d4f8e0ccf4cd0b74185df36a6921228b8157ade",
+  "request_path": "content/requests/wd-2c820178813e1de815bddf9d.json",
+  "source_commit_sha": "bfd82420301821112776516b20d86d064e48f3b3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He really was stopping a thief. His solution created a completely different problem. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c8429c919ac5abafaedd",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Had a Closet Full of My Packages"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35670414873"
+  },
+  "youtube_video_id": "97CkLnKpEHo"
+}
