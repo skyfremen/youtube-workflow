@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c9f626abbb9b1f43893bff02",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T12:09:12.108707Z",
+  "request_blob_sha": "e4c8352ac6b0e0489d6c1ab0c9fd2134dd36a4f4",
+  "request_path": "content/requests/wd-c9f626abbb9b1f43893bff02.json",
+  "source_commit_sha": "811d4e984631967bfc98e0cba6bb05fcced68e3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A romantic anniversary dinner looked very different after one return receipt connected years of missing gifts.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6942be859aee797a52bb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Returned My Gifts to Pay for Our Dates"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35724872648"
+  },
+  "youtube_video_id": "l3BwMnoALNI"
+}
