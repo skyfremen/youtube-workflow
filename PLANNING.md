@@ -86,7 +86,7 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Prefer specific, believable details over generic drama, while allowing heightened, funny, awkward, absurd, or dramatic situations.
 - Keep titles curiosity-driven and specific without revealing the payoff.
 - Use one narrator per winner.
-- Aim for 145-160 seconds through meaningful story development, not additional narration. Every major beat should introduce new conflict, information, a decision, a consequence, or a change in viewer understanding. If a beat does none of these, cut it.
+- Aim for 70-85 seconds through meaningful story development, not additional narration. Every major beat should introduce new conflict, information, a decision, a consequence, or a change in viewer understanding. If a beat does none of these, cut it.
 - `narration` is the story body after the opening hook. Do not repeat the hook at the start of `narration`.
 - `payoff` must be a short exact phrase that appears verbatim in `narration`.
 - `like_cta` must be a short, story-specific visual reaction prompt, usually 3-8 words, such as `LIKE IF HE DESERVED IT` or `LIKE IF YOU SAW THAT COMING`. Keep it natural to the story rather than using a generic request.
