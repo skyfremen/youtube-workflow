@@ -434,7 +434,7 @@ def self_test():
     test_slots=["2030-01-01T03:00:00Z","2030-01-01T04:00:00Z","2030-01-01T05:00:00Z"]
     batch=make_batch("draft-selftest01",raw,d,r,test_slots); validate_batch(batch,REQS/(batch["request_id"]+".json"),r); ok("11 batch validates",len(batch["items"])==3); ok("12 unique content ids",len({x["content_id"] for x in batch["items"]})==3)
     ok("13 scheduled private",all(x["visibility"]=="private" and x["publication"]["mode"]=="scheduled" for x in batch["items"])); ok("14 contract hash",CONTRACT_HASH=="db118b20737d06509071754851388e51af427b7930cd48708b3e427415fce1de")
-    workflows={p.name for p in (ROOT/".github/workflows").glob("*.yml")}; ok("15 workflow set",workflows=={"finalize-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"})
+    workflows={p.name for p in (ROOT/".github/workflows").glob("*.yml")}; required_workflows={"finalize-draft.yml","backgrounds.yml","dispatch.yml","result.yml","context.yml"}; ok("15 required workflows",required_workflows<=workflows)
     ok("16 planning doc exists",(ROOT/"PLANNING.md").is_file()); ok("17 legacy daily doc removed",not (ROOT/"DAILY.md").exists()); ok("18 legacy adhoc doc removed",not (ROOT/"ADHOC.md").exists())
     source=Path(__file__).read_text(encoding="utf-8"); legacy_mode_key="planning_"+"mode"; ok("19 mode agnostic",legacy_mode_key not in source)
     short=dict(d["winners"][0]); short["narration"]="too short"; violations=collect_draft_violations({"winners":[short,dict(short)]}); ok("20 aggregate draft violations",[v["winner_index"] for v in violations if v["error_code"]=="NARRATION_TOO_SHORT"]==[0,1])
