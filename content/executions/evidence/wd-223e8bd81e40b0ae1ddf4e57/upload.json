@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-223e8bd81e40b0ae1ddf4e57",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T00:15:27.082473Z",
+  "request_blob_sha": "459c0c575cc1435ec21ade7ee892013aa60657b2",
+  "request_path": "content/requests/wd-223e8bd81e40b0ae1ddf4e57.json",
+  "source_commit_sha": "bfd82420301821112776516b20d86d064e48f3b3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She thought she was protecting him from users. Then one missed dinner changed the argument. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1b203855a1a07ec0a136",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Girlfriend Secretly Rejected My Friends for Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35670413084"
+  },
+  "youtube_video_id": "GFm8S8oN2dI"
+}
