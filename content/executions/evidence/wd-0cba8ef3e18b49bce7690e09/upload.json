@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0cba8ef3e18b49bce7690e09",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T14:47:37.299591Z",
+  "request_blob_sha": "6c1384b65043f4ef776058b330b16f45f94a4247",
+  "request_path": "content/requests/wd-0cba8ef3e18b49bce7690e09.json",
+  "source_commit_sha": "a5eb24038afce55f857be2f3a845bac4369bf592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A helpful coworker looks very different once the email routing history is checked.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-454b8aabdc5408cde7b9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Kept Rescuing Me From Work He Secretly Sent Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35742040799"
+  },
+  "youtube_video_id": "Tacc79wZYhs"
+}
