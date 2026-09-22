@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7307aa9774dbb44b00328e40",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T00:15:07.542939Z",
+  "request_blob_sha": "8b6be4631276104ae1c2c55704c348b7f9142044",
+  "request_path": "content/requests/wd-7307aa9774dbb44b00328e40.json",
+  "source_commit_sha": "bfd82420301821112776516b20d86d064e48f3b3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He thought he was protecting an injured friend. Then his fake numbers created a new risk. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5f572825ebe8b09d4d95",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Gym Partner Secretly Lowered All My Weights"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35670420222"
+  },
+  "youtube_video_id": "Q-QllA8mpsk"
+}
