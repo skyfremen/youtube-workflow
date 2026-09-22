@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-77fe147001d1e183122c4575",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T14:47:24.713040Z",
+  "request_blob_sha": "edad5c8228bf307a5ddf948ff47063930bfc6dd4",
+  "request_path": "content/requests/wd-77fe147001d1e183122c4575.json",
+  "source_commit_sha": "a5eb24038afce55f857be2f3a845bac4369bf592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A concert screenshot turns into a fake ticket business when one friend makes a risky plan.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-943ffc80b8d2f9ba0bbe",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "People Wanted Refunds for Tickets I Never Sold"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35742048942"
+  },
+  "youtube_video_id": "9q6Y16a8YZE"
+}
