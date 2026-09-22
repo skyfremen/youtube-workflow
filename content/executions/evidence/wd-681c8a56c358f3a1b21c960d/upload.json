@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-681c8a56c358f3a1b21c960d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T14:46:34.822967Z",
+  "request_blob_sha": "27cb9f119e282b05843e16193d9bfcb2b6d6ae9c",
+  "request_path": "content/requests/wd-681c8a56c358f3a1b21c960d.json",
+  "source_commit_sha": "a5eb24038afce55f857be2f3a845bac4369bf592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One apartment parking mystery ends when management checks who made the reservations.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-28d3d87036c37a784d07",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Same Invisible Car Booked Our Parking Every Weekend"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35742043942"
+  },
+  "youtube_video_id": "2VJmDINSltQ"
+}
