@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5cc0a5d1d290a95104fcb346",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T12:10:06.939165Z",
+  "request_blob_sha": "f3b93459e6ff049bd7084a7e2c55eb36faa56ca6",
+  "request_path": "content/requests/wd-5cc0a5d1d290a95104fcb346.json",
+  "source_commit_sha": "811d4e984631967bfc98e0cba6bb05fcced68e3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Repeated hallway violations made no sense until a door camera caught where the mystery shoes came from.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9e0b4066f6e9b7f767ee",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Kept Leaving Shoes Outside My Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35724858243"
+  },
+  "youtube_video_id": "07BqozY_xI4"
+}
