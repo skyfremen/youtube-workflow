@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2b6e7ebe5f706b602541dc76",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T14:48:18.849514Z",
+  "request_blob_sha": "75772739e097aba8fc6c23af3d6d655098eed8c4",
+  "request_path": "content/requests/wd-2b6e7ebe5f706b602541dc76.json",
+  "source_commit_sha": "a5eb24038afce55f857be2f3a845bac4369bf592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Borrowed collectible cards become advertising for mystery packs they were never actually inside.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9f5a609a653e6949496f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Used My Pokémon Cards to Sell Mystery Packs"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35742063151"
+  },
+  "youtube_video_id": "WPXb0vqTxtM"
+}
