@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-71044898d451b6f2ea556315",
+  "created_at": "2026-09-22T14:47:10.950226Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "f69f6eca39afaa07bdcb248d19ef2ccba2d27ddc",
+  "request_path": "content/requests/wd-71044898d451b6f2ea556315.json",
+  "source_commit_sha": "a5eb24038afce55f857be2f3a845bac4369bf592",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A prepaid family birthday cake disappears, and party photos explain exactly where it went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ec9cc78c4d1f341456de",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Cousin Collected Mom's Birthday Cake Before I Did"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35742046424"
+  }
+}
