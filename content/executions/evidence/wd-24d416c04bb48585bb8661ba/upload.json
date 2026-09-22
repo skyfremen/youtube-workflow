@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-24d416c04bb48585bb8661ba",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-22T00:12:00.331654Z",
+  "request_blob_sha": "73c470ecd9335b3064a3b8c934873dc08ab1c28e",
+  "request_path": "content/requests/wd-24d416c04bb48585bb8661ba.json",
+  "source_commit_sha": "bfd82420301821112776516b20d86d064e48f3b3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She called it smart budgeting. I called it renting out something she didn't own. #WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b439bd9097daa3cd6e04",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Secretly Rented Out My Bedroom"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-22T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b992b900fa5eecbd31ec456b7fe51bfe088ba1cc",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35670408236"
+  },
+  "youtube_video_id": "f8LIIqhEGys"
+}
