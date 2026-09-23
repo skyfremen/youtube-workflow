@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a842569bb751d7534b4ac108",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-23T12:10:53.687304Z",
+  "request_blob_sha": "ae8425ed75244116656575e35fce59f55003ab87",
+  "request_path": "content/requests/wd-a842569bb751d7534b4ac108.json",
+  "source_commit_sha": "338925af0351edaa5b09ace0abcf881b2525d381",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One cashier accidentally revealed what happened after every birthday dinner.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-aa2948b46c61e0c8c60e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Returned Every Birthday Gift We Gave Her"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35858205022"
+  },
+  "youtube_video_id": "SGCXrsFQ4C0"
+}
