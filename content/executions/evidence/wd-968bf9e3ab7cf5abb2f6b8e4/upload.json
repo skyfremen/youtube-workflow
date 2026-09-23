@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-968bf9e3ab7cf5abb2f6b8e4",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-23T00:06:21.015256Z",
+  "request_blob_sha": "6379e289ea8d805091a063beb2722768cd9e8de8",
+  "request_path": "content/requests/wd-968bf9e3ab7cf5abb2f6b8e4.json",
+  "source_commit_sha": "431e3283344d350124ee09f447c463c4a391d01f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three days of leave somehow became a full office desk takeover.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7fd1e6c42c3038c86a9e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Packed My Desk While I Was Away"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35799993001"
+  },
+  "youtube_video_id": "GLbX6TSR9rM"
+}
