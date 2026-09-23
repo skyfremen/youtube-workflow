@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6cce9e9e4b62170e88675181",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-23T09:13:09.526487Z",
+  "request_blob_sha": "80fd5b1a6f490b58bb79167e7e820be961af1249",
+  "request_path": "content/requests/wd-6cce9e9e4b62170e88675181.json",
+  "source_commit_sha": "a9628b97efb71c8956c5810e6e205909fc470da3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A team farewell collection gets awkward when one receipt reveals the gift was already reimbursed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a563c907a3375d76551c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Found Our Farewell Gift on an Expense Report"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35841137380"
+  },
+  "youtube_video_id": "n2w0GU7PKgA"
+}
