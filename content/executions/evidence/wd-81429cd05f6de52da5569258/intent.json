@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-81429cd05f6de52da5569258",
+  "created_at": "2026-09-23T12:08:43.842057Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "92c2da4ebfcc8ee0a8ed21d700b4ebd1a2df856b",
+  "request_path": "content/requests/wd-81429cd05f6de52da5569258.json",
+  "source_commit_sha": "338925af0351edaa5b09ace0abcf881b2525d381",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The extra guests supposedly cost nothing until the host counted them.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5bc39d73eb3b190a4fe1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Cousin Invited Four Free Guests on Our Vacation"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35858212171"
+  }
+}
