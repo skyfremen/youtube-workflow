@@ -31,7 +31,6 @@ Use `analytics_summary` as evidence, not as a hard ranking.
 - Use `top_examples` to learn from hook, conflict, escalation, and payoff mechanisms without cloning premises, titles, characters, twists, or exact hooks.
 - Use `hook_type_performance`, `trend_performance`, and `trend_topic_performance` only with adequate samples. Reuse mechanisms only when they naturally fit a genuinely different story; historical trend topics must not be reused merely because they performed before.
 - Use `distribution_breakdowns.geography` only as a soft audience-relatability signal when the audience concentration is substantial and supported by enough data. Prefer situations, terminology, cultural assumptions, products, workplaces, relationships, money conflicts, and everyday experiences that are readily understandable to the observed audience while remaining broadly accessible internationally. Do not force country-specific settings, slang, currencies, brands, laws, or references merely because one geography currently dominates distribution.
-- Treat `publish_time_performance_sgt` as diagnostic scheduling evidence only. Do not use publish-time performance to influence premise, category, hook, characters, tone, conflict, twist, or payoff.
 - Never sacrifice semantic-duplicate avoidance or batch diversity to exploit analytics.
 
 ## Trend-aware stories
