@@ -1,0 +1,92 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-27936935",
+            "segment_duration_seconds": 72.333,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-38555862",
+            "segment_duration_seconds": 100.0,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-29906418",
+            "segment_duration_seconds": 81.039,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-6cce9e9e4b62170e88675181",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-23T15:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260923T170500-6b84c1d2",
+      "story": {
+        "card_emojis": [
+          "📱",
+          "💰",
+          "💔",
+          "🙃"
+        ],
+        "category": "workplace",
+        "conflict": "The coworker insists she meant to return the money later, while the team sees it as keeping cash that was no longer needed for the gift.",
+        "hook": "I found our office farewell gift on an expense report after everyone had already paid my coworker for it.",
+        "hook_type": "discovery",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF SHE SHOULD HAVE ASKED",
+        "premise": "A woman discovers her coworker collected money from the team for their manager's farewell gift even though the company later reimbursed the full purchase.",
+        "punchline": "The gift was real. The collection wasn't.",
+        "script": "She organized a collection for our manager's leaving present and asked twelve of us for twenty-five dollars each. She said the company would not cover personal gifts, so nobody questioned it. We bought a nice hamper, signed the card, and gave it to our manager.\n\nA week later I was helping finance check receipts and saw the exact hamper listed as a fully reimbursed team expense. Same store, same amount, same date. I thought maybe my coworker had refunded us and I missed it, but everyone checked. Nobody had received anything back.\n\nWhen I asked her privately, she said reimbursement was approved after she collected the money and she planned to use our cash for a second surprise. There was no second surprise. She finally admitted the cash was still in her account.\n\nThen she told us her rent had jumped that month, and she had convinced herself she could borrow the collection for a few days and replace it before anyone noticed. Some people softened. Others got angrier because she never asked.\n\nShe returned every payment that afternoon. What annoyed everyone wasn't even the money. It was that she kept calling it a misunderstanding until finance printed the reimbursement form with her own signature on it.\n\nThe gift was real. The collection wasn't.",
+        "story_tone": "dramatic",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "She admits her rent jumped that month and she convinced herself she could temporarily borrow the collection, which makes some coworkers more sympathetic and others angrier that she never asked."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "A team farewell collection gets awkward when one receipt reveals the gift was already reimbursed.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "I Found Our Farewell Gift on an Expense Report"
+      }
+    }
+  ],
+  "request_id": "rq-86e4fc70ea04d8030eb72afd",
+  "request_version": 2,
+  "source_draft_id": "draft-20260923T170500-6b84c1d2"
+}
