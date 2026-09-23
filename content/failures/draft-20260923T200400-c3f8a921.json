@@ -1,0 +1,117 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "satisfying_process",
+        "category": "work",
+        "conflict": "The customer loudly accuses the narrator of ruining her hair and demands another refund.",
+        "description": "The salon's own appointment history turned a dramatic refund demand around.",
+        "emoji_cues": [
+          "panic",
+          "evidence",
+          "disbelief",
+          "victory"
+        ],
+        "hook": "A customer started crying over the haircut she had shown me in her own reference photo.",
+        "hook_type": "accusation",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF THE PHOTOS SETTLED IT",
+        "narration": "She said I cut it far shorter than she asked and demanded a full refund. I pulled up the reference photo we had discussed together, and the length matched almost exactly. She got louder and said photos could be misleading. Other customers were staring, and she kept repeating that I had ruined months of growth. My manager was about to refund her just to calm things down when another stylist recognized the name. She checked the appointment notes. The same customer had complained about her last two cuts, each time after showing a nearly identical reference and each time receiving money back. We also take a quick before-and-after photo with permission. All three finished cuts looked remarkably similar. One note even said she loved the result before asking for a refund twenty minutes later. Another showed she had requested the same length using almost the same words. My manager calmly showed her the history and offered to adjust anything specific she disliked, but not another refund. Suddenly she could not name a single section that needed fixing. She left saying she would never return. My manager quietly marked the account. For once, that promise sounded helpful.",
+        "payoff": "that promise sounded helpful",
+        "premise": "A woman catches a salon customer repeatedly claiming bad haircuts to avoid paying full price.",
+        "story_tone": "dramatic_comedy",
+        "title": "She Complained About the Same Haircut Three Times",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The salon's appointment photos show the customer requested nearly identical cuts from three stylists before making the same complaint each time."
+      },
+      "winner_index": 8
+    },
+    {
+      "winner": {
+        "background_category": "city_motion",
+        "category": "family",
+        "conflict": "She insists he is imagining the extra mileage because the fuel gauge always looks the same.",
+        "description": "The fuel gauge looked untouched, but the odometer and one receipt disagreed.",
+        "emoji_cues": [
+          "confusion",
+          "suspicion",
+          "evidence",
+          "awkward"
+        ],
+        "hook": "My car gained eighty kilometers while I was sitting at my desk all day.",
+        "hook_type": "contradiction",
+        "lead_gender": "male",
+        "like_cta": "LIKE IF SHE SHOULD HAVE ASKED",
+        "narration": "I noticed because I track mileage for work expenses. My sister had a spare key for emergencies, but she swore she never touched the car. The fuel gauge was exactly where I left it, so for a moment I wondered if I had written the number wrong. Then it happened again. I started photographing the odometer before work, and two days later another sixty kilometers appeared. She still denied everything and joked that maybe my car was going out without me. I even checked whether anyone else in the family had a key. This time a parking receipt fell from the sun visor when I pulled it down. My car had spent three hours at a shopping center across town while I was in a meeting. She finally admitted she had been borrowing it, then adding just enough fuel to return the gauge to the same spot. She said that meant it cost me nothing. I asked about mileage, parking risk, tolls, and the fact she never asked. She handed back the spare key. A week later she asked to borrow the car properly. I said yes. Apparently permission was the one thing she couldn't refill afterward.",
+        "payoff": "permission was the one thing she couldn't refill afterward",
+        "premise": "A man discovers his sister has been borrowing his car and replacing the fuel just enough to hide it.",
+        "story_tone": "natural",
+        "title": "My Car Was Driving Around Without Me",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "A parking receipt falls from the visor showing his car was across town while he was at work."
+      },
+      "winner_index": 9
+    },
+    {
+      "winner": {
+        "background_category": "assembly_process",
+        "category": "roommates",
+        "conflict": "The roommate denies touching anything and says the products probably separated naturally.",
+        "description": "A kitchen scale caught the strangest kind of roommate borrowing.",
+        "emoji_cues": [
+          "suspicion",
+          "evidence",
+          "disbelief",
+          "funny"
+        ],
+        "hook": "I came home from a trip and my brand-new face cream weighed more than when I left.",
+        "hook_type": "discovery",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF THAT'S NOT REPLACING IT",
+        "narration": "I know that sounds ridiculous, but the cream was expensive and my last jar had disappeared suspiciously fast. Before leaving, I weighed the sealed replacement on my kitchen scale as a joke to myself and took a photo of the number. When I came back, the seal was broken and the jar was heavier. My roommate said skincare separates and I was being paranoid. I showed her the photo from before my trip. Then I opened the jar. The texture and smell were completely different near the top, and there was a streak of floral lotion around the lid. I checked her bathroom shelf and the lotion bottle was suddenly almost empty too. She finally admitted she had used some, panicked because I might notice, and refilled the jar with her body lotion. She kept saying she replaced what she took, as if volume was the only difference between the products. I asked if she would drink half my orange juice and refill it with soup. She said that was not the same thing, which somehow made it funnier. She bought me a new jar that night. I bought a small lockbox the next morning.",
+        "payoff": "I bought a small lockbox the next morning",
+        "premise": "A woman discovers her roommate has been using her expensive skincare products and refilling the containers with cheaper lotion.",
+        "story_tone": "dramatic_comedy",
+        "title": "My Roommate Refilled My Skincare With Body Lotion",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The narrator weighs a new sealed jar before a trip and finds it heavier when she returns because it was topped up with a denser substitute."
+      },
+      "winner_index": 10
+    }
+  ],
+  "draft_id": "draft-20260923T200400-c3f8a921",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=3",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[8].narration",
+      "observed_value": "estimated_seconds=44.87",
+      "required_constraint": "45-65s",
+      "winner_index": 8,
+      "winner_title": "She Complained About the Same Haircut Three Times"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[9].narration",
+      "observed_value": "estimated_seconds=44.66",
+      "required_constraint": "45-65s",
+      "winner_index": 9,
+      "winner_title": "My Car Was Driving Around Without Me"
+    },
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[10].narration",
+      "observed_value": "estimated_seconds=44.87",
+      "required_constraint": "45-65s",
+      "winner_index": 10,
+      "winner_title": "My Roommate Refilled My Skincare With Body Lotion"
+    }
+  ]
+}
