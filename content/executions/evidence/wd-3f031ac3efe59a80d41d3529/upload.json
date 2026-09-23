@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3f031ac3efe59a80d41d3529",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-23T00:03:37.655643Z",
+  "request_blob_sha": "80c6f559e52d69bae261fa77269e82bd9a0e2a8a",
+  "request_path": "content/requests/wd-3f031ac3efe59a80d41d3529.json",
+  "source_commit_sha": "431e3283344d350124ee09f447c463c4a391d01f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Six mysterious lunch redemptions explained where a birthday dinner went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b3daa59432867c46671d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Used My Points to Impress His Coworkers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35800005223"
+  },
+  "youtube_video_id": "5CL4Zk51nFc"
+}
