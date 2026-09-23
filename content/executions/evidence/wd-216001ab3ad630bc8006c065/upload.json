@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-216001ab3ad630bc8006c065",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-23T12:10:42.984118Z",
+  "request_blob_sha": "e09ce1d63dda1d3e2fa578fef1cef354a89f461c",
+  "request_path": "content/requests/wd-216001ab3ad630bc8006c065.json",
+  "source_commit_sha": "338925af0351edaa5b09ace0abcf881b2525d381",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A laundry-room accusation fell apart when the machine history was checked.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5ce71ef7ef9985a7b70c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Put My Face in the Building Group Chat"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35858208840"
+  },
+  "youtube_video_id": "aMqD6xjBSgA"
+}
