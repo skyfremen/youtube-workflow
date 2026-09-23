@@ -20,7 +20,7 @@ BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"conten
 REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"
 REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=1
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
-MIN_NARR=60.0; MAX_NARR=90.0; WORDS_PER_SEC=3.0; TTS_SPEED=1.75
+MIN_NARR=60.0; MAX_NARR=90.0; BASE_WORDS_PER_SEC=2.7; TTS_SPEED=1.75
 SGT=ZoneInfo("Asia/Singapore"); SLOT_BUFFER=timedelta(minutes=10); YOUTUBE_SCAN_LIMIT=250
 EXPECTED_YOUTUBE_CHANNEL_ID="UCvrq2m9G4yrwPfL_X-QPzMA"
 DEFAULT_EMOJIS=["😳","💬","🔥","👀"]
@@ -76,7 +76,7 @@ def voice(g,t):
     if g not in {"female","male"}: raise VError("INVALID_LEAD_GENDER","story.lead_gender",g,"female or male")
     if t not in TONES: raise VError("INVALID_STORY_TONE","story.story_tone",t,"approved tone")
     return ("af_bella" if t in EXPRESSIVE else "af_heart") if g=="female" else ("am_fenrir" if t in EXPRESSIVE else "am_echo")
-def estimate(hook,script): return round(len((hook+" "+script).split())/WORDS_PER_SEC,2)
+def estimate(hook,script): return round(len((hook+" "+script).split())/(BASE_WORDS_PER_SEC*TTS_SPEED),2)
 def strip_repeated_hook(hook,script):
     h=clean(hook); s=clean(script)
     return s[len(h):].lstrip(" \t\r\n-—–:;,.!?") if h and s[:len(h)].casefold()==h.casefold() else s
@@ -419,7 +419,7 @@ def self_test():
         checks.append(name)
     r=registry(); c=build_context(); groups=category_assets(r)
     ok("1 context compact",len(pretty(c))<=40000); ok("2 viable backgrounds",bool(c["background_categories"]) and all(len(groups.get(x,[]))>=3 for x in c["background_categories"]))
-    filler=" ".join(["Then everything changed when the truth finally came out."]*25); payoff="I had the receipts"; bgcat=c["background_categories"][0]
+    filler=" ".join(["Then everything changed when the truth finally came out."]*32); payoff="I had the receipts"; bgcat=c["background_categories"][0]
     winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","hook_type":"accusation","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
     raw={"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3)
     try: normalize_draft({"winner":winner})
