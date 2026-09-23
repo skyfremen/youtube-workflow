@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-5ea3fdc450b10820bc172eb4",
+  "created_at": "2026-09-23T12:10:11.274451Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "5e6565770b8f91a6b46977e08b4016b42ef6e893",
+  "request_path": "content/requests/wd-5ea3fdc450b10820bc172eb4.json",
+  "source_commit_sha": "338925af0351edaa5b09ace0abcf881b2525d381",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One charity bake sale forced a very confident baker into the kitchen alone.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-23250438a9cc22168163",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Took Credit for Every Cake I Baked"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T20:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35858216856"
+  }
+}
