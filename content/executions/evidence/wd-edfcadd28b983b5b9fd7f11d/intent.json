@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-edfcadd28b983b5b9fd7f11d",
+  "created_at": "2026-09-23T00:07:34.329649Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "6b83542ae0ec47c5b4e7799b038d857aa870d7a1",
+  "request_path": "content/requests/wd-edfcadd28b983b5b9fd7f11d.json",
+  "source_commit_sha": "431e3283344d350124ee09f447c463c4a391d01f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A disappearing-buyer mystery ended with screenshots from the person being blocked.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0d7b19f418248400c022",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Was Scaring Away My Buyers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-23T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "881cc5a99e38b6f3ea94a6cc99241e2330d65886",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35800013100"
+  }
+}
