@@ -793,7 +793,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -829,68 +828,6 @@
           }
         ],
         "views_total": 50426
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 23852,
-            "source": "SHORTS",
-            "view_share_percentage": 96.13,
-            "views": 54146
-          },
-          {
-            "engaged_views": 291,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.86,
-            "views": 1046
-          },
-          {
-            "engaged_views": 319,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 1.05,
-            "views": 592
-          },
-          {
-            "engaged_views": 138,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.57,
-            "views": 321
-          },
-          {
-            "engaged_views": 62,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.21,
-            "views": 121
-          }
-        ],
-        "views_total": 56327
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 54.78,
-          "sample": 139,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 223,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 204
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 198
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 158
-        },
-        "views_7d": {
-          "median": 9.5,
-          "sample": 70
-        }
       }
     },
     "generated_at": "2026-09-24T10:22:50Z",
@@ -1141,170 +1078,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 23.62,
-          "engaged_view_sample": 21,
-          "engaged_views_per_view_percentage": 50.0,
-          "sample": 22,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 34
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 33
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 26
-        },
-        "views_7d": {
-          "median": 5.5,
-          "sample": 12
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 34.92,
-          "engaged_view_sample": 21,
-          "engaged_views_per_view_percentage": 50.0,
-          "sample": 21,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 1.5,
-          "sample": 32
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 2.0,
-          "sample": 11
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 64.7,
-          "engaged_view_sample": 26,
-          "engaged_views_per_view_percentage": 51.88,
-          "sample": 26,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 38,
-        "views_24h": {
-          "median": 340.5,
-          "sample": 34
-        },
-        "views_6h": {
-          "median": 240.0,
-          "sample": 30
-        },
-        "views_72h": {
-          "median": 383.5,
-          "sample": 26
-        },
-        "views_7d": {
-          "median": 237.0,
-          "sample": 11
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 58.91,
-          "engaged_view_sample": 24,
-          "engaged_views_per_view_percentage": 54.82,
-          "sample": 24,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 180.0,
-          "sample": 32
-        },
-        "views_6h": {
-          "median": 107.0,
-          "sample": 35
-        },
-        "views_72h": {
-          "median": 311.0,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 456.0,
-          "sample": 9
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 57.32,
-          "engaged_view_sample": 26,
-          "engaged_views_per_view_percentage": 50.33,
-          "sample": 27,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 41,
-        "views_24h": {
-          "median": 56.0,
-          "sample": 37
-        },
-        "views_6h": {
-          "median": 4.0,
-          "sample": 33
-        },
-        "views_72h": {
-          "median": 148.0,
-          "sample": 30
-        },
-        "views_7d": {
-          "median": 235.5,
-          "sample": 14
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 12.94,
-          "engaged_view_sample": 19,
-          "engaged_views_per_view_percentage": 44.19,
-          "sample": 19,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 35
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 31
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 8.0,
-          "sample": 13
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -1864,13 +1637,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The coworker insists she meant to return the money later, while the team sees it as keeping cash that was no longer needed for the gift.",
-      "payoff": "The gift was real. The collection wasn't.",
-      "premise": "A woman discovers her coworker collected money from the team for their manager's farewell gift even though the company later reimbursed the full purchase.",
-      "title": "I Found Our Farewell Gift on an Expense Report",
-      "twist": "She admits her rent jumped that month and she convinced herself she could temporarily borrow the collection, which makes some coworkers more sympathetic and others angrier that she never asked."
-    },
-    {
       "conflict": "The cousin argues the extra friends will sleep on couches and therefore should not owe anything.",
       "payoff": "very accurate accounting",
       "premise": "A woman learns her cousin has been quietly adding guests to a family vacation rental without paying.",
@@ -2037,6 +1803,13 @@
       "premise": "A mother discovers another parent has been signing her child out of an after-school activity early to secure the best pickup spot.",
       "title": "Another Parent Was Signing My Son Out for Me",
       "twist": "The sign-out sheet shows the parent has been writing the narrator's initials beside both children's names."
+    },
+    {
+      "conflict": "He says putting both names on cards feels awkward because he does the shopping, even though she transfers half the money every time.",
+      "payoff": "room for two names after all",
+      "premise": "A woman discovers her brother has been telling their parents she never contributes to family gifts while putting only his name on presents they split equally.",
+      "title": "My Brother Took Credit for Every Family Gift",
+      "twist": "Their mother asks the narrator why she stopped giving birthday gifts, revealing that the brother has accepted sole credit for years."
     }
   ]
 }
