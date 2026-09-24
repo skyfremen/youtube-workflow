@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5ee87169e1a59ab67b0939bc",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:07:51.490343Z",
+  "request_blob_sha": "9aec2967cfa1dcd2511f01ca1d6bf1c0bd756f5a",
+  "request_path": "content/requests/wd-5ee87169e1a59ab67b0939bc.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A childcare apology revealed a wedding rule the bride never made.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-434c23ba7f21b1c2bc1a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Secretly Made My Wedding Child-Free"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T08:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936459343"
+  },
+  "youtube_video_id": "_uaCXjFS41o"
+}
