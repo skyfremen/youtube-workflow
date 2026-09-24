@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-c92b4bb9650b606ef1129633",
+  "created_at": "2026-09-24T12:09:38.390575Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "c697219ccb43f6b8935ca6cfe36b1b1ca9d6ecdb",
+  "request_path": "content/requests/wd-c92b4bb9650b606ef1129633.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One impossible item on a family grocery receipt exposed a quiet self-appointed shopping fee.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-40433d6c5973b24f50c0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Grandma's Grocery Bill Had Dog Food on It"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996776563"
+  }
+}
