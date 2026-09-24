@@ -150,3 +150,14 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
 Normal drafts use the complete `winners[]` shape above. Repair drafts instead use `supersedes_draft_id` plus `replacements[]` as defined in the Repair path; deterministic code reconstructs the complete batch from immutable drafts.
 
 The draft must contain exactly `winner_count` winner objects.
+
+
+## Current creative bias
+
+Use these as soft winner-selection preferences, not quotas or mandatory story formulas.
+
+- Prefer stories with tangible stakes or meaningful consequences over low-stakes interpersonal irritation. Tangible stakes may include money, jobs, reputation, relationships, property, access, important possessions, bookings, weddings, promotions, accounts, tickets, or similar concrete consequences.
+- When two candidate ideas are otherwise similarly strong, prefer one that opens with a concrete discovery or an already-visible consequence rather than background setup.
+- Favor `discovery` and `consequence_first` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types.
+- Reduce generic premises that amount mainly to someone being rude, annoying, inconsiderate, or argumentative unless the escalation, twist, stakes, or comedy payoff makes the story unusually strong.
+- Prefer stronger stakes and more immediate discovery/consequence openings during winner selection, but do not let this override diversity, originality, or a clearly stronger idea using another hook type.
