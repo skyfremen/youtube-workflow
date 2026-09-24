@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f891922401c93da2ca69cf7e",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T12:11:02.591249Z",
+  "request_blob_sha": "26b1d632656c7a49cece5da6771629f3046a9453",
+  "request_path": "content/requests/wd-f891922401c93da2ca69cf7e.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Photos of one yellow bottle made a gym member look impossibly selfish until the background revealed who was moving it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-df5301328d561a3e09b1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Water Bottle Was Getting Me Gym Complaints"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996774341"
+  },
+  "youtube_video_id": "1ClN2aWG048"
+}
