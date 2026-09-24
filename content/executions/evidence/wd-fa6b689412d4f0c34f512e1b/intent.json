@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-fa6b689412d4f0c34f512e1b",
+  "created_at": "2026-09-24T12:10:43.560168Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "9387866b6cfbf38beec86e668ebb8a0ae2aca5fc",
+  "request_path": "content/requests/wd-fa6b689412d4f0c34f512e1b.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A returning delivery driver exposed why another person's meals kept appearing outside one man's apartment.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-144dfe400c4b58775d91",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Door Was Part of My Neighbor's Refund Trick"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996781489"
+  }
+}
