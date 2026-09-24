@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-79bfe5e95001dfc20a16e310",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:07:58.416561Z",
+  "request_blob_sha": "31828c2b90c5de954894ce2cb65770a0c2ddc7f3",
+  "request_path": "content/requests/wd-79bfe5e95001dfc20a16e310.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two impossible check-ins exposed a friend's free workout plan.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8c83c14434e3519d15c5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Was Secretly Using My Gym Membership"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936457398"
+  },
+  "youtube_video_id": "bGkJibEymT4"
+}
