@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-35aae859727fa2805cce6115",
+  "created_at": "2026-09-24T00:07:59.972110Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "5272666a9a75850a14bdb9737d77110e0480c24f",
+  "request_path": "content/requests/wd-35aae859727fa2805cce6115.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cheesecake notification exposed somebody else's romantic dinner budget.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3c26a48c9c605b8cfee8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Used My Card to Impress His Girlfriend"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936462909"
+  }
+}
