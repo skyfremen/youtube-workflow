@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-569fff3860e354e06a077f1e",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:09:41.134757Z",
+  "request_blob_sha": "15793707eb0edb1c90d7361a31f80ec9425b2b52",
+  "request_path": "content/requests/wd-569fff3860e354e06a077f1e.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three mysteriously cancelled reservations all had one person in common.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0a15eae07d1fcd346e83",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Girlfriend Kept Cancelling My Dinner Plans"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T12:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936466956"
+  },
+  "youtube_video_id": "mmO_DR7Nb-w"
+}
