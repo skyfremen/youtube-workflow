@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-dd747f742589c65e9e1062d3",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:06:43.043503Z",
+  "request_blob_sha": "effc3448b0f682ea14d88bd732db6df98f0a2978",
+  "request_path": "content/requests/wd-dd747f742589c65e9e1062d3.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unexpected car came with a receipt nobody expected.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a3aa015df783c15173ab",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Was Renting Out My Parking Space"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T09:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936461401"
+  },
+  "youtube_video_id": "fL_OZeHK0S4"
+}
