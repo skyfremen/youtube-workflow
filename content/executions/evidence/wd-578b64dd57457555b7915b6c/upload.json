@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-578b64dd57457555b7915b6c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T12:10:10.833606Z",
+  "request_blob_sha": "6973b59c015aedcd2deedc148bd3d5f8433344d8",
+  "request_path": "content/requests/wd-578b64dd57457555b7915b6c.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cancellation sent at the impossible moment exposed months of messages one man never wrote.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f03797489dfb898bd22f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Kept Cancelling My Plans From My Account"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T23:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996772385"
+  },
+  "youtube_video_id": "-RZ6H1BWTT0"
+}
