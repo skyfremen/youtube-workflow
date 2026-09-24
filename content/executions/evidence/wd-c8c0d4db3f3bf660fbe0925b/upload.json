@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c8c0d4db3f3bf660fbe0925b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:11:40.093929Z",
+  "request_blob_sha": "af5131950f10078cfe8ea2bb38dc5b9f74cb63fd",
+  "request_path": "content/requests/wd-c8c0d4db3f3bf660fbe0925b.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A teacher's simple question uncovered a fake pickup signature.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8d7b1bc59117ecf02884",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Another Parent Was Signing My Son Out for Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936469058"
+  },
+  "youtube_video_id": "fi--05QJOWo"
+}
