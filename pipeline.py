@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
-BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"
+BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
 REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"
 REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=1
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
@@ -67,6 +67,22 @@ def instant(v,field="timestamp"):
     if d.tzinfo is None: raise VError("INVALID_TIMESTAMP",field,v,"RFC3339 timestamp with timezone",False)
     return d
 def zulu(d): return d.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
+def publish_slots(path=PUBLISH_SLOTS):
+    x=read(path)
+    if not isinstance(x,dict) or set(x)!={"timezone","slots"}: raise VError("INVALID_PUBLISH_SLOT_CONFIG",str(path),type(x).__name__,"object with timezone and slots",False)
+    if clean(x.get("timezone"))!="Asia/Singapore": raise VError("INVALID_PUBLISH_SLOT_TIMEZONE","timezone",x.get("timezone"),"Asia/Singapore",False)
+    raw=x.get("slots")
+    if not isinstance(raw,list) or len(raw)!=24: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 24 daily slots",False)
+    out=[]
+    for index,value in enumerate(raw):
+        m=re.fullmatch(r"([01]\\d|2[0-3]):([0-5]\\d)",str(value))
+        if not m: raise VError("INVALID_PUBLISH_SLOT",f"slots[{index}]",value,"HH:MM",False)
+        slot=(int(m.group(1)),int(m.group(2)))
+        if slot[1] not in {0,20,40}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 20, or 40",False)
+        out.append(slot)
+    if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"24 unique daily slots",False)
+    if out!=sorted(out): raise VError("UNSORTED_PUBLISH_SLOTS","slots",raw,"ascending daily order",False)
+    return out
 
 def normalize_gender(v):
     g=clean(v).casefold(); return g if g in {"female","male"} else "female"
@@ -260,13 +276,16 @@ def allocate_publish_slots(count,now=None,occupied=None):
     for value in occupied:
         d=value if isinstance(value,datetime) else instant(value,"occupied_slot")
         normalized.add(d.astimezone(timezone.utc).replace(microsecond=0))
-    candidate=now.replace(minute=0,second=0,microsecond=0)+timedelta(hours=1)
-    if candidate-now<SLOT_BUFFER: candidate+=timedelta(hours=1)
-    out=[]
+    slots=publish_slots(); threshold=now+SLOT_BUFFER; out=[]; day=now.date()
     while len(out)<count:
-        utc=candidate.astimezone(timezone.utc).replace(microsecond=0)
-        if utc not in normalized: out.append(zulu(utc))
-        candidate+=timedelta(hours=1)
+        for hour,minute in slots:
+            candidate=datetime(day.year,day.month,day.day,hour,minute,tzinfo=SGT)
+            if candidate<threshold: continue
+            utc=candidate.astimezone(timezone.utc).replace(microsecond=0)
+            if utc in normalized: continue
+            out.append(zulu(utc)); normalized.add(utc)
+            if len(out)==count: return out
+        day+=timedelta(days=1)
     return out
 
 def content_id_for(did,index,w): return "wd-"+hashlib.sha256(canonical({"source_draft_id":did,"winner_index":index,"winner":w})).hexdigest()[:24]
@@ -324,7 +343,7 @@ def validate_item(x,r=None):
     p=x["publication"]
     if not isinstance(p,dict) or set(p)!={"mode","publish_at"} or p.get("mode")!="scheduled": raise VError("INVALID_PUBLICATION","publication",p,"scheduled publish_at",False)
     d=instant(p.get("publish_at"),"publication.publish_at")
-    if d.minute or d.second or d.microsecond: raise VError("INVALID_PUBLICATION_SLOT","publication.publish_at",p.get("publish_at"),"whole-hour timestamp",False)
+    if d.minute not in {0,20,40} or d.second or d.microsecond: raise VError("INVALID_PUBLICATION_SLOT","publication.publish_at",p.get("publish_at"),"timestamp on minute 00, 20, or 40",False)
     if x["visibility"]!="private": raise VError("INVALID_VISIBILITY","visibility",x["visibility"],"private",False)
     expected={"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}
     if x["render"]!=expected: raise VError("INVALID_RENDER_CONTRACT","render",x["render"],str(expected),False)
@@ -428,9 +447,11 @@ def self_test():
     ok("5 defaults",d["winners"][0]["lead_gender"]=="female" and d["winners"][0]["story_tone"]=="natural")
     ok("6 repeated hook stripped",not d["winners"][0]["narration"].casefold().startswith(d["winners"][0]["hook"].casefold()))
     ok("7 payoff fallback",d["winners"][0]["payoff"]=="Nobody could answer after that.")
-    now=datetime(2030,1,1,10,50,tzinfo=SGT); slots=allocate_publish_slots(3,now,occupied=set()); ok("8 exact ten minutes allowed",slots[0]=="2030-01-01T03:00:00Z")
-    slots=allocate_publish_slots(2,datetime(2030,1,1,10,50,1,tzinfo=SGT),occupied=set()); ok("9 under ten minutes skipped",slots[0]=="2030-01-01T04:00:00Z")
-    occupied={datetime(2030,1,1,4,0,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,10,51,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T05:00:00Z","2030-01-01T06:00:00Z"])
+    now=datetime(2030,1,1,7,50,tzinfo=SGT); slots=allocate_publish_slots(3,now,occupied=set()); ok("8 exact ten minutes allowed",slots[0]=="2030-01-01T00:00:00Z")
+    slots=allocate_publish_slots(2,datetime(2030,1,1,7,50,1,tzinfo=SGT),occupied=set()); ok("9 under ten minutes skipped",slots[0]=="2030-01-01T00:40:00Z")
+    occupied={datetime(2030,1,1,0,40,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,8,29,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T01:20:00Z","2030-01-01T02:00:00Z"])
+    slots=allocate_publish_slots(1,datetime(2030,1,1,19,21,tzinfo=SGT),occupied=set()); ok("10a evening control slot",slots[0]=="2030-01-01T13:00:00Z")
+    slots=allocate_publish_slots(1,datetime(2030,1,1,23,1,tzinfo=SGT),occupied=set()); ok("10b next-day rollover",slots[0]=="2030-01-01T17:00:00Z")
     test_slots=["2030-01-01T03:00:00Z","2030-01-01T04:00:00Z","2030-01-01T05:00:00Z"]
     batch=make_batch("draft-selftest01",raw,d,r,test_slots); validate_batch(batch,REQS/(batch["request_id"]+".json"),r); ok("11 batch validates",len(batch["items"])==3); ok("12 unique content ids",len({x["content_id"] for x in batch["items"]})==3)
     ok("13 scheduled private",all(x["visibility"]=="private" and x["publication"]["mode"]=="scheduled" for x in batch["items"])); ok("14 contract hash",CONTRACT_HASH=="db118b20737d06509071754851388e51af427b7930cd48708b3e427415fce1de")
