@@ -779,7 +779,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -815,68 +814,6 @@
           }
         ],
         "views_total": 50426
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 23852,
-            "source": "SHORTS",
-            "view_share_percentage": 96.13,
-            "views": 54146
-          },
-          {
-            "engaged_views": 291,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.86,
-            "views": 1047
-          },
-          {
-            "engaged_views": 319,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 1.05,
-            "views": 592
-          },
-          {
-            "engaged_views": 138,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.57,
-            "views": 321
-          },
-          {
-            "engaged_views": 62,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.21,
-            "views": 121
-          }
-        ],
-        "views_total": 56328
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 50.02,
-          "sample": 128,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 209,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 190
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 185
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 144
-        },
-        "views_7d": {
-          "median": 29.5,
-          "sample": 56
-        }
       }
     },
     "generated_at": "2026-09-23T20:36:56Z",
@@ -1127,170 +1064,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 16.76,
-          "engaged_view_sample": 21,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 22,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 32
-        },
-        "views_6h": {
-          "median": 0.5,
-          "sample": 32
-        },
-        "views_72h": {
-          "median": 3.5,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 5.5,
-          "sample": 8
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 23.4,
-          "engaged_view_sample": 21,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 21,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 33,
-        "views_24h": {
-          "median": 1.5,
-          "sample": 32
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 32
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 1.5,
-          "sample": 8
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 65.84,
-          "engaged_view_sample": 22,
-          "engaged_views_per_view_percentage": 53.36,
-          "sample": 22,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 34,
-        "views_24h": {
-          "median": 333.0,
-          "sample": 34
-        },
-        "views_6h": {
-          "median": 212.0,
-          "sample": 27
-        },
-        "views_72h": {
-          "median": 383.5,
-          "sample": 26
-        },
-        "views_7d": {
-          "median": 237.0,
-          "sample": 11
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 58.62,
-          "engaged_view_sample": 20,
-          "engaged_views_per_view_percentage": 55.18,
-          "sample": 20,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 32,
-        "views_24h": {
-          "median": 139.0,
-          "sample": 28
-        },
-        "views_6h": {
-          "median": 96.0,
-          "sample": 31
-        },
-        "views_72h": {
-          "median": 239.5,
-          "sample": 20
-        },
-        "views_7d": {
-          "median": 456.0,
-          "sample": 9
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 54.38,
-          "engaged_view_sample": 23,
-          "engaged_views_per_view_percentage": 50.25,
-          "sample": 24,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 38,
-        "views_24h": {
-          "median": 56.0,
-          "sample": 33
-        },
-        "views_6h": {
-          "median": 3.5,
-          "sample": 32
-        },
-        "views_72h": {
-          "median": 156.0,
-          "sample": 26
-        },
-        "views_7d": {
-          "median": 280.0,
-          "sample": 11
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 12.94,
-          "engaged_view_sample": 19,
-          "engaged_views_per_view_percentage": 44.19,
-          "sample": 19,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 1.0,
-          "sample": 31
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 31
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 10.0,
-          "sample": 9
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -1850,13 +1623,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "He says the points were going to expire anyway, even though she had been saving them for a family celebration.",
-      "payoff": "the real value of loyalty",
-      "premise": "A woman discovers her boyfriend has been using her loyalty points to impress his coworkers with free lunches.",
-      "title": "He Used My Points to Impress His Coworkers",
-      "twist": "The restaurant app shows he redeemed nearly all of them during dates when he claimed he was working through lunch."
-    },
-    {
       "conflict": "The friend denies selling anything and claims the missing tools were never lent to him.",
       "payoff": "Nobody lent him tools after that",
       "premise": "A man finds out his friend has been returning borrowed tools to a hardware store for store credit.",
@@ -2023,6 +1789,13 @@
       "premise": "A woman discovers her roommate has been using her expensive skincare products and refilling the containers with cheaper lotion.",
       "title": "My Roommate Refilled My Skincare With Body Lotion",
       "twist": "The narrator weighs a new sealed jar before a trip and finds it heavier when she returns because it was topped up with a denser substitute."
+    },
+    {
+      "conflict": "The neighbor denies touching the outlet while the narrator keeps finding thawed food.",
+      "payoff": "a very boring life since then",
+      "premise": "A man realizes his neighbor has been unplugging his hallway freezer to charge an electric scooter.",
+      "title": "My Neighbor Kept Unplugging My Freezer at Night",
+      "twist": "A smart plug log shows the freezer loses power at the exact times the neighbor charges his scooter overnight."
     }
   ]
 }
