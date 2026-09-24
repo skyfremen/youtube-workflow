@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-9baa4939e81d84f374b5e41e",
+  "created_at": "2026-09-24T12:08:37.042973Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "c420c7cc99e58a833fa758507b7cadf3bcc0412d",
+  "request_path": "content/requests/wd-9baa4939e81d84f374b5e41e.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Years of bank transfers changed one family's idea of who had been buying the presents.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c43da1061ffa56d9aaf5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Took Credit for Every Family Gift"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T18:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996760014"
+  }
+}
