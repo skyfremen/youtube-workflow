@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b9ebadde51e487bd008de84c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:06:17.947799Z",
+  "request_blob_sha": "e276f32a212a56cb5986f6162f789396e9e05769",
+  "request_path": "content/requests/wd-b9ebadde51e487bd008de84c.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A freezer problem turned into a hallway charging mystery.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ff6c199ec03d57ebe649",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Kept Unplugging My Freezer at Night"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936453485"
+  },
+  "youtube_video_id": "imwxoa1SOBs"
+}
