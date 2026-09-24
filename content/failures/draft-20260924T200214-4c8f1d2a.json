@@ -1,0 +1,47 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "food_process",
+        "category": "workplace",
+        "conflict": "He insists the tiny substitutions are harmless because nobody notices a few dollars, while the narrator realizes the same people have been overpaying for weeks.",
+        "description": "A few missing side dishes exposed why one coworker's Friday lunch always looked better than everyone else's.",
+        "emoji_cues": [
+          "money",
+          "suspicion",
+          "evidence",
+          "embarrassment"
+        ],
+        "hook": "Our lunch order was always exactly twelve dollars more expensive after my coworker collected the money.",
+        "hook_type": "money_stakes",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF HE SHOULD REPAY IT",
+        "narration": "At first I blamed delivery fees because he was the one who organized our Friday orders. Everyone sent him the amount shown in the group chat, and lunch appeared an hour later. Then my usual side disappeared for the third week in a row. He said the restaurant must have substituted it, but I opened the paper receipt and saw my side had actually been removed. His meal had an extra appetizer and a premium drink instead. I checked the older receipts stuffed in the office drawer. Same pattern. He would collect exactly what we ordered, then edit several meals downward and upgrade his own before checkout. The difference was usually one or two dollars per person, small enough that nobody complained. One coworker then realized her drink had mysteriously vanished from four previous orders too. When I showed the team, he laughed and said we were seriously fighting over pocket change. That made everyone angrier. Our manager asked him to repay the differences, and suddenly he had a spreadsheet calculating every cent. The next Friday someone else organized lunch. His order was the only one nobody volunteered to subsidize.",
+        "payoff": "nobody volunteered to subsidize",
+        "premise": "A woman discovers her coworker has been quietly changing the shared lunch order after everyone pays so his own meal is covered by the group.",
+        "story_tone": "dramatic_comedy",
+        "title": "He Was Quietly Editing Our Lunch Orders",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The restaurant's itemized receipts show he has been upgrading his own meal and downgrading other people's sides after collecting everyone's money."
+      },
+      "winner_index": 0
+    }
+  ],
+  "draft_id": "draft-20260924T200214-4c8f1d2a",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[0].narration",
+      "observed_value": "estimated_seconds=43.6",
+      "required_constraint": "45-65s",
+      "winner_index": 0,
+      "winner_title": "He Was Quietly Editing Our Lunch Orders"
+    }
+  ]
+}
