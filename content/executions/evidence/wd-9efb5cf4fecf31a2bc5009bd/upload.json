@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9efb5cf4fecf31a2bc5009bd",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T12:12:47.574214Z",
+  "request_blob_sha": "80c8559d01ebdfc0825833f656861da58ddf1c64",
+  "request_path": "content/requests/wd-9efb5cf4fecf31a2bc5009bd.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A school sign-up history showed why one parent always ended up buying the expensive supplies.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-63a1ca613f79da293191",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Kept Volunteering My Wallet at School"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T20:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996764368"
+  },
+  "youtube_video_id": "qRJ44m4ZJTY"
+}
