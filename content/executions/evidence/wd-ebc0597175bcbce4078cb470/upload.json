@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ebc0597175bcbce4078cb470",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:08:50.400659Z",
+  "request_blob_sha": "8a2ebb5367c5a579b72dc8506cabe865f79e5703",
+  "request_path": "content/requests/wd-ebc0597175bcbce4078cb470.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A checkout argument became much simpler once the camera was checked.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c240a255a2dba4bff145",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Changed the Price Tag Then Blamed Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T11:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936465011"
+  },
+  "youtube_video_id": "gVpCZFRtrMM"
+}
