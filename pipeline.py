@@ -75,7 +75,7 @@ def publish_slots(path=PUBLISH_SLOTS):
     if not isinstance(raw,list) or len(raw)!=24: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 24 daily slots",False)
     out=[]
     for index,value in enumerate(raw):
-        m=re.fullmatch(r"([01]\\d|2[0-3]):([0-5]\\d)",str(value))
+        m=re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)",str(value))
         if not m: raise VError("INVALID_PUBLISH_SLOT",f"slots[{index}]",value,"HH:MM",False)
         slot=(int(m.group(1)),int(m.group(2)))
         if slot[1] not in {0,20,40}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 20, or 40",False)
