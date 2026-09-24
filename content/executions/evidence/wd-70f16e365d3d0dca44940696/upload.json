@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-70f16e365d3d0dca44940696",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T00:06:41.134883Z",
+  "request_blob_sha": "0cbb93559d59f180087c0fc9322c512c61d976ca",
+  "request_path": "content/requests/wd-70f16e365d3d0dca44940696.json",
+  "source_commit_sha": "9baf30c5143a7cb837a385ea94b063778c39b4eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A famous office recipe had one problem: the famous cook wasn't cooking it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-cc4dc3a5c93116d5af98",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Took Credit for My Meal Prep at Work"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T14:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35936471062"
+  },
+  "youtube_video_id": "K-UoqAtlKbo"
+}
