@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0af4a7e6b4311e5705b9e2dc",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-24T12:12:55.697550Z",
+  "request_blob_sha": "c56ed5da77231d35f6a9b9616ecdfd348872f2be",
+  "request_path": "content/requests/wd-0af4a7e6b4311e5705b9e2dc.json",
+  "source_commit_sha": "3ab0c4a6a6a1dfe734e8dd41156aa87600a70d3b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A no-show warning exposed how one friend kept getting impossible dinner reservations.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-dc5e4325b77d3b3cecd4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Was Dating Under My Restaurant Account"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-24T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "35996762210"
+  },
+  "youtube_video_id": "102ZHa18Nmc"
+}
