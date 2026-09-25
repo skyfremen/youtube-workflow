@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6696ab4da1f586bd01bfea7b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T12:11:05.601999Z",
+  "request_blob_sha": "da0f9618d6493dfdb0ac837ad1bf5d130cc96352",
+  "request_path": "content/requests/wd-6696ab4da1f586bd01bfea7b.json",
+  "source_commit_sha": "e012ab823e45a2c9f4c6f0b94f79b4608e2d3c79",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A donor's serial number exposes missing prizes before a school fundraiser begins.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-505ad752a9f886bf4e02",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our School Raffle Prizes Started Disappearing"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T03:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36132917328"
+  },
+  "youtube_video_id": "Cep2T-WVyZs"
+}
