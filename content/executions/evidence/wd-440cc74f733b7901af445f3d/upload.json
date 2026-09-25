@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-440cc74f733b7901af445f3d",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:53:24.831660Z",
+  "request_blob_sha": "9ab5cf81792e433c77728183a4b91a585cc8904c",
+  "request_path": "content/requests/wd-440cc74f733b7901af445f3d.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing airline credit forces a family to compare an expiry story with the actual redemption history.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-abfe5645953778475a23",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Used Mom's Flight Credit for Her Own Trip"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095860627"
+  },
+  "youtube_video_id": "Cp-I2H1xfcI"
+}
