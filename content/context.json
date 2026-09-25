@@ -811,7 +811,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -847,68 +846,6 @@
           }
         ],
         "views_total": 58187
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 27954,
-            "source": "SHORTS",
-            "view_share_percentage": 96.32,
-            "views": 62156
-          },
-          {
-            "engaged_views": 316,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.8,
-            "views": 1161
-          },
-          {
-            "engaged_views": 353,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 1.0,
-            "views": 644
-          },
-          {
-            "engaged_views": 140,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.51,
-            "views": 327
-          },
-          {
-            "engaged_views": 68,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.21,
-            "views": 134
-          }
-        ],
-        "views_total": 64529
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 54.33,
-          "sample": 150,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 233,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 214
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 208
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 168
-        },
-        "views_7d": {
-          "median": 16.5,
-          "sample": 80
-        }
       }
     },
     "generated_at": "2026-09-24T20:40:19Z",
@@ -1187,170 +1124,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 28.65,
-          "engaged_view_sample": 26,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 27,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 36
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 5.5,
-          "sample": 12
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 29.16,
-          "engaged_view_sample": 22,
-          "engaged_views_per_view_percentage": 41.66,
-          "sample": 22,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 37,
-        "views_24h": {
-          "median": 1.5,
-          "sample": 36
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 2.0,
-          "sample": 12
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 64.39,
-          "engaged_view_sample": 26,
-          "engaged_views_per_view_percentage": 55.14,
-          "sample": 26,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 38,
-        "views_24h": {
-          "median": 346.5,
-          "sample": 38
-        },
-        "views_6h": {
-          "median": 240.0,
-          "sample": 30
-        },
-        "views_72h": {
-          "median": 393.5,
-          "sample": 30
-        },
-        "views_7d": {
-          "median": 237.0,
-          "sample": 15
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 58.88,
-          "engaged_view_sample": 24,
-          "engaged_views_per_view_percentage": 55.41,
-          "sample": 24,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 36,
-        "views_24h": {
-          "median": 180.0,
-          "sample": 32
-        },
-        "views_6h": {
-          "median": 107.0,
-          "sample": 35
-        },
-        "views_72h": {
-          "median": 311.0,
-          "sample": 24
-        },
-        "views_7d": {
-          "median": 313.0,
-          "sample": 13
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 54.38,
-          "engaged_view_sample": 27,
-          "engaged_views_per_view_percentage": 50.0,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 56.0,
-          "sample": 37
-        },
-        "views_6h": {
-          "median": 3.5,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 148.0,
-          "sample": 30
-        },
-        "views_7d": {
-          "median": 280.0,
-          "sample": 15
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 16.62,
-          "engaged_view_sample": 23,
-          "engaged_views_per_view_percentage": 44.19,
-          "sample": 23,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 35
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 35
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 8.0,
-          "sample": 13
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -1922,13 +1695,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The roommate denies touching anything and says the products probably separated naturally.",
-      "payoff": "I bought a small lockbox the next morning",
-      "premise": "A woman discovers her roommate has been using her expensive skincare products and refilling the containers with cheaper lotion.",
-      "title": "My Roommate Refilled My Skincare With Body Lotion",
-      "twist": "The narrator weighs a new sealed jar before a trip and finds it heavier when she returns because it was topped up with a denser substitute."
-    },
-    {
       "conflict": "The neighbor denies touching the outlet while the narrator keeps finding thawed food.",
       "payoff": "a very boring life since then",
       "premise": "A man realizes his neighbor has been unplugging his hallway freezer to charge an electric scooter.",
@@ -2095,6 +1861,13 @@
       "premise": "A man realizes his friend has been using his name to reserve popular restaurant tables and then giving the bookings to dates.",
       "title": "My Friend Was Dating Under My Restaurant Account",
       "twist": "The restaurant recognizes the narrator's phone number but a completely different regular guest has been arriving under his name."
+    },
+    {
+      "conflict": "The aunt says she was holding the money for safekeeping, but none of the children or parents knew and no savings record exists.",
+      "payoff": "I'll handle the safekeeping",
+      "premise": "A woman discovers her aunt has been quietly removing cash gifts from birthday cards before handing them to younger relatives.",
+      "title": "The Birthday Money Kept Disappearing Before the Cake",
+      "twist": "A child opens a card early and finds a handwritten note mentioning cash that is already missing."
     }
   ]
 }
