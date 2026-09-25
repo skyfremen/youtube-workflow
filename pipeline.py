@@ -156,16 +156,27 @@ def normalize_winner(w,index):
     if not isinstance(w,dict): raise VError("INVALID_WINNER_FIELDS",f"winners[{index}]",type(w).__name__,"winner object")
     hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration")); raw_topic=w.get("trend_topic")
     return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"like_cta":clean(w.get("like_cta")),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
-def materialize_draft(x,seen=None):
+def declared_winner_count(x,required=True):
+    if "winner_count" not in x:
+        if required: raise VError("MISSING_WINNER_COUNT","winner_count",None,"positive integer matching the caller-provided winner_count",False)
+        return None
+    count=x.get("winner_count")
+    if type(count) is not int or count<1: raise VError("INVALID_WINNER_COUNT","winner_count",count,"positive integer",False)
+    return count
+
+def materialize_draft(x,seen=None,require_winner_count=True):
     if not isinstance(x,dict): raise VError("INVALID_DRAFT_ROOT","$",type(x).__name__,"object")
     if "winner" in x: raise VError("LEGACY_DRAFT_SHAPE","winner","present","use winners[] only",False)
     supersedes=x.get("supersedes_draft_id")
     if supersedes is not None and not DRAFT_RE.fullmatch(str(supersedes)): raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",supersedes,"valid prior draft id")
+    count=declared_winner_count(x,require_winner_count)
     if "replacements" not in x:
         winners=x.get("winners")
         if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
-        return {"winners":winners}
-    if "winners" in x or not supersedes: raise VError("INVALID_REPAIR_SHAPE","$","mixed or missing supersedes","supersedes_draft_id plus replacements[] only")
+        if count is None: count=len(winners)
+        if len(winners)!=count: raise VError("WINNER_COUNT_MISMATCH","winners",len(winners),f"exactly {count} winners",False)
+        return {"winner_count":count,"winners":winners}
+    if "winners" in x or not supersedes: raise VError("INVALID_REPAIR_SHAPE","$","mixed or missing supersedes","winner_count plus supersedes_draft_id plus replacements[] only")
     replacements=x.get("replacements")
     if not isinstance(replacements,list) or not replacements: raise VError("INVALID_REPLACEMENTS","replacements",replacements,"non-empty replacements array")
     seen=set(seen or ())
@@ -173,7 +184,9 @@ def materialize_draft(x,seen=None):
     seen.add(supersedes)
     source_path=DRAFTS/(supersedes+".json")
     if not source_path.exists(): raise VError("SUPERSEDED_DRAFT_NOT_FOUND","supersedes_draft_id",supersedes,"existing immutable draft",False)
-    source=materialize_draft(read_draft(source_path),seen)
+    source=materialize_draft(read_draft(source_path),seen,False)
+    if count is None: count=source["winner_count"]
+    if count!=source["winner_count"]: raise VError("WINNER_COUNT_CHANGED","winner_count",count,source["winner_count"],False)
     winners=list(source["winners"])
     failure_path=FAILS/(supersedes+".json")
     if not failure_path.exists(): raise VError("REPAIR_FAILURE_NOT_FOUND","supersedes_draft_id",supersedes,"matching deterministic failure file",False)
@@ -189,11 +202,12 @@ def materialize_draft(x,seen=None):
         if index in supplied: raise VError("DUPLICATE_REPLACEMENT_INDEX","replacements",index,"one replacement per affected winner")
         supplied.add(index); winners[index]=replacement["winner"]
     if expected and supplied!=expected: raise VError("REPAIR_INDEX_MISMATCH","replacements",sorted(supplied),f"exact affected winner indexes {sorted(expected)}")
-    return {"winners":winners}
+    if len(winners)!=count: raise VError("WINNER_COUNT_MISMATCH","winners",len(winners),f"exactly {count} winners",False)
+    return {"winner_count":count,"winners":winners}
 
 def normalize_draft(x):
     materialized=materialize_draft(x)
-    return {"winners":[normalize_winner(w,i) for i,w in enumerate(materialized["winners"])]}
+    return {"winner_count":materialized["winner_count"],"winners":[normalize_winner(w,i) for i,w in enumerate(materialized["winners"])]}
 
 def collect_draft_violations(d):
     out=[]; required=("premise","category","conflict","twist","hook","narration","title","description")
@@ -381,8 +395,10 @@ def fail(did,e,raw=None):
     write(FAILS/(did+".json"),payload)
 def preflight_draft(path):
     path=Path(path).resolve(); did=draft_id(path)
-    try: read_draft(path)
-    except VError as e: fail(did,e); raise
+    try:
+        raw=read_draft(path); materialize_draft(raw)
+    except VError as e:
+        fail(did,e,raw if "raw" in locals() else None); raise
     return path
 def finalize(path):
     path=Path(path).resolve(); did=draft_id(path)
@@ -440,7 +456,7 @@ def self_test():
     ok("1 context compact",len(pretty(c))<=40000); ok("2 viable backgrounds",bool(c["background_categories"]) and all(len(groups.get(x,[]))>=3 for x in c["background_categories"]))
     filler=" ".join(["Then everything changed when the truth finally came out."]*32); payoff="I had the receipts"; bgcat=c["background_categories"][0]
     winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","hook_type":"accusation","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
-    raw={"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3)
+    raw={"winner_count":3,"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3 and d["winner_count"]==3)\n    try: normalize_draft({"winner_count":2,"winners":[winner,winner.copy(),winner.copy()]})\n    except VError as e: ok("3a winner count mismatch rejected",e.code=="WINNER_COUNT_MISMATCH")\n    else: raise AssertionError("winner count mismatch must fail")
     try: normalize_draft({"winner":winner})
     except VError as e: ok("4 legacy singular rejected",e.code=="LEGACY_DRAFT_SHAPE")
     else: raise AssertionError("legacy draft must fail")
@@ -459,10 +475,10 @@ def self_test():
     ok("16 planning doc exists",(ROOT/"PLANNING.md").is_file()); ok("17 legacy daily doc removed",not (ROOT/"DAILY.md").exists()); ok("18 legacy adhoc doc removed",not (ROOT/"ADHOC.md").exists())
     source=Path(__file__).read_text(encoding="utf-8"); legacy_mode_key="planning_"+"mode"; ok("19 mode agnostic",legacy_mode_key not in source)
     short=dict(d["winners"][0]); short["narration"]="too short"; violations=collect_draft_violations({"winners":[short,dict(short)]}); ok("20 aggregate draft violations",[v["winner_index"] for v in violations if v["error_code"]=="NARRATION_TOO_SHORT"]==[0,1])
-    trend=dict(winner); trend["trend_aware"]=True; trend["trend_topic"]="GTA 6"; trend["hook_type"]="money_stakes"; trend_d=normalize_draft({"winners":[trend]}); trend_item=make_item("draft-selftest02",0,trend_d["winners"][0],r,"2030-01-01T03:00:00Z"); validate_item(trend_item,r); ok("21 creative provenance propagated",trend_item["story"]["hook_type"]=="money_stakes" and trend_item["story"]["trend_aware"] is True and trend_item["story"]["trend_topic"]=="GTA 6")
+    trend=dict(winner); trend["trend_aware"]=True; trend["trend_topic"]="GTA 6"; trend["hook_type"]="money_stakes"; trend_d=normalize_draft({"winner_count":1,"winners":[trend]}); trend_item=make_item("draft-selftest02",0,trend_d["winners"][0],r,"2030-01-01T03:00:00Z"); validate_item(trend_item,r); ok("21 creative provenance propagated",trend_item["story"]["hook_type"]=="money_stakes" and trend_item["story"]["trend_aware"] is True and trend_item["story"]["trend_topic"]=="GTA 6")
     no_hook=json.loads(json.dumps(trend_item)); no_hook["story"].pop("hook_type"); validate_item(no_hook,r); ok("22 request without hook type remains valid")
     legacy=json.loads(json.dumps(trend_item)); legacy["story"].pop("hook_type"); legacy["story"].pop("trend_aware"); legacy["story"].pop("trend_topic"); validate_item(legacy,r); ok("23 legacy request remains valid")
-    bad_hook=dict(winner); bad_hook["hook_type"]="mystery"; violations=collect_draft_violations(normalize_draft({"winners":[bad_hook]})); ok("24 invalid hook type rejected",any(v["error_code"]=="INVALID_HOOK_TYPE" for v in violations))
+    bad_hook=dict(winner); bad_hook["hook_type"]="mystery"; violations=collect_draft_violations(normalize_draft({"winner_count":1,"winners":[bad_hook]})); ok("24 invalid hook type rejected",any(v["error_code"]=="INVALID_HOOK_TYPE" for v in violations))
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
