@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-4cbaf26a09f7b889edb37449",
+  "created_at": "2026-09-25T04:52:17.222084Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "f80e6b259096b0c3a04841433b58ff909d1021a6",
+  "request_path": "content/requests/wd-4cbaf26a09f7b889edb37449.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A small monthly sports fee looks harmless until another group asks why they have never heard of it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f65e0c0c053eb1a419c1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Club's Equipment Fee Was Paying One Person's Dues"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T23:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095862238"
+  }
+}
