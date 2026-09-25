@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-73bfd0c26e91dc03be3908bc",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:56:58.264126Z",
+  "request_blob_sha": "19ecf9a32b8b4a8e2a09917509f11d21f7c769e6",
+  "request_path": "content/requests/wd-73bfd0c26e91dc03be3908bc.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing leave balance exposes a pattern of manual edits that affected exactly one employee.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a2313170a9428259703b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Vacation Days Were Used While the Office Was Closed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095865704"
+  },
+  "youtube_video_id": "EDMCcLF9ZTE"
+}
