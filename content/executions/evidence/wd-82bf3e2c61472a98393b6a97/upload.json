@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-82bf3e2c61472a98393b6a97",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:56:10.274129Z",
+  "request_blob_sha": "84cae6c8a56aa666510cdf61cf992a522fbb9751",
+  "request_path": "content/requests/wd-82bf3e2c61472a98393b6a97.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A perfect thirty-minute walk report becomes difficult to explain when the dog is still sitting beside its owner.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-69fcb1fa4621592a6606",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Dog Walker Logged Walks That Never Happened"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T17:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095857612"
+  },
+  "youtube_video_id": "SDtpnqnHcD8"
+}
