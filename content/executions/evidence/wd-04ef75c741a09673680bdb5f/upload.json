@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-04ef75c741a09673680bdb5f",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:54:15.138388Z",
+  "request_blob_sha": "95857496f2c2fbc63de077f5b06635709dd9af5e",
+  "request_path": "content/requests/wd-04ef75c741a09673680bdb5f.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride's missing reception photos lead to an invoice, a second event, and two bookings that should never have overlapped.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1e5b1a5ce345213074df",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Photographer Left My Wedding Two Hours Early"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095859069"
+  },
+  "youtube_video_id": "AZTlTsZMd0M"
+}
