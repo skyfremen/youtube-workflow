@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-0573599a655611afe13e6ceb",
+  "created_at": "2026-09-25T00:13:34.000235Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "d854e8bb37104edd66341adf09630cc9f3cd4088",
+  "request_path": "content/requests/wd-0573599a655611afe13e6ceb.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A marketplace listing reveals where the family heirlooms actually went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c6f9879c067764217698",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Cousin Said Grandma's Jewelry Was Being Restored"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T08:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36075893014"
+  }
+}
