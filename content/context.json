@@ -827,7 +827,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -863,68 +862,6 @@
           }
         ],
         "views_total": 58187
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 27954,
-            "source": "SHORTS",
-            "view_share_percentage": 96.32,
-            "views": 62156
-          },
-          {
-            "engaged_views": 316,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.8,
-            "views": 1161
-          },
-          {
-            "engaged_views": 353,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 1.0,
-            "views": 644
-          },
-          {
-            "engaged_views": 140,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.51,
-            "views": 327
-          },
-          {
-            "engaged_views": 68,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.21,
-            "views": 134
-          }
-        ],
-        "views_total": 64529
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 56.54,
-          "sample": 164,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 253,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 228
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 226
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 182
-        },
-        "views_7d": {
-          "median": 9.0,
-          "sample": 94
-        }
       }
     },
     "generated_at": "2026-09-25T10:26:22Z",
@@ -1213,170 +1150,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 28.65,
-          "engaged_view_sample": 26,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 27,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 38
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 37
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 30
-        },
-        "views_7d": {
-          "median": 4.5,
-          "sample": 16
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 42.6,
-          "engaged_view_sample": 25,
-          "engaged_views_per_view_percentage": 50.0,
-          "sample": 25,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 1.5,
-          "sample": 36
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 40
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 2.0,
-          "sample": 15
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 71.35,
-          "engaged_view_sample": 30,
-          "engaged_views_per_view_percentage": 52.41,
-          "sample": 30,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 45,
-        "views_24h": {
-          "median": 354.5,
-          "sample": 38
-        },
-        "views_6h": {
-          "median": 280.0,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 393.5,
-          "sample": 30
-        },
-        "views_7d": {
-          "median": 237.0,
-          "sample": 15
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 59.73,
-          "engaged_view_sample": 28,
-          "engaged_views_per_view_percentage": 55.09,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 242.0,
-          "sample": 36
-        },
-        "views_6h": {
-          "median": 104.0,
-          "sample": 41
-        },
-        "views_72h": {
-          "median": 307.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 313.0,
-          "sample": 13
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 60.12,
-          "engaged_view_sample": 30,
-          "engaged_views_per_view_percentage": 48.16,
-          "sample": 31,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 46,
-        "views_24h": {
-          "median": 56.0,
-          "sample": 41
-        },
-        "views_6h": {
-          "median": 3.0,
-          "sample": 37
-        },
-        "views_72h": {
-          "median": 148.0,
-          "sample": 34
-        },
-        "views_7d": {
-          "median": 235.5,
-          "sample": 18
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 16.62,
-          "engaged_view_sample": 23,
-          "engaged_views_per_view_percentage": 44.19,
-          "sample": 23,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 1.0,
-          "sample": 39
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 35
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 3.0,
-          "sample": 17
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -1962,13 +1735,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The friend says unused reservations are wasted anyway, while the narrator is getting warning messages for repeated no-shows he never made.",
-      "payoff": "Nobody else found that mysterious",
-      "premise": "A man realizes his friend has been using his name to reserve popular restaurant tables and then giving the bookings to dates.",
-      "title": "My Friend Was Dating Under My Restaurant Account",
-      "twist": "The restaurant recognizes the narrator's phone number but a completely different regular guest has been arriving under his name."
-    },
-    {
       "conflict": "The aunt says she was holding the money for safekeeping, but none of the children or parents knew and no savings record exists.",
       "payoff": "I'll handle the safekeeping",
       "premise": "A woman discovers her aunt has been quietly removing cash gifts from birthday cards before handing them to younger relatives.",
@@ -2135,6 +1901,13 @@
       "premise": "A woman discovers her manager has been deducting her vacation balance for office closure days that the rest of the team receives as paid leave.",
       "title": "My Vacation Days Were Used While the Office Was Closed",
       "twist": "Her leave history shows the deductions began only after she challenged the manager over an unrelated scheduling decision."
+    },
+    {
+      "conflict": "The friend says the photos were only inspiration, while customers believe they are paying for the narrator's handmade designs.",
+      "payoff": "The frosting was not the only thing that needed smoothing over.",
+      "premise": "A woman discovers her friend has been using photos of her handmade cakes to advertise custom orders that look nothing like the delivered cakes.",
+      "title": "My Friend Was Advertising Cakes I Never Baked",
+      "twist": "A customer contacts the narrator after recognizing her cropped watermark and asks why the delivered cake looks completely different."
     }
   ]
 }
