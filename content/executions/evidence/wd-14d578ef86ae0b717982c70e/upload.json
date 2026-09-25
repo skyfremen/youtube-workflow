@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-14d578ef86ae0b717982c70e",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T12:15:28.648775Z",
+  "request_blob_sha": "5805069f1c0149a1799cb3db6ef51e6175daff38",
+  "request_path": "content/requests/wd-14d578ef86ae0b717982c70e.json",
+  "source_commit_sha": "e012ab823e45a2c9f4c6f0b94f79b4608e2d3c79",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A rejected mileage claim exposes a coworker turning shared calendar entries into reimbursements.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a7098f34486e1b31f14f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Else Got Paid for My Work Trips"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T08:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36132934622"
+  },
+  "youtube_video_id": "SNwb4CYUP2s"
+}
