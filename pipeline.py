@@ -170,11 +170,31 @@ def materialize_draft(x,seen=None,require_winner_count=True):
     supersedes=x.get("supersedes_draft_id")
     if supersedes is not None and not DRAFT_RE.fullmatch(str(supersedes)): raise VError("INVALID_SUPERSEDES_DRAFT_ID","supersedes_draft_id",supersedes,"valid prior draft id")
     count=declared_winner_count(x,require_winner_count)
+    if supersedes and "winners" in x and "replacements" not in x:
+        winners=x.get("winners")
+        if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
+        source_path=DRAFTS/(supersedes+".json")
+        if not source_path.exists(): raise VError("SUPERSEDED_DRAFT_NOT_FOUND","supersedes_draft_id",supersedes,"existing immutable draft",False)
+        source_raw=read_draft(source_path)
+        source_count=declared_winner_count(source_raw,False)
+        if source_count is None:
+            source_winners=source_raw.get("winners")
+            source_count=len(source_winners) if isinstance(source_winners,list) else None
+        if source_count is None: raise VError("SOURCE_WINNER_COUNT_UNRESOLVED","supersedes_draft_id",supersedes,"superseded draft with resolvable winner count",False)
+        if count is None: count=source_count
+        if count!=source_count: raise VError("WINNER_COUNT_CHANGED","winner_count",count,source_count,False)
+        failure_path=FAILS/(supersedes+".json")
+        if not failure_path.exists(): raise VError("REPAIR_FAILURE_NOT_FOUND","supersedes_draft_id",supersedes,"matching deterministic failure file",False)
+        failure=read(failure_path)
+        if failure.get("repairable") is not True or failure.get("error_code")!="WINNER_COUNT_MISMATCH":
+            raise VError("FULL_BATCH_REPAIR_NOT_ALLOWED","supersedes_draft_id",supersedes,"repairable WINNER_COUNT_MISMATCH failure",False)
+        if len(winners)!=count: raise VError("WINNER_COUNT_MISMATCH","winners",len(winners),f"exactly {count} winners",True)
+        return {"winner_count":count,"winners":winners}
     if "replacements" not in x:
         winners=x.get("winners")
         if not isinstance(winners,list) or not winners: raise VError("INVALID_WINNERS","winners",type(winners).__name__ if not isinstance(winners,list) else len(winners),"non-empty winners array")
         if count is None: count=len(winners)
-        if len(winners)!=count: raise VError("WINNER_COUNT_MISMATCH","winners",len(winners),f"exactly {count} winners",False)
+        if len(winners)!=count: raise VError("WINNER_COUNT_MISMATCH","winners",len(winners),f"exactly {count} winners",True)
         return {"winner_count":count,"winners":winners}
     if "winners" in x or not supersedes: raise VError("INVALID_REPAIR_SHAPE","$","mixed or missing supersedes","winner_count plus supersedes_draft_id plus replacements[] only")
     replacements=x.get("replacements")
@@ -383,6 +403,13 @@ def validate_batch(x,path=None,r=None):
 
 def fail(did,e,raw=None):
     payload={"draft_id":did,"error_code":e.code,"field":e.field,"observed_value":e.observed,"required_constraint":e.required,"repairable":e.repairable}
+    if e.code=="WINNER_COUNT_MISMATCH" and isinstance(raw,dict):
+        winners=raw.get("winners")
+        if isinstance(winners,list):
+            payload["winner_count"]=raw.get("winner_count")
+            payload["actual_winner_count"]=len(winners)
+            payload["all_winners"]=winners
+            payload["affected_winners"]=[{"winner_index":i,"winner":winner} for i,winner in enumerate(winners)]
     if isinstance(e,DraftValidationError):
         payload["violations"]=e.violations
         if isinstance(raw,dict):
@@ -458,7 +485,7 @@ def self_test():
     winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","hook_type":"accusation","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
     raw={"winner_count":3,"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3 and d["winner_count"]==3)
     try: normalize_draft({"winner_count":2,"winners":[winner,winner.copy(),winner.copy()]})
-    except VError as e: ok("3a winner count mismatch rejected",e.code=="WINNER_COUNT_MISMATCH")
+    except VError as e: ok("3a winner count mismatch rejected",e.code=="WINNER_COUNT_MISMATCH" and e.repairable is True)
     else: raise AssertionError("winner count mismatch must fail")
     try: normalize_draft({"winner":winner})
     except VError as e: ok("4 legacy singular rejected",e.code=="LEGACY_DRAFT_SHAPE")
