@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f0281947fc3f865bd8101a63",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:12:16.572920Z",
+  "request_blob_sha": "011e10fedcf1fb9a6bdb4f73fef72e335c2ab808",
+  "request_path": "content/requests/wd-f0281947fc3f865bd8101a63.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One handwritten note exposes what happened to the family's cash gifts.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-11809387471bc0f06baf",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Birthday Money Kept Disappearing Before the Cake"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36075882407"
+  },
+  "youtube_video_id": "F-5TPW0Q1cI"
+}
