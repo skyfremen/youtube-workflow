@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2d112d35194233767007de2e",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T01:06:47.232855Z",
+  "request_blob_sha": "c74d4878fcaae97ca05ba66a05e3d7002de3f16a",
+  "request_path": "content/requests/wd-2d112d35194233767007de2e.json",
+  "source_commit_sha": "7ce3f6d659f0bc07c76c0815407d2482a4c0aec5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A promotion review gets awkward when the original client emails come back.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2c5c7137ada50802287c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Coworker Cropped Me Out of My Own Praise"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36079991341"
+  },
+  "youtube_video_id": "4BNPWLSaX3g"
+}
