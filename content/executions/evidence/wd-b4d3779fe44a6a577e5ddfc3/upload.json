@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b4d3779fe44a6a577e5ddfc3",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:44:31.385030Z",
+  "request_blob_sha": "a14c6460ba7b7f96f9225337f69889b93182ed35",
+  "request_path": "content/requests/wd-b4d3779fe44a6a577e5ddfc3.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise console delivery exposes a whole collection of fake entries.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b60d44bd1e7f75718d7d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Used My Address to Enter Giveaways"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T08:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078244725"
+  },
+  "youtube_video_id": "VhOTIASUUlA"
+}
