@@ -1695,13 +1695,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "He insists the booking system is glitching even though her reservations keep changing only on days he comes in.",
-      "payoff": "exactly where I left it",
-      "premise": "A woman discovers her coworker has been quietly moving her desk bookings to undesirable seats so he can claim her preferred spot.",
-      "title": "He Kept Stealing My Desk Before I Arrived",
-      "twist": "Facilities checks the audit log and finds he has been editing her bookings from a shared team admin account."
-    },
-    {
       "conflict": "Her sister claims she is only helping clear unwanted clothes even though the dresses were never gifts.",
       "payoff": "the store's website",
       "premise": "A woman discovers her sister has been secretly returning borrowed dresses and keeping the store credit.",
@@ -1868,6 +1861,13 @@
       "premise": "A man discovers his teammate has been forwarding his job applications to their boss to stop him from leaving.",
       "title": "My Coworker Was Reporting My Job Applications",
       "twist": "A recruiter reveals that the teammate's email was accidentally included in an auto-forward rule on a shared professional association mailbox."
+    },
+    {
+      "conflict": "A neighbor claims the charger was unused overnight anyway, while the narrator has paid for weeks of charging he never received.",
+      "payoff": "Very long misunderstanding",
+      "premise": "A man discovers someone in his apartment building has been using his EV charging account and leaving the fees on his monthly bill.",
+      "title": "My Neighbor Was Charging His Car on My Account",
+      "twist": "The charging history shows the neighbor copied the account QR code from a photo the narrator posted in the residents' troubleshooting chat."
     }
   ]
 }
