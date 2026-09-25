@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-aad5f99b2e5fb53925e26200",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:53:48.961293Z",
+  "request_blob_sha": "79afb77b36b10e2430fefeb2808272d7191907a3",
+  "request_path": "content/requests/wd-aad5f99b2e5fb53925e26200.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A recurring bank transfer reveals that one couple's emergency savings have been supporting another household without both partners knowing.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-dc6cdade4dfdd1904410",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Emergency Fund Had a Second Rent Payment"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T10:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095851754"
+  },
+  "youtube_video_id": "dy6VV9UB61w"
+}
