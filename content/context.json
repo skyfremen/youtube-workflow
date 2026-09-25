@@ -1735,13 +1735,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "A neighbor claims the charger was unused overnight anyway, while the narrator has paid for weeks of charging he never received.",
-      "payoff": "Very long misunderstanding",
-      "premise": "A man discovers someone in his apartment building has been using his EV charging account and leaving the fees on his monthly bill.",
-      "title": "My Neighbor Was Charging His Car on My Account",
-      "twist": "The charging history shows the neighbor copied the account QR code from a photo the narrator posted in the residents' troubleshooting chat."
-    },
-    {
       "conflict": "The friend calls it harmless because the prizes are free, while the narrator's address is now flagged and legitimate entries are being rejected.",
       "payoff": "a thumbs-up",
       "premise": "A man learns his friend has been entering giveaways with his address so multiple-account wins cannot be traced back to one household.",
@@ -1908,6 +1901,13 @@
       "premise": "A man discovers his gym trainer has been logging private sessions as completed when the trainer cancels, causing prepaid credits to disappear.",
       "title": "My Trainer Charged Me for Sessions He Cancelled",
       "twist": "The gym's notes list the sessions as client no-shows even though the trainer's texts say he is sick or double-booked."
+    },
+    {
+      "conflict": "The coworker says he assumed unclaimed trips could be submitted by whoever handled paperwork, while the narrator personally drove and paid for fuel.",
+      "payoff": "My mileage finally got paid. His expense account got a much longer journey.",
+      "premise": "A man discovers a coworker has been claiming his mileage reimbursements by copying trip details from their shared field-service calendar.",
+      "title": "Someone Else Got Paid for My Work Trips",
+      "twist": "The expense system shows duplicate trip dates, but the coworker's vehicle access logs prove his car never left the office garage."
     }
   ]
 }
