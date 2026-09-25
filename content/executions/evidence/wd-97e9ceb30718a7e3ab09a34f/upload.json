@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-97e9ceb30718a7e3ab09a34f",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:44:32.969941Z",
+  "request_blob_sha": "7fa0e446a9d1676f1e82a539d7c2f10cdf22f6c1",
+  "request_path": "content/requests/wd-97e9ceb30718a7e3ab09a34f.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "One vendor call exposes a side hustle hiding inside a bride's contract.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a3f8357793674fcd181d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Turned My Wedding Discount Into a Business"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078233924"
+  },
+  "youtube_video_id": "B_UrarcGUG0"
+}
