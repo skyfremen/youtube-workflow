@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-5e7f63684852fbd8b0afcfca",
+  "created_at": "2026-09-25T04:53:59.727624Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "7d28f1371608deff0866832b7ff5a8f1771f6f16",
+  "request_path": "content/requests/wd-5e7f63684852fbd8b0afcfca.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Weekly cleaning reports unravel when one unopened parcel refuses to move for three separate visits.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-87317719760021867e28",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Cleaner Kept Sending the Same Proof Photos"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T01:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095867265"
+  }
+}
