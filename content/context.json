@@ -1735,34 +1735,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The roommate says the bookings help cover household costs, while strangers are using shared appliances, food, and access without permission.",
-      "payoff": "my kitchen's business era lasted until the owner came home early",
-      "premise": "A man discovers his roommate has been listing their apartment kitchen as a rentable cooking space while he is at work.",
-      "title": "My Roommate Was Renting Out Our Kitchen",
-      "twist": "A stranger arrives early carrying baking trays and shows a paid booking page featuring photos taken from the narrator's social media."
-    },
-    {
-      "conflict": "He says a gift should become his property once given, while she realizes months of thoughtful purchases were converted into cash without a word.",
-      "payoff": "finally buying something the recipient actually wanted",
-      "premise": "A woman learns her boyfriend has been secretly returning gifts she buys him and using the refunds to fund a hobby he told her was too expensive.",
-      "title": "My Boyfriend Returned Every Gift I Bought Him",
-      "twist": "A store employee recognizes her receipt and mentions the repeated returns when she tries to exchange a defective gift."
-    },
-    {
-      "conflict": "The parent says unused reservations should be shared, while the narrator's child has repeatedly been waitlisted for activities supposedly booked under his own name.",
-      "payoff": "why adults make registration so dramatic",
-      "premise": "A woman discovers another parent has been using her child's name to reserve limited after-school activity spots, then transferring them to friends.",
-      "title": "Someone Was Giving Away My Son's Activity Spots",
-      "twist": "The center's transfer log shows the reservations were made with the narrator's child's member priority and reassigned minutes later."
-    },
-    {
-      "conflict": "The brother says he deserved the better room because he handled the booking, but everyone contributed equally.",
-      "payoff": "unauthorized travel agent commission",
-      "premise": "A man discovers his brother used their shared vacation booking to secretly upgrade his own room while downgrading their parents.",
-      "title": "My Brother Upgraded Himself With My Parents' Room",
-      "twist": "At check-in, the hotel reveals the upgrade was paid using credit created by cancelling the parents' sea-view room."
-    },
-    {
       "conflict": "The coworker claims he was making last-minute improvements, while the narrator repeatedly looks careless in front of clients.",
       "payoff": "The version history had already presented the case",
       "premise": "A woman discovers her coworker has been changing shared presentation files after approval so her slides contain errors during client meetings.",
@@ -1908,6 +1880,34 @@
       "premise": "A man discovers his apartment agent has been collecting a monthly building maintenance surcharge that the landlord never authorized.",
       "title": "My Landlord Had Never Heard of My Monthly Fee",
       "twist": "The landlord's ledger shows only the base rent was ever reported while the surcharge used a separate payment reference."
+    },
+    {
+      "conflict": "He says managers represent team ideas, while the contest awards the prize and recognition to the named creator.",
+      "payoff": "He wanted credit for my work until the version history started taking attendance.",
+      "premise": "A woman discovers her manager submitted her successful project proposal to an internal innovation contest under his own name.",
+      "title": "My Manager Won a Prize With My Proposal",
+      "twist": "The submission history contains her original file with her name removed minutes before upload."
+    },
+    {
+      "conflict": "The friend says empty weekends should be used and he was only helping friends, while the other owners keep arriving to find unexpected guests.",
+      "payoff": "The new calendar permissions were much less flexible with him.",
+      "premise": "A man discovers his friend has been promising their shared vacation house to different groups on overlapping weekends without telling the other owners.",
+      "title": "Someone Else Was Staying in My Vacation House",
+      "twist": "A shared calendar export shows he deliberately deleted other owners' reservations before promising the house to his friends."
+    },
+    {
+      "conflict": "The stylist says the add-ons were upgrades discussed verbally, while the final emailed receipt differs from the payment screen the narrator signed.",
+      "payoff": "I did not mind being offered extras. I minded receiving them only on the receipt.",
+      "premise": "A woman discovers her salon has been charging her card for premium treatments she never received by adding them after checkout.",
+      "title": "My Salon Added Treatments After I Paid",
+      "twist": "The transaction audit shows the payment was reopened minutes after checkout and the add-ons inserted manually."
+    },
+    {
+      "conflict": "The roommate says the room is empty anyway and guests never touch her belongings, while strangers have been sleeping in her private space without permission.",
+      "payoff": "my bedroom became a guest room whenever I clocked in.",
+      "premise": "A woman discovers her roommate has been letting overnight guests use her bedroom whenever she works night shifts.",
+      "title": "My Roommate Used My Bedroom While I Worked Nights",
+      "twist": "A guest messages the narrator after finding her name on mail in the room and asks for the Wi-Fi password he was promised."
     }
   ]
 }
