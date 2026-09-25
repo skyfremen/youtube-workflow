@@ -1735,13 +1735,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The teammate claims he was protecting the team from being understaffed, while the narrator's confidential job search has now reached management.",
-      "payoff": "accidentally proved exactly why I was looking",
-      "premise": "A man discovers his teammate has been forwarding his job applications to their boss to stop him from leaving.",
-      "title": "My Coworker Was Reporting My Job Applications",
-      "twist": "A recruiter reveals that the teammate's email was accidentally included in an auto-forward rule on a shared professional association mailbox."
-    },
-    {
       "conflict": "A neighbor claims the charger was unused overnight anyway, while the narrator has paid for weeks of charging he never received.",
       "payoff": "Very long misunderstanding",
       "premise": "A man discovers someone in his apartment building has been using his EV charging account and leaving the fees on his monthly bill.",
@@ -1908,6 +1901,13 @@
       "premise": "A man discovers his cousin has been collecting extra money from relatives for their grandfather's home repairs as an undisclosed coordination fee.",
       "title": "Grandpa Thought His Repairs Were Free",
       "twist": "A contractor invoice shows the actual repair cost is thousands less than the amount the family contributed."
+    },
+    {
+      "conflict": "The trainer says cancelled sessions expire if the client does not reschedule quickly, while the narrator has messages showing the trainer cancelled each one.",
+      "payoff": "The credits only came back because one client finally counted them.",
+      "premise": "A man discovers his gym trainer has been logging private sessions as completed when the trainer cancels, causing prepaid credits to disappear.",
+      "title": "My Trainer Charged Me for Sessions He Cancelled",
+      "twist": "The gym's notes list the sessions as client no-shows even though the trainer's texts say he is sick or double-booked."
     }
   ]
 }
