@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-d43259e65a0678805b6c4986",
+  "created_at": "2026-09-25T12:11:54.255185Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "ef75ebe24760c4886207ecac4c6b08e985fcccf5",
+  "request_path": "content/requests/wd-d43259e65a0678805b6c4986.json",
+  "source_commit_sha": "e012ab823e45a2c9f4c6f0b94f79b4608e2d3c79",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A Wi-Fi question from a stranger reveals what has been happening during every overnight shift.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-25ccbc6695512bcf7683",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Used My Bedroom While I Worked Nights"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T07:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36132932513"
+  }
+}
