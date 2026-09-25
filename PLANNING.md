@@ -120,7 +120,7 @@ Supported cues:
 
 ## Draft contract
 
-Only the array shape is valid. Do not write singular `winner`, `draft_version`, `planning_mode`, IDs, timestamps, TTS voices, raw production emojis, media URLs, render settings, execution state, publication dates, or publication slots.
+Only the declared-count plus array shape is valid: `winner_count` together with `winners[]`. Do not write singular `winner`, `draft_version`, `planning_mode`, IDs, timestamps, TTS voices, raw production emojis, media URLs, render settings, execution state, publication dates, or publication slots.
 
 ```json
 {
