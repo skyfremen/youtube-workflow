@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b5e8baee307f6431a5e5f877",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:13:42.962154Z",
+  "request_blob_sha": "af7e3a947e87793be34acf1612629c2d2606aecb",
+  "request_path": "content/requests/wd-b5e8baee307f6431a5e5f877.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A fake event notice falls apart outside a very active arena.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f0c9a558277ea714a418",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Sold My Concert Ticket and Faked a Postponement"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "578f44d9930f11783a04b9028ff456c7bb49455c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36075887447"
+  },
+  "youtube_video_id": "Z2szvgJlUx8"
+}
