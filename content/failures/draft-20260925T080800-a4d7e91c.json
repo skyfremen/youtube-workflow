@@ -1,0 +1,47 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "crafting",
+        "category": "parenting",
+        "conflict": "The parent says unused reservations should be shared, while the narrator's child has repeatedly been waitlisted for activities supposedly booked under his own name.",
+        "description": "A waitlist makes no sense until the center checks the transfer history.",
+        "emoji_cues": [
+          "confusion",
+          "evidence",
+          "anger",
+          "victory"
+        ],
+        "hook": "My son was waitlisted for robotics, but the center said he had already booked and transferred his spot.",
+        "hook_type": "contradiction",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF THE CENTER DID THE RIGHT THING",
+        "narration": "My son had been trying to get into a small after-school robotics class for months. Registration opened at noon, and somehow he was already waitlisted. I called the center because it seemed impossible. The coordinator checked his account and said, 'He did get a spot. You transferred it at 12:01.' I hadn't transferred anything. She pulled the history and found the same thing had happened with swimming and a holiday science workshop. Someone was booking limited activities using my son's membership priority, then transferring the places to other children. The contact email attached to the transfers belonged to another parent, Claire, who volunteered with the center and had helped families set up their accounts earlier that year. When I asked her about it, she said she knew my son sometimes skipped activities, so she was making sure spaces didn't go to waste. Except she wasn't waiting to see whether we wanted them. She was grabbing them the second registration opened. Then I learned why. Three of her friends had children without priority membership, and she had been using my son's account to secure spots before general registration. Claire insisted she wasn't making money and was only helping people. I asked whether helping people usually required locking the actual member out of his own classes. The center reset our login, removed her volunteer access, and audited every transfer she had made. They restored my son's robotics place because the recipient had been moved ahead improperly. Claire told other parents I had gotten her kicked out over 'a kids' class.' The coordinator corrected her in the group chat: it was over unauthorized account access. My son didn't care about any of that. He just came home from robotics holding a tiny moving car and asked why adults make registration so dramatic.",
+        "payoff": "why adults make registration so dramatic",
+        "premise": "A woman discovers another parent has been using her child's name to reserve limited after-school activity spots, then transferring them to friends.",
+        "story_tone": "dramatic_comedy",
+        "title": "Someone Was Giving Away My Son's Activity Spots",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The center's transfer log shows the reservations were made with the narrator's child's member priority and reassigned minutes later."
+      },
+      "winner_index": 8
+    }
+  ],
+  "draft_id": "draft-20260925T080800-a4d7e91c",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_LONG",
+      "field": "winners[8].narration",
+      "observed_value": "estimated_seconds=67.09",
+      "required_constraint": "45-65s",
+      "winner_index": 8,
+      "winner_title": "Someone Was Giving Away My Son's Activity Spots"
+    }
+  ]
+}
