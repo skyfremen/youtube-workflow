@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-efb431730ba08b45fc1a0824",
+  "created_at": "2026-09-25T00:40:25.300837Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "dd627720194dee8a14c68007aec6d68b358af01d",
+  "request_path": "content/requests/wd-efb431730ba08b45fc1a0824.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Coming home early reveals a business operating beside the refrigerator.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-92aadfe507c4b4a49a9f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Was Renting Out Our Kitchen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T07:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078243020"
+  }
+}
