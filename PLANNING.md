@@ -17,7 +17,7 @@ The count is the only planning difference. Do not change creative behavior based
 2. Generate a broad, varied candidate pool internally; reject semantic duplicates against `recent_story_cards`, then select exactly `winner_count` strong winners.
 3. When `winner_count > 1`, treat the winners as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, opening-hook mechanisms, and emotional beats.
 4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
-5. Write exactly one new immutable file under `content/drafts/` containing all selected winners in one `winners[]` array.
+5. Write exactly one new immutable file under `content/drafts/` with `winner_count` set to the caller-provided value and all selected winners in one `winners[]` array.
 6. Check the **Finalize Draft** workflow triggered by that exact draft commit. If it succeeds, stop.
 
 Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
@@ -56,6 +56,7 @@ Write one new immutable repair draft containing only:
 
 ```json
 {
+  "winner_count": 12,
   "supersedes_draft_id": "draft-...",
   "replacements": [
     {
@@ -66,7 +67,7 @@ Write one new immutable repair draft containing only:
 }
 ```
 
-Deterministic code loads the superseded immutable draft, preserves every unaffected winner exactly, applies only the supplied affected-winner replacements, and validates that the replacement indexes exactly match the deterministic failure. Never copy the complete batch into a repair draft.
+Set `winner_count` to the same caller-provided value used by the initial draft. Deterministic code loads the superseded immutable draft, preserves every unaffected winner exactly, applies only the supplied affected-winner replacements, verifies that `winner_count` did not change, and validates that the replacement indexes exactly match the deterministic failure. Never copy the complete batch into a repair draft.
 
 Recheck **Finalize Draft** for the repair draft. If it fails with another matching deterministic failure file, repeat from that new failure file. Create at most 5 repair drafts after the initial draft. If workflow failure occurs without a matching deterministic failure file, stop and report it rather than guessing.
 
@@ -123,6 +124,7 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
 
 ```json
 {
+  "winner_count": 12,
   "winners": [
     {
       "premise": "...",
@@ -147,9 +149,9 @@ Only the array shape is valid. Do not write singular `winner`, `draft_version`, 
 }
 ```
 
-Normal drafts use the complete `winners[]` shape above. Repair drafts instead use `supersedes_draft_id` plus `replacements[]` as defined in the Repair path; deterministic code reconstructs the complete batch from immutable drafts.
+Normal drafts use the complete `winner_count` plus `winners[]` shape above. `winner_count` must exactly equal the caller-provided value. Repair drafts use the same `winner_count` plus `supersedes_draft_id` and `replacements[]` as defined in the Repair path; deterministic code reconstructs the complete batch from immutable drafts.
 
-The draft must contain exactly `winner_count` winner objects.
+The draft must contain exactly `winner_count` winner objects. Deterministic preflight rejects `WINNER_COUNT_MISMATCH` before duration validation, slot allocation, request creation, or production.
 
 
 ## Current creative bias
