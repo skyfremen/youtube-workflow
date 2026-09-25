@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b0031b2e9904eafc6667b9f7",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:42:24.995225Z",
+  "request_blob_sha": "b3d4c649698117cd00a48960821d73dbb049a979",
+  "request_path": "content/requests/wd-b0031b2e9904eafc6667b9f7.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A routine exchange reveals where six months of presents really went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-fde7e3fd4fa44369c688",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boyfriend Returned Every Gift I Bought Him"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T05:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078239489"
+  },
+  "youtube_video_id": "XV951UMnEWg"
+}
