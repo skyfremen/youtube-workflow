@@ -52,7 +52,21 @@ If **Finalize Draft** creates `content/failures/<draft_id>.json`, stay in the sa
 
 For planner-repairable winner violations, use `affected_winners[]` from the failure file as the complete source for the affected winners. Do not retrieve or reproduce unaffected winners. Repair every listed `violations[]` entry, using `winner_index` to identify the affected winner and making only the minimum creative correction required.
 
-Write one new immutable repair draft containing only:
+For `WINNER_COUNT_MISMATCH`, the failure file intentionally returns the complete current batch in `all_winners[]` and also includes every indexed winner in `affected_winners[]`. Use the complete batch to make the minimum creative count correction: if there are too many winners, choose which winner(s) to drop; if there are too few, add enough strong, non-duplicate winners. Then write a full corrected batch with exactly `winner_count` winners:
+
+```json
+{
+  "winner_count": 12,
+  "supersedes_draft_id": "draft-...",
+  "winners": [
+    { "...complete winner..." }
+  ]
+}
+```
+
+This full-batch repair shape is valid only for a repairable `WINNER_COUNT_MISMATCH`. Preserve all unaffected winners exactly when practical; do not rewrite the batch merely for style.
+
+For all other planner-repairable winner violations, write one new immutable compact repair draft containing only:
 
 ```json
 {
