@@ -1,0 +1,47 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "food_process",
+        "category": "consumer_service",
+        "conflict": "The stylist says the add-ons were upgrades discussed verbally, while the final emailed receipt differs from the payment screen the narrator signed.",
+        "description": "A bank alert reveals a beauty appointment that became more expensive after the customer left.",
+        "emoji_cues": [
+          "shock",
+          "money",
+          "evidence",
+          "warning"
+        ],
+        "hook": "My salon receipt gained two expensive treatments after I had already gone home.",
+        "hook_type": "consequence_first",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF EVERY CUSTOMER SHOULD CHECK",
+        "narration": "I only caught it because my bank sent a spending alert that was much higher than the total I remembered signing. The emailed receipt listed a premium mask and scalp treatment I never received. I called the salon, and my stylist said we had discussed upgrading the appointment. We had discussed it. I had said no. She suggested I might have misunderstood what was included, so I pulled up the screenshot I had taken of the payment screen before tapping my card. The total was lower and the two treatments were not there. The salon manager first blamed a software sync issue. Then another customer overheard me at reception and said her last receipt had also changed after she left. The manager checked the transaction audit. My payment had been reopened six minutes after checkout and two add-ons were inserted manually. Several other transactions showed the same pattern. The salon refunded everyone they could identify and suspended the employee account used for the edits while they investigated. My stylist apologized for defending the charge before checking. I did not mind being offered extras. I minded receiving them only on the receipt.",
+        "payoff": "I did not mind being offered extras. I minded receiving them only on the receipt.",
+        "premise": "A woman discovers her salon has been charging her card for premium treatments she never received by adding them after checkout.",
+        "story_tone": "dramatic",
+        "title": "My Salon Added Treatments After I Paid",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The transaction audit shows the payment was reopened minutes after checkout and the add-ons inserted manually."
+      },
+      "winner_index": 6
+    }
+  ],
+  "draft_id": "draft-20260925T195900-a4d7c219",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_SHORT",
+      "field": "winners[6].narration",
+      "observed_value": "estimated_seconds=43.17",
+      "required_constraint": "45-65s",
+      "winner_index": 6,
+      "winner_title": "My Salon Added Treatments After I Paid"
+    }
+  ]
+}
