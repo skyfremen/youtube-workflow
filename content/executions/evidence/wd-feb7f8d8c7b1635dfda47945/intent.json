@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-feb7f8d8c7b1635dfda47945",
+  "created_at": "2026-09-25T12:14:20.993837Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "1f37b651dd3d4ab041bc04a1657e68dac3133130",
+  "request_path": "content/requests/wd-feb7f8d8c7b1635dfda47945.json",
+  "source_commit_sha": "e012ab823e45a2c9f4c6f0b94f79b4608e2d3c79",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three trainer cancellations somehow become three client no-shows until the text messages reach the manager.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3d56a7727d22bdfe850f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Trainer Charged Me for Sessions He Cancelled"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T09:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36132938966"
+  }
+}
