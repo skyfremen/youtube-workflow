@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7dfd076da87ac35d09d6d075",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:44:27.025039Z",
+  "request_blob_sha": "d3ce322eacea71fe5baf20db6786299e12fcec5d",
+  "request_path": "content/requests/wd-7dfd076da87ac35d09d6d075.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A secret job search reaches the boss through the last person who should see it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3702b18aee6837b4f4b1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Coworker Was Reporting My Job Applications"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T04:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078237646"
+  },
+  "youtube_video_id": "bAoVQOuNvu4"
+}
