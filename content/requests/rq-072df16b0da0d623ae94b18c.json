@@ -1,0 +1,92 @@
+{
+  "request_version": 2,
+  "request_id": "rq-072df16b0da0d623ae94b18c",
+  "source_draft_id": "draft-20260925T081200-c8e31f6a",
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-29975898",
+            "segment_duration_seconds": 75.701,
+            "segment_start_seconds": 0
+          },
+          {
+            "background_id": "px-29959411",
+            "segment_duration_seconds": 71.004,
+            "segment_start_seconds": 0
+          },
+          {
+            "background_id": "px-33652401",
+            "segment_duration_seconds": 70.933,
+            "segment_start_seconds": 0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-2d112d35194233767007de2e",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-09-25T00:40:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20260925T081200-c8e31f6a",
+      "story": {
+        "card_emojis": [
+          "📱",
+          "💔",
+          "😡",
+          "😎"
+        ],
+        "category": "workplace",
+        "conflict": "He insists he only organized feedback that mentioned their shared project, while her promotion case suddenly looks much weaker than his.",
+        "hook": "My manager asked why a client kept praising work I apparently never did.",
+        "hook_type": "consequence_first",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF SHE SHOULD REPORT HIM",
+        "premise": "A woman discovers her coworker has been quietly redirecting customer praise meant for her into his own performance file.",
+        "punchline": "His folder looked impressive until the names came back",
+        "script": "I was up for promotion, and during my review my manager said something weird. A major client kept complimenting features I had built, but none of that feedback appeared in my performance folder. Meanwhile, my coworker Daniel had pages of glowing comments from the same account. I assumed the client was just mixing up our names until she forwarded me an old thank-you email because she wanted to reference the project again. The original message thanked me by name for fixing a launch problem over a weekend. In Daniel's review folder, the exact same message was there, except the first sentence had been cropped out. I checked two more client notes I remembered receiving. Same thing. Daniel had been saving screenshots of praise from our shared inbox, trimming away anything that identified me, then attaching them to his own achievements. When I confronted him, he said he was only documenting feedback about projects we both supported. That explanation lasted until our manager opened the email archive and found one message where Daniel hadn't even been copied. The client had sent it directly to me, and he had pulled it from a forwarded project chain weeks later. HR asked both of us to submit original evidence for every achievement in our reviews. Daniel lost most of his supporting examples. I didn't get an automatic promotion, which honestly annoyed me, but my manager extended the review deadline so my real work could be counted. The best part was Daniel having to sit there while the client confirmed exactly who had done the work. His folder looked impressive until the names came back.",
+        "story_tone": "dramatic",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "A client forwards an old thank-you email and the manager notices the coworker removed the narrator's name before uploading it as evidence of his own performance."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "A promotion review gets awkward when the original client emails come back.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "Wacky Dramas",
+          "Shorts"
+        ],
+        "title": "My Coworker Cropped Me Out of My Own Praise"
+      }
+    }
+  ]
+}
