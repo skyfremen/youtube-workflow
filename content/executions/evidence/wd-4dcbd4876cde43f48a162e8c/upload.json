@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4dcbd4876cde43f48a162e8c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:43:05.315413Z",
+  "request_blob_sha": "0e7b3f93bfd093b47e35f2b2aa1c9ca39b28d369",
+  "request_path": "content/requests/wd-4dcbd4876cde43f48a162e8c.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A waitlist makes no sense until the center checks the transfer history.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6fd60b5ed73ecb41a008",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Someone Was Giving Away My Son's Activity Spots"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T06:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078241304"
+  },
+  "youtube_video_id": "7dGiVRyAEI8"
+}
