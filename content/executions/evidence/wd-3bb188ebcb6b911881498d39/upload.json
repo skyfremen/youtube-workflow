@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3bb188ebcb6b911881498d39",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T00:44:07.724015Z",
+  "request_blob_sha": "be5661143700c3151600c7b6fffeb6d9f4613b1d",
+  "request_path": "content/requests/wd-3bb188ebcb6b911881498d39.json",
+  "source_commit_sha": "9f17a64d653d51525d519db7909d204eb2280a2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Version history explains why one coworker always looked ready to save the meeting.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4240979be995dc093244",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Presentation Errors Kept Fixing Themselves"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-25T09:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36078246494"
+  },
+  "youtube_video_id": "ssijHs1PYH0"
+}
