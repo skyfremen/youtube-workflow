@@ -1,0 +1,33 @@
+{
+  "winner_count": 12,
+  "supersedes_draft_id": "draft-20260925T195900-a4d7c219",
+  "replacements": [
+    {
+      "winner_index": 6,
+      "winner": {
+        "premise": "A woman discovers her salon has been charging her card for premium treatments she never received by adding them after checkout.",
+        "category": "consumer_service",
+        "conflict": "The stylist says the add-ons were upgrades discussed verbally, while the final emailed receipt differs from the payment screen the narrator signed.",
+        "twist": "The transaction audit shows the payment was reopened minutes after checkout and the add-ons inserted manually.",
+        "hook": "My salon receipt gained two expensive treatments after I had already gone home.",
+        "hook_type": "consequence_first",
+        "narration": "I only caught it because my bank sent a spending alert that was much higher than the total I remembered signing. The emailed receipt listed a premium mask and scalp treatment I never received. I called the salon, and my stylist said we had discussed upgrading the appointment. We had discussed it. I had said no. She suggested I might have misunderstood what was included, so I pulled up the screenshot I had taken of the payment screen before tapping my card. The total was lower and the two treatments were not there. The salon manager first blamed a software sync issue. Then another customer overheard me at reception and said her last receipt had also changed after she left. The manager checked the transaction audit. My payment had been reopened six minutes after checkout and two add-ons were inserted manually. Several other transactions showed the same pattern. One customer had even been charged for a treatment that required equipment the salon said was unavailable that day. That made the software explanation impossible. The salon refunded everyone they could identify and suspended the employee account used for the edits while they investigated. They also emailed recent customers asking them to compare receipts with their bank totals. My stylist apologized for defending the charge before checking. I did not mind being offered extras. I minded receiving them only on the receipt.",
+        "title": "My Salon Added Treatments After I Paid",
+        "description": "A bank alert reveals a beauty appointment that became more expensive after the customer left.",
+        "lead_gender": "female",
+        "story_tone": "dramatic",
+        "payoff": "I did not mind being offered extras. I minded receiving them only on the receipt.",
+        "like_cta": "LIKE IF EVERY CUSTOMER SHOULD CHECK",
+        "emoji_cues": [
+          "shock",
+          "money",
+          "evidence",
+          "warning"
+        ],
+        "background_category": "food_process",
+        "trend_aware": false,
+        "trend_topic": null
+      }
+    }
+  ]
+}
