@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-bad97750f2f23b50b2b3ad7c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-25T04:54:38.117440Z",
+  "request_blob_sha": "bb7e476080ee084682051dec72e628ab2e64969f",
+  "request_path": "content/requests/wd-bad97750f2f23b50b2b3ad7c.json",
+  "source_commit_sha": "4c7cc0d56ea5839aef0e390bafa1ba7ce7d515cf",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A group trip nearly falls apart when the hotel produces a refund receipt that contradicts the organizer's story.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f7a948df6b01998b0fa7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Hotel Refunded Us Weeks Before My Friend Asked for More Money"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36095863704"
+  },
+  "youtube_video_id": "y8oi95AkmfA"
+}
