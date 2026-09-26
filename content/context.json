@@ -1826,13 +1826,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The trainer says cancelled sessions expire if the client does not reschedule quickly, while the narrator has messages showing the trainer cancelled each one.",
-      "payoff": "The credits only came back because one client finally counted them.",
-      "premise": "A man discovers his gym trainer has been logging private sessions as completed when the trainer cancels, causing prepaid credits to disappear.",
-      "title": "My Trainer Charged Me for Sessions He Cancelled",
-      "twist": "The gym's notes list the sessions as client no-shows even though the trainer's texts say he is sick or double-booked."
-    },
-    {
       "conflict": "The coworker says he assumed unclaimed trips could be submitted by whoever handled paperwork, while the narrator personally drove and paid for fuel.",
       "payoff": "My mileage finally got paid. His expense account got a much longer journey.",
       "premise": "A man discovers a coworker has been claiming his mileage reimbursements by copying trip details from their shared field-service calendar.",
@@ -1999,6 +1992,13 @@
       "premise": "A woman discovers her coworker has been quietly changing the ownership field on completed sales leads just before monthly commission closes.",
       "title": "My Biggest Sales Suddenly Belonged to My Coworker",
       "twist": "The CRM audit shows every ownership change happened late at night after each client signed, and only on deals large enough to affect the bonus ranking."
+    },
+    {
+      "conflict": "The coworker says he relied on the automated summary and believed approval was given, while the recording and chat show the narrator repeatedly said the change needed security review.",
+      "payoff": "the machine was not the one that invented my approval.",
+      "premise": "A woman discovers a coworker used AI-generated meeting summaries to make it appear she approved a risky client change she had explicitly rejected.",
+      "title": "My Coworker Edited the AI Notes to Say I Approved It",
+      "twist": "The meeting tool's edit history shows the coworker manually changed the generated action item before forwarding the summary to the client."
     }
   ]
 }
