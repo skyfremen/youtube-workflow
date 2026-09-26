@@ -838,7 +838,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -874,68 +873,6 @@
           }
         ],
         "views_total": 65310
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 31541,
-            "source": "SHORTS",
-            "view_share_percentage": 96.39,
-            "views": 69658
-          },
-          {
-            "engaged_views": 349,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.82,
-            "views": 1315
-          },
-          {
-            "engaged_views": 390,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 0.97,
-            "views": 704
-          },
-          {
-            "engaged_views": 143,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.46,
-            "views": 334
-          },
-          {
-            "engaged_views": 71,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.2,
-            "views": 141
-          }
-        ],
-        "views_total": 72264
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 54.23,
-          "sample": 175,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 259,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 241
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 234
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 192
-        },
-        "views_7d": {
-          "median": 14.0,
-          "sample": 102
-        }
       }
     },
     "generated_at": "2026-09-25T20:39:41Z",
@@ -1224,170 +1161,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 14.91,
-          "engaged_view_sample": 31,
-          "engaged_views_per_view_percentage": 28.57,
-          "sample": 31,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 40
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 38
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 4.5,
-          "sample": 16
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 38.76,
-          "engaged_view_sample": 25,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 26,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 40,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 40
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 40
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 2.0,
-          "sample": 16
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 71.35,
-          "engaged_view_sample": 30,
-          "engaged_views_per_view_percentage": 53.48,
-          "sample": 30,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 45,
-        "views_24h": {
-          "median": 431.0,
-          "sample": 45
-        },
-        "views_6h": {
-          "median": 280.0,
-          "sample": 36
-        },
-        "views_72h": {
-          "median": 414.0,
-          "sample": 34
-        },
-        "views_7d": {
-          "median": 238.0,
-          "sample": 18
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 59.73,
-          "engaged_view_sample": 28,
-          "engaged_views_per_view_percentage": 55.41,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 242.0,
-          "sample": 36
-        },
-        "views_6h": {
-          "median": 104.0,
-          "sample": 41
-        },
-        "views_72h": {
-          "median": 307.0,
-          "sample": 28
-        },
-        "views_7d": {
-          "median": 304.0,
-          "sample": 16
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 54.38,
-          "engaged_view_sample": 31,
-          "engaged_views_per_view_percentage": 50.0,
-          "sample": 32,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 48,
-        "views_24h": {
-          "median": 56.0,
-          "sample": 41
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 42
-        },
-        "views_72h": {
-          "median": 148.0,
-          "sample": 34
-        },
-        "views_7d": {
-          "median": 280.0,
-          "sample": 19
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 16.88,
-          "engaged_view_sample": 28,
-          "engaged_views_per_view_percentage": 42.69,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 1.0,
-          "sample": 39
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 37
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 3.0,
-          "sample": 17
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -1987,13 +1760,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The friend calls it harmless because the prizes are free, while the narrator's address is now flagged and legitimate entries are being rejected.",
-      "payoff": "a thumbs-up",
-      "premise": "A man learns his friend has been entering giveaways with his address so multiple-account wins cannot be traced back to one household.",
-      "title": "My Friend Used My Address to Enter Giveaways",
-      "twist": "A courier arrives with a prize requiring ID, exposing that the friend has been using variations of the narrator's name too."
-    },
-    {
       "conflict": "The treasurer claims the fee was an informal way to build a reserve for replacement gear, while no other team knows about it and there is no reserve account.",
       "payoff": "The equipment reserve had bought exactly one thing: Colin's membership.",
       "premise": "A woman learns the treasurer of her recreational sports club created a fake equipment fee that only her group was paying, then used the money to cover his own membership.",
@@ -2160,6 +1926,13 @@
       "premise": "A man discovers a coworker has been claiming his mileage reimbursements by copying trip details from their shared field-service calendar.",
       "title": "Someone Else Got Paid for My Work Trips",
       "twist": "The expense system shows duplicate trip dates, but the coworker's vehicle access logs prove his car never left the office garage."
+    },
+    {
+      "conflict": "The friend argues he did the work of securing difficult tickets and deserves something for the effort, while he told everyone the higher amount was the official ticket price.",
+      "payoff": "The group queue suddenly has five more volunteers.",
+      "premise": "A man discovers his friend has been charging the group full price for concert tickets while secretly using a membership discount and keeping the difference.",
+      "title": "Our Friend Was Marking Up Our Concert Tickets",
+      "twist": "One ticket fails to load, forcing the group to visit the box office where the receipt shows the actual discounted price for the entire order."
     }
   ]
 }
