@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0e793d00631c64a3bd0bc3d2",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T00:10:38.519067Z",
+  "request_blob_sha": "c69a984ee7cf23bb6b3c0c65079f388211bf9f99",
+  "request_path": "content/requests/wd-0e793d00631c64a3bd0bc3d2.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A prepaid customer exposes a roommate's secret side business using shared storage.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-79b6a1e69d082cfa3513",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Rented Out Our Storage Locker"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T10:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203255019"
+  },
+  "youtube_video_id": "84Qu9DTEMcI"
+}
