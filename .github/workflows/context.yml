@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'data/backgrounds.json'
+      - 'content/planner-analytics.json'
       - 'pipeline.py'
   workflow_dispatch:
 
@@ -30,50 +31,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          merge_analytics() {
-            if [[ ! -f content/analytics-summary.json ]]; then
-              return 0
-            fi
-            python - <<'PY'
-          import json
-          from pathlib import Path
-
-          context_path = Path("content/context.json")
-          summary_path = Path("content/analytics-summary.json")
-          context = json.loads(context_path.read_text(encoding="utf-8"))
-          summary = json.loads(summary_path.read_text(encoding="utf-8"))
-          if not isinstance(context, dict) or not isinstance(summary, dict):
-              raise SystemExit("ANALYTICS_CONTEXT_INVALID expected JSON objects")
-          context["context_version"] = max(int(context.get("context_version", 1)), 2)
-          planner_keys = (
-              "analytics_version",
-              "generated_at",
-              "window_days",
-              "videos_analyzed",
-              "learning",
-              "category_performance",
-              "hook_type_performance",
-              "tone_performance",
-              "lead_gender_performance",
-              "trend_performance",
-              "trend_topic_performance",
-              "top_examples",
-              "weak_retention_examples",
-          )
-          planner_summary = {key: summary[key] for key in planner_keys if key in summary}
-          distribution = summary.get("distribution_breakdowns")
-          if isinstance(distribution, dict) and isinstance(distribution.get("geography"), dict):
-              planner_summary["distribution_breakdowns"] = {
-                  "geography": distribution["geography"]
-              }
-          context["analytics_summary"] = planner_summary
-          raw = json.dumps(context, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
-          if len(raw.encode()) > 80000:
-              raise SystemExit("ANALYTICS_CONTEXT_TOO_LARGE expected <=80000 bytes")
-          context_path.write_text(raw, encoding="utf-8")
-          PY
-          }
-
           for attempt in 1 2 3; do
             echo "Context rebuild attempt ${attempt}/3"
             git fetch origin main
@@ -81,7 +38,6 @@ jobs:
 
             python pipeline.py context
             python pipeline.py self-test
-            merge_analytics
             git add content/context.json
 
             if git diff --cached --quiet; then

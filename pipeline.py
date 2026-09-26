@@ -16,10 +16,11 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
-BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
+BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PLANNER_ANALYTICS=ROOT/"content/planner-analytics.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
 REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"
-REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=1
+REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=3
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
+MAX_CONTEXT_BYTES=40000; MAX_PLANNER_ANALYTICS_BYTES=16000
 MIN_NARR=45.0; MAX_NARR=65.0; BASE_WORDS_PER_SEC=2.7; TTS_SPEED=1.75
 SGT=ZoneInfo("Asia/Singapore"); SLOT_BUFFER=timedelta(minutes=10); YOUTUBE_SCAN_LIMIT=250
 EXPECTED_YOUTUBE_CHANNEL_ID="UCvrq2m9G4yrwPfL_X-QPzMA"
@@ -142,6 +143,27 @@ def select_background_ids(requested_category,r,seed):
     ids=[clean(a.get("id")) for a in ranked[:MIN_CATEGORY_BACKGROUNDS]]
     if len(ids)!=3 or len(set(ids))!=3: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",len(set(ids)),"three distinct valid approved backgrounds",False)
     return ids
+def load_planner_analytics(path=None):
+    path=Path(path or PLANNER_ANALYTICS)
+    try:
+        raw=path.read_bytes()
+        if len(raw)>MAX_PLANNER_ANALYTICS_BYTES: return None
+        data=json.loads(raw.decode("utf-8"))
+    except (OSError,UnicodeDecodeError,json.JSONDecodeError):
+        return None
+    allowed={"analytics_version","generated_at","learning","creative_signals","distribution_signals","audience_signals","data_freshness","warnings"}
+    if not isinstance(data,dict) or set(data)-allowed: return None
+    if data.get("analytics_version")!=3 or not isinstance(data.get("generated_at"),str): return None
+    learning=data.get("learning")
+    if not isinstance(learning,dict): return None
+    if learning.get("stage") not in {"cold_start","early_learning","established"}: return None
+    if learning.get("analytics_weight") not in {"low","medium","normal"}: return None
+    minimum=learning.get("minimum_pattern_sample")
+    if type(minimum) is not int or minimum<1: return None
+    for key in ("creative_signals","distribution_signals","audience_signals"):
+        if key in data and not isinstance(data[key],dict): return None
+    if "warnings" in data and not isinstance(data["warnings"],list): return None
+    return data
 def build_context():
     h=read(HIST)
     if not isinstance(h,list): raise VError("INVALID_HISTORY","data/history.json",type(h).__name__,"array")
@@ -149,7 +171,12 @@ def build_context():
     if not categories: raise VError("NO_USABLE_BACKGROUND","data/backgrounds.json",0,"at least one viable category",False)
     cards=[{k:str(x.get(k) or "") for k in ("title","premise","conflict","twist","payoff")} for x in h[-RECENT_LIMIT:] if isinstance(x,dict)]
     out={"context_version":CONTEXT_VERSION,"recent_story_cards":cards,"background_categories":categories}
-    if len(pretty(out))>40000: raise VError("CONTEXT_TOO_LARGE","content/context.json",len(pretty(out)),"<=40000 bytes")
+    base_size=len(pretty(out))
+    if base_size>MAX_CONTEXT_BYTES: raise VError("CONTEXT_TOO_LARGE","content/context.json",base_size,f"<={MAX_CONTEXT_BYTES} bytes")
+    analytics=load_planner_analytics()
+    if analytics is not None:
+        candidate={**out,"analytics_summary":analytics}
+        if len(pretty(candidate))<=MAX_CONTEXT_BYTES: out=candidate
     write(CTX,out); return out
 
 def normalize_winner(w,index):
@@ -494,10 +521,10 @@ def self_test():
     ok("6 repeated hook stripped",not d["winners"][0]["narration"].casefold().startswith(d["winners"][0]["hook"].casefold()))
     ok("7 payoff fallback",d["winners"][0]["payoff"]=="Nobody could answer after that.")
     now=datetime(2030,1,1,7,50,tzinfo=SGT); slots=allocate_publish_slots(3,now,occupied=set()); ok("8 exact ten minutes allowed",slots[0]=="2030-01-01T00:00:00Z")
-    slots=allocate_publish_slots(2,datetime(2030,1,1,7,50,1,tzinfo=SGT),occupied=set()); ok("9 under ten minutes skipped",slots[0]=="2030-01-01T00:40:00Z")
-    occupied={datetime(2030,1,1,0,40,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,8,29,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T01:20:00Z","2030-01-01T02:00:00Z"])
-    slots=allocate_publish_slots(1,datetime(2030,1,1,19,21,tzinfo=SGT),occupied=set()); ok("10a evening control slot",slots[0]=="2030-01-01T13:00:00Z")
-    slots=allocate_publish_slots(1,datetime(2030,1,1,23,1,tzinfo=SGT),occupied=set()); ok("10b next-day rollover",slots[0]=="2030-01-01T17:00:00Z")
+    slots=allocate_publish_slots(2,datetime(2030,1,1,7,50,1,tzinfo=SGT),occupied=set()); ok("9 buffered slot skipped",slots[0]=="2030-01-01T00:20:00Z")
+    occupied={datetime(2030,1,1,0,40,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,8,29,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T01:00:00Z","2030-01-01T01:20:00Z"])
+    slots=allocate_publish_slots(1,datetime(2030,1,1,19,21,tzinfo=SGT),occupied=set()); ok("10a evening rollover",slots[0]=="2030-01-02T00:00:00Z")
+    slots=allocate_publish_slots(1,datetime(2030,1,1,23,1,tzinfo=SGT),occupied=set()); ok("10b next-day rollover",slots[0]=="2030-01-02T00:00:00Z")
     test_slots=["2030-01-01T03:00:00Z","2030-01-01T04:00:00Z","2030-01-01T05:00:00Z"]
     batch=make_batch("draft-selftest01",raw,d,r,test_slots); validate_batch(batch,REQS/(batch["request_id"]+".json"),r); ok("11 batch validates",len(batch["items"])==3); ok("12 unique content ids",len({x["content_id"] for x in batch["items"]})==3)
     ok("13 scheduled private",all(x["visibility"]=="private" and x["publication"]["mode"]=="scheduled" for x in batch["items"])); ok("14 contract hash",CONTRACT_HASH=="db118b20737d06509071754851388e51af427b7930cd48708b3e427415fce1de")

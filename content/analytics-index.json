@@ -1,0 +1,19 @@
+{
+  "analytics_repository": "skyfremen/youtube-analytics-data",
+  "analytics_version": 3,
+  "available_datasets": {
+    "basic": false,
+    "combined": false,
+    "demographics": false,
+    "device_os": false,
+    "playback_location": false,
+    "reach": false,
+    "realtime": false,
+    "retention": false,
+    "traffic_source": false
+  },
+  "generated_at": "2026-09-26T11:30:30Z",
+  "latest_realtime_snapshot": null,
+  "latest_reporting_date": null,
+  "warnings": ["Analytics warehouse initialization is pending."]
+}

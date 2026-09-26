@@ -1,0 +1,31 @@
+{
+  "analytics_version": 3,
+  "audience_signals": {
+    "dominant_countries": [
+      {"country": "US", "sample_views": 49311, "view_share_percentage": 75.5},
+      {"country": "GB", "sample_views": 3272, "view_share_percentage": 5.01},
+      {"country": "AU", "sample_views": 1673, "view_share_percentage": 2.56}
+    ],
+    "dominant_traffic_sources": [
+      {"source": "SHORTS", "sample_views": 69652, "view_share_percentage": 96.4},
+      {"source": "YT_SEARCH", "sample_views": 1309, "view_share_percentage": 1.81}
+    ]
+  },
+  "creative_signals": {
+    "soft_evidence_only": true,
+    "supported_patterns": [],
+    "weak_patterns": []
+  },
+  "distribution_signals": {
+    "strong_publish_windows_sgt": [],
+    "weak_publish_windows_sgt": []
+  },
+  "generated_at": "2026-09-26T11:30:30Z",
+  "learning": {
+    "analytics_weight": "normal",
+    "checkpoint_samples": {"2h": 0, "6h": 252, "24h": 256, "72h": 207, "7d": 117},
+    "minimum_pattern_sample": 12,
+    "stage": "established"
+  },
+  "warnings": ["Analytics v3 warehouse collection has not completed yet; retained v2 aggregate evidence only."]
+}
