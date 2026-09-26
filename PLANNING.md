@@ -173,7 +173,7 @@ The draft must contain exactly `winner_count` winner objects. Deterministic pref
 Use these as soft winner-selection preferences, not quotas or mandatory story formulas.
 
 - Prefer stories with tangible stakes or meaningful consequences over low-stakes interpersonal irritation. Tangible stakes may include money, jobs, reputation, relationships, property, access, important possessions, bookings, weddings, promotions, accounts, tickets, or similar concrete consequences.
-- When two candidate ideas are otherwise similarly strong, prefer one that opens with a concrete discovery or an already-visible consequence rather than background setup.
-- Favor `discovery` and `consequence_first` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types.
+- When two candidate ideas are otherwise similarly strong, prefer one that opens with a concrete accusation, discovery, or already-visible consequence rather than background setup, especially when the accusation concerns a specific wrongdoing with tangible consequences.
+- Favor `accusation`, `discovery`, and `consequence_first` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types.
 - Reduce generic premises that amount mainly to someone being rude, annoying, inconsiderate, or argumentative unless the escalation, twist, stakes, or comedy payoff makes the story unusually strong.
-- Prefer stronger stakes and more immediate discovery/consequence openings during winner selection, but do not let this override diversity, originality, or a clearly stronger idea using another hook type.
+- Prefer stronger stakes and more immediate accusation/discovery/consequence openings during winner selection, but do not let this override diversity, originality, or a clearly stronger idea using another hook type.
