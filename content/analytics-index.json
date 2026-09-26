@@ -8,12 +8,14 @@
     "device_os": false,
     "playback_location": false,
     "reach": false,
-    "realtime": false,
+    "realtime": true,
     "retention": false,
     "traffic_source": false
   },
   "generated_at": "2026-09-26T11:30:30Z",
-  "latest_realtime_snapshot": null,
+  "latest_realtime_snapshot": "realtime/legacy/analytics-20260926T113030Z.json",
   "latest_reporting_date": null,
-  "warnings": ["Analytics warehouse initialization is pending."]
+  "warnings": [
+    "Analytics warehouse live collection is pending PRIVATE_STATE_TOKEN access to skyfremen/youtube-analytics-data; v3 artifacts currently use preserved legacy snapshots."
+  ]
 }
