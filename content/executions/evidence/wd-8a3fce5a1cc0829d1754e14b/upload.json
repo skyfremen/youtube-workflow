@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8a3fce5a1cc0829d1754e14b",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T00:08:42.561017Z",
+  "request_blob_sha": "241727be2669514ba2f331cea5ea56a4cbd20833",
+  "request_path": "content/requests/wd-8a3fce5a1cc0829d1754e14b.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A collector's phone call reveals that a promised family heirloom was secretly sold.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-076af424b75088b0d97d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Sold Grandpa's Watch in Secret"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203257250"
+  },
+  "youtube_video_id": "ofZE5-jQ2sI"
+}
