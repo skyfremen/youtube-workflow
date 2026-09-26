@@ -9,12 +9,12 @@
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 135.5,
-      "median_views_2h": 21.0,
+      "median_views_2h": 0.0,
       "median_views_6h": 30.0,
       "median_views_72h": 482.0,
       "median_views_7d": 456.0,
       "sample_24h": 2,
-      "sample_2h": 2,
+      "sample_2h": 3,
       "sample_6h": 2,
       "sample_72h": 1,
       "sample_7d": 1,
@@ -46,7 +46,7 @@
       "median_engaged_views_per_view_percentage": null,
       "median_shares": null,
       "median_subscribers_gained": null,
-      "median_views_24h": 0.0,
+      "median_views_24h": 1.0,
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": null,
@@ -1099,12 +1099,12 @@
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.0,
-      "median_views_2h": 1.5,
+      "median_views_2h": 1.0,
       "median_views_6h": 2.0,
       "median_views_72h": 5.0,
       "median_views_7d": null,
       "sample_24h": 45,
-      "sample_2h": 34,
+      "sample_2h": 35,
       "sample_6h": 53,
       "sample_72h": 21,
       "sample_7d": 0,
@@ -1187,7 +1187,7 @@
       "sample_size": 26
     }
   },
-  "generated_at": "2026-09-26T17:27:40Z",
+  "generated_at": "2026-09-26T17:34:36Z",
   "geography_analysis": {
     "sample_rows": 45,
     "top": [
@@ -1753,7 +1753,7 @@
       "median_views_72h": 3.0,
       "median_views_7d": 57.0,
       "sample_24h": 26,
-      "sample_2h": 12,
+      "sample_2h": 13,
       "sample_6h": 23,
       "sample_72h": 20,
       "sample_7d": 9,
@@ -1850,7 +1850,7 @@
       "median_views_72h": 8.0,
       "median_views_7d": 7.5,
       "sample_24h": 107,
-      "sample_2h": 55,
+      "sample_2h": 56,
       "sample_6h": 101,
       "sample_72h": 87,
       "sample_7d": 48,
@@ -1861,7 +1861,7 @@
     "analytics_weight": "normal",
     "checkpoint_samples": {
       "24h": 260,
-      "2h": 134,
+      "2h": 135,
       "6h": 235,
       "72h": 218,
       "7d": 134
@@ -2069,7 +2069,7 @@
         "median_views_72h": 108.0,
         "median_views_7d": 104.0,
         "sample_24h": 12,
-        "sample_2h": 6,
+        "sample_2h": 7,
         "sample_6h": 10,
         "sample_72h": 7,
         "sample_7d": 7,
@@ -2120,12 +2120,12 @@
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.0,
-      "median_views_2h": 1.5,
+      "median_views_2h": 1.0,
       "median_views_6h": 0.0,
       "median_views_72h": 3.0,
       "median_views_7d": 7.5,
       "sample_24h": 11,
-      "sample_2h": 6,
+      "sample_2h": 7,
       "sample_6h": 10,
       "sample_72h": 9,
       "sample_7d": 6,
@@ -2578,12 +2578,12 @@
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.0,
-      "median_views_2h": 1.5,
+      "median_views_2h": 1.0,
       "median_views_6h": 0.0,
       "median_views_72h": 3.0,
       "median_views_7d": 7.5,
       "sample_24h": 11,
-      "sample_2h": 6,
+      "sample_2h": 7,
       "sample_6h": 10,
       "sample_72h": 9,
       "sample_7d": 6,
@@ -3345,7 +3345,7 @@
       "median_views_72h": 3.0,
       "median_views_7d": 3.0,
       "sample_24h": 42,
-      "sample_2h": 27,
+      "sample_2h": 28,
       "sample_6h": 38,
       "sample_72h": 36,
       "sample_7d": 22,
@@ -3993,7 +3993,7 @@
       "median_views_72h": 3.0,
       "median_views_7d": 5.0,
       "sample_24h": 18,
-      "sample_2h": 5,
+      "sample_2h": 6,
       "sample_6h": 18,
       "sample_72h": 12,
       "sample_7d": 9,
@@ -4075,7 +4075,7 @@
           "views": 1021
         },
         "7d": {
-          "actual_age_hours": 160.46,
+          "actual_age_hours": 160.58,
           "views": 1082
         }
       },
@@ -4151,7 +4151,7 @@
           "views": 1029
         },
         "7d": {
-          "actual_age_hours": 158.46,
+          "actual_age_hours": 158.58,
           "views": 1058
         }
       },
@@ -4319,7 +4319,7 @@
       "median_views_72h": 9.0,
       "median_views_7d": 38.0,
       "sample_24h": 167,
-      "sample_2h": 94,
+      "sample_2h": 95,
       "sample_6h": 166,
       "sample_72h": 123,
       "sample_7d": 50,
@@ -4673,7 +4673,8 @@
   "videos_analyzed": 282,
   "warnings": [
     "Reporting API discovery unavailable: HTTP 403 Forbidden",
-    "Optional retention returned empty curves for 24 due checkpoints; will retry"
+    "Optional retention returned empty curves for 23 due checkpoints; will retry",
+    "Optional retention unavailable for 1 due checkpoints (TimeoutError); will retry"
   ],
   "weak_retention_examples": [
     {
@@ -4731,7 +4732,7 @@
           "views": 0
         },
         "7d": {
-          "actual_age_hours": 151.46,
+          "actual_age_hours": 151.58,
           "views": 1
         }
       },
