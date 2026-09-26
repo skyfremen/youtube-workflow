@@ -70,36 +70,12 @@
     "soft_evidence_only": true,
     "supported_patterns": [
       {
-        "average_view_percentage": 63.51,
-        "dimension": "category",
-        "evidence_median_views": 383.0,
-        "mature_sample": 8,
-        "sample_size": 13,
-        "value": "wedding"
-      },
-      {
-        "average_view_percentage": 63.3,
-        "dimension": "category",
-        "evidence_median_views": 249.0,
-        "mature_sample": 8,
-        "sample_size": 12,
-        "value": "work"
-      },
-      {
         "average_view_percentage": 64.75,
         "dimension": "hook_type",
-        "evidence_median_views": 208.0,
+        "evidence_median_views": 129.0,
         "mature_sample": 16,
         "sample_size": 26,
         "value": "accusation"
-      },
-      {
-        "average_view_percentage": 61.62,
-        "dimension": "category",
-        "evidence_median_views": 163.0,
-        "mature_sample": 10,
-        "sample_size": 18,
-        "value": "relationship"
       },
       {
         "average_view_percentage": 51.05,
@@ -116,17 +92,33 @@
         "mature_sample": 18,
         "sample_size": 28,
         "value": "workplace"
+      },
+      {
+        "average_view_percentage": 68.79,
+        "dimension": "story_tone",
+        "evidence_median_views": 93.5,
+        "mature_sample": 12,
+        "sample_size": 13,
+        "value": "natural"
+      },
+      {
+        "average_view_percentage": 58.06,
+        "dimension": "trend_lane",
+        "evidence_median_views": 74.0,
+        "mature_sample": 97,
+        "sample_size": 184,
+        "value": "evergreen"
+      },
+      {
+        "average_view_percentage": 55.31,
+        "dimension": "story_tone",
+        "evidence_median_views": 37.0,
+        "mature_sample": 47,
+        "sample_size": 81,
+        "value": "dramatic"
       }
     ],
     "weak_patterns": [
-      {
-        "average_view_percentage": 56.47,
-        "dimension": "hook_type",
-        "evidence_median_views": 2.0,
-        "mature_sample": 15,
-        "sample_size": 24,
-        "value": "social_exposure"
-      },
       {
         "average_view_percentage": 64.61,
         "dimension": "hook_type",
@@ -136,20 +128,28 @@
         "value": "consequence_first"
       },
       {
-        "average_view_percentage": 46.76,
-        "dimension": "category",
-        "evidence_median_views": 2.5,
-        "mature_sample": 12,
-        "sample_size": 19,
-        "value": "neighbors"
-      },
-      {
         "average_view_percentage": 38.66,
         "dimension": "trend_lane",
         "evidence_median_views": 3.0,
         "mature_sample": 21,
         "sample_size": 24,
         "value": "trend_aware"
+      },
+      {
+        "average_view_percentage": 34.92,
+        "dimension": "story_tone",
+        "evidence_median_views": 3.0,
+        "mature_sample": 9,
+        "sample_size": 20,
+        "value": "sarcastic"
+      },
+      {
+        "average_view_percentage": 29.43,
+        "dimension": "hook_type",
+        "evidence_median_views": 3.0,
+        "mature_sample": 12,
+        "sample_size": 14,
+        "value": "urgency"
       }
     ]
   },
