@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-cb0325b097c051eb59c78c17",
+  "created_at": "2026-09-26T15:06:05.972626Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "5233e0fe52f16752e6a32a820f6320ffd84be0d1",
+  "request_path": "content/requests/wd-cb0325b097c051eb59c78c17.json",
+  "source_commit_sha": "59ee603be5906c68fd93894b4d61a699f28516e9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A strange commission report leads to a CRM audit and a very selective definition of teamwork.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a908912516712649330b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Biggest Sales Suddenly Belonged to My Coworker"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7663a362ea618ba533eea4590c5e4cab325130b3",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36250252986"
+  }
+}
