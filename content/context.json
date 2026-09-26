@@ -185,7 +185,7 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-09-26T19:27:56Z",
+      "latest_realtime_snapshot": "2026-09-26T19:31:26Z",
       "videos_analyzed": 283
     },
     "distribution_signals": {
@@ -219,12 +219,12 @@
         }
       ]
     },
-    "generated_at": "2026-09-26T19:27:56Z",
+    "generated_at": "2026-09-26T19:31:26Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 263,
-        "2h": 135,
+        "2h": 136,
         "6h": 236,
         "72h": 220,
         "7d": 136
@@ -233,7 +233,7 @@
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 24 due checkpoints; will retry"
+      "Optional retention returned empty curves for 12 due checkpoints; will retry"
     ]
   },
   "background_categories": [
