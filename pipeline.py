@@ -78,7 +78,7 @@ def publish_slots(path=PUBLISH_SLOTS):
         m=re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)",str(value))
         if not m: raise VError("INVALID_PUBLISH_SLOT",f"slots[{index}]",value,"HH:MM",False)
         slot=(int(m.group(1)),int(m.group(2)))
-        if slot[1] not in {0,20,40}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 20, or 40",False)
+        if slot[1] not in {0,10,20,30,40,50}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 10, 20, 30, 40, or 50",False)
         out.append(slot)
     if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"24 unique daily slots",False)
     if out!=sorted(out): raise VError("UNSORTED_PUBLISH_SLOTS","slots",raw,"ascending daily order",False)
@@ -377,7 +377,7 @@ def validate_item(x,r=None):
     p=x["publication"]
     if not isinstance(p,dict) or set(p)!={"mode","publish_at"} or p.get("mode")!="scheduled": raise VError("INVALID_PUBLICATION","publication",p,"scheduled publish_at",False)
     d=instant(p.get("publish_at"),"publication.publish_at")
-    if d.minute not in {0,20,40} or d.second or d.microsecond: raise VError("INVALID_PUBLICATION_SLOT","publication.publish_at",p.get("publish_at"),"timestamp on minute 00, 20, or 40",False)
+    if d.minute not in {0,10,20,30,40,50} or d.second or d.microsecond: raise VError("INVALID_PUBLICATION_SLOT","publication.publish_at",p.get("publish_at"),"timestamp on minute 00, 10, 20, 30, 40, or 50",False)
     if x["visibility"]!="private": raise VError("INVALID_VISIBILITY","visibility",x["visibility"],"private",False)
     expected={"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}
     if x["render"]!=expected: raise VError("INVALID_RENDER_CONTRACT","render",x["render"],str(expected),False)
