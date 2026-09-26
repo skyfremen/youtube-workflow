@@ -1760,20 +1760,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The property manager says a temporary extension cable was only used briefly, while the narrator has paid weeks of inflated utility charges.",
-      "payoff": "The cable had been temporary. The bill definitely wasn't.",
-      "premise": "A woman realizes the unusually high electricity bill in her apartment is partly powering renovation work in the vacant unit next door.",
-      "title": "The Empty Apartment Next Door Was Using My Electricity",
-      "twist": "A smart-plug history and hallway camera show contractors repeatedly connecting equipment to an outlet wired to her meter whenever she leaves for work."
-    },
-    {
-      "conflict": "The sister argues the credit was going to expire and says she planned to reimburse their mother later, while the family had been saving it for a replacement trip.",
-      "payoff": "The credit didn't expire. Our trust did first.",
-      "premise": "A man discovers his sister used their mother's airline credit for her own vacation before the family could rebook a cancelled trip.",
-      "title": "My Sister Used Mom's Flight Credit for Her Own Trip",
-      "twist": "The airline account shows the credit was used only three weeks after the cancellation, months before its expiry date."
-    },
-    {
       "conflict": "He argues helping family was an emergency and he always planned to replace the money, while she realizes their own safety net has been shrinking for months without her consent.",
       "payoff": "Helping family wasn't the betrayal. Pretending I had agreed was.",
       "premise": "A woman learns her boyfriend has been quietly paying his sister's rent from their shared emergency fund while telling her the balance dropped because of household expenses.",
@@ -1933,6 +1919,20 @@
       "premise": "A woman discovers her wedding venue quietly reassigned the private garden she paid for to a larger corporate event on the same day.",
       "title": "My Wedding Venue Sold My Garden Twice",
       "twist": "A corporate guest accidentally forwards her the venue's sales email promising that company exclusive use of the garden weeks after her contract was signed."
+    },
+    {
+      "conflict": "The friend says he was waiting for a better refundable hotel rate before booking, while the group sent money because he repeatedly said their rooms were already secured.",
+      "payoff": "Waiting for a better deal was reasonable. Inventing a confirmation number was not.",
+      "premise": "A woman discovers her friend collected money for a GTA 6 launch trip even though the hotel reservation he claimed was confirmed had never been booked.",
+      "title": "Our GTA 6 Launch Hotel Was Never Booked",
+      "twist": "One friend calls the hotel to add a guest name and learns the confirmation number belongs to a cancelled reservation from a different month."
+    },
+    {
+      "conflict": "The neighbor claims the boxes were repeatedly left at his door by mistake and he assumed they were replacements, while delivery records show post-dispatch address edits from her shared building tablet.",
+      "payoff": "He got a much simpler lobby password: none.",
+      "premise": "A woman learns her neighbor has been redirecting her delivered meal kits to his apartment by changing the unit number after delivery notifications arrive.",
+      "title": "My Neighbor Redirected My Deliveries to Himself",
+      "twist": "The delivery company produces an audit showing the unit number was changed minutes after each shipment reached the building, using the lobby tablet account the neighbor manages."
     }
   ]
 }
