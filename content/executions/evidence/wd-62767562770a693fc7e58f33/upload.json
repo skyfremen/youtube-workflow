@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-62767562770a693fc7e58f33",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T00:07:57.560224Z",
+  "request_blob_sha": "6163d44ba0a43d0608a1a501cf423e4c0c9b437d",
+  "request_path": "content/requests/wd-62767562770a693fc7e58f33.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A gaming group's launch trip nearly falls apart when a hotel confirmation turns out to be from an old reservation.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0c48e89c97db7f7a1e5c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our GTA 6 Launch Hotel Was Never Booked"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T15:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203258389"
+  },
+  "youtube_video_id": "ImGYZFqwl3g"
+}
