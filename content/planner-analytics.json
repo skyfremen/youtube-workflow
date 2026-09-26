@@ -184,7 +184,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-09-26T17:34:36Z",
+    "latest_realtime_snapshot": "2026-09-26T17:43:17Z",
     "videos_analyzed": 282
   },
   "distribution_signals": {
@@ -218,11 +218,11 @@
       }
     ]
   },
-  "generated_at": "2026-09-26T17:34:36Z",
+  "generated_at": "2026-09-26T17:43:17Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 260,
+      "24h": 261,
       "2h": 135,
       "6h": 235,
       "72h": 218,
@@ -233,7 +233,6 @@
   },
   "warnings": [
     "Reporting API discovery unavailable: HTTP 403 Forbidden",
-    "Optional retention returned empty curves for 23 due checkpoints; will retry",
-    "Optional retention unavailable for 1 due checkpoints (TimeoutError); will retry"
+    "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ]
 }
