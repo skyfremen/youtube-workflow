@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-93db99bc70df6d9b477df2d5",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T15:02:18.768837Z",
+  "request_blob_sha": "9ad19c1493718cd33cbf2d8ad09b3ca8c2a4ac0e",
+  "request_path": "content/requests/wd-93db99bc70df6d9b477df2d5.json",
+  "source_commit_sha": "59ee603be5906c68fd93894b4d61a699f28516e9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An impossible overnight electricity pattern leads to an extension cable crossing the property line.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d97b61e0c794cd5cc9ff",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Was Charging His Business From My Outlet"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7663a362ea618ba533eea4590c5e4cab325130b3",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36250259474"
+  },
+  "youtube_video_id": "wZB3SJW4i0w"
+}
