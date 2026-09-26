@@ -7,6 +7,7 @@ on:
       - 'data/backgrounds.json'
       - 'content/planner-analytics.json'
       - 'pipeline.py'
+      - 'tests/test_pipeline.py'
   workflow_dispatch:
 
 permissions:
@@ -36,6 +37,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            python -m unittest discover -s tests
             python pipeline.py context
             python pipeline.py self-test
             git add content/context.json

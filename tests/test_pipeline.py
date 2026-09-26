@@ -267,6 +267,13 @@ class PublicationSlotTests(unittest.TestCase):
         self.assertIn("group: finalize-state-${{ github.ref }}", workflow)
         self.assertIn("git reset --hard origin/main", workflow)
 
+    def test_context_workflow_enforces_unit_regressions(self):
+        workflow = (p.ROOT / ".github" / "workflows" / "context.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("'tests/test_pipeline.py'", workflow)
+        self.assertIn("python -m unittest discover -s tests", workflow)
+
 
 class PlannerAnalyticsContextTests(unittest.TestCase):
     def setUp(self):
