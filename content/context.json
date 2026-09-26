@@ -904,7 +904,6 @@
         }
       }
     },
-    "detailed_analytics_available": true,
     "distribution_breakdowns": {
       "geography": {
         "top": [
@@ -940,68 +939,6 @@
           }
         ],
         "views_total": 65310
-      },
-      "traffic_sources": {
-        "top": [
-          {
-            "engaged_views": 31541,
-            "source": "SHORTS",
-            "view_share_percentage": 96.4,
-            "views": 69652
-          },
-          {
-            "engaged_views": 346,
-            "source": "YT_SEARCH",
-            "view_share_percentage": 1.81,
-            "views": 1309
-          },
-          {
-            "engaged_views": 390,
-            "source": "YT_OTHER_PAGE",
-            "view_share_percentage": 0.97,
-            "views": 704
-          },
-          {
-            "engaged_views": 143,
-            "source": "YT_CHANNEL",
-            "view_share_percentage": 0.46,
-            "views": 334
-          },
-          {
-            "engaged_views": 71,
-            "source": "EXT_URL",
-            "view_share_percentage": 0.2,
-            "views": 141
-          }
-        ],
-        "views_total": 72252
-      }
-    },
-    "duration_performance": {
-      "under_120": {
-        "mature": {
-          "average_view_percentage": 54.55,
-          "sample": 188,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 279,
-        "views_24h": {
-          "median": 4.0,
-          "sample": 256
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 252
-        },
-        "views_72h": {
-          "median": 9.0,
-          "sample": 207
-        },
-        "views_7d": {
-          "median": 8.0,
-          "sample": 117
-        }
       }
     },
     "generated_at": "2026-09-26T11:30:30Z",
@@ -1290,170 +1227,6 @@
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
-    },
-    "publish_time_performance_sgt": {
-      "00-03": {
-        "mature": {
-          "average_view_percentage": 14.91,
-          "engaged_view_sample": 31,
-          "engaged_views_per_view_percentage": 28.57,
-          "sample": 31,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 41
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 39
-        },
-        "views_72h": {
-          "median": 3.0,
-          "sample": 35
-        },
-        "views_7d": {
-          "median": 3.0,
-          "sample": 20
-        }
-      },
-      "04-07": {
-        "mature": {
-          "average_view_percentage": 29.16,
-          "engaged_view_sample": 27,
-          "engaged_views_per_view_percentage": 33.33,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 2.0,
-          "sample": 40
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 42
-        },
-        "views_72h": {
-          "median": 2.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 2.0,
-          "sample": 20
-        }
-      },
-      "08-11": {
-        "mature": {
-          "average_view_percentage": 71.35,
-          "engaged_view_sample": 34,
-          "engaged_views_per_view_percentage": 52.66,
-          "sample": 34,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 51,
-        "views_24h": {
-          "median": 431.0,
-          "sample": 45
-        },
-        "views_6h": {
-          "median": 280.0,
-          "sample": 42
-        },
-        "views_72h": {
-          "median": 414.0,
-          "sample": 34
-        },
-        "views_7d": {
-          "median": 238.0,
-          "sample": 18
-        }
-      },
-      "12-15": {
-        "mature": {
-          "average_view_percentage": 60.55,
-          "engaged_view_sample": 32,
-          "engaged_views_per_view_percentage": 55.02,
-          "sample": 32,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 48,
-        "views_24h": {
-          "median": 218.0,
-          "sample": 42
-        },
-        "views_6h": {
-          "median": 104.0,
-          "sample": 47
-        },
-        "views_72h": {
-          "median": 397.0,
-          "sample": 32
-        },
-        "views_7d": {
-          "median": 304.0,
-          "sample": 16
-        }
-      },
-      "16-19": {
-        "mature": {
-          "average_view_percentage": 57.25,
-          "engaged_view_sample": 34,
-          "engaged_views_per_view_percentage": 45.81,
-          "sample": 35,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 54,
-        "views_24h": {
-          "median": 10.0,
-          "sample": 47
-        },
-        "views_6h": {
-          "median": 2.0,
-          "sample": 45
-        },
-        "views_72h": {
-          "median": 148.0,
-          "sample": 38
-        },
-        "views_7d": {
-          "median": 228.0,
-          "sample": 22
-        }
-      },
-      "20-23": {
-        "mature": {
-          "average_view_percentage": 16.88,
-          "engaged_view_sample": 28,
-          "engaged_views_per_view_percentage": 42.69,
-          "sample": 28,
-          "shares": 0.0,
-          "subscribers_gained": 0.0
-        },
-        "sample_size": 42,
-        "views_24h": {
-          "median": 1.0,
-          "sample": 41
-        },
-        "views_6h": {
-          "median": 0.0,
-          "sample": 37
-        },
-        "views_72h": {
-          "median": 3.5,
-          "sample": 36
-        },
-        "views_7d": {
-          "median": 3.0,
-          "sample": 21
-        }
-      }
     },
     "tone_performance": {
       "absurd": {
@@ -2053,13 +1826,6 @@
   "context_version": 2,
   "recent_story_cards": [
     {
-      "conflict": "The manager says using her accrued leave was an administrative shortcut because her contract is different, while HR says no such exception exists.",
-      "payoff": "Four identical mistakes had already done enough talking.",
-      "premise": "A woman discovers her manager has been deducting her vacation balance for office closure days that the rest of the team receives as paid leave.",
-      "title": "My Vacation Days Were Used While the Office Was Closed",
-      "twist": "Her leave history shows the deductions began only after she challenged the manager over an unrelated scheduling decision."
-    },
-    {
       "conflict": "The friend says the photos were only inspiration, while customers believe they are paying for the narrator's handmade designs.",
       "payoff": "The frosting was not the only thing that needed smoothing over.",
       "premise": "A woman discovers her friend has been using photos of her handmade cakes to advertise custom orders that look nothing like the delivered cakes.",
@@ -2226,6 +1992,13 @@
       "premise": "A woman discovers her landlord has been advertising her apartment as a furnished short-term rental for dates when she travels for work.",
       "title": "My Landlord Rented My Apartment While I Traveled",
       "twist": "A guest leaves a handwritten thank-you card inside a kitchen drawer mentioning a three-night stay during the narrator's business trip."
+    },
+    {
+      "conflict": "She claims she was rescuing family plans when restaurants supposedly made mistakes, while confirmation emails show the bookings were deliberately cancelled from a shared account.",
+      "payoff": "Her food was actually good.",
+      "premise": "A man discovers his sister has been secretly cancelling family restaurant reservations so everyone will use the catering business she recently started.",
+      "title": "My Sister Kept Rescuing Dinners She Secretly Cancelled",
+      "twist": "The restaurant provides a cancellation timestamp and device information matching the family tablet she had borrowed."
     }
   ]
 }
