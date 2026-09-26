@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7042da8ecea652f81dfde707",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T00:07:35.556439Z",
+  "request_blob_sha": "553ed3da2d7c0c0fa82a4a052b2d947b43b97224",
+  "request_path": "content/requests/wd-7042da8ecea652f81dfde707.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Delivery audit logs reveal why one resident's meal boxes kept reaching the apartment across the hall.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4ab2e755f43dbcf60c2a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Redirected My Deliveries to Himself"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203260474"
+  },
+  "youtube_video_id": "3_9-a9UUIhM"
+}
