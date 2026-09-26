@@ -18,7 +18,7 @@
       "sample_6h": 2,
       "sample_72h": 1,
       "sample_7d": 1,
-      "sample_size": 2
+      "sample_size": 3
     },
     "collectibles": {
       "mature_engaged_sample": 4,
@@ -331,12 +331,12 @@
       "median_engaged_views_per_view_percentage": null,
       "median_shares": null,
       "median_subscribers_gained": null,
-      "median_views_24h": null,
+      "median_views_24h": 608.0,
       "median_views_2h": 36.0,
       "median_views_6h": 232.0,
       "median_views_72h": null,
       "median_views_7d": null,
-      "sample_24h": 0,
+      "sample_24h": 1,
       "sample_2h": 1,
       "sample_6h": 1,
       "sample_72h": 0,
@@ -467,12 +467,12 @@
       "median_views_24h": 3.0,
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
-      "median_views_72h": 5.0,
+      "median_views_72h": 7.0,
       "median_views_7d": 2.5,
       "sample_24h": 19,
       "sample_2h": 7,
       "sample_6h": 15,
-      "sample_72h": 14,
+      "sample_72h": 15,
       "sample_7d": 8,
       "sample_size": 19
     },
@@ -574,7 +574,7 @@
     "relationship": {
       "mature_engaged_sample": 10,
       "mature_sample": 10,
-      "median_average_view_percentage": 61.62,
+      "median_average_view_percentage": 61.59,
       "median_engaged_views_per_view_percentage": 40.9,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -631,7 +631,7 @@
     "roommate_drama": {
       "mature_engaged_sample": 3,
       "mature_sample": 3,
-      "median_average_view_percentage": 76.32,
+      "median_average_view_percentage": 76.24,
       "median_engaged_views_per_view_percentage": 54.32,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -688,7 +688,7 @@
     "shopping": {
       "mature_engaged_sample": 4,
       "mature_sample": 4,
-      "median_average_view_percentage": 61.08,
+      "median_average_view_percentage": 61.3,
       "median_engaged_views_per_view_percentage": 35.63,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -783,7 +783,7 @@
     "work": {
       "mature_engaged_sample": 8,
       "mature_sample": 8,
-      "median_average_view_percentage": 63.3,
+      "median_average_view_percentage": 63.38,
       "median_engaged_views_per_view_percentage": 53.45,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -810,12 +810,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 13.0,
-      "median_views_7d": 104.0,
+      "median_views_7d": 105.5,
       "sample_24h": 24,
       "sample_2h": 12,
       "sample_6h": 23,
       "sample_72h": 21,
-      "sample_7d": 13,
+      "sample_7d": 14,
       "sample_size": 28
     }
   },
@@ -824,16 +824,16 @@
     "top": [
       {
         "average_view_duration": 44,
-        "average_view_percentage": 70.75,
+        "average_view_percentage": 70.77,
         "creatorContentType": "shorts",
-        "engaged_view_rate_percentage": 45.02,
-        "engaged_views": 32553,
-        "estimated_minutes_watched": 25133,
+        "engaged_view_rate_percentage": 45.04,
+        "engaged_views": 32544,
+        "estimated_minutes_watched": 25132,
         "view_share_percentage": 100.0,
-        "views": 72311
+        "views": 72259
       }
     ],
-    "views_total": 72311
+    "views_total": 72259
   },
   "demographics_analysis": {
     "sample_rows": 16,
@@ -1098,17 +1098,17 @@
       "median_engaged_views_per_view_percentage": 0.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 2.5,
+      "median_views_24h": 3.0,
       "median_views_2h": 1.5,
       "median_views_6h": 2.0,
       "median_views_72h": 5.0,
       "median_views_7d": null,
-      "sample_24h": 44,
+      "sample_24h": 45,
       "sample_2h": 34,
       "sample_6h": 53,
-      "sample_72h": 20,
+      "sample_72h": 21,
       "sample_7d": 0,
-      "sample_size": 59
+      "sample_size": 60
     },
     "55_64": {
       "mature_engaged_sample": 0,
@@ -1159,19 +1159,19 @@
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
       "median_views_72h": 9.0,
-      "median_views_7d": 8.5,
+      "median_views_7d": 9.0,
       "sample_24h": 156,
       "sample_2h": 69,
       "sample_6h": 124,
       "sample_72h": 158,
-      "sample_7d": 118,
+      "sample_7d": 119,
       "sample_size": 158
     },
     "under_45": {
       "mature_engaged_sample": 11,
       "mature_sample": 11,
       "median_average_view_percentage": 70.42,
-      "median_engaged_views_per_view_percentage": 42.18,
+      "median_engaged_views_per_view_percentage": 42.1,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.0,
@@ -1187,7 +1187,7 @@
       "sample_size": 26
     }
   },
-  "generated_at": "2026-09-26T16:57:05Z",
+  "generated_at": "2026-09-26T17:27:40Z",
   "geography_analysis": {
     "sample_rows": 45,
     "top": [
@@ -1648,7 +1648,7 @@
     "accusation": {
       "mature_engaged_sample": 17,
       "mature_sample": 17,
-      "median_average_view_percentage": 68.38,
+      "median_average_view_percentage": 68.46,
       "median_engaged_views_per_view_percentage": 49.36,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -1656,18 +1656,18 @@
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
       "median_views_72h": 151.0,
-      "median_views_7d": 208.0,
+      "median_views_7d": 151.0,
       "sample_24h": 23,
       "sample_2h": 15,
       "sample_6h": 24,
       "sample_72h": 19,
-      "sample_7d": 6,
+      "sample_7d": 7,
       "sample_size": 26
     },
     "confession": {
       "mature_engaged_sample": 1,
       "mature_sample": 1,
-      "median_average_view_percentage": 76.32,
+      "median_average_view_percentage": 76.24,
       "median_engaged_views_per_view_percentage": 54.32,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -1725,25 +1725,25 @@
       "mature_engaged_sample": 34,
       "mature_sample": 34,
       "median_average_view_percentage": 54.42,
-      "median_engaged_views_per_view_percentage": 37.84,
+      "median_engaged_views_per_view_percentage": 37.77,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
-      "median_views_72h": 16.5,
+      "median_views_72h": 18.0,
       "median_views_7d": 106.0,
       "sample_24h": 54,
       "sample_2h": 31,
       "sample_6h": 53,
-      "sample_72h": 40,
+      "sample_72h": 41,
       "sample_7d": 15,
       "sample_size": 59
     },
     "money_stakes": {
       "mature_engaged_sample": 15,
       "mature_sample": 15,
-      "median_average_view_percentage": 63.12,
+      "median_average_view_percentage": 63.06,
       "median_engaged_views_per_view_percentage": 55.41,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -1757,7 +1757,7 @@
       "sample_6h": 23,
       "sample_72h": 20,
       "sample_7d": 9,
-      "sample_size": 28
+      "sample_size": 29
     },
     "social_exposure": {
       "mature_engaged_sample": 15,
@@ -1766,12 +1766,12 @@
       "median_engaged_views_per_view_percentage": 50.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 4.0,
+      "median_views_24h": 5.0,
       "median_views_2h": 7.0,
       "median_views_6h": 1.5,
       "median_views_72h": 3.0,
       "median_views_7d": 2.0,
-      "sample_24h": 20,
+      "sample_24h": 21,
       "sample_2h": 13,
       "sample_6h": 22,
       "sample_72h": 17,
@@ -1829,12 +1829,12 @@
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
       "median_views_72h": 9.0,
-      "median_views_7d": 10.0,
+      "median_views_7d": 12.5,
       "sample_24h": 153,
       "sample_2h": 79,
       "sample_6h": 134,
       "sample_72h": 131,
-      "sample_7d": 85,
+      "sample_7d": 86,
       "sample_size": 166
     },
     "male": {
@@ -1849,22 +1849,22 @@
       "median_views_6h": 2.0,
       "median_views_72h": 8.0,
       "median_views_7d": 7.5,
-      "sample_24h": 106,
+      "sample_24h": 107,
       "sample_2h": 55,
       "sample_6h": 101,
-      "sample_72h": 86,
+      "sample_72h": 87,
       "sample_7d": 48,
-      "sample_size": 115
+      "sample_size": 116
     }
   },
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 259,
+      "24h": 260,
       "2h": 134,
       "6h": 235,
-      "72h": 217,
-      "7d": 133
+      "72h": 218,
+      "7d": 134
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
@@ -1872,7 +1872,7 @@
   "low_sample_categories": [
     {
       "category": "cars",
-      "sample_size": 2
+      "sample_size": 3
     },
     {
       "category": "collectibles",
@@ -2048,12 +2048,12 @@
         "median_views_2h": 2.0,
         "median_views_6h": 2.0,
         "median_views_72h": 8.0,
-        "median_views_7d": 7.0,
-        "sample_24h": 228,
+        "median_views_7d": 7.5,
+        "sample_24h": 229,
         "sample_2h": 113,
         "sample_6h": 192,
-        "sample_72h": 207,
-        "sample_7d": 123,
+        "sample_72h": 208,
+        "sample_7d": 124,
         "sample_size": 229
       },
       "over_60m": {
@@ -2073,13 +2073,13 @@
         "sample_6h": 10,
         "sample_72h": 7,
         "sample_7d": 7,
-        "sample_size": 15
+        "sample_size": 16
       }
     },
     "exact_gap_minute_samples": {
       "0": 1,
       "100": 2,
-      "120": 10,
+      "120": 11,
       "15.18": 1,
       "20": 3,
       "237.32": 1,
@@ -2123,13 +2123,13 @@
       "median_views_2h": 1.5,
       "median_views_6h": 0.0,
       "median_views_72h": 3.0,
-      "median_views_7d": 7.0,
+      "median_views_7d": 7.5,
       "sample_24h": 11,
       "sample_2h": 6,
       "sample_6h": 10,
       "sample_72h": 9,
-      "sample_7d": 5,
-      "sample_size": 11
+      "sample_7d": 6,
+      "sample_size": 12
     },
     "02": {
       "mature_engaged_sample": 7,
@@ -2252,12 +2252,12 @@
       "median_engaged_views_per_view_percentage": 51.73,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 360.0,
+      "median_views_24h": 387.5,
       "median_views_2h": 79.0,
       "median_views_6h": 232.0,
       "median_views_72h": 296.5,
       "median_views_7d": 85.0,
-      "sample_24h": 11,
+      "sample_24h": 12,
       "sample_2h": 11,
       "sample_6h": 3,
       "sample_72h": 10,
@@ -2267,7 +2267,7 @@
     "09": {
       "mature_engaged_sample": 9,
       "mature_sample": 9,
-      "median_average_view_percentage": 63.12,
+      "median_average_view_percentage": 63.06,
       "median_engaged_views_per_view_percentage": 54.55,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2286,7 +2286,7 @@
     "10": {
       "mature_engaged_sample": 8,
       "mature_sample": 8,
-      "median_average_view_percentage": 76.34,
+      "median_average_view_percentage": 76.38,
       "median_engaged_views_per_view_percentage": 50.19,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2305,7 +2305,7 @@
     "11": {
       "mature_engaged_sample": 8,
       "mature_sample": 8,
-      "median_average_view_percentage": 72.73,
+      "median_average_view_percentage": 72.86,
       "median_engaged_views_per_view_percentage": 55.56,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2350,19 +2350,19 @@
       "median_views_24h": 164.5,
       "median_views_2h": 49.0,
       "median_views_6h": 144.0,
-      "median_views_72h": 530.0,
+      "median_views_72h": 560.0,
       "median_views_7d": 465.0,
       "sample_24h": 10,
       "sample_2h": 1,
       "sample_6h": 11,
-      "sample_72h": 8,
+      "sample_72h": 9,
       "sample_7d": 5,
       "sample_size": 11
     },
     "14": {
       "mature_engaged_sample": 9,
       "mature_sample": 9,
-      "median_average_view_percentage": 67.94,
+      "median_average_view_percentage": 68.08,
       "median_engaged_views_per_view_percentage": 55.42,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2581,13 +2581,13 @@
       "median_views_2h": 1.5,
       "median_views_6h": 0.0,
       "median_views_72h": 3.0,
-      "median_views_7d": 7.0,
+      "median_views_7d": 7.5,
       "sample_24h": 11,
       "sample_2h": 6,
       "sample_6h": 10,
       "sample_72h": 9,
-      "sample_7d": 5,
-      "sample_size": 11
+      "sample_7d": 6,
+      "sample_size": 12
     },
     "02:00": {
       "mature_engaged_sample": 7,
@@ -2710,12 +2710,12 @@
       "median_engaged_views_per_view_percentage": 55.07,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 387.5,
+      "median_views_24h": 415.0,
       "median_views_2h": 68.5,
       "median_views_6h": 120.0,
       "median_views_72h": 387.0,
       "median_views_7d": 113.0,
-      "sample_24h": 10,
+      "sample_24h": 11,
       "sample_2h": 10,
       "sample_6h": 2,
       "sample_72h": 9,
@@ -2839,7 +2839,7 @@
     "10:00": {
       "mature_engaged_sample": 8,
       "mature_sample": 8,
-      "median_average_view_percentage": 76.34,
+      "median_average_view_percentage": 76.38,
       "median_engaged_views_per_view_percentage": 50.19,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2877,7 +2877,7 @@
     "11:00": {
       "mature_engaged_sample": 8,
       "mature_sample": 8,
-      "median_average_view_percentage": 72.73,
+      "median_average_view_percentage": 72.86,
       "median_engaged_views_per_view_percentage": 55.56,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2960,12 +2960,12 @@
       "median_views_24h": 215.0,
       "median_views_2h": 49.0,
       "median_views_6h": 144.0,
-      "median_views_72h": 530.0,
+      "median_views_72h": 560.0,
       "median_views_7d": 465.0,
       "sample_24h": 9,
       "sample_2h": 1,
       "sample_6h": 9,
-      "sample_72h": 8,
+      "sample_72h": 9,
       "sample_7d": 5,
       "sample_size": 9
     },
@@ -2991,7 +2991,7 @@
     "14:00": {
       "mature_engaged_sample": 9,
       "mature_sample": 9,
-      "median_average_view_percentage": 67.94,
+      "median_average_view_percentage": 68.08,
       "median_engaged_views_per_view_percentage": 55.42,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -3348,8 +3348,8 @@
       "sample_2h": 27,
       "sample_6h": 38,
       "sample_72h": 36,
-      "sample_7d": 21,
-      "sample_size": 42
+      "sample_7d": 22,
+      "sample_size": 43
     },
     "04-07": {
       "mature_engaged_sample": 27,
@@ -3377,12 +3377,12 @@
       "median_engaged_views_per_view_percentage": 52.66,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 431.0,
+      "median_views_24h": 440.0,
       "median_views_2h": 47.0,
       "median_views_6h": 303.5,
       "median_views_72h": 448.5,
       "median_views_7d": 310.0,
-      "sample_24h": 45,
+      "sample_24h": 46,
       "sample_2h": 22,
       "sample_6h": 32,
       "sample_72h": 38,
@@ -3399,12 +3399,12 @@
       "median_views_24h": 218.0,
       "median_views_2h": 49.0,
       "median_views_6h": 104.0,
-      "median_views_72h": 482.0,
+      "median_views_72h": 490.5,
       "median_views_7d": 229.0,
       "sample_24h": 42,
       "sample_2h": 13,
       "sample_6h": 47,
-      "sample_72h": 33,
+      "sample_72h": 34,
       "sample_7d": 20,
       "sample_size": 48
     },
@@ -3482,7 +3482,7 @@
   },
   "shorts_feed_diagnostics": {
     "classification_counts": {
-      "insufficient_evidence": 229,
+      "insufficient_evidence": 230,
       "low_distribution_strong_response": 5,
       "low_distribution_weak_response": 5,
       "strong_distribution_strong_response": 22,
@@ -3831,7 +3831,7 @@
     "absurd": {
       "mature_engaged_sample": 1,
       "mature_sample": 1,
-      "median_average_view_percentage": 87.23,
+      "median_average_view_percentage": 87.69,
       "median_engaged_views_per_view_percentage": 37.94,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -3877,12 +3877,12 @@
       "median_views_2h": 1.0,
       "median_views_6h": 1.0,
       "median_views_72h": 11.0,
-      "median_views_7d": 13.0,
+      "median_views_7d": 17.0,
       "sample_24h": 43,
       "sample_2h": 23,
       "sample_6h": 35,
       "sample_72h": 38,
-      "sample_7d": 24,
+      "sample_7d": 25,
       "sample_size": 43
     },
     "conversational": {
@@ -3916,10 +3916,10 @@
       "median_views_6h": 2.0,
       "median_views_72h": 6.0,
       "median_views_7d": 37.0,
-      "sample_24h": 70,
+      "sample_24h": 71,
       "sample_2h": 42,
       "sample_6h": 67,
-      "sample_72h": 52,
+      "sample_72h": 53,
       "sample_7d": 33,
       "sample_size": 82
     },
@@ -3997,7 +3997,7 @@
       "sample_6h": 18,
       "sample_72h": 12,
       "sample_7d": 9,
-      "sample_size": 20
+      "sample_size": 21
     },
     "warm": {
       "mature_engaged_sample": 34,
@@ -4059,7 +4059,7 @@
       "views_7d": 1142
     },
     {
-      "average_view_percentage": 63.12,
+      "average_view_percentage": 63.06,
       "category": "relationship",
       "checkpoint_observations": {
         "24h": {
@@ -4075,7 +4075,7 @@
           "views": 1021
         },
         "7d": {
-          "actual_age_hours": 159.95,
+          "actual_age_hours": 160.46,
           "views": 1082
         }
       },
@@ -4151,7 +4151,7 @@
           "views": 1029
         },
         "7d": {
-          "actual_age_hours": 157.95,
+          "actual_age_hours": 158.46,
           "views": 1058
         }
       },
@@ -4316,14 +4316,14 @@
       "median_views_24h": 3.0,
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
-      "median_views_72h": 8.5,
-      "median_views_7d": 19.0,
-      "sample_24h": 166,
+      "median_views_72h": 9.0,
+      "median_views_7d": 38.0,
+      "sample_24h": 167,
       "sample_2h": 94,
       "sample_6h": 166,
-      "sample_72h": 122,
-      "sample_7d": 49,
-      "sample_size": 185
+      "sample_72h": 123,
+      "sample_7d": 50,
+      "sample_size": 186
     },
     "trend_aware": {
       "mature_engaged_sample": 20,
@@ -4521,7 +4521,7 @@
       "mature_engaged_sample": 2,
       "mature_sample": 2,
       "median_average_view_percentage": 76.84,
-      "median_engaged_views_per_view_percentage": 43.87,
+      "median_engaged_views_per_view_percentage": 43.8,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 470.0,
@@ -4670,138 +4670,10 @@
       "sample_size": 1
     }
   },
-  "videos_analyzed": 281,
+  "videos_analyzed": 282,
   "warnings": [
-    "Reporting API discovery unavailable: HTTPError",
-    "Optional retention fG-Q_nj6oXA/7d returned an empty curve; will retry",
-    "Optional retention 5IJ94-JYQac/72h returned an empty curve; will retry",
-    "Optional retention yWpM7BuiYEI/7d returned an empty curve; will retry",
-    "Optional retention tl-NEStxlQM/72h returned an empty curve; will retry",
-    "Optional retention GBTdfmHU5Uw/72h returned an empty curve; will retry",
-    "Optional retention dxRa9qjcIs4/7d returned an empty curve; will retry",
-    "Optional retention Tacc79wZYhs/72h returned an empty curve; will retry",
-    "Optional retention yr9TOIdtIgY/7d returned an empty curve; will retry",
-    "Optional retention UnfJRIXtoqo/7d returned an empty curve; will retry",
-    "Optional retention -_lhaVv6DlI/7d returned an empty curve; will retry",
-    "Optional retention PDZLvsS5fMI/7d returned an empty curve; will retry",
-    "Optional retention e5kZVlwpk0U/7d returned an empty curve; will retry",
-    "Optional retention MPNN_f6JsZE/7d returned an empty curve; will retry",
-    "Optional retention wZScXWWjx5U/7d returned an empty curve; will retry",
-    "Optional retention p2aT-UUZvfU/7d returned an empty curve; will retry",
-    "Optional retention MJLKWNmiUrk/7d returned an empty curve; will retry",
-    "Optional retention aMqD6xjBSgA/72h returned an empty curve; will retry",
-    "Optional retention GFm8S8oN2dI/72h returned an empty curve; will retry",
-    "Optional retention f8LIIqhEGys/72h returned an empty curve; will retry",
-    "Optional retention lXmCj0qJUaM/7d returned an empty curve; will retry",
-    "Optional retention WPXb0vqTxtM/72h returned an empty curve; will retry",
-    "Optional retention 97CkLnKpEHo/72h returned an empty curve; will retry",
-    "Optional retention jvcamvj-0jo/7d returned an empty curve; will retry",
-    "Optional retention XeF3pxXBwSU/72h returned an empty curve; will retry",
-    "Optional retention M1jnNjFCdnc/7d returned an empty curve; will retry",
-    "Optional retention gAr6rIUtxFo/7d returned an empty curve; will retry",
-    "Optional retention S-0lO9zC49I/72h returned an empty curve; will retry",
-    "Optional retention aKQtQS4jWGM/7d returned an empty curve; will retry",
-    "Optional retention 5VCIcy7z1Cw/7d returned an empty curve; will retry",
-    "Optional retention o5OB8YE8ewM/72h returned an empty curve; will retry",
-    "Optional retention yAq2TeNeUPw/72h returned an empty curve; will retry",
-    "Optional retention FenbNrwzcWc/7d returned an empty curve; will retry",
-    "Optional retention 9gmw8cCNgU8/7d returned an empty curve; will retry",
-    "Optional retention 5CL4Zk51nFc/72h returned an empty curve; will retry",
-    "Optional retention jHUxO8I00-s/7d returned an empty curve; will retry",
-    "Optional retention vCDKn2H08Qs/72h returned an empty curve; will retry",
-    "Optional retention fa8LgJSAHYM/7d returned an empty curve; will retry",
-    "Optional retention TOg4SW1gIUk/72h returned an empty curve; will retry",
-    "Optional retention LEFeD8_yL_0/72h returned an empty curve; will retry",
-    "Optional retention sLqvgo_HwIk/7d returned an empty curve; will retry",
-    "Optional retention qxgyeBntsBA/72h returned an empty curve; will retry",
-    "Optional retention baEcpxJlxGE/72h returned an empty curve; will retry",
-    "Optional retention YHDfEcH3xWE/7d returned an empty curve; will retry",
-    "Optional retention zaU_lghZe-Y/72h returned an empty curve; will retry",
-    "Optional retention c7-RG4VgJgQ/72h returned an empty curve; will retry",
-    "Optional retention Kq7qV8Pys_c/7d returned an empty curve; will retry",
-    "Optional retention HhQiV0MiZqo/7d returned an empty curve; will retry",
-    "Optional retention lvV5HVqLzkA/72h returned an empty curve; will retry",
-    "Optional retention lY-1yZ0Kakk/72h returned an empty curve; will retry",
-    "Optional retention f_avcwt-gyg/7d returned an empty curve; will retry",
-    "Optional retention u-XdVkwPJl0/72h returned an empty curve; will retry",
-    "Optional retention cOS7rgaPloE/72h returned an empty curve; will retry",
-    "Optional retention 2VJmDINSltQ/72h returned an empty curve; will retry",
-    "Optional retention cK9dp0-o6jA/72h returned an empty curve; will retry",
-    "Optional retention n2w0GU7PKgA/72h returned an empty curve; will retry",
-    "Optional retention SJHa3hVs734/7d returned an empty curve; will retry",
-    "Optional retention DmdjKv1J1gw/7d returned an empty curve; will retry",
-    "Optional retention 6b5M50wBZkQ/72h returned an empty curve; will retry",
-    "Optional retention bWQ0UJBEfw8/7d returned an empty curve; will retry",
-    "Optional retention Q-QllA8mpsk/72h returned an empty curve; will retry",
-    "Optional retention ys1BbTsRA8I/7d returned an empty curve; will retry",
-    "Optional retention BNC5QALxLdQ/7d returned an empty curve; will retry",
-    "Optional retention 4LjV2pJ0haY/72h returned an empty curve; will retry",
-    "Optional retention 9q6Y16a8YZE/72h returned an empty curve; will retry",
-    "Optional retention 5FLzsQnLX38/7d returned an empty curve; will retry",
-    "Optional retention _HIjM1ZS8vU/7d returned an empty curve; will retry",
-    "Optional retention Wjq4ZJmh1kU/7d returned an empty curve; will retry",
-    "Optional retention eInw1U3a8QQ/72h returned an empty curve; will retry",
-    "Optional retention wdUP62tRlZQ/72h returned an empty curve; will retry",
-    "Optional retention VdrnzgSzgG8/72h returned an empty curve; will retry",
-    "Optional retention P5fg5TqHZqM/7d returned an empty curve; will retry",
-    "Optional retention Fv-ZOYTKalw/7d returned an empty curve; will retry",
-    "Optional retention TOj44D9as4w/7d returned an empty curve; will retry",
-    "Optional retention mYVGIZTwtOc/7d returned an empty curve; will retry",
-    "Optional retention RRpw2dbwsbw/72h returned an empty curve; will retry",
-    "Optional retention xMyFQE29D8Q/7d returned an empty curve; will retry",
-    "Optional retention YflY5QSnPbQ/7d returned an empty curve; will retry",
-    "Optional retention 6O1VFGZufOA/72h returned an empty curve; will retry",
-    "Optional retention -fyphExANcM/7d returned an empty curve; will retry",
-    "Optional retention dd_Q1ZIk1_Y/7d returned an empty curve; will retry",
-    "Optional retention ELd8jegr5SY/72h returned an empty curve; will retry",
-    "Optional retention GLbX6TSR9rM/72h returned an empty curve; will retry",
-    "Optional retention WBUoh-L_ku8/72h returned an empty curve; will retry",
-    "Optional retention JkBWHSnwL_w/72h returned an empty curve; will retry",
-    "Optional retention P8rRsMzkbiM/7d returned an empty curve; will retry",
-    "Optional retention XNgjTmpAztc/7d returned an empty curve; will retry",
-    "Optional retention AxkLrpZonmg/72h returned an empty curve; will retry",
-    "Optional retention noJj5cctnJw/72h returned an empty curve; will retry",
-    "Optional retention SGCXrsFQ4C0/72h returned an empty curve; will retry",
-    "Optional retention tyMqRwm7mFk/7d returned an empty curve; will retry",
-    "Optional retention TDHTfpo8uOk/7d returned an empty curve; will retry",
-    "Optional retention ivtXjXIwOIo/72h returned an empty curve; will retry",
-    "Optional retention yiJfMFyP99E/7d returned an empty curve; will retry",
-    "Optional retention JNJuN6hjDnU/7d returned an empty curve; will retry",
-    "Optional retention xp3v7JQYTeY/72h returned an empty curve; will retry",
-    "Optional retention qYGAGmI8DkA/7d returned an empty curve; will retry",
-    "Optional retention pfGOVb7FgH4/7d returned an empty curve; will retry",
-    "Optional retention SG904dWb9Oo/7d returned an empty curve; will retry",
-    "Optional retention lv7U0qIwAqI/72h returned an empty curve; will retry",
-    "Optional retention 1J9-PkU0Ico/7d returned an empty curve; will retry",
-    "Optional retention ZhbPn3nV7YQ/72h returned an empty curve; will retry",
-    "Optional retention Re04iw_dBME/7d returned an empty curve; will retry",
-    "Optional retention AR_ipk4bbfo/72h returned an empty curve; will retry",
-    "Optional retention PWak30UTWgI/72h returned an empty curve; will retry",
-    "Optional retention RTQHpihQB64/72h returned an empty curve; will retry",
-    "Optional retention nc4lkE5b58E/7d returned an empty curve; will retry",
-    "Optional retention Ug22yEIAdWQ/72h returned an empty curve; will retry",
-    "Optional retention MV9FcqRhHb0/7d returned an empty curve; will retry",
-    "Optional retention Ok58KKM2w0g/7d returned an empty curve; will retry",
-    "Optional retention Ip2DWLPJgXs/7d returned an empty curve; will retry",
-    "Optional retention 2-N_29umabM/7d returned an empty curve; will retry",
-    "Optional retention Kf0WjK4Xb3k/7d returned an empty curve; will retry",
-    "Optional retention nzChaulkJuU/7d returned an empty curve; will retry",
-    "Optional retention CCg3xfI33LM/7d returned an empty curve; will retry",
-    "Optional retention zsUOxxodPNU/7d returned an empty curve; will retry",
-    "Optional retention 4eLcVZOchMw/7d returned an empty curve; will retry",
-    "Optional retention d4Pry_3R2RY/7d returned an empty curve; will retry",
-    "Optional retention K0eliQoPyEA/7d returned an empty curve; will retry",
-    "Optional retention J-7uX-1h9KI/72h returned an empty curve; will retry",
-    "Optional retention 6IxCkUZE20I/72h returned an empty curve; will retry",
-    "Optional retention fPTldS-qj1Y/7d returned an empty curve; will retry",
-    "Optional retention 1WbJB63GW9M/72h returned an empty curve; will retry",
-    "Optional retention xwB0YpbhbBw/72h returned an empty curve; will retry",
-    "Optional retention g9CaV4h_VnA/72h returned an empty curve; will retry",
-    "Optional retention QirIFYqjS24/72h returned an empty curve; will retry",
-    "Optional retention 0-RdMPOTK7k/7d returned an empty curve; will retry",
-    "Optional retention gsxkkQOpGyk/72h returned an empty curve; will retry",
-    "Optional retention Wuygt-kJILU/72h returned an empty curve; will retry",
-    "Optional retention JbZ0euKYprM/7d returned an empty curve; will retry"
+    "Reporting API discovery unavailable: HTTP 403 Forbidden",
+    "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ],
   "weak_retention_examples": [
     {
@@ -4859,7 +4731,7 @@
           "views": 0
         },
         "7d": {
-          "actual_age_hours": 150.95,
+          "actual_age_hours": 151.46,
           "views": 1
         }
       },
