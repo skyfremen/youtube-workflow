@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c7f3a65472ebe845e0e44e39",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T15:03:52.012166Z",
+  "request_blob_sha": "11915c36a594d7c96da9e171a11c53effe8c4754",
+  "request_path": "content/requests/wd-c7f3a65472ebe845e0e44e39.json",
+  "source_commit_sha": "59ee603be5906c68fd93894b4d61a699f28516e9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A resident faces a gym ban until security footage explains why her account keeps admitting strangers.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ea369fb37feebed7ff00",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Cloned My Gym Access Pass"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7663a362ea618ba533eea4590c5e4cab325130b3",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36250255222"
+  },
+  "youtube_video_id": "Ar9nxT4XGuY"
+}
