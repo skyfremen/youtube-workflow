@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-42564ab769cce79f28d8f069",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-26T00:11:18.187972Z",
+  "request_blob_sha": "a7084aa78d3f60f34250cd748ecf7c21e4cd68bf",
+  "request_path": "content/requests/wd-42564ab769cce79f28d8f069.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cropped order screenshot exposes a friend's fake confirmations for scarce gaming hardware.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-52d724a93d35eac97b48",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Console Preorders Never Existed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T01:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203266240"
+  },
+  "youtube_video_id": "4EzqyB9ciRg"
+}
