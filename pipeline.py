@@ -330,9 +330,21 @@ def youtube_scheduled_slots():
                 try: occupied.add(instant(raw,"youtube.status.publishAt").astimezone(timezone.utc).replace(microsecond=0))
                 except VError: continue
     return occupied
+def request_publish_slots(path=REQS):
+    occupied=set()
+    for request_path in sorted(Path(path).glob("*.json")):
+        try: document=read(request_path)
+        except (OSError,json.JSONDecodeError) as exc: raise VError("INVALID_RESERVED_REQUEST",str(request_path),type(exc).__name__,"valid immutable request JSON",False) from None
+        items=document.get("items") if isinstance(document,dict) and isinstance(document.get("items"),list) else [document]
+        for item in items:
+            publication=item.get("publication") if isinstance(item,dict) else None
+            raw=publication.get("publish_at") if isinstance(publication,dict) else None
+            if raw:
+                occupied.add(instant(raw,f"{request_path}.publication.publish_at").astimezone(timezone.utc).replace(microsecond=0))
+    return occupied
 def allocate_publish_slots(count,now=None,occupied=None):
     if not isinstance(count,int) or count<=0: raise VError("INVALID_SLOT_COUNT","count",count,"positive integer",False)
-    now=(now or datetime.now(SGT)).astimezone(SGT); occupied=youtube_scheduled_slots() if occupied is None else occupied
+    now=(now or datetime.now(SGT)).astimezone(SGT); occupied=(youtube_scheduled_slots()|request_publish_slots()) if occupied is None else occupied
     normalized=set()
     for value in occupied:
         d=value if isinstance(value,datetime) else instant(value,"occupied_slot")
@@ -409,8 +421,9 @@ def validate_item(x,r=None):
     expected={"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}
     if x["render"]!=expected: raise VError("INVALID_RENDER_CONTRACT","render",x["render"],str(expected),False)
     return x
+def request_id_for(did,raw): return "rq-"+hashlib.sha256(canonical({"source_draft_id":did,"draft":raw})).hexdigest()[:24]
 def make_batch(did,raw,d,r,slots):
-    rid="rq-"+hashlib.sha256(canonical({"source_draft_id":did,"draft":raw})).hexdigest()[:24]
+    rid=request_id_for(did,raw)
     items=[make_item(did,i,w,r,slots[i]) for i,w in enumerate(d["winners"])]
     return {"request_version":2,"request_id":rid,"source_draft_id":did,"items":items}
 def validate_batch(x,path=None,r=None):
@@ -459,7 +472,14 @@ def finalize(path):
     try:
         raw=read_draft(path); d=normalize_draft(raw); r=registry(); violations=collect_draft_violations(d)
         if violations: raise DraftValidationError(violations)
-        slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); target=REQS/(q["request_id"]+".json"); validate_batch(q,target,r)
+        target=REQS/(request_id_for(did,raw)+".json")
+        if target.exists():
+            existing=validate_batch(read(target),target,r)
+            slots=[item["publication"]["publish_at"] for item in existing["items"]]
+            q=make_batch(did,raw,d,r,slots)
+            if target.read_bytes()!=pretty(q): raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(pretty(q)),False)
+            return target
+        slots=allocate_publish_slots(len(d["winners"])); q=make_batch(did,raw,d,r,slots); validate_batch(q,target,r)
     except VError as e: fail(did,e,raw if "raw" in locals() else None); raise
     rawq=pretty(q)
     if target.exists() and target.read_bytes()!=rawq: raise VError("IMMUTABLE_REQUEST_CONFLICT",str(target),blob(target.read_bytes()),blob(rawq),False)

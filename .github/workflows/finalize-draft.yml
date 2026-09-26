@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: finalize-state-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   finalize:
     runs-on: ubuntu-latest
@@ -34,6 +38,24 @@ jobs:
           fi
           echo "path=${drafts[0]}" >> "${GITHUB_OUTPUT}"
           echo "id=$(basename "${drafts[0]}" .json)" >> "${GITHUB_OUTPUT}"
+
+      - name: Refresh latest serialized planning state
+        shell: bash
+        run: |
+          set -euo pipefail
+          path="${{ steps.draft.outputs.path }}"
+          source_blob="$(git rev-parse "${GITHUB_SHA}:${path}")"
+          git fetch origin main
+          git reset --hard origin/main
+          if [[ ! -f "${path}" ]]; then
+            echo "::error::DRAFT_MISSING_FROM_MAIN ${path}"
+            exit 1
+          fi
+          current_blob="$(git hash-object "${path}")"
+          if [[ "${source_blob}" != "${current_blob}" ]]; then
+            echo "::error::DRAFT_IMMUTABILITY_VIOLATION ${path}"
+            exit 1
+          fi
 
       - name: Preflight draft JSON
         shell: bash

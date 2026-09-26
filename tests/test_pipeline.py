@@ -205,6 +205,68 @@ class DraftValidationTests(unittest.TestCase):
             self.assertEqual(payload["field"], "RUNTIME_AUTH_A")
             self.assertFalse(payload["repairable"])
 
+    def test_finalize_reuses_identical_immutable_request_without_reallocating_slots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            draft_path = root / "draft-testidempotent01.json"
+            requests = root / "requests"
+            failures = root / "failures"
+            draft_path.write_text(
+                json.dumps(draft_doc(winner(valid_narration()))), encoding="utf-8"
+            )
+            registry = {
+                "assets": [
+                    {
+                        "id": name,
+                        "category": "crafting",
+                        "source_url": f"https://www.pexels.com/video/{name}",
+                        "download_url": f"https://videos.pexels.com/{name}.mp4",
+                        "duration_seconds": 60,
+                    }
+                    for name in ("a", "b", "c")
+                ]
+            }
+
+            with patch.object(p, "REQS", requests), patch.object(
+                p, "FAILS", failures
+            ), patch.object(p, "registry", return_value=registry), patch.object(
+                p, "allocate_publish_slots", return_value=["2030-01-01T00:00:00Z"]
+            ):
+                first = p.finalize(draft_path)
+
+            with patch.object(p, "REQS", requests), patch.object(
+                p, "FAILS", failures
+            ), patch.object(p, "registry", return_value=registry), patch.object(
+                p,
+                "allocate_publish_slots",
+                side_effect=AssertionError("existing request must not reallocate slots"),
+            ) as allocate:
+                second = p.finalize(draft_path)
+
+            self.assertEqual(first, second)
+            allocate.assert_not_called()
+
+
+class PublicationSlotTests(unittest.TestCase):
+    def test_remote_and_finalized_request_slots_are_both_reserved(self):
+        now = p.datetime(2030, 1, 1, 7, 50, tzinfo=p.SGT)
+        remote = {p.datetime(2030, 1, 1, 0, 0, tzinfo=p.timezone.utc)}
+        finalized = {p.datetime(2030, 1, 1, 0, 20, tzinfo=p.timezone.utc)}
+
+        with patch.object(p, "youtube_scheduled_slots", return_value=remote), patch.object(
+            p, "request_publish_slots", return_value=finalized, create=True
+        ):
+            slots = p.allocate_publish_slots(1, now)
+
+        self.assertEqual(slots, ["2030-01-01T00:40:00Z"])
+
+    def test_finalize_workflow_serializes_slot_allocation_from_latest_main(self):
+        workflow = (p.ROOT / ".github" / "workflows" / "finalize-draft.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("group: finalize-state-${{ github.ref }}", workflow)
+        self.assertIn("git reset --hard origin/main", workflow)
+
 
 class PlannerAnalyticsContextTests(unittest.TestCase):
     def setUp(self):
