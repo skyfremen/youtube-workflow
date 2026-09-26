@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-292d0d29770ebd495427b398",
+  "created_at": "2026-09-26T00:06:47.110695Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "d578a20b6741733e8d45ec4d9b7a56ab117eec35",
+  "request_path": "content/requests/wd-292d0d29770ebd495427b398.json",
+  "source_commit_sha": "335be31591b7a3151637280acd6d77db5050bc2e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A box-office receipt exposes a hidden markup inside a friend's group ticket purchases.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f97396a58aee8227318a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Friend Was Marking Up Our Concert Tickets"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-26T21:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "e13a930a90ad9ba174c2682ea8591c6040bd4fdd",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36203261525"
+  }
+}
