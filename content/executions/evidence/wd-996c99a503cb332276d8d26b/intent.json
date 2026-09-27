@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-996c99a503cb332276d8d26b",
+  "created_at": "2026-09-27T12:10:32.249086Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "ecaec8c89574064b3bb1b258ab1f24f61eb8b66f",
+  "request_path": "content/requests/wd-996c99a503cb332276d8d26b.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A sponsor's congratulations email reveals the real price behind one friend's group event package.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e18c0cffd81d6d38bd44",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Free Game-Day Passes Somehow Cost Us Money"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T04:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317732519"
+  }
+}
