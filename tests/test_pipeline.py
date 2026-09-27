@@ -248,6 +248,140 @@ class DraftValidationTests(unittest.TestCase):
 
 
 class PublicationSlotTests(unittest.TestCase):
+    @staticmethod
+    def write_reserved_item(root, content_id, publish_at):
+        requests = root / "requests"
+        requests.mkdir()
+        (requests / "rq-test.json").write_text(
+            json.dumps(
+                {
+                    "items": [
+                        {
+                            "content_id": content_id,
+                            "publication": {"publish_at": publish_at},
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        return requests
+
+    def test_completed_explicit_cancellation_releases_local_slot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            content_id = "wd-" + "a" * 24
+            video_id = "abcdefghijk"
+            publish_at = "2030-01-01T00:00:00Z"
+            requests = self.write_reserved_item(root, content_id, publish_at)
+            results = root / "results"
+            results.mkdir()
+            (results / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "result_version": 2,
+                        "content_id": content_id,
+                        "execution_id": "ex-" + "b" * 24,
+                        "status": "scheduled",
+                        "youtube_video_id": video_id,
+                        "visibility": "private",
+                        "verified": True,
+                        "publish_at": publish_at,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            cancellations = root / "slot-cancellations"
+            cancellations.mkdir()
+            (cancellations / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "cancellation_version": 1,
+                        "content_id": content_id,
+                        "youtube_video_id": video_id,
+                        "reason": "deleted_from_youtube",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(p, "CANCELLATIONS", cancellations, create=True), patch.object(
+                p, "RESULTS", results, create=True
+            ):
+                occupied = p.request_publish_slots(requests)
+
+            self.assertEqual(occupied, set())
+
+    def test_cancellation_without_completed_result_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            content_id = "wd-" + "a" * 24
+            requests = self.write_reserved_item(
+                root, content_id, "2030-01-01T00:00:00Z"
+            )
+            results = root / "results"
+            results.mkdir()
+            cancellations = root / "slot-cancellations"
+            cancellations.mkdir()
+            (cancellations / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "cancellation_version": 1,
+                        "content_id": content_id,
+                        "youtube_video_id": "abcdefghijk",
+                        "reason": "deleted_from_youtube",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(p, "CANCELLATIONS", cancellations, create=True), patch.object(
+                p, "RESULTS", results, create=True
+            ), self.assertRaisesRegex(p.VError, "CANCELLATION_RESULT_MISSING"):
+                p.request_publish_slots(requests)
+
+    def test_cancellation_video_id_must_match_completed_result(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            content_id = "wd-" + "a" * 24
+            publish_at = "2030-01-01T00:00:00Z"
+            requests = self.write_reserved_item(root, content_id, publish_at)
+            results = root / "results"
+            results.mkdir()
+            (results / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "result_version": 2,
+                        "content_id": content_id,
+                        "execution_id": "ex-" + "b" * 24,
+                        "status": "scheduled",
+                        "youtube_video_id": "abcdefghijk",
+                        "visibility": "private",
+                        "verified": True,
+                        "publish_at": publish_at,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            cancellations = root / "slot-cancellations"
+            cancellations.mkdir()
+            (cancellations / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "cancellation_version": 1,
+                        "content_id": content_id,
+                        "youtube_video_id": "zzzzzzzzzzz",
+                        "reason": "deleted_from_youtube",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(p, "CANCELLATIONS", cancellations, create=True), patch.object(
+                p, "RESULTS", results, create=True
+            ), self.assertRaisesRegex(p.VError, "CANCELLATION_RESULT_MISMATCH"):
+                p.request_publish_slots(requests)
+
     def test_remote_and_finalized_request_slots_are_both_reserved(self):
         now = p.datetime(2030, 1, 1, 7, 50, tzinfo=p.SGT)
         remote = {p.datetime(2030, 1, 1, 0, 0, tzinfo=p.timezone.utc)}

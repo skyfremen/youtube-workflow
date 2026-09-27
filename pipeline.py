@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PLANNER_ANALYTICS=ROOT/"content/planner-analytics.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
-REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"
+REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"; RESULTS=ROOT/"content/results"; CANCELLATIONS=ROOT/"content/slot-cancellations"
 REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=3
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
 MAX_CONTEXT_BYTES=40000; MAX_PLANNER_ANALYTICS_BYTES=16000
@@ -331,7 +331,20 @@ def youtube_scheduled_slots():
                 except VError: continue
     return occupied
 def request_publish_slots(path=REQS):
-    occupied=set()
+    released={}
+    for cancellation_path in sorted(CANCELLATIONS.glob("*.json")):
+        try: cancellation=read(cancellation_path)
+        except (OSError,json.JSONDecodeError) as exc: raise VError("INVALID_SLOT_CANCELLATION",str(cancellation_path),type(exc).__name__,"valid immutable cancellation JSON",False) from None
+        required={"cancellation_version","content_id","youtube_video_id","reason"}
+        if not isinstance(cancellation,dict) or set(cancellation)!=required: raise VError("INVALID_SLOT_CANCELLATION_FIELDS",str(cancellation_path),sorted(cancellation) if isinstance(cancellation,dict) else type(cancellation).__name__,"exact cancellation fields",False)
+        cid=str(cancellation.get("content_id") or "")
+        if cancellation.get("cancellation_version")!=1 or not CID_RE.fullmatch(cid) or cancellation_path.name!=cid+".json" or cancellation.get("reason")!="deleted_from_youtube": raise VError("INVALID_SLOT_CANCELLATION",str(cancellation_path),cancellation,"version 1 cancellation named for its content_id with reason deleted_from_youtube",False)
+        result_path=RESULTS/(cid+".json")
+        if not result_path.is_file(): raise VError("CANCELLATION_RESULT_MISSING",str(cancellation_path),cid,"existing verified scheduled result",False)
+        result=validate_result(read(result_path),result_path)
+        if result["youtube_video_id"]!=cancellation["youtube_video_id"]: raise VError("CANCELLATION_RESULT_MISMATCH","youtube_video_id",cancellation["youtube_video_id"],result["youtube_video_id"],False)
+        released[cid]=instant(result["publish_at"],"result.publish_at").astimezone(timezone.utc).replace(microsecond=0)
+    occupied=set(); matched=set()
     for request_path in sorted(Path(path).glob("*.json")):
         try: document=read(request_path)
         except (OSError,json.JSONDecodeError) as exc: raise VError("INVALID_RESERVED_REQUEST",str(request_path),type(exc).__name__,"valid immutable request JSON",False) from None
@@ -340,7 +353,14 @@ def request_publish_slots(path=REQS):
             publication=item.get("publication") if isinstance(item,dict) else None
             raw=publication.get("publish_at") if isinstance(publication,dict) else None
             if raw:
-                occupied.add(instant(raw,f"{request_path}.publication.publish_at").astimezone(timezone.utc).replace(microsecond=0))
+                slot=instant(raw,f"{request_path}.publication.publish_at").astimezone(timezone.utc).replace(microsecond=0)
+                cid=item.get("content_id") if isinstance(item,dict) else None
+                if cid in released:
+                    if released[cid]!=slot: raise VError("CANCELLATION_SLOT_MISMATCH","publish_at",zulu(released[cid]),zulu(slot),False)
+                    matched.add(cid); continue
+                occupied.add(slot)
+    missing=set(released)-matched
+    if missing: raise VError("CANCELLATION_REQUEST_MISSING","content_id",sorted(missing),"content present in one immutable request",False)
     return occupied
 def allocate_publish_slots(count,now=None,occupied=None):
     if not isinstance(count,int) or count<=0: raise VError("INVALID_SLOT_COUNT","count",count,"positive integer",False)
