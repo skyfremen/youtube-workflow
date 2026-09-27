@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8651c8c391d61d2568bf3923",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T12:08:08.065633Z",
+  "request_blob_sha": "517cca5aad92f53762b7effaac3ea34e20c1009a",
+  "request_path": "content/requests/wd-8651c8c391d61d2568bf3923.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cancellation warning reveals that one spare gym tag has been traveling much farther than its owner.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4bbaf7740da40b6e6e20",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Gym Membership Became My Friend's Guest Pass"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317728103"
+  },
+  "youtube_video_id": "cSpUCgMh680"
+}
