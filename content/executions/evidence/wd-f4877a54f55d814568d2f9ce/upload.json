@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f4877a54f55d814568d2f9ce",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T00:29:59.302676Z",
+  "request_blob_sha": "1010fda6cb5c422d23a4be835073320df2406ce2",
+  "request_path": "content/requests/wd-f4877a54f55d814568d2f9ce.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7a8f8d4a67cccf82e99d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Best Friend Secretly Returned My Birthday Gift"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T09:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282374783"
+  },
+  "youtube_video_id": "V9e1G3kq0q0"
+}
