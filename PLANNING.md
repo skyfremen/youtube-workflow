@@ -90,6 +90,8 @@ Recheck **Finalize Draft** for the repair draft. If it fails with another matchi
 Every winner follows the same creative contract. Tell addictive, relatable everyday dramas like someone excitedly recounting something that happened. Use simple conversational language, fast progression, and natural narration rather than literary prose or screenplay-style scene setting.
 
 - Hook immediately with a specific situation that creates curiosity or tension. Prefer concrete conflict, consequence, contradiction, discovery, confession, exposure, urgency, or meaningful stakes over generic setup.
+- After the opening hook, immediately deliver the first concrete proof, consequence, contradiction, or escalation. Avoid spending the first post-hook beat on background explanation when that context can come afterward.
+- Front-load the first meaningful development: hook → proof/problem gets worse → context, rather than hook → context → proof.
 - Choose exactly one `hook_type` from the supported mechanisms below based on how the opening earns attention, not merely the overall story conflict.
 - Build around meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging. Prefer conflicts where viewers can naturally take sides without forcing artificial 50/50 ambiguity when one character is clearly wrong.
 - Give characters understandable motivations and stakes when natural, so disagreement comes from the story rather than a bolted-on engagement question.
