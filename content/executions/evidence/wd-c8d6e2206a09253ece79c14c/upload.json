@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c8d6e2206a09253ece79c14c",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T00:31:24.540991Z",
+  "request_blob_sha": "bae52f864c9fd65eeec13b234975d0d92e78bca6",
+  "request_path": "content/requests/wd-c8d6e2206a09253ece79c14c.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b7efaeecdba3f302e543",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Wedding Photographer Gave My Photos to Another Couple"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282380320"
+  },
+  "youtube_video_id": "FXuFb2Tv9wo"
+}
