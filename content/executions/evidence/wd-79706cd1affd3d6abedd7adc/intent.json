@@ -1,0 +1,34 @@
+{
+  "content_id": "wd-79706cd1affd3d6abedd7adc",
+  "created_at": "2026-09-27T00:31:17.279625Z",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "intent",
+  "request_blob_sha": "acda826424a11c9a2bb1c0c69a5673640d0b379a",
+  "request_path": "content/requests/wd-79706cd1affd3d6abedd7adc.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-42d5868cf9e922d3ae37",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor's Renovation Was Being Billed to Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T08:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282373695"
+  }
+}
