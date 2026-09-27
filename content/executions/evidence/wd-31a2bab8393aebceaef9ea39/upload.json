@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-31a2bab8393aebceaef9ea39",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T12:11:32.674136Z",
+  "request_blob_sha": "b095cfe3330ec4082eb21b2119501568d630d802",
+  "request_path": "content/requests/wd-31a2bab8393aebceaef9ea39.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A marketplace buyer unexpectedly reveals where personalized wedding supplies have been disappearing.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b2b7d9c4d355331e5081",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Bridesmaid Was Selling My Wedding Welcome Bags"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317726706"
+  },
+  "youtube_video_id": "TXiD8DOIZUA"
+}
