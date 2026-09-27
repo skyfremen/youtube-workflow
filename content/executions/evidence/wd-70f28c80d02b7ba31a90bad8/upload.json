@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-70f28c80d02b7ba31a90bad8",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T00:31:34.051398Z",
+  "request_blob_sha": "6f39342bcdee5d94cbb996f4c7ae884bdbc08514",
+  "request_path": "content/requests/wd-70f28c80d02b7ba31a90bad8.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-60cbd96df821c3bd99b2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Fiancé Invited His Coworkers to Our Honeymoon"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T10:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282375888"
+  },
+  "youtube_video_id": "Ng_oRI-xdWE"
+}
