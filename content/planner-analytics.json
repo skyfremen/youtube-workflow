@@ -110,7 +110,7 @@
       {
         "average_view_percentage": 69.95,
         "dimension": "hook_type",
-        "evidence_median_views": 129.0,
+        "evidence_median_views": 167.5,
         "mature_sample": 20,
         "sample_size": 30,
         "value": "accusation"
@@ -124,28 +124,28 @@
         "value": "natural"
       },
       {
-        "average_view_percentage": 50.09,
+        "average_view_percentage": 42.51,
         "dimension": "category",
-        "evidence_median_views": 105.5,
-        "mature_sample": 21,
+        "evidence_median_views": 58.5,
+        "mature_sample": 22,
         "sample_size": 31,
         "value": "workplace"
       },
       {
+        "average_view_percentage": 63.1,
+        "dimension": "story_tone",
+        "evidence_median_views": 37.0,
+        "mature_sample": 54,
+        "sample_size": 93,
+        "value": "dramatic"
+      },
+      {
         "average_view_percentage": 68.67,
         "dimension": "category",
-        "evidence_median_views": 45.5,
+        "evidence_median_views": 27.0,
         "mature_sample": 10,
         "sample_size": 15,
         "value": "work"
-      },
-      {
-        "average_view_percentage": 67.54,
-        "dimension": "trend_lane",
-        "evidence_median_views": 41.0,
-        "mature_sample": 122,
-        "sample_size": 211,
-        "value": "evergreen"
       }
     ],
     "weak_patterns": [
@@ -158,18 +158,10 @@
         "value": "consequence_first"
       },
       {
-        "average_view_percentage": 60.92,
-        "dimension": "hook_type",
-        "evidence_median_views": 2.5,
-        "mature_sample": 16,
-        "sample_size": 26,
-        "value": "social_exposure"
-      },
-      {
-        "average_view_percentage": 63.89,
+        "average_view_percentage": 63.62,
         "dimension": "story_tone",
         "evidence_median_views": 3.0,
-        "mature_sample": 53,
+        "mature_sample": 54,
         "sample_size": 77,
         "value": "dramatic_comedy"
       },
@@ -180,24 +172,32 @@
         "mature_sample": 12,
         "sample_size": 15,
         "value": "urgency"
+      },
+      {
+        "average_view_percentage": 64.25,
+        "dimension": "category",
+        "evidence_median_views": 3.0,
+        "mature_sample": 13,
+        "sample_size": 23,
+        "value": "friends"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-09-27T11:30:28Z",
+    "latest_realtime_snapshot": "2026-09-27T17:30:28Z",
     "videos_analyzed": 309
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 499.5,
-        "sample_size": 58,
-        "window": "12-15"
-      },
-      {
-        "evidence_median_views": 448.5,
+        "evidence_median_views": 511.0,
         "sample_size": 61,
         "window": "08-11"
+      },
+      {
+        "evidence_median_views": 500.0,
+        "sample_size": 58,
+        "window": "12-15"
       },
       {
         "evidence_median_views": 148.0,
@@ -218,24 +218,24 @@
       }
     ]
   },
-  "generated_at": "2026-09-27T11:30:28Z",
+  "generated_at": "2026-09-27T17:30:28Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 280,
+      "24h": 285,
       "2h": 149,
-      "6h": 261,
-      "72h": 236,
-      "7d": 152
+      "6h": 264,
+      "72h": 246,
+      "7d": 158
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional Reporting download 20506318096 unavailable: HTTPError",
-    "Optional Reporting download 20506535963 unavailable: HTTPError",
-    "Optional Reporting download 20506518237 unavailable: HTTPError",
-    "Optional Reporting download 20506417544 unavailable: HTTPError",
-    "Optional Reporting download 20506514429 unavailable: HTTPError"
+    "Optional Reporting download 20506331724 unavailable: HTTPError",
+    "Optional Reporting download 20506331718 unavailable: HTTPError",
+    "Optional Reporting download 20506667830 unavailable: HTTPError",
+    "Optional Reporting download 20506441623 unavailable: HTTPError",
+    "Optional Reporting download 20506491358 unavailable: HTTPError"
   ]
 }
