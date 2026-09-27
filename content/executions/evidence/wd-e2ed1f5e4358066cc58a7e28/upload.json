@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e2ed1f5e4358066cc58a7e28",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T12:11:04.336474Z",
+  "request_blob_sha": "333c46fa4cc897b5d20b275af9966c97e82c5075",
+  "request_path": "content/requests/wd-e2ed1f5e4358066cc58a7e28.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An office award ceremony becomes awkward when the winning idea is already sitting on someone else's desk.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d1ef3396bda64fd9d893",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Coworker Won an Award With My Prototype"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317722039"
+  },
+  "youtube_video_id": "aO5MI2PlgwE"
+}
