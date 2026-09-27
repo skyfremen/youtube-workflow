@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6ec716dbd547a0dc57a8cafb",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T12:12:29.081216Z",
+  "request_blob_sha": "6db3766498621be3babdd57d868ece5f8b841feb",
+  "request_path": "content/requests/wd-6ec716dbd547a0dc57a8cafb.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise laptop confirmation turns into a fight over purchase limits, identity details, and an unfinished financing form.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d19de9ae156f354dd5c3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boyfriend Preordered a Googlebook in My Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317733641"
+  },
+  "youtube_video_id": "aUiI3WRooOQ"
+}
