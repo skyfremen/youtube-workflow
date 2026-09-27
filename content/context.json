@@ -252,13 +252,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "The friend says the narrator loses nothing because she never paid for the purchases, while repeated returns have triggered a fraud restriction on the narrator's account.",
-      "payoff": "They restored my legitimate purchases",
-      "premise": "A woman discovers a friend has been using her loyalty account for expensive purchases, collecting the rewards, then returning the items for cash-equivalent store credit.",
-      "title": "My Friend Turned My Loyalty Account Into Her Return Account",
-      "twist": "Store records show the friend deliberately entered the narrator's phone number on purchases made with her own card before returning them without receipts."
-    },
-    {
       "conflict": "The coworker calls it a convenience service because unused spaces would otherwise sit empty, while employees are being denied free parking allocated by the company.",
       "payoff": "Facilities cancelled the future bookings",
       "premise": "A man discovers his coworker has been booking scarce office parking spaces under absent employees' names and reselling them to colleagues for cash.",
@@ -425,6 +418,13 @@
       "premise": "A woman discovers her neighbor has been using her assigned visitor parking permits for clients of his home tutoring business.",
       "title": "My Neighbor Used My Visitor Parking for His Clients",
       "twist": "The building portal shows permit requests were made using an old emergency-access login she once shared with him."
+    },
+    {
+      "conflict": "The friend says he spent hours securing the promotion and considers the savings his reward, while everyone paid believing the amount represented their actual event cost.",
+      "payoff": "He refunded everyone that afternoon.",
+      "premise": "A man discovers his friend took deposits for a shared tailgate package, then used free promotional passes and kept the collected money.",
+      "title": "Our Free Game-Day Passes Somehow Cost Us Money",
+      "twist": "A sponsor email congratulating the group on winning free passes is accidentally forwarded to everyone."
     }
   ]
 }
