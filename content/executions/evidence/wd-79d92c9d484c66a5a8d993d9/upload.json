@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-79d92c9d484c66a5a8d993d9",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T12:09:10.344164Z",
+  "request_blob_sha": "4b66e334bd8db3ce2fc0d299d39e1390379724f5",
+  "request_path": "content/requests/wd-79d92c9d484c66a5a8d993d9.json",
+  "source_commit_sha": "b71a93cbb6bf9342320b4bab03baba197dff4332",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Repeated leave rejections stop looking coincidental when calendar history reveals who saw the requests first.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8104b3216c2991a79681",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Gave My Vacation Dates to His Favorite"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T03:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d199c8864f4f84c8353759f6b6444814cc17b184",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36317729336"
+  },
+  "youtube_video_id": "CzOgnnxBjaY"
+}
