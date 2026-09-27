@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-20baa1cc31b3db7d2164cc93",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T00:29:29.857652Z",
+  "request_blob_sha": "3fcff0a55275eada5bdd8c3feb2a58489d050aaf",
+  "request_path": "content/requests/wd-20baa1cc31b3db7d2164cc93.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a11387badb0d624d71b4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Charged Rent for Mom's Empty Room"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T06:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282370297"
+  },
+  "youtube_video_id": "IRkW06P78qo"
+}
