@@ -1,0 +1,36 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1f8ec8561bd0f49d8377ec16",
+  "evidence_version": 1,
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "record_type": "upload",
+  "recorded_at": "2026-09-27T00:32:24.217058Z",
+  "request_blob_sha": "705d18c0fee824e480fe54f012607f99847ca757",
+  "request_path": "content/requests/wd-1f8ec8561bd0f49d8377ec16.json",
+  "source_commit_sha": "7227c8086779c7cbf125b17ff2cca771ec3440b5",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An everyday conflict escalates when the records reveal what really happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-593e9888f5bcba87a5be",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Bridesmaid Quietly Changed My Wedding Orders"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-27T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "414d55b843127b3b7fc7cc878cdb09ad0260353f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36282368970"
+  },
+  "youtube_video_id": "AMcmYVMxL14"
+}
