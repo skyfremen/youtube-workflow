@@ -252,13 +252,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "The neighbor says the electricity cost is tiny and the outlet is accessible from the shared walkway, while the narrator's bill has risen and the outlet belongs to his unit.",
-      "payoff": "He paid those and bought a charging setup for his own garage.",
-      "premise": "A man discovers his neighbor has been plugging an extension cable into his outdoor power outlet every night to charge equipment for a home business.",
-      "title": "My Neighbor Was Charging His Business From My Outlet",
-      "twist": "A smart-plug history shows the nightly load began exactly when the neighbor advertised a new battery-powered cleaning service."
-    },
-    {
       "conflict": "The friend says the narrator loses nothing because she never paid for the purchases, while repeated returns have triggered a fraud restriction on the narrator's account.",
       "payoff": "They restored my legitimate purchases",
       "premise": "A woman discovers a friend has been using her loyalty account for expensive purchases, collecting the rewards, then returning the items for cash-equivalent store credit.",
@@ -425,6 +418,13 @@
       "premise": "A woman discovers her manager has been declining her leave requests, then approving the same dates for a favored coworker after copying her vacation plans.",
       "title": "My Manager Gave My Vacation Dates to His Favorite",
       "twist": "Calendar history shows the manager forwarded screenshots of her pending leave dates to the coworker before rejecting them."
+    },
+    {
+      "conflict": "He says the permits often go unused and his clients only stay an hour, while her actual visitors are receiving fines because her permit quota is already consumed.",
+      "payoff": "They cancelled the fines, revoked the old access, and charged his unit for the excess permits.",
+      "premise": "A woman discovers her neighbor has been using her assigned visitor parking permits for clients of his home tutoring business.",
+      "title": "My Neighbor Used My Visitor Parking for His Clients",
+      "twist": "The building portal shows permit requests were made using an old emergency-access login she once shared with him."
     }
   ]
 }
