@@ -3,19 +3,19 @@
   "analytics_version": 3,
   "available_datasets": {
     "basic": true,
-    "combined": false,
+    "combined": true,
     "demographics": true,
     "device_os": true,
     "playback_location": true,
-    "reach": false,
+    "reach": true,
     "realtime": true,
     "retention": true,
     "traffic_source": true
   },
-  "generated_at": "2026-09-26T23:30:28Z",
-  "latest_realtime_snapshot": "realtime/2026-09-26/analytics-20260926T233028Z.json",
-  "latest_reporting_date": null,
+  "generated_at": "2026-09-27T05:30:29Z",
+  "latest_realtime_snapshot": "realtime/2026-09-27/analytics-20260927T053029Z.json",
+  "latest_reporting_date": "2026-09-26T07:00:00Z",
   "warnings": [
-    "Optional retention returned empty curves for 10 due checkpoints; will retry"
+    "Optional retention returned empty curves for 8 due checkpoints; will retry"
   ]
 }
