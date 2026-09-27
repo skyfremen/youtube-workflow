@@ -176,6 +176,6 @@ Use these as soft winner-selection preferences, not quotas or mandatory story fo
 
 - Prefer stories with tangible stakes or meaningful consequences over low-stakes interpersonal irritation. Tangible stakes may include money, jobs, reputation, relationships, property, access, important possessions, bookings, weddings, promotions, accounts, tickets, or similar concrete consequences.
 - When two candidate ideas are otherwise similarly strong, prefer one that opens with a concrete accusation, discovery, or already-visible consequence rather than background setup, especially when the accusation concerns a specific wrongdoing with tangible consequences.
-- Favor `accusation`, `discovery`, and `consequence_first` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types.
+- Favor `accusation`, `discovery`, and `contradiction` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types. Keep `consequence_first` available for strong-fitting stories, but do not preferentially favor it until mature analytics support doing so.
 - Reduce generic premises that amount mainly to someone being rude, annoying, inconsiderate, or argumentative unless the escalation, twist, stakes, or comedy payoff makes the story unusually strong.
 - Prefer stronger stakes and more immediate accusation/discovery/consequence openings during winner selection, but do not let this override diversity, originality, or a clearly stronger idea using another hook type.
