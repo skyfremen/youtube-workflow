@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ea4737a65a2d99c5fdf6a22f",
+  "created_at": "2026-09-28T01:15:04.744045Z",
+  "evidence_version": 2,
+  "execution_id": "ex-de1a635d9a894c86eb01ab9b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "edf58542bbf1d36b746fdea88c5baa650325202d",
+  "record_type": "intent",
+  "request_blob_sha": "67130dcd1a3fbe3fe6fb90280d977b365ea38c45",
+  "request_id": "rq-2a92c005b0cbc0eaf262a776",
+  "request_path": "content/requests/rq-2a92c005b0cbc0eaf262a776.json",
+  "request_source_sha": "8153fe6aa9a9838bfaba5c58d76806f233477f15",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A minor parking scrape reveals where a group's supposed premium coverage actually went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2f71c6642abe387ffb51",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Rental-Car Insurance Never Existed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36364721809"
+  }
+}
