@@ -252,13 +252,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "The coworker says he relied on the automated summary and believed approval was given, while the recording and chat show the narrator repeatedly said the change needed security review.",
-      "payoff": "the machine was not the one that invented my approval.",
-      "premise": "A woman discovers a coworker used AI-generated meeting summaries to make it appear she approved a risky client change she had explicitly rejected.",
-      "title": "My Coworker Edited the AI Notes to Say I Approved It",
-      "twist": "The meeting tool's edit history shows the coworker manually changed the generated action item before forwarding the summary to the client."
-    },
-    {
       "conflict": "She says someone had to serve the client and she closed the deal, while he had developed the account for months and arranged the meeting.",
       "payoff": "The account credit went back to me.",
       "premise": "A man discovers a coworker redirected an important client meeting to herself while he was sick, then claimed the account as an abandoned lead.",
@@ -425,6 +418,13 @@
       "premise": "A woman discovers her coworker has been submitting her completed design concepts to an internal innovation contest under his own name.",
       "title": "My Coworker Won an Award With My Prototype",
       "twist": "The contest portal preserves an earlier draft where her name was listed as creator before it was replaced minutes before submission."
+    },
+    {
+      "conflict": "The parent says the collection covered customization and rush shipping, while the sponsor's invoice includes names, numbers, and delivery.",
+      "payoff": "Every jersey payment came back before the next game.",
+      "premise": "A woman discovers a youth sports parent collected money for team jerseys even though a local sponsor had already paid for every uniform.",
+      "title": "We Paid for Team Jerseys the Sponsor Had Already Bought",
+      "twist": "A sponsor representative attends a game wearing a thank-you shirt and casually mentions that the entire uniform order was donated at no cost to families."
     }
   ]
 }
