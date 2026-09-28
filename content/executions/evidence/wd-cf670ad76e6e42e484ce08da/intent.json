@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-cf670ad76e6e42e484ce08da",
+  "created_at": "2026-09-28T01:12:34.259853Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a612a8941f410c56ab7acea3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "82c9a342afbdb981e6afe1beb4c815072d37bc72",
+  "record_type": "intent",
+  "request_blob_sha": "67130dcd1a3fbe3fe6fb90280d977b365ea38c45",
+  "request_id": "rq-2a92c005b0cbc0eaf262a776",
+  "request_path": "content/requests/rq-2a92c005b0cbc0eaf262a776.json",
+  "request_source_sha": "8153fe6aa9a9838bfaba5c58d76806f233477f15",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposed move-out deduction disappears when the landlord sends the actual refund receipt.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-06bf4cd050292a30f5a7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Invented Damage to Keep My Deposit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T08:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36364715762"
+  }
+}
