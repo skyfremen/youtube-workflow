@@ -19,7 +19,7 @@ from lifecycle import audit_lifecycle
 
 ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PLANNER_ANALYTICS=ROOT/"content/planner-analytics.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
-REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"; RESULTS=ROOT/"content/results"; CANCELLATIONS=ROOT/"content/slot-cancellations"
+REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"; RESULTS=ROOT/"content/results"; CANCELLATIONS=ROOT/"content/slot-cancellations"; ABANDONMENTS=ROOT/"content/abandonments"
 REQUEST_VERSION=2; EXECUTION_VERSION=2; RESULT_VERSION=2; CONTEXT_VERSION=3
 RECENT_LIMIT=25; MIN_CATEGORY_BACKGROUNDS=3; MIN_BG=60.0; MAX_SEGMENT=100.0
 MAX_CONTEXT_BYTES=40000; MAX_PLANNER_ANALYTICS_BYTES=16000
@@ -346,23 +346,39 @@ def request_publish_slots(path=REQS):
         result=validate_result(read(result_path),result_path)
         if result["youtube_video_id"]!=cancellation["youtube_video_id"]: raise VError("CANCELLATION_RESULT_MISMATCH","youtube_video_id",cancellation["youtube_video_id"],result["youtube_video_id"],False)
         released[cid]=instant(result["publish_at"],"result.publish_at").astimezone(timezone.utc).replace(microsecond=0)
-    occupied=set(); matched=set()
+    abandoned={}
+    for abandonment_path in sorted(ABANDONMENTS.glob("*.json")):
+        try: abandonment=read(abandonment_path)
+        except (OSError,json.JSONDecodeError) as exc: raise VError("INVALID_ABANDONMENT",str(abandonment_path),type(exc).__name__,"valid immutable abandonment JSON",False) from None
+        required={"abandonment_version","content_id","request_id","reason"}
+        if not isinstance(abandonment,dict) or set(abandonment)!=required: raise VError("INVALID_ABANDONMENT_FIELDS",str(abandonment_path),sorted(abandonment) if isinstance(abandonment,dict) else type(abandonment).__name__,"exact abandonment fields",False)
+        cid=str(abandonment.get("content_id") or ""); rid=str(abandonment.get("request_id") or "")
+        if abandonment.get("abandonment_version")!=1 or not CID_RE.fullmatch(cid) or not RID_RE.fullmatch(rid) or abandonment_path.name!=cid+".json" or abandonment.get("reason")!="upload_limit_abandoned": raise VError("INVALID_ABANDONMENT",str(abandonment_path),abandonment,"version 1 upload-limit abandonment named for its content_id",False)
+        if (RESULTS/(cid+".json")).exists() or (EXECS/"evidence"/cid/"upload.json").exists(): raise VError("ABANDONMENT_REMOTE_OUTCOME_EXISTS","content_id",cid,"no result or upload evidence",False)
+        abandoned[cid]=rid
+    occupied=set(); matched=set(); matched_abandoned=set()
     for request_path in sorted(Path(path).glob("*.json")):
         try: document=read(request_path)
         except (OSError,json.JSONDecodeError) as exc: raise VError("INVALID_RESERVED_REQUEST",str(request_path),type(exc).__name__,"valid immutable request JSON",False) from None
         items=document.get("items") if isinstance(document,dict) and isinstance(document.get("items"),list) else [document]
+        request_id=document.get("request_id") if isinstance(document,dict) else None
         for item in items:
             publication=item.get("publication") if isinstance(item,dict) else None
             raw=publication.get("publish_at") if isinstance(publication,dict) else None
             if raw:
                 slot=instant(raw,f"{request_path}.publication.publish_at").astimezone(timezone.utc).replace(microsecond=0)
                 cid=item.get("content_id") if isinstance(item,dict) else None
+                if cid in abandoned:
+                    if abandoned[cid]!=request_id: raise VError("ABANDONMENT_REQUEST_MISMATCH","request_id",abandoned[cid],request_id,False)
+                    matched_abandoned.add(cid); continue
                 if cid in released:
                     if released[cid]!=slot: raise VError("CANCELLATION_SLOT_MISMATCH","publish_at",zulu(released[cid]),zulu(slot),False)
                     matched.add(cid); continue
                 occupied.add(slot)
     missing=set(released)-matched
     if missing: raise VError("CANCELLATION_REQUEST_MISSING","content_id",sorted(missing),"content present in one immutable request",False)
+    missing_abandoned=set(abandoned)-matched_abandoned
+    if missing_abandoned: raise VError("ABANDONMENT_REQUEST_MISSING","content_id",sorted(missing_abandoned),"content present in matching immutable request",False)
     return occupied
 def allocate_publish_slots(count,now=None,occupied=None):
     if not isinstance(count,int) or count<=0: raise VError("INVALID_SLOT_COUNT","count",count,"positive integer",False)

@@ -267,6 +267,55 @@ class PublicationSlotTests(unittest.TestCase):
         )
         return requests
 
+    def test_upload_limit_abandonment_releases_request_only_slot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            content_id = "wd-" + "a" * 24
+            request_id = "rq-" + "b" * 24
+            publish_at = "2030-01-01T00:00:00Z"
+            requests = root / "requests"
+            requests.mkdir()
+            (requests / (request_id + ".json")).write_text(
+                json.dumps(
+                    {
+                        "request_version": 2,
+                        "request_id": request_id,
+                        "source_draft_id": "draft-test",
+                        "items": [
+                            {
+                                "content_id": content_id,
+                                "publication": {"publish_at": publish_at},
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            abandonments = root / "abandonments"
+            abandonments.mkdir()
+            (abandonments / f"{content_id}.json").write_text(
+                json.dumps(
+                    {
+                        "abandonment_version": 1,
+                        "content_id": content_id,
+                        "request_id": request_id,
+                        "reason": "upload_limit_abandoned",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            results = root / "results"
+            results.mkdir()
+            executions = root / "executions"
+            (executions / "evidence").mkdir(parents=True)
+
+            with patch.object(p, "ABANDONMENTS", abandonments, create=True), patch.object(
+                p, "RESULTS", results, create=True
+            ), patch.object(p, "EXECS", executions, create=True):
+                occupied = p.request_publish_slots(requests)
+
+            self.assertEqual(occupied, set())
+
     def test_completed_explicit_cancellation_releases_local_slot(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
