@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-fff88b7dc98693de1f9134bd",
+  "evidence_version": 2,
+  "execution_id": "ex-87fb50362f37d455c118e9ef",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "076f6fe85d6c21bf89fa5701afcc3279df521a9c",
+  "record_type": "upload",
+  "recorded_at": "2026-09-28T15:42:59.880544Z",
+  "request_blob_sha": "73f40bf8df3e09a3f6856dcffd040bd2ad76f37e",
+  "request_id": "rq-fa0ef28981dd98fe67a19e20",
+  "request_path": "content/requests/rq-fa0ef28981dd98fe67a19e20.json",
+  "request_source_sha": "db816a3bc25da33d087167245cbafe7420655e23",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A promised next-day vehicle delivery turns into a weeks-long delay after the customer's old car has already been sold.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a8da6c9728ed2f876ae2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Dealer Sold My Trade-In Before My New Car Arrived"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T01:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36444299868"
+  },
+  "youtube_video_id": "HQMMnDaNnI4"
+}
