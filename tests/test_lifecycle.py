@@ -91,10 +91,23 @@ class LifecycleAuditTests(unittest.TestCase):
                 "request_blob_sha": execution["item_blob_sha"],
                 "source_commit_sha": execution["request_source_sha"],
             }
+        shared = {
+            "expected_channel_id": "channel",
+            "upload_body": {"status": {"privacyStatus": "private"}},
+        }
+        if version == 2:
+            intent = {
+                "evidence_version": version,
+                "record_type": "intent",
+                **identity,
+                **shared,
+            }
+            (directory / "intent.json").write_bytes(encoded(intent))
         upload = {
             "evidence_version": version,
             "record_type": "upload",
             **identity,
+            **shared,
             "youtube_video_id": video_id,
         }
         (directory / "upload.json").write_bytes(encoded(upload))
@@ -266,6 +279,86 @@ class LifecycleAuditTests(unittest.TestCase):
         self.assertEqual("legacy_evidence_alias", status[complete])
         self.assertEqual("execution_without_evidence", status[incomplete])
         self.assertEqual([], report["validation_errors"])
+
+    def test_malformed_or_conflicting_intent_invalidates_v2_lifecycle(self):
+        cid, rid, item, raw = self.add_request("9")
+        eid, execution = self.add_execution(cid, rid, item, raw)
+        self.add_upload(execution, "video000009")
+        self.add_result(cid, eid, item["publication"]["publish_at"], "video000009")
+        (self.root / "data/history.json").write_bytes(encoded(self.history))
+        intent_path = self.root / "content/executions/evidence" / cid / "intent.json"
+
+        intent_path.write_text("{", encoding="utf-8")
+        malformed = audit_lifecycle(self.root)["items"][0]
+        self.assertEqual("invalid_cross_repository_relationship", malformed["status"])
+
+        intent = {
+            "evidence_version": 2,
+            "record_type": "intent",
+            **{
+                key: execution[key]
+                for key in (
+                    "execution_id", "content_id", "request_id", "request_path",
+                    "request_source_sha", "request_blob_sha", "item_blob_sha",
+                )
+            },
+            "expected_channel_id": "different-channel",
+            "upload_body": {"status": {"privacyStatus": "private"}},
+        }
+        intent_path.write_bytes(encoded(intent))
+        conflicting = audit_lifecycle(self.root)["items"][0]
+        self.assertEqual("invalid_cross_repository_relationship", conflicting["status"])
+
+    def test_malformed_nested_publication_and_result_contract_are_invalid_not_fatal(self):
+        cid, rid, item, raw = self.add_request("9")
+        eid, execution = self.add_execution(cid, rid, item, raw)
+        self.add_upload(execution, "video000009")
+        self.add_result(cid, eid, item["publication"]["publish_at"], "video000009")
+        (self.root / "data/history.json").write_bytes(encoded(self.history))
+        request_path = self.root / "content/requests" / f"{rid}.json"
+        malformed_request = {"request_version": 2, "request_id": rid, "items": [{"content_id": cid, "publication": "bad"}]}
+        request_path.write_bytes(encoded(malformed_request))
+        result_path = self.root / "content/results" / f"{cid}.json"
+        result = json.loads(result_path.read_text())
+        result["result_version"] = 99
+        result["verified"] = False
+        result_path.write_bytes(encoded(result))
+
+        report = audit_lifecycle(self.root)
+
+        self.assertEqual("invalid_cross_repository_relationship", report["items"][0]["status"])
+        self.assertTrue(report["items"][0]["errors"])
+
+    def test_duplicate_results_and_orphan_history_are_per_content_errors(self):
+        cid, rid, item, raw = self.add_request("9")
+        eid, execution = self.add_execution(cid, rid, item, raw)
+        self.add_upload(execution, "video000009")
+        self.add_result(cid, eid, item["publication"]["publish_at"], "video000009")
+        duplicate = self.root / "content/results/duplicate.json"
+        duplicate.write_bytes((self.root / "content/results" / f"{cid}.json").read_bytes())
+        orphan = "wd-" + "e" * 24
+        self.history.append({"content_id": orphan, "publish_at": "2030-01-01T00:00:00Z"})
+        (self.root / "data/history.json").write_bytes(encoded(self.history))
+
+        report = audit_lifecycle(self.root)
+        by_id = {item["content_id"]: item for item in report["items"]}
+
+        self.assertEqual("invalid_cross_repository_relationship", by_id[cid]["status"])
+        self.assertTrue(any("multiple results" in error for error in by_id[cid]["errors"]))
+        self.assertEqual("invalid_cross_repository_relationship", by_id[orphan]["status"])
+        self.assertTrue(any("history" in error for error in by_id[orphan]["errors"]))
+
+    def test_cli_refuses_to_overwrite_repository_state(self):
+        self.build_matrix()
+        target = next((self.root / "content/requests").glob("*.json"))
+        before = target.read_bytes()
+
+        with patch.object(pipeline, "ROOT", self.root), patch(
+            "sys.argv", ["pipeline.py", "audit-lifecycle", "--output", str(target)]
+        ), self.assertRaises(SystemExit):
+            pipeline.main()
+
+        self.assertEqual(before, target.read_bytes())
 
 
 if __name__ == "__main__":

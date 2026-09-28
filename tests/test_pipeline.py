@@ -458,7 +458,7 @@ class ResultRelationshipTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def write_upload(self, version=2, video_id=None):
+    def write_upload(self, version=2, video_id=None, *, conflicting_intent=False):
         if version == 2:
             identity = {
                 key: self.execution[key]
@@ -479,10 +479,25 @@ class ResultRelationshipTests(unittest.TestCase):
                 "request_blob_sha": self.execution["item_blob_sha"],
                 "source_commit_sha": self.execution["request_source_sha"],
             }
+        shared = {
+            "expected_channel_id": "channel",
+            "upload_body": {"status": {"privacyStatus": "private"}},
+        }
+        if version == 2:
+            intent = {
+                "evidence_version": 2,
+                "record_type": "intent",
+                **identity,
+                **shared,
+            }
+            if conflicting_intent:
+                intent["expected_channel_id"] = "different-channel"
+            (self.evidence_dir / "intent.json").write_bytes(p.pretty(intent))
         upload = {
             "evidence_version": version,
             "record_type": "upload",
             **identity,
+            **shared,
             "youtube_video_id": video_id or self.video_id,
         }
         (self.evidence_dir / "upload.json").write_bytes(p.pretty(upload))
@@ -531,6 +546,19 @@ class ResultRelationshipTests(unittest.TestCase):
         self.write_result()
         self.ingest()
         self.assertEqual(self.cid, json.loads(self.history.read_text())[0]["content_id"])
+
+    def test_ingest_rejects_conflicting_v2_intent_and_upload(self):
+        self.write_upload(version=2, conflicting_intent=True)
+        self.write_result()
+        with self.assertRaisesRegex(p.VError, "EVIDENCE_RELATIONSHIP_MISMATCH"):
+            self.ingest()
+
+    def test_ingest_rejects_malformed_v2_intent(self):
+        self.write_upload(version=2)
+        (self.evidence_dir / "intent.json").write_text("{", encoding="utf-8")
+        self.write_result()
+        with self.assertRaisesRegex(p.VError, "INTENT_EVIDENCE_INVALID"):
+            self.ingest()
 
 
 class PlannerAnalyticsContextTests(unittest.TestCase):

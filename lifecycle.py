@@ -69,14 +69,42 @@ def _evidence_errors(evidence, execution):
     ]
 
 
+def _evidence_record_errors(evidence, execution, record_type):
+    errors = _evidence_errors(evidence, execution)
+    if evidence.get("record_type") != record_type:
+        errors.append(f"{record_type} evidence has invalid record_type")
+    return errors
+
+
+def _result_errors(result):
+    version = result.get("result_version")
+    if version == 2:
+        errors = []
+        if result.get("status") != "scheduled" or result.get("visibility") != "private" or result.get("verified") is not True:
+            errors.append("V2 result is not scheduled/private/verified")
+        if not isinstance(result.get("publish_at"), str) or not result["publish_at"]:
+            errors.append("V2 result has invalid publish_at")
+        return errors
+    if version == 1:
+        errors = []
+        if result.get("status") != "published" or result.get("visibility") != "public" or result.get("verified") is not True:
+            errors.append("V1 result is not published/public/verified")
+        if not isinstance(result.get("published_at"), str) or not result["published_at"]:
+            errors.append("V1 result has invalid published_at")
+        return errors
+    return ["result has unsupported result_version"]
+
+
 def audit_lifecycle(root: Path) -> dict:
     """Return lifecycle classifications without writing files or using the network."""
     root = Path(root)
     request_records = defaultdict(list)
     executions = defaultdict(list)
+    intents = {}
     uploads = {}
+    intent_errors = defaultdict(list)
     upload_errors = defaultdict(list)
-    results = {}
+    results = defaultdict(list)
     global_errors = []
 
     for path in sorted((root / "content/requests").glob("*.json")):
@@ -128,10 +156,17 @@ def audit_lifecycle(root: Path) -> dict:
             if not CID_RE.fullmatch(cid):
                 global_errors.append(f"{directory.relative_to(root).as_posix()}: invalid content_id directory")
                 continue
-            path = directory / "upload.json"
-            if path.exists():
+            intent_path = directory / "intent.json"
+            if intent_path.exists():
                 errors = []
-                upload = _read(path, errors, path.relative_to(root).as_posix())
+                intent = _read(intent_path, errors, intent_path.relative_to(root).as_posix())
+                intent_errors[cid].extend(errors)
+                if intent is not None:
+                    intents[cid] = intent
+            upload_path = directory / "upload.json"
+            if upload_path.exists():
+                errors = []
+                upload = _read(upload_path, errors, upload_path.relative_to(root).as_posix())
                 upload_errors[cid].extend(errors)
                 if upload is not None:
                     uploads[cid] = upload
@@ -146,9 +181,7 @@ def audit_lifecycle(root: Path) -> dict:
         if not CID_RE.fullmatch(str(cid or "")):
             global_errors.append(f"{path.relative_to(root).as_posix()}: invalid content_id")
             continue
-        if cid in results:
-            global_errors.append(f"duplicate results for {cid}")
-        results[cid] = result
+        results[cid].append(result)
 
     history_by_content = defaultdict(list)
     history_path = root / "data/history.json"
@@ -165,16 +198,27 @@ def audit_lifecycle(root: Path) -> dict:
             if isinstance(record, dict) and CID_RE.fullmatch(str(record.get("content_id") or "")):
                 history_by_content[record["content_id"]].append(record)
 
-    content_ids = sorted(set(request_records) | set(executions) | set(uploads) | set(upload_errors) | set(results))
+    content_ids = sorted(
+        set(request_records)
+        | set(executions)
+        | set(intents)
+        | set(intent_errors)
+        | set(uploads)
+        | set(upload_errors)
+        | set(results)
+        | set(history_by_content)
+    )
     items = []
     for cid in content_ids:
-        errors = list(upload_errors[cid])
+        errors = list(intent_errors[cid]) + list(upload_errors[cid])
         requests = request_records[cid]
         execution_list = executions[cid]
+        result_list = results[cid]
         request = requests[0] if len(requests) == 1 else None
         execution = execution_list[0] if len(execution_list) == 1 else None
+        intent = intents.get(cid)
         upload = uploads.get(cid)
-        result = results.get(cid)
+        result = result_list[0] if len(result_list) == 1 else None
 
         if len(requests) > 1:
             errors.append("content_id occurs in multiple request items")
@@ -182,6 +226,8 @@ def audit_lifecycle(root: Path) -> dict:
             errors.append("request item is missing")
         if len(execution_list) > 1:
             errors.append("content_id has multiple executions")
+        if len(result_list) > 1:
+            errors.append("content_id has multiple results")
 
         if request is not None and execution is not None:
             if execution.get("execution_version") == 1 and request["request"].get("request_version") == 1:
@@ -203,16 +249,35 @@ def audit_lifecycle(root: Path) -> dict:
             if execution is None:
                 errors.append("upload evidence has no unique execution")
             else:
-                errors.extend(_evidence_errors(upload, execution))
+                errors.extend(_evidence_record_errors(upload, execution, "upload"))
+                if upload.get("evidence_version") == 2:
+                    if intent is None:
+                        errors.append("V2 upload evidence is missing intent evidence")
+                    else:
+                        errors.extend(_evidence_record_errors(intent, execution, "intent"))
+                        if intent.get("evidence_version") != upload.get("evidence_version"):
+                            errors.append("intent and upload evidence versions do not match")
+                        for field in ("expected_channel_id", "upload_body"):
+                            if intent.get(field) != upload.get(field):
+                                errors.append(f"intent {field} does not match upload evidence")
+                elif intent is not None:
+                    errors.extend(_evidence_record_errors(intent, execution, "intent"))
+
+        if intent is not None and upload is None:
+            errors.append("intent evidence is missing upload evidence")
 
         if result is not None:
+            errors.extend(_result_errors(result))
             if execution is None or request is None:
                 errors.append("result has no unique execution/request join")
             else:
                 if result.get("content_id") != cid or result.get("execution_id") != execution.get("execution_id"):
                     errors.append("result identity does not match execution")
                 if result.get("result_version") == 2:
-                    publish_at = (request["item"].get("publication") or {}).get("publish_at")
+                    publication = request["item"].get("publication")
+                    publish_at = publication.get("publish_at") if isinstance(publication, dict) else None
+                    if publish_at is None:
+                        errors.append("request publication is invalid")
                     if result.get("publish_at") != publish_at:
                         errors.append("result publish_at does not match request")
             if upload is None:
@@ -226,6 +291,8 @@ def audit_lifecycle(root: Path) -> dict:
                 time_field = "published_at" if result.get("result_version") == 1 else "publish_at"
                 if history_records[0].get(time_field) != result.get(time_field):
                     errors.append(f"history {time_field} does not match result")
+        elif history_by_content[cid]:
+            errors.append("history record has no unique result")
 
         if errors:
             status = "invalid_cross_repository_relationship"

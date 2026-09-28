@@ -542,7 +542,11 @@ def validate_result_relationships(root,result,execution,item):
     if not batch_path.is_file() or execution.get("request_blob_sha")!=blob(batch_path.read_bytes()) or execution.get("item_blob_sha")!=blob(pretty(item)):
         raise VError("EXECUTION_BLOB_MISMATCH","request_path",request_path,"matching immutable batch and item blobs",False)
     identity_fields=("execution_id","content_id","request_id","request_path","request_source_sha","request_blob_sha","item_blob_sha")
-    def validate_evidence(evidence,evidence_path):
+    def validate_evidence(evidence,evidence_path,record_type):
+        if not isinstance(evidence,dict):
+            raise VError("EVIDENCE_INVALID",str(evidence_path),type(evidence).__name__,"JSON object",False)
+        if evidence.get("record_type")!=record_type:
+            raise VError("EVIDENCE_RECORD_TYPE_MISMATCH",str(evidence_path),evidence.get("record_type"),record_type,False)
         version=evidence.get("evidence_version")
         if version==2:
             expected={field:execution.get(field) for field in identity_fields}
@@ -557,11 +561,22 @@ def validate_result_relationships(root,result,execution,item):
     if not upload_path.is_file(): raise VError("UPLOAD_EVIDENCE_MISSING",str(upload_path),None,"immutable upload evidence",False)
     try: upload=read(upload_path)
     except (OSError,json.JSONDecodeError): raise VError("UPLOAD_EVIDENCE_INVALID",str(upload_path),"unreadable","valid JSON",False) from None
-    validate_evidence(upload,upload_path)
+    validate_evidence(upload,upload_path,"upload")
     intent_path=evidence_dir/"intent.json"
+    intent=None
     if intent_path.is_file():
-        try: validate_evidence(read(intent_path),intent_path)
+        try:
+            intent=read(intent_path)
+            validate_evidence(intent,intent_path,"intent")
         except (OSError,json.JSONDecodeError): raise VError("INTENT_EVIDENCE_INVALID",str(intent_path),"unreadable","valid JSON",False) from None
+    elif upload.get("evidence_version")==2:
+        raise VError("INTENT_EVIDENCE_MISSING",str(intent_path),None,"immutable V2 intent evidence",False)
+    if intent is not None:
+        if intent.get("evidence_version")!=upload.get("evidence_version"):
+            raise VError("EVIDENCE_RELATIONSHIP_MISMATCH","evidence_version",intent.get("evidence_version"),upload.get("evidence_version"),False)
+        for field in ("expected_channel_id","upload_body"):
+            if intent.get(field)!=upload.get(field):
+                raise VError("EVIDENCE_RELATIONSHIP_MISMATCH",field,intent.get(field),upload.get(field),False)
     if upload.get("youtube_video_id")!=result.get("youtube_video_id"):
         raise VError("RESULT_UPLOAD_MISMATCH","youtube_video_id",result.get("youtube_video_id"),upload.get("youtube_video_id"),False)
 def ingest(path):
@@ -631,7 +646,13 @@ def main():
         elif a.cmd=="ingest-result": ingest(a.result); print("Result ingested")
         elif a.cmd=="audit-lifecycle":
             report=audit_lifecycle(ROOT); rendered=json.dumps(report,sort_keys=True,indent=2)+"\n"
-            if a.output: Path(a.output).write_text(rendered,encoding="utf-8")
+            if a.output:
+                target=Path(a.output).resolve(); protected=ROOT.resolve()
+                try: target.relative_to(protected)
+                except ValueError: pass
+                else: raise VError("AUDIT_OUTPUT_PROTECTED",str(target),"repository path","path outside repository",False)
+                if target.exists(): raise VError("AUDIT_OUTPUT_EXISTS",str(target),"existing path","new output path",False)
+                target.write_text(rendered,encoding="utf-8")
             else: print(rendered,end="")
         elif a.cmd=="contract-hash": print(CONTRACT_HASH)
         else: self_test()
