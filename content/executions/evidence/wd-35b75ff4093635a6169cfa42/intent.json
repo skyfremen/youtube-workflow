@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-35b75ff4093635a6169cfa42",
+  "created_at": "2026-09-28T01:12:19.315812Z",
+  "evidence_version": 2,
+  "execution_id": "ex-ca49032805e2b0f14b714050",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5201cd8ffbb6dd6a8b6393def60b1a6a7ec2a37e",
+  "record_type": "intent",
+  "request_blob_sha": "67130dcd1a3fbe3fe6fb90280d977b365ea38c45",
+  "request_id": "rq-2a92c005b0cbc0eaf262a776",
+  "request_path": "content/requests/rq-2a92c005b0cbc0eaf262a776.json",
+  "request_source_sha": "8153fe6aa9a9838bfaba5c58d76806f233477f15",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A launch-day upgrade gets awkward when the trade-in serial number belongs to someone else's phone.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-56521f4951b5d15c0b93",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boyfriend Traded My Phone for His iPhone 18 Pro"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36364711880"
+  }
+}
