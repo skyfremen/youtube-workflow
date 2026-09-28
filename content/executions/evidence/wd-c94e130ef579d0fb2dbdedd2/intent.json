@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-c94e130ef579d0fb2dbdedd2",
+  "created_at": "2026-09-28T01:13:36.700187Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5448b69e1943743e1987dabf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3a4a845e146d0edff426ad0379bfc5216b432cf9",
+  "record_type": "intent",
+  "request_blob_sha": "67130dcd1a3fbe3fe6fb90280d977b365ea38c45",
+  "request_id": "rq-2a92c005b0cbc0eaf262a776",
+  "request_path": "content/requests/rq-2a92c005b0cbc0eaf262a776.json",
+  "request_source_sha": "8153fe6aa9a9838bfaba5c58d76806f233477f15",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A model-number mismatch reveals where one homeowner's premium renovation materials actually went.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e9e7b303a05de07551e6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Renovation Materials Ended Up in Another House"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36364709285"
+  }
+}
