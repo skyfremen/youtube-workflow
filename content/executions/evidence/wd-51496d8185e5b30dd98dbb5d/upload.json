@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-51496d8185e5b30dd98dbb5d",
+  "evidence_version": 2,
+  "execution_id": "ex-4974c2b6be4ee0f9178ba0a1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ff52def1a87f95a5b752c04a96c12ab13f0fcb55",
+  "record_type": "upload",
+  "recorded_at": "2026-09-28T15:41:47.345824Z",
+  "request_blob_sha": "73f40bf8df3e09a3f6856dcffd040bd2ad76f37e",
+  "request_id": "rq-fa0ef28981dd98fe67a19e20",
+  "request_path": "content/requests/rq-fa0ef28981dd98fe67a19e20.json",
+  "request_source_sha": "db816a3bc25da33d087167245cbafe7420655e23",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An internal job application turns awkward when a manager starts replacing an employee who has not actually left.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-17158a5576bb0c9e6a02",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Announced My Exit Before I Had Another Job"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36444296778"
+  },
+  "youtube_video_id": "oWewFLZhkWY"
+}
