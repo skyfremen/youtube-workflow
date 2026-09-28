@@ -64,12 +64,12 @@
           "views": 88183
         },
         {
-          "engaged_view_rate_percentage": 26.49,
+          "engaged_view_rate_percentage": 26.6,
           "engaged_views": 427,
           "estimated_minutes_watched": 162,
           "insightTrafficSourceType": "YT_SEARCH",
           "view_share_percentage": 1.76,
-          "views": 1612
+          "views": 1605
         },
         {
           "engaged_view_rate_percentage": 55.02,
@@ -101,19 +101,19 @@
       "soft_evidence_only": true,
       "supported_patterns": [
         {
-          "average_view_percentage": 73.27,
+          "average_view_percentage": 77.14,
           "dimension": "category",
           "evidence_median_views": 256.0,
-          "mature_sample": 10,
-          "sample_size": 14,
+          "mature_sample": 11,
+          "sample_size": 16,
           "value": "wedding"
         },
         {
           "average_view_percentage": 70.45,
           "dimension": "hook_type",
-          "evidence_median_views": 167.5,
-          "mature_sample": 20,
-          "sample_size": 30,
+          "evidence_median_views": 129.0,
+          "mature_sample": 22,
+          "sample_size": 35,
           "value": "accusation"
         },
         {
@@ -121,56 +121,56 @@
           "dimension": "story_tone",
           "evidence_median_views": 113.0,
           "mature_sample": 13,
-          "sample_size": 17,
+          "sample_size": 20,
           "value": "natural"
-        },
-        {
-          "average_view_percentage": 42.51,
-          "dimension": "category",
-          "evidence_median_views": 58.5,
-          "mature_sample": 22,
-          "sample_size": 31,
-          "value": "workplace"
         },
         {
           "average_view_percentage": 63.21,
           "dimension": "hook_type",
-          "evidence_median_views": 30.5,
-          "mature_sample": 22,
-          "sample_size": 34,
+          "evidence_median_views": 65.5,
+          "mature_sample": 24,
+          "sample_size": 36,
           "value": "money_stakes"
         },
         {
-          "average_view_percentage": 68.68,
+          "average_view_percentage": 50.09,
           "dimension": "category",
-          "evidence_median_views": 29.0,
-          "mature_sample": 10,
-          "sample_size": 15,
-          "value": "work"
+          "evidence_median_views": 58.5,
+          "mature_sample": 23,
+          "sample_size": 33,
+          "value": "workplace"
+        },
+        {
+          "average_view_percentage": 66.47,
+          "dimension": "story_tone",
+          "evidence_median_views": 47.0,
+          "mature_sample": 57,
+          "sample_size": 98,
+          "value": "dramatic"
         }
       ],
       "weak_patterns": [
         {
           "average_view_percentage": 54.26,
           "dimension": "hook_type",
-          "evidence_median_views": 2.5,
+          "evidence_median_views": 2.0,
           "mature_sample": 6,
-          "sample_size": 18,
+          "sample_size": 20,
           "value": "consequence_first"
         },
         {
-          "average_view_percentage": 63.89,
+          "average_view_percentage": 65.68,
           "dimension": "story_tone",
           "evidence_median_views": 3.0,
-          "mature_sample": 57,
-          "sample_size": 77,
+          "mature_sample": 60,
+          "sample_size": 80,
           "value": "dramatic_comedy"
         },
         {
-          "average_view_percentage": 29.43,
+          "average_view_percentage": 30.21,
           "dimension": "hook_type",
           "evidence_median_views": 3.0,
-          "mature_sample": 12,
+          "mature_sample": 13,
           "sample_size": 15,
           "value": "urgency"
         },
@@ -179,25 +179,25 @@
           "dimension": "category",
           "evidence_median_views": 3.0,
           "mature_sample": 14,
-          "sample_size": 23,
+          "sample_size": 26,
           "value": "friends"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-09-27T23:30:27Z",
-      "videos_analyzed": 309
+      "latest_realtime_snapshot": "2026-09-28T05:30:29Z",
+      "videos_analyzed": 324
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
           "evidence_median_views": 511.0,
-          "sample_size": 61,
+          "sample_size": 71,
           "window": "08-11"
         },
         {
           "evidence_median_views": 490.5,
-          "sample_size": 58,
+          "sample_size": 63,
           "window": "12-15"
         },
         {
@@ -219,25 +219,25 @@
         }
       ]
     },
-    "generated_at": "2026-09-27T23:30:27Z",
+    "generated_at": "2026-09-28T05:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 300,
-        "2h": 149,
-        "6h": 264,
-        "72h": 255,
-        "7d": 164
+        "24h": 307,
+        "2h": 157,
+        "6h": 271,
+        "72h": 258,
+        "7d": 170
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional Reporting download 20506663844 unavailable: HTTPError",
-      "Optional Reporting download 20506661592 unavailable: HTTPError",
-      "Optional Reporting download 20506405090 unavailable: HTTPError",
-      "Optional Reporting download 20506405088 unavailable: HTTPError",
-      "Optional Reporting download 20506666021 unavailable: HTTPError"
+      "Optional Reporting download 20506660316 unavailable: HTTPError",
+      "Optional Reporting download 20506659917 unavailable: HTTPError",
+      "Optional Reporting download 20506648185 unavailable: HTTPError",
+      "Optional Reporting download 20506352330 unavailable: HTTPError",
+      "Optional Reporting download 20506651757 unavailable: HTTPError"
     ]
   },
   "background_categories": [
