@@ -377,8 +377,6 @@ def request_publish_slots(path=REQS):
                 occupied.add(slot)
     missing=set(released)-matched
     if missing: raise VError("CANCELLATION_REQUEST_MISSING","content_id",sorted(missing),"content present in one immutable request",False)
-    missing_abandoned=set(abandoned)-matched_abandoned
-    if missing_abandoned: raise VError("ABANDONMENT_REQUEST_MISSING","content_id",sorted(missing_abandoned),"content present in matching immutable request",False)
     return occupied
 def allocate_publish_slots(count,now=None,occupied=None):
     if not isinstance(count,int) or count<=0: raise VError("INVALID_SLOT_COUNT","count",count,"positive integer",False)
