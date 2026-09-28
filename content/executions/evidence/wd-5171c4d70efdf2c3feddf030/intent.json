@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-5171c4d70efdf2c3feddf030",
+  "created_at": "2026-09-28T01:14:54.417037Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9ab9f4d3cbd38c5df0af81b1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7e6adb3e60314ab01c0c7518d6e120f66a38f2e1",
+  "record_type": "intent",
+  "request_blob_sha": "67130dcd1a3fbe3fe6fb90280d977b365ea38c45",
+  "request_id": "rq-2a92c005b0cbc0eaf262a776",
+  "request_path": "content/requests/rq-2a92c005b0cbc0eaf262a776.json",
+  "request_source_sha": "8153fe6aa9a9838bfaba5c58d76806f233477f15",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A public sponsor thank-you turns one youth team's uniform collection into a much bigger question.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f43c6df6cbd3c8e1378d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "We Paid for Team Jerseys the Sponsor Had Already Bought"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-28T09:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36364718157"
+  }
+}
