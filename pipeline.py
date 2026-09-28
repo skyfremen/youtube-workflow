@@ -15,6 +15,8 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
+from lifecycle import audit_lifecycle
+
 ROOT=Path(__file__).resolve().parent
 BG=ROOT/"data/backgrounds.json"; HIST=ROOT/"data/history.json"; CTX=ROOT/"content/context.json"; PLANNER_ANALYTICS=ROOT/"content/planner-analytics.json"; PUBLISH_SLOTS=ROOT/"data/publish-slots.json"
 REQS=ROOT/"content/requests"; EXECS=ROOT/"content/executions"; FAILS=ROOT/"content/failures"; DRAFTS=ROOT/"content/drafts"; RESULTS=ROOT/"content/results"; CANCELLATIONS=ROOT/"content/slot-cancellations"
@@ -526,6 +528,42 @@ def validate_result(x,path=None):
     if x["status"]!="scheduled" or x["visibility"]!="private" or x["verified"] is not True: raise VError("RESULT_NOT_VERIFIED_SCHEDULED","$",x,"scheduled/private/verified",False)
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}",str(x["youtube_video_id"])): raise VError("INVALID_YOUTUBE_VIDEO_ID","youtube_video_id",x["youtube_video_id"],"11 chars",False)
     instant(x["publish_at"],"publish_at"); return x
+def validate_result_relationships(root,result,execution,item):
+    root=Path(root); cid=result["content_id"]
+    if execution.get("execution_id")!=result["execution_id"] or execution.get("content_id")!=cid or item.get("content_id")!=cid:
+        raise VError("RESULT_EXECUTION_MISMATCH","content_id",cid,"matching execution and request item",False)
+    publish_at=(item.get("publication") or {}).get("publish_at")
+    if result.get("publish_at")!=publish_at:
+        raise VError("RESULT_PUBLISH_AT_MISMATCH","publish_at",result.get("publish_at"),publish_at,False)
+    request_id=execution.get("request_id"); request_path=str(execution.get("request_path") or "")
+    if request_path!=f"content/requests/{request_id}.json":
+        raise VError("EXECUTION_REQUEST_MISMATCH","request_path",request_path,f"content/requests/{request_id}.json",False)
+    batch_path=root/request_path
+    if not batch_path.is_file() or execution.get("request_blob_sha")!=blob(batch_path.read_bytes()) or execution.get("item_blob_sha")!=blob(pretty(item)):
+        raise VError("EXECUTION_BLOB_MISMATCH","request_path",request_path,"matching immutable batch and item blobs",False)
+    identity_fields=("execution_id","content_id","request_id","request_path","request_source_sha","request_blob_sha","item_blob_sha")
+    def validate_evidence(evidence,evidence_path):
+        version=evidence.get("evidence_version")
+        if version==2:
+            expected={field:execution.get(field) for field in identity_fields}
+        elif version==1:
+            expected={"content_id":cid,"request_path":f"content/requests/{cid}.json","request_blob_sha":execution.get("item_blob_sha"),"source_commit_sha":execution.get("request_source_sha")}
+        else:
+            raise VError("UNSUPPORTED_EVIDENCE_VERSION",str(evidence_path),version,"evidence version 1 or 2",False)
+        for field,value in expected.items():
+            if evidence.get(field)!=value: raise VError("EVIDENCE_IDENTITY_MISMATCH",field,evidence.get(field),value,False)
+    evidence_dir=root/"content/executions/evidence"/cid
+    upload_path=evidence_dir/"upload.json"
+    if not upload_path.is_file(): raise VError("UPLOAD_EVIDENCE_MISSING",str(upload_path),None,"immutable upload evidence",False)
+    try: upload=read(upload_path)
+    except (OSError,json.JSONDecodeError): raise VError("UPLOAD_EVIDENCE_INVALID",str(upload_path),"unreadable","valid JSON",False) from None
+    validate_evidence(upload,upload_path)
+    intent_path=evidence_dir/"intent.json"
+    if intent_path.is_file():
+        try: validate_evidence(read(intent_path),intent_path)
+        except (OSError,json.JSONDecodeError): raise VError("INTENT_EVIDENCE_INVALID",str(intent_path),"unreadable","valid JSON",False) from None
+    if upload.get("youtube_video_id")!=result.get("youtube_video_id"):
+        raise VError("RESULT_UPLOAD_MISMATCH","youtube_video_id",result.get("youtube_video_id"),upload.get("youtube_video_id"),False)
 def ingest(path):
     path=Path(path); x=validate_result(read(path),path); ep=EXECS/(x["execution_id"]+".json")
     if not ep.exists(): raise VError("EXECUTION_NOT_FOUND","execution_id",x["execution_id"],"matching immutable execution",False)
@@ -535,7 +573,7 @@ def ingest(path):
     if not rp.exists(): raise VError("REQUEST_NOT_FOUND","request_path",str(rp),"matching immutable batch request",False)
     q=validate_batch(read(rp),rp,None); matches=[i for i in q["items"] if i["content_id"]==x["content_id"]]
     if len(matches)!=1: raise VError("RESULT_ITEM_UNRESOLVED","content_id",x["content_id"],"exactly one batch item",False)
-    item=matches[0]; h=read(HIST)
+    item=matches[0]; validate_result_relationships(ROOT,x,e,item); h=read(HIST)
     if not isinstance(h,list): raise VError("INVALID_HISTORY","data/history.json",type(h).__name__,"array",False)
     if not any(isinstance(i,dict) and i.get("content_id")==x["content_id"] for i in h):
         s=item["story"]; h.append({"content_id":x["content_id"],"title":item["youtube"]["title"],"premise":s["premise"],"category":s["category"],"conflict":s["conflict"],"twist":s["twist"],"payoff":s["punchline"],"publish_at":x["publish_at"]}); write(HIST,h)
@@ -579,7 +617,7 @@ def self_test():
     print(f"SELF_TEST_PASS checks={len(checks)} contract_hash={CONTRACT_HASH}")
 
 def main():
-    ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True); sub.add_parser("context"); p=sub.add_parser("preflight-draft"); p.add_argument("--draft",required=True); p=sub.add_parser("finalize"); p.add_argument("--draft",required=True); p=sub.add_parser("validate"); p.add_argument("--request",required=True); p=sub.add_parser("executions"); p.add_argument("--request",required=True); p.add_argument("--request-source-sha",required=True); p=sub.add_parser("ingest-result"); p.add_argument("--result",required=True); sub.add_parser("contract-hash"); sub.add_parser("self-test"); a=ap.parse_args()
+    ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True); sub.add_parser("context"); p=sub.add_parser("preflight-draft"); p.add_argument("--draft",required=True); p=sub.add_parser("finalize"); p.add_argument("--draft",required=True); p=sub.add_parser("validate"); p.add_argument("--request",required=True); p=sub.add_parser("executions"); p.add_argument("--request",required=True); p.add_argument("--request-source-sha",required=True); p=sub.add_parser("ingest-result"); p.add_argument("--result",required=True); p=sub.add_parser("audit-lifecycle"); p.add_argument("--output"); sub.add_parser("contract-hash"); sub.add_parser("self-test"); a=ap.parse_args()
     try:
         if a.cmd=="context":
             c=build_context(); print(f"Context rebuilt: recent={len(c['recent_story_cards'])} background_categories={len(c['background_categories'])}")
@@ -591,6 +629,10 @@ def main():
             for x in xs: print(x["path"])
             print(json.dumps({"executions":xs},sort_keys=True,separators=(",",":")))
         elif a.cmd=="ingest-result": ingest(a.result); print("Result ingested")
+        elif a.cmd=="audit-lifecycle":
+            report=audit_lifecycle(ROOT); rendered=json.dumps(report,sort_keys=True,indent=2)+"\n"
+            if a.output: Path(a.output).write_text(rendered,encoding="utf-8")
+            else: print(rendered,end="")
         elif a.cmd=="contract-hash": print(CONTRACT_HASH)
         else: self_test()
     except VError as e:

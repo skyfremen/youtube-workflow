@@ -409,6 +409,130 @@ class PublicationSlotTests(unittest.TestCase):
         self.assertIn("python -m unittest discover -s tests", workflow)
 
 
+class ResultRelationshipTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.cid = "wd-" + "a" * 24
+        self.rid = "rq-" + "b" * 24
+        self.eid = "ex-" + "c" * 24
+        self.publish_at = "2030-01-01T00:00:00Z"
+        self.video_id = "abcdefghijk"
+        self.item = {
+            "content_id": self.cid,
+            "publication": {"publish_at": self.publish_at},
+            "story": {
+                "premise": "Premise",
+                "category": "friends",
+                "conflict": "Conflict",
+                "twist": "Twist",
+                "punchline": "Payoff",
+            },
+            "youtube": {"title": "Title"},
+        }
+        self.batch = {"request_version": 2, "request_id": self.rid, "items": [self.item]}
+        request_path = self.root / "content/requests" / f"{self.rid}.json"
+        request_path.parent.mkdir(parents=True)
+        request_path.write_bytes(p.pretty(self.batch))
+        self.execution = {
+            "execution_version": 2,
+            "execution_id": self.eid,
+            "request_id": self.rid,
+            "content_id": self.cid,
+            "request_path": f"content/requests/{self.rid}.json",
+            "request_source_sha": "d" * 40,
+            "request_blob_sha": p.blob(request_path.read_bytes()),
+            "item_blob_sha": p.blob(p.pretty(self.item)),
+            "state": "prepared",
+        }
+        executions = self.root / "content/executions"
+        executions.mkdir(parents=True)
+        (executions / f"{self.eid}.json").write_bytes(p.pretty(self.execution))
+        self.evidence_dir = executions / "evidence" / self.cid
+        self.evidence_dir.mkdir(parents=True)
+        self.result_path = self.root / f"{self.cid}.json"
+        self.history = self.root / "data/history.json"
+        self.history.parent.mkdir(parents=True)
+        self.history.write_text("[]", encoding="utf-8")
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def write_upload(self, version=2, video_id=None):
+        if version == 2:
+            identity = {
+                key: self.execution[key]
+                for key in (
+                    "execution_id",
+                    "content_id",
+                    "request_id",
+                    "request_path",
+                    "request_source_sha",
+                    "request_blob_sha",
+                    "item_blob_sha",
+                )
+            }
+        else:
+            identity = {
+                "content_id": self.cid,
+                "request_path": f"content/requests/{self.cid}.json",
+                "request_blob_sha": self.execution["item_blob_sha"],
+                "source_commit_sha": self.execution["request_source_sha"],
+            }
+        upload = {
+            "evidence_version": version,
+            "record_type": "upload",
+            **identity,
+            "youtube_video_id": video_id or self.video_id,
+        }
+        (self.evidence_dir / "upload.json").write_bytes(p.pretty(upload))
+
+    def write_result(self, *, publish_at=None, video_id=None):
+        result = {
+            "result_version": 2,
+            "content_id": self.cid,
+            "execution_id": self.eid,
+            "status": "scheduled",
+            "youtube_video_id": video_id or self.video_id,
+            "visibility": "private",
+            "verified": True,
+            "publish_at": publish_at or self.publish_at,
+        }
+        self.result_path.write_bytes(p.pretty(result))
+
+    def ingest(self):
+        with patch.object(p, "ROOT", self.root), patch.object(
+            p, "EXECS", self.root / "content/executions"
+        ), patch.object(p, "HIST", self.history), patch.object(
+            p, "validate_batch", return_value=self.batch
+        ), patch.object(p, "build_context"):
+            p.ingest(self.result_path)
+
+    def test_ingest_rejects_publish_time_mismatch(self):
+        self.write_upload()
+        self.write_result(publish_at="2030-01-01T00:10:00Z")
+        with self.assertRaisesRegex(p.VError, "RESULT_PUBLISH_AT_MISMATCH"):
+            self.ingest()
+
+    def test_ingest_rejects_video_id_mismatch(self):
+        self.write_upload(video_id="zzzzzzzzzzz")
+        self.write_result()
+        with self.assertRaisesRegex(p.VError, "RESULT_UPLOAD_MISMATCH"):
+            self.ingest()
+
+    def test_ingest_accepts_complete_v2_evidence(self):
+        self.write_upload(version=2)
+        self.write_result()
+        self.ingest()
+        self.assertEqual(self.cid, json.loads(self.history.read_text())[0]["content_id"])
+
+    def test_ingest_accepts_exact_legacy_v1_alias(self):
+        self.write_upload(version=1)
+        self.write_result()
+        self.ingest()
+        self.assertEqual(self.cid, json.loads(self.history.read_text())[0]["content_id"])
+
+
 class PlannerAnalyticsContextTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
