@@ -119,7 +119,7 @@
         {
           "average_view_percentage": 69.09,
           "dimension": "story_tone",
-          "evidence_median_views": 94.0,
+          "evidence_median_views": 94.5,
           "mature_sample": 13,
           "sample_size": 21,
           "value": "natural"
@@ -133,17 +133,17 @@
           "value": "money_stakes"
         },
         {
-          "average_view_percentage": 50.09,
+          "average_view_percentage": 68.1,
           "dimension": "category",
-          "evidence_median_views": 58.5,
-          "mature_sample": 23,
-          "sample_size": 33,
-          "value": "workplace"
+          "evidence_median_views": 29.0,
+          "mature_sample": 11,
+          "sample_size": 15,
+          "value": "work"
         },
         {
           "average_view_percentage": 61.7,
           "dimension": "hook_type",
-          "evidence_median_views": 47.5,
+          "evidence_median_views": 19.0,
           "mature_sample": 47,
           "sample_size": 68,
           "value": "discovery"
@@ -185,18 +185,18 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-09-28T11:30:31Z",
+      "latest_realtime_snapshot": "2026-09-28T17:30:41Z",
       "videos_analyzed": 325
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 511.0,
+          "evidence_median_views": 535.0,
           "sample_size": 71,
           "window": "08-11"
         },
         {
-          "evidence_median_views": 490.5,
+          "evidence_median_views": 499.0,
           "sample_size": 63,
           "window": "12-15"
         },
@@ -219,25 +219,25 @@
         }
       ]
     },
-    "generated_at": "2026-09-28T11:30:31Z",
+    "generated_at": "2026-09-28T17:30:41Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 307,
+        "24h": 309,
         "2h": 158,
-        "6h": 279,
-        "72h": 261,
-        "7d": 176
+        "6h": 280,
+        "72h": 270,
+        "7d": 182
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional Reporting download 20506366191 unavailable: HTTPError",
-      "Optional Reporting download 20506365960 unavailable: HTTPError",
-      "Optional Reporting download 20506365425 unavailable: HTTPError",
-      "Optional Reporting download 20506329306 unavailable: HTTPError",
-      "Optional Reporting download 17653890531 unavailable: HTTPError"
+      "Optional Reporting download 20506242023 unavailable: HTTPError",
+      "Optional Reporting download 20506302025 unavailable: HTTPError",
+      "Optional Reporting download 20506242005 unavailable: HTTPError",
+      "Optional Reporting download 20506510776 unavailable: HTTPError",
+      "Optional Reporting download 20506302014 unavailable: HTTPError"
     ]
   },
   "background_categories": [
