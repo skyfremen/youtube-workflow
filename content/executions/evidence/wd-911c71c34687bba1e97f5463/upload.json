@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-911c71c34687bba1e97f5463",
+  "evidence_version": 2,
+  "execution_id": "ex-a27926064e1bec36c16c0c46",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9d82acdd814e6dec62af4f076400c601b58c5314",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:08:48.013400Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A late-night parking dispute reveals a reserved space has become event parking.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-87aadcf51913e3f54964",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Was Renting Out My Parking Space"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501181117"
+  },
+  "youtube_video_id": "fqc-_Hfizhw"
+}
