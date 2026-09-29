@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6d6245b51436fdd3b695cb3c",
+  "evidence_version": 2,
+  "execution_id": "ex-9ea80a9d7f30317cac547366",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "416dab121de46951918cb9e9514261cd2ffc1a9b",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:09:10.620030Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unexpected visitor reveals an occupied apartment has already been marketed as available.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ae5a8747c0bad078cb92",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Landlord Was Showing My Apartment Behind My Back"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501174806"
+  },
+  "youtube_video_id": "dw3UpBtlTqU"
+}
