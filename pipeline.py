@@ -615,7 +615,7 @@ def self_test():
         checks.append(name)
     r=registry(); c=build_context(); groups=category_assets(r)
     ok("1 context compact",len(pretty(c))<=40000); ok("2 viable backgrounds",bool(c["background_categories"]) and all(len(groups.get(x,[]))>=3 for x in c["background_categories"]))
-    filler=" ".join(["Then everything changed when the truth finally came out."]*32); payoff="I had the receipts"; bgcat=c["background_categories"][0]
+    filler=" ".join(["Then everything changed when the truth finally came out."]*22); payoff="I had the receipts"; bgcat=c["background_categories"][0]
     winner={"premise":"A manager falsely blames an employee.","category":"work","conflict":"The accusation happens in front of the whole team.","twist":"The employee kept screenshots that prove what happened.","hook":"My manager accused me in front of everyone.","hook_type":"accusation","narration":f"My manager accused me in front of everyone. {filler} {payoff}. Nobody could answer after that.","title":"My Manager Picked the Wrong Person to Blame","description":"A workplace accusation turns around fast.","lead_gender":"invalid","story_tone":"invalid","payoff":"missing payoff","emoji_cues":["shock","evidence","panic","victory"],"background_category":bgcat,"trend_aware":False,"trend_topic":None}
     raw={"winner_count":3,"winners":[winner,winner.copy(),winner.copy()]}; d=normalize_draft(raw); ok("3 array accepted",len(d["winners"])==3 and d["winner_count"]==3)
     try: normalize_draft({"winner_count":2,"winners":[winner,winner.copy(),winner.copy()]})
