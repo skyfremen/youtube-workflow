@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8a5e6e20dfdb467e3378cf52",
+  "evidence_version": 2,
+  "execution_id": "ex-9f4eedb8d2e22f54b8a8addf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "dc5b4759fac056b2789e5e3c69861b74897e55ed",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T12:13:20.757496Z",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Our two-person honeymoon suddenly had a third ticket—and my name was used to explain it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d4d64a4ea885c141c1aa",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Fiancée Invited Her Sister on Our Honeymoon"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565729675"
+  },
+  "youtube_video_id": "IGfYZGj-do4"
+}
