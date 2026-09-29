@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-7d89f094b0dd838c351dbceb",
+  "created_at": "2026-09-29T12:09:08.600895Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9b3c6b94f3bd65b68fe3c920",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2b0a1b7c62a1735ecf66fd2f258d22eec0cdcc07",
+  "record_type": "intent",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I thought the travel nominations were compliments until one sentence exposed the bonus he was getting.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-51cbb569915b6ceb9bc7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Sent Me on Work Trips for My Desk"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565737428"
+  }
+}
