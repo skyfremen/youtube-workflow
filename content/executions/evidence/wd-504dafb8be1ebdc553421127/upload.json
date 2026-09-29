@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-504dafb8be1ebdc553421127",
+  "evidence_version": 2,
+  "execution_id": "ex-64300426dc8c830fddd3b70e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8dd2de05e699335db04de7e3361a5452b63b09e9",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:07:22.170068Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A routine vet visit exposes an ownership-profile change made as a relationship started falling apart.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1cfce7bcf85ba84f0456",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Ex Quietly Put My Dog in His Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T05:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501183325"
+  },
+  "youtube_video_id": "uGGWaVTPgkU"
+}
