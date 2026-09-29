@@ -1,0 +1,33 @@
+{
+  "winner_count": 12,
+  "supersedes_draft_id": "draft-20260929T000400-c4e81b62",
+  "replacements": [
+    {
+      "winner_index": 1,
+      "winner": {
+        "background_category": "city_motion",
+        "category": "neighbor",
+        "conflict": "The neighbor says he thought the credit belonged to the parking space, while charges continued after the narrator said the account was personal.",
+        "description": "A strange utility bill exposes months of charging on the wrong resident's account.",
+        "emoji_cues": [
+          "money",
+          "suspicion",
+          "evidence",
+          "victory"
+        ],
+        "hook": "My electricity bill jumped by hundreds because my neighbor had been charging his car on my account.",
+        "hook_type": "money_stakes",
+        "lead_gender": "male",
+        "like_cta": "LIKE IF HE SHOULD PAY IT ALL",
+        "narration": "The building manager pulled the charger logs and every mystery session came from the space beside mine. I do not own an electric car, so months of charging fees made no sense. My neighbor did. He first blamed a system mix-up because our spaces were adjacent, but the charger requires an account billing code. Months earlier I had sent him a building access sheet when he helped with a delivery, and the charging code appeared at the bottom. He admitted saving it but said he thought each parking space came with free charging. That explanation collapsed when management found sessions from the week after I had already questioned him about the bill. He had kept using it. The garage audit tied every session to his device. Management removed his access, reset my billing code, and moved the documented charges onto his account. He offered to reimburse me privately, but late fees had already appeared, so I wanted the correction recorded. Once the adjustment posted, my balance returned to normal.  Management also gave me a monthly usage report so I could verify immediately if any unfamiliar charging session appeared again.  The building sent me a final written statement showing exactly which charges had been reassigned. Every charging fee was transferred off my account.",
+        "payoff": "Every charging fee was transferred off my account.",
+        "premise": "A man discovers his neighbor has been charging electric-car sessions to his apartment account using a copied building billing code.",
+        "story_tone": "natural",
+        "title": "My Neighbor Charged His Car to My Apartment",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "Garage logs show the neighbor saved the billing code after seeing it during an earlier favor."
+      }
+    }
+  ]
+}
