@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c91c7d8d048c829dedc78511",
+  "evidence_version": 2,
+  "execution_id": "ex-0af2f3dfb770e3f4e5e99f0d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5815d0b4ed120fe858366c17e404e1d21edf5751",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T12:12:54.420555Z",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A joint gift became a solo gesture—until Mom recognized where the new words really came from.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-49d16fededced068a5c2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Took My Name Off Mom's Retirement Gift"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T07:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565750427"
+  },
+  "youtube_video_id": "MtFxlNN9h4c"
+}
