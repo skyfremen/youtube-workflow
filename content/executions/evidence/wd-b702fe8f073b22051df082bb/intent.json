@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-b702fe8f073b22051df082bb",
+  "created_at": "2026-09-29T12:08:36.897198Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5241cd1307d1b6d049e582d3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f3acc39d17f875c84c9423d130cb16c278bd29a4",
+  "record_type": "intent",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two employees were quietly competing for a promotion that did not even exist yet.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-29c2fa88916f42c01537",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Boss Promised Both of Us the Same Promotion"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T04:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565726864"
+  }
+}
