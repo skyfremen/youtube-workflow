@@ -252,20 +252,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "The friend says she only needed help passing the income threshold and planned to pay everything herself, while the narrator is now tied to a lease application.",
-      "payoff": "The application was cancelled before the lease started.",
-      "premise": "A woman discovers her friend listed her as a co-tenant and used her income documents to qualify for an apartment she never agreed to rent.",
-      "title": "My Friend Used My Name to Get a Bigger Apartment",
-      "twist": "The leasing office has an electronic signature completed from the friend's device after the narrator had explicitly declined to co-sign."
-    },
-    {
-      "conflict": "The friend says he was using otherwise wasted class credits and thought scanning the narrator's spare tag helped both of them, while the penalties threaten the narrator's membership.",
-      "payoff": "The gym cancelled the extra check-ins and removed the penalties",
-      "premise": "A man discovers his gym buddy has been checking into classes under his membership whenever he skips, causing repeated no-show penalties on his account.",
-      "title": "My Gym Membership Became My Friend's Guest Pass",
-      "twist": "Reception footage shows the friend lending the spare tag to different people, not merely using it himself."
-    },
-    {
       "conflict": "The manager says leave is approved according to business priority, while the narrator's requests were submitted first and the coworker repeatedly books identical dates afterward.",
       "payoff": "HR reinstated my upcoming leave",
       "premise": "A woman discovers her manager has been declining her leave requests, then approving the same dates for a favored coworker after copying her vacation plans.",
@@ -425,6 +411,20 @@
       "premise": "A woman discovers a coworker has been forwarding customer praise about her work to management after removing her name.",
       "title": "My Coworker Kept Forwarding My Client Praise",
       "twist": "A customer replies to a forwarded thread asking why the woman's name and original greeting disappeared."
+    },
+    {
+      "conflict": "The friend says he intended to replace the points later, while the redemption erased savings for the narrator's own planned trip.",
+      "payoff": "Every mile returned to my account.",
+      "premise": "A man discovers a friend used his airline loyalty account to redeem points for a family vacation.",
+      "title": "My Friend Used My Airline Miles for His Family",
+      "twist": "Security logs show the notification email was temporarily changed during booking so alerts would not reach the narrator."
+    },
+    {
+      "conflict": "The relative says the discount would otherwise go unused and offered to share profits, while repeated purchases caused the woman's own orders to be cancelled under quantity limits.",
+      "payoff": "My cancelled order was reinstated at the original price.",
+      "premise": "A woman discovers a relative has been using her membership discount to buy limited-stock household items for resale.",
+      "title": "My Cousin Used My Discount Until My Order Got Cancelled",
+      "twist": "Purchase history shows the relative placed multiple orders from the woman's account before asking whether she wanted the items herself."
     }
   ]
 }
