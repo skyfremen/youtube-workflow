@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6f78406ae76f359cd871d960",
+  "evidence_version": 2,
+  "execution_id": "ex-47abdee1a2a8cd947ded2f9f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b351f6b60822fc8de6fed498f4ca2a4a81c49e0d",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:13:14.843918Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposed overdue storage bill collapses when the family checks the account.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f237aedad1a823d554b6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Invented a Storage Debt to Sell Our Stuff"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T03:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501172736"
+  },
+  "youtube_video_id": "DXR-8TT2HwQ"
+}
