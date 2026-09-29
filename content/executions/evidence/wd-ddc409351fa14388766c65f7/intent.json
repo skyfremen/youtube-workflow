@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ddc409351fa14388766c65f7",
+  "created_at": "2026-09-29T08:09:48.759044Z",
+  "evidence_version": 2,
+  "execution_id": "ex-72af118a8ff40c3caa54a3dd",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8266dfbe5f8cb1b080ba732ea5eaa6038b5e2a42",
+  "record_type": "intent",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I hadn't finished moving out. My furniture was already being promised to someone else.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ee8af8c1fe04ae1bf266",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Dad Gave Away the Desk Grandma Left Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540118295"
+  }
+}
