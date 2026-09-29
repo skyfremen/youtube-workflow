@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1e05924e269add4d5343059c",
+  "evidence_version": 2,
+  "execution_id": "ex-1372ced38d900a443379620a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b8df07cd7175163629fb4a4aeb58e7e135082429",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T08:07:05.663101Z",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "His secret deliveries were annoying. Then one vanished and suddenly I was the suspect.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-51cd7db9bdf1b21e50d4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Used My Porch to Hide His Shopping"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T03:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540125736"
+  },
+  "youtube_video_id": "ogues8RMQBc"
+}
