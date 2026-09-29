@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-42abc4cb4caa4c84a679168f",
+  "created_at": "2026-09-29T00:10:35.907503Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e068b1e90c10eaf711890c12",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "44c17554c2702c02c859254e18d3f0ff522b6a76",
+  "record_type": "intent",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Missing loyalty points reveal a family vacation booked from somebody else's account.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-92889505f29e4d961aea",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Friend Used My Airline Miles for His Family"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T04:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501176903"
+  }
+}
