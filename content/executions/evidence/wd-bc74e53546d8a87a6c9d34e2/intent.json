@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-bc74e53546d8a87a6c9d34e2",
+  "created_at": "2026-09-29T12:10:05.320775Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8c2c2ab1ecbf39b65d45514f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ff3a5323eb78d99c08d73555ee5698af42189393",
+  "record_type": "intent",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Relatives thought Grandma was being excluded. The cancelled visits told another story.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ea38cb8a3f15e8fa8b02",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Said My Wife Kept Her From Our Baby"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T05:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565734966"
+  }
+}
