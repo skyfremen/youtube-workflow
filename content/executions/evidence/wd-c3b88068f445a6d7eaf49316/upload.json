@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c3b88068f445a6d7eaf49316",
+  "evidence_version": 2,
+  "execution_id": "ex-059cf6a3882e88bdc858da26",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "23e82722878f6b6075fa91a9f4491ca00029f379",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:10:53.315638Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A conversation with an official exposes where a recreational league's weekly cash was going.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-adaca13044dda5ea8733",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Referee Fee Wasn't Paying the Referees"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501185131"
+  },
+  "youtube_video_id": "GP0b2D3JtlE"
+}
