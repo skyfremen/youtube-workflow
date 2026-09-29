@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9ee8539a07630c28da9c1b6c",
+  "evidence_version": 2,
+  "execution_id": "ex-189a958d83fcb692f8526793",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "42e59baaf920942a5c5518b8143fb8059650136a",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:10:17.120882Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A purchase-limit error reveals someone else has been repeatedly using a membership benefit.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-80b6235e658c440dd9c7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Cousin Used My Discount Until My Order Got Cancelled"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501187038"
+  },
+  "youtube_video_id": "hYOjC3lPGOM"
+}
