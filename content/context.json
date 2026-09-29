@@ -252,13 +252,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "He says he reported what looked concerning and HR should decide, while she says he deliberately removed context from a conversation he knew was harmless.",
-      "payoff": "HR restored my promotion review.",
-      "premise": "A woman discovers a coworker filed an anonymous misconduct complaint days before her promotion decision, using screenshots cropped to remove the messages that cleared her.",
-      "title": "My Promotion Vanished After One Anonymous Complaint",
-      "twist": "The uncropped export shows he was in the same chat and replied to the missing message that explained the joke."
-    },
-    {
       "conflict": "The friend says she only needed help passing the income threshold and planned to pay everything herself, while the narrator is now tied to a lease application.",
       "payoff": "The application was cancelled before the lease started.",
       "premise": "A woman discovers her friend listed her as a co-tenant and used her income documents to qualify for an apartment she never agreed to rent.",
@@ -425,6 +418,13 @@
       "premise": "A man discovers his neighbor has been charging electric-car sessions to his apartment account using a copied building billing code.",
       "title": "My Neighbor Charged His Car to My Apartment",
       "twist": "Garage logs show the neighbor saved the billing code after seeing it during an earlier favor."
+    },
+    {
+      "conflict": "He says he was summarizing team feedback, while the forwarded messages make the praise appear to describe his own work.",
+      "payoff": "The praise went back under my name.",
+      "premise": "A woman discovers a coworker has been forwarding customer praise about her work to management after removing her name.",
+      "title": "My Coworker Kept Forwarding My Client Praise",
+      "twist": "A customer replies to a forwarded thread asking why the woman's name and original greeting disappeared."
     }
   ]
 }
