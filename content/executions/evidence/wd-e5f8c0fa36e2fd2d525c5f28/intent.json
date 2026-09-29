@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e5f8c0fa36e2fd2d525c5f28",
+  "created_at": "2026-09-29T08:07:20.298058Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9dac4c8e3df7884afa4d5150",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "26649b0fb2c3fd2ab93896dae7518161fc8f27a2",
+  "record_type": "intent",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He booked the resort, but somehow I became the reason everyone's kids were excluded.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f3b9e49966a004dbb761",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Blamed Me for His Adults-Only Vacation"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540112774"
+  }
+}
