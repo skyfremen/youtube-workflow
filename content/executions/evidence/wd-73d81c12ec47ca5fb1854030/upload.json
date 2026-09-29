@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-73d81c12ec47ca5fb1854030",
+  "evidence_version": 2,
+  "execution_id": "ex-f1dd78f34f6db281b6f69be3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7fc680c53b21d7e6162aa3089c34f3c899fbb648",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T12:09:54.827246Z",
+  "request_blob_sha": "1cf204e172a54488390bb029aca5efeb6368fae6",
+  "request_id": "rq-0db714ea2105e95c9e248f64",
+  "request_path": "content/requests/rq-0db714ea2105e95c9e248f64.json",
+  "request_source_sha": "e92ab0fcdcbbf13e0c29c21272cf52c442189185",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My maid of honor changed one deeply personal wedding detail without asking—and had another surprise planned.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-705b320acae8071126d5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Removed My Mother's Flowers From My Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36565721579"
+  },
+  "youtube_video_id": "i_7-4xBeKkg"
+}
