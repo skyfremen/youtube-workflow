@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e9dfedb8d9f18e694eac4406",
+  "created_at": "2026-09-29T00:11:03.788753Z",
+  "evidence_version": 2,
+  "execution_id": "ex-788471a39490c7518f831b3f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e2f33d0d479b3994ce40af6402e4bff7c2c831ae",
+  "record_type": "intent",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise bulk order reveals handmade products entered under somebody else's brand.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3db9c474997ebde30c12",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Cousin Turned My Hobby Into His Business"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T04:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501179007"
+  }
+}
