@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ca7c0ca5561363bbf32ac423",
+  "created_at": "2026-09-29T08:08:08.267637Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e4a93c787159fcbef63f6f61",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5a44eb27bc0c2a3a411e68bf32f309f862611daf",
+  "record_type": "intent",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Our wedding was already full. Then twenty relatives received invitations we never sent.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-51e6c5d2e4cbb53ff649",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Mother-in-Law Secretly Added 20 Wedding Guests"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540091096"
+  }
+}
