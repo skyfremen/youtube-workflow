@@ -32,7 +32,7 @@ def winner(narration, title="A Valid Story Title", **overrides):
 
 
 def valid_narration():
-    return " ".join(["word"] * 280)
+    return " ".join(["word"] * 220)
 
 
 def draft_doc(*winners):
