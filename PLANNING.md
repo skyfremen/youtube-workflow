@@ -14,7 +14,7 @@ The count is the only planning difference. Do not change creative behavior based
 ## Normal run
 
 1. Read `content/context.json`.
-2. Generate a broad, varied candidate pool internally; reject semantic duplicates against `recent_story_cards`, then select exactly `winner_count` strong winners.
+2. Generate a broad, varied candidate pool internally; for `winner_count = 12`, generate at least 60 distinct candidate premises before winner selection (for other counts, generate at least 5 candidates per requested winner). Reject semantic duplicates against `recent_story_cards`, then aggressively reject ordinary, low-curiosity, or explanation-dependent premises before selecting exactly `winner_count` strong winners. Do not fully author candidates before they survive premise selection.
 3. When `winner_count > 1`, treat the winners as one editorial batch and preserve strong diversity across premises, conflicts, twists, title patterns, opening-hook mechanisms, and emotional beats.
 4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
 5. Write exactly one new immutable file under `content/drafts/` with `winner_count` set to the caller-provided value and all selected winners in one `winners[]` array.
@@ -89,9 +89,9 @@ Recheck **Finalize Draft** for the repair draft. If it fails with another matchi
 
 Every winner follows the same creative contract. Tell addictive, relatable everyday dramas like someone excitedly recounting something that happened. Use simple conversational language, fast progression, and natural narration rather than literary prose or screenplay-style scene setting.
 
-- Hook immediately with a specific situation that creates curiosity or tension. Prefer concrete conflict, consequence, contradiction, discovery, confession, exposure, urgency, or meaningful stakes over generic setup.
-- After the opening hook, immediately deliver the first concrete proof, consequence, contradiction, or escalation. Avoid spending the first post-hook beat on background explanation when that context can come afterward.
-- Front-load the first meaningful development: hook → proof/problem gets worse → context, rather than hook → context → proof.
+- Open with the strongest immediately understandable concrete fact available in the story: a conflict, accusation, discovery, contradiction, consequence, confession, exposure, urgency, or meaningful stake. Write for a cold viewer with zero context: the first sentence must make the core problem clear and create a reason to keep watching without requiring background explanation. Do not open with setup, character introduction, vague suspense, rhetorical framing, or a promise that something interesting will happen, and do not withhold the strongest opening fact merely to manufacture suspense.
+- The first development after the hook must prove the claim, reveal evidence, show a consequence, introduce a contradiction, or materially worsen the situation. Do not spend that beat on relationship history, character background, scene-setting, explanation, or other context unless the context itself escalates the conflict.
+- Front-load the opening progression: strongest concrete fact → proof/consequence/problem gets worse → context, rather than hook → context → proof. The viewer should receive two meaningful developments before non-escalating background explanation.
 - Choose exactly one `hook_type` from the supported mechanisms below based on how the opening earns attention, not merely the overall story conflict.
 - Build around meaningful interpersonal conflict that progressively escalates and gives viewers something worth judging. Prefer conflicts where viewers can naturally take sides without forcing artificial 50/50 ambiguity when one character is clearly wrong.
 - Give characters understandable motivations and stakes when natural, so disagreement comes from the story rather than a bolted-on engagement question.
@@ -172,8 +172,10 @@ The draft must contain exactly `winner_count` winner objects. Deterministic pref
 
 ## Current creative bias
 
-Use these as soft winner-selection preferences, not quotas or mandatory story formulas.
+Use these as soft winner-selection preferences, not quotas or mandatory story formulas. Premise strength is the primary winner-selection criterion, while the preferences below shape selection without becoming rigid formulas.
 
+- Aggressively reject premises whose core conflict is ordinary, low-curiosity, or only becomes interesting after a later twist or substantial explanation. A winning premise should be compelling in one sentence before any twist, context, or prose is added: a cold viewer should immediately understand why the situation is unusual, consequential, surprising, or worth finding out more about. A well-written ordinary premise should lose to a more compelling premise. Never try to rescue a weak premise with dramatic wording or a stronger hook; reject it and choose a stronger underlying idea instead.
+- Prefer premises with broad human recognizability or immediately understandable fascination, while keeping situations specific and original rather than generic. Broad appeal must not override semantic-duplicate avoidance or batch diversity.
 - Prefer stories with tangible stakes or meaningful consequences over low-stakes interpersonal irritation. Tangible stakes may include money, jobs, reputation, relationships, property, access, important possessions, bookings, weddings, promotions, accounts, tickets, or similar concrete consequences.
 - When two candidate ideas are otherwise similarly strong, prefer one that opens with a concrete accusation, discovery, or already-visible consequence rather than background setup, especially when the accusation concerns a specific wrongdoing with tangible consequences.
 - Favor `accusation`, `discovery`, and `contradiction` hooks when they naturally make the conflict more immediate, while preserving variety across all supported hook types. Keep `consequence_first` available for strong-fitting stories, but do not preferentially favor it until mature analytics support doing so.
