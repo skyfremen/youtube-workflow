@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c28d1a73b4f5c7c612b62743",
+  "evidence_version": 2,
+  "execution_id": "ex-393bcacc495827e980fb276a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7024e67fc2358fc137b9a46beca14d958436acdf",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:11:34.452600Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Missing concert tickets lead to a refund already spent somewhere else.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a1706b7d67f8e908fc7b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Partner Cancelled My Tickets and Spent the Refund"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501170620"
+  },
+  "youtube_video_id": "rcaj3-9oWZg"
+}
