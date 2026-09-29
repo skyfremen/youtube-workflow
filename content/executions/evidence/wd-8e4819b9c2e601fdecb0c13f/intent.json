@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-8e4819b9c2e601fdecb0c13f",
+  "created_at": "2026-09-29T08:06:26.558500Z",
+  "evidence_version": 2,
+  "execution_id": "ex-81b00ae35191b59a04d82a9b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "56b31b674725fed1e66cd7b5c28f767ad82b8d6e",
+  "record_type": "intent",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He said his parents had nowhere else to go. His mother told me something very different.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-bb564960a7d8432a7275",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Partner Invited His Parents to Move In for Four Months"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T03:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540123384"
+  }
+}
