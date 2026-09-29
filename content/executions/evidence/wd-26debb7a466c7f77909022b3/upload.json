@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-26debb7a466c7f77909022b3",
+  "evidence_version": 2,
+  "execution_id": "ex-240867f7c30621ec28009f77",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6b9fa9082ad1415ee3066989055f3e503347eb27",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T08:06:37.084244Z",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I had proof I paid. My sister had proof the money never reached her wedding.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a963f8463b5b175c118a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Parents Gave Away My Sister's Wedding Money"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540093801"
+  },
+  "youtube_video_id": "6xf_O99snBw"
+}
