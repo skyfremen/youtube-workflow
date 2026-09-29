@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b9d0fcb46b39880adbc00408",
+  "evidence_version": 2,
+  "execution_id": "ex-9a049794a910b1a5e0f2c5a5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e249ddde7ea5c6cda7a00164e061613f10c0964d",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T00:09:48.065242Z",
+  "request_blob_sha": "d163a1860b89966f2d08db4bca1bbf6cfd301219",
+  "request_id": "rq-5f1775bb00ce988ab4e14140",
+  "request_path": "content/requests/rq-5f1775bb00ce988ab4e14140.json",
+  "request_source_sha": "38630544c3b3ecb426fb59156ec68722992711a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A strange utility bill exposes months of charging on the wrong resident's account.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-bd706d81ec8763801309",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Charged His Car to My Apartment"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-29T02:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36501166293"
+  },
+  "youtube_video_id": "Rwzre43Zye4"
+}
