@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-014deb16d7ff89da08c42780",
+  "evidence_version": 2,
+  "execution_id": "ex-c6a7f53f169f39372a48e4e7",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "256d438533fc4e6e0aef7e0cf64d7e4bd3e0d288",
+  "record_type": "upload",
+  "recorded_at": "2026-09-29T08:07:18.873034Z",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "We prepaid every seat. Guests were still being told to bring cash.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-825e3a45cf6c4af4bbce",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Charged Guests for Our Free Wedding Shuttle"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540120620"
+  },
+  "youtube_video_id": "UvsHsPjt_1w"
+}
