@@ -111,7 +111,7 @@
         {
           "average_view_percentage": 70.45,
           "dimension": "hook_type",
-          "evidence_median_views": 168.0,
+          "evidence_median_views": 151.0,
           "mature_sample": 26,
           "sample_size": 39,
           "value": "accusation"
@@ -125,14 +125,6 @@
           "value": "natural"
         },
         {
-          "average_view_percentage": 65.98,
-          "dimension": "category",
-          "evidence_median_views": 93.5,
-          "mature_sample": 12,
-          "sample_size": 15,
-          "value": "work"
-        },
-        {
           "average_view_percentage": 78.25,
           "dimension": "category",
           "evidence_median_views": 73.5,
@@ -141,12 +133,20 @@
           "value": "relationship"
         },
         {
-          "average_view_percentage": 45.48,
+          "average_view_percentage": 58.05,
+          "dimension": "hook_type",
+          "evidence_median_views": 57.0,
+          "mature_sample": 29,
+          "sample_size": 40,
+          "value": "money_stakes"
+        },
+        {
+          "average_view_percentage": 65.98,
           "dimension": "category",
-          "evidence_median_views": 58.5,
-          "mature_sample": 27,
-          "sample_size": 35,
-          "value": "workplace"
+          "evidence_median_views": 31.0,
+          "mature_sample": 12,
+          "sample_size": 15,
+          "value": "work"
         }
       ],
       "weak_patterns": [
@@ -159,44 +159,44 @@
           "value": "conversational"
         },
         {
-          "average_view_percentage": 49.9,
-          "dimension": "hook_type",
-          "evidence_median_views": 2.0,
-          "mature_sample": 13,
-          "sample_size": 20,
-          "value": "consequence_first"
-        },
-        {
-          "average_view_percentage": 54.94,
-          "dimension": "story_tone",
-          "evidence_median_views": 3.0,
-          "mature_sample": 19,
-          "sample_size": 26,
-          "value": "sarcastic"
-        },
-        {
           "average_view_percentage": 29.43,
           "dimension": "hook_type",
           "evidence_median_views": 3.0,
           "mature_sample": 14,
           "sample_size": 15,
           "value": "urgency"
+        },
+        {
+          "average_view_percentage": 49.9,
+          "dimension": "hook_type",
+          "evidence_median_views": 3.0,
+          "mature_sample": 13,
+          "sample_size": 20,
+          "value": "consequence_first"
+        },
+        {
+          "average_view_percentage": 61.49,
+          "dimension": "hook_type",
+          "evidence_median_views": 4.0,
+          "mature_sample": 22,
+          "sample_size": 31,
+          "value": "social_exposure"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-09-29T11:30:28Z",
+      "latest_realtime_snapshot": "2026-09-29T17:30:29Z",
       "videos_analyzed": 342
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 535.0,
+          "evidence_median_views": 491.0,
           "sample_size": 81,
           "window": "08-11"
         },
         {
-          "evidence_median_views": 397.0,
+          "evidence_median_views": 304.0,
           "sample_size": 70,
           "window": "12-15"
         },
@@ -219,21 +219,22 @@
         }
       ]
     },
-    "generated_at": "2026-09-29T11:30:28Z",
+    "generated_at": "2026-09-29T17:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 323,
+        "24h": 325,
         "2h": 166,
         "6h": 297,
-        "72h": 285,
-        "7d": 200
+        "72h": 300,
+        "7d": 206
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 20 due checkpoints; will retry"
+      "Optional Reporting download 17661578719 unavailable: HTTPError",
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
