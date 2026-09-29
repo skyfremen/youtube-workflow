@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-402de2c5471cd225d269a23d",
+  "created_at": "2026-09-29T08:08:45.396018Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6c8df7be986461dfb2e9561c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "47705d01f3cc9d7bfd18eecdb9bfac2a4ff88719",
+  "record_type": "intent",
+  "request_blob_sha": "c9a5c0f188229f999dda7e174ef3d7b4a460153a",
+  "request_id": "rq-d8acca0f5017046597950d25",
+  "request_path": "content/requests/rq-d8acca0f5017046597950d25.json",
+  "request_source_sha": "e05a0774afd48672f44bb5d42a906c896a7de9a2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He promised my prepaid suite to another couple—and put my name on the gift.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-127787ff21aed3d77d24",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Best Man Gave Away My Wedding Suite"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-09-30T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36540099226"
+  }
+}
