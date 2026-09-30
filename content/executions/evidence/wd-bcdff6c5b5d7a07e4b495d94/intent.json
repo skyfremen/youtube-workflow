@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-bcdff6c5b5d7a07e4b495d94",
+  "created_at": "2026-09-30T00:11:24.721111Z",
+  "evidence_version": 2,
+  "execution_id": "ex-832a1dfb06863ac138cace21",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "26a818a3a214fd2acfa8e62a5e2acd3bd8370261",
+  "record_type": "intent",
+  "request_blob_sha": "63583f9daf285708ac119d788d40dc4970a799eb",
+  "request_id": "rq-5de81d5600ae26c26ae43fcf",
+  "request_path": "content/requests/rq-5de81d5600ae26c26ae43fcf.json",
+  "request_source_sha": "c366e5bb868db31ebfb2a79f2431cad6d3f36228",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two matching gifts exposed two different inheritance promises.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d25c352d8dfef94955b9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Promised Grandpa's Watch to Both of Us"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T01:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36648568651"
+  }
+}
