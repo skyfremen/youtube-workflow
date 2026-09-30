@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-cfb73e066e681bf1a909f6fd",
+  "created_at": "2026-09-30T12:14:07.919961Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c273db235c4d536bfc3682e6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "527af24251c91d7222dba64f349efaae9a176af9",
+  "record_type": "intent",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The bridesmaids thought I banned their partners. The seats had quietly gone somewhere else.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-03677bd0d52942bd61b6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Secretly Reassigned My Wedding Guests"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T05:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712801807"
+  }
+}
