@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-339974bd0ed0a9eb695560b5",
+  "evidence_version": 2,
+  "execution_id": "ex-2aff0f5fa5e5a47f7565677d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6a08ed71828a7198a0d69fee565fdc410ee9f967",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T12:14:51.540880Z",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Finance wanted my business case for an upgrade I had never authorized.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c73c9cff31dac1d7add5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Bought Software Using My Approval"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712809618"
+  },
+  "youtube_video_id": "JIHMkxIJeZY"
+}
