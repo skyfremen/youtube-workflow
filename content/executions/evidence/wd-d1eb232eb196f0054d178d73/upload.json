@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d1eb232eb196f0054d178d73",
+  "evidence_version": 2,
+  "execution_id": "ex-4a61022bc66f7aebaf6cd7e9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "403a2b75d33db5ab93bf8cf6f51bf976d9768e1d",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T00:12:08.131905Z",
+  "request_blob_sha": "63583f9daf285708ac119d788d40dc4970a799eb",
+  "request_id": "rq-5de81d5600ae26c26ae43fcf",
+  "request_path": "content/requests/rq-5de81d5600ae26c26ae43fcf.json",
+  "request_source_sha": "c366e5bb868db31ebfb2a79f2431cad6d3f36228",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My bridesmaids thought they were secretly rescuing me from wedding costs.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-af3aa89ae55dda095b8c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Maid of Honor Invented My Wedding Debt"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36648570419"
+  },
+  "youtube_video_id": "J32pVqI2_6M"
+}
