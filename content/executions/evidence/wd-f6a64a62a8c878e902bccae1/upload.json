@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f6a64a62a8c878e902bccae1",
+  "evidence_version": 2,
+  "execution_id": "ex-a88c262eac288adb7ef70417",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e0bf529e3faed659b3e149a6a66b7f51510d01f8",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T12:15:44.723638Z",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Mom recognized her own repair in a photo from a wedding none of us attended.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c60a992ee53d595afa6d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Grandma's Necklace Appeared in a Stranger's Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T07:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712817135"
+  },
+  "youtube_video_id": "_qHzg2o1KmM"
+}
