@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d0923f39b8065c2e5654b509",
+  "created_at": "2026-09-30T00:14:41.482102Z",
+  "evidence_version": 2,
+  "execution_id": "ex-970672b5967ffc426c99c580",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "78f96e572602e251f2dee2172fd5a6eafa2e3827",
+  "record_type": "intent",
+  "request_blob_sha": "63583f9daf285708ac119d788d40dc4970a799eb",
+  "request_id": "rq-5de81d5600ae26c26ae43fcf",
+  "request_path": "content/requests/rq-5de81d5600ae26c26ae43fcf.json",
+  "request_source_sha": "c366e5bb868db31ebfb2a79f2431cad6d3f36228",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A stranger complimented the staging in a home I never listed for sale.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7ad984cab7a36acdba80",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Neighbor Was Using My Apartment for His Viewings"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T03:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36648579479"
+  }
+}
