@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f3766b2e4d74f61f0e5f18a1",
+  "created_at": "2026-09-30T00:10:02.748014Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e73de05ffbe16080c26c486c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e854d74d5addfd767e160b62ef42d7930ecf8661",
+  "record_type": "intent",
+  "request_blob_sha": "63583f9daf285708ac119d788d40dc4970a799eb",
+  "request_id": "rq-5de81d5600ae26c26ae43fcf",
+  "request_path": "content/requests/rq-5de81d5600ae26c26ae43fcf.json",
+  "request_source_sha": "c366e5bb868db31ebfb2a79f2431cad6d3f36228",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A request for rent money exposed a family arrangement nobody else understood.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9ffa83e6f867434bcc09",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Was Paying Rent on the House He Owned"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36648561236"
+  }
+}
