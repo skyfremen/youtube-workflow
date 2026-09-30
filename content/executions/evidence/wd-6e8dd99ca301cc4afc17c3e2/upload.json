@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6e8dd99ca301cc4afc17c3e2",
+  "evidence_version": 2,
+  "execution_id": "ex-ce07dcdc7210d9e797bb5a9f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "53539b4466abdf75ceb8530aa05a7339db01dd06",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T12:16:16.801005Z",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Everyone thought I was too cheap for the trip. Then her best friend thanked me.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9aa8440b33d9afffe3eb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Blamed Me for Cancelling Our Anniversary"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T06:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712812146"
+  },
+  "youtube_video_id": "vhZ94XDgI54"
+}
