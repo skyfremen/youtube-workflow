@@ -101,51 +101,51 @@
       "soft_evidence_only": true,
       "supported_patterns": [
         {
-          "average_view_percentage": 68.89,
+          "average_view_percentage": 62.75,
           "dimension": "category",
           "evidence_median_views": 402.5,
-          "mature_sample": 13,
-          "sample_size": 24,
+          "mature_sample": 14,
+          "sample_size": 25,
           "value": "wedding"
         },
         {
           "average_view_percentage": 69.32,
           "dimension": "hook_type",
-          "evidence_median_views": 151.0,
+          "evidence_median_views": 129.0,
           "mature_sample": 29,
-          "sample_size": 44,
+          "sample_size": 46,
           "value": "accusation"
         },
         {
-          "average_view_percentage": 69.09,
+          "average_view_percentage": 62.93,
           "dimension": "story_tone",
           "evidence_median_views": 115.0,
-          "mature_sample": 13,
-          "sample_size": 40,
+          "mature_sample": 16,
+          "sample_size": 43,
           "value": "natural"
+        },
+        {
+          "average_view_percentage": 59.56,
+          "dimension": "hook_type",
+          "evidence_median_views": 47.5,
+          "mature_sample": 60,
+          "sample_size": 74,
+          "value": "discovery"
         },
         {
           "average_view_percentage": 63.95,
           "dimension": "category",
           "evidence_median_views": 31.0,
           "mature_sample": 15,
-          "sample_size": 19,
+          "sample_size": 20,
           "value": "work"
-        },
-        {
-          "average_view_percentage": 60.91,
-          "dimension": "hook_type",
-          "evidence_median_views": 23.0,
-          "mature_sample": 58,
-          "sample_size": 73,
-          "value": "discovery"
         },
         {
           "average_view_percentage": 53.32,
           "dimension": "story_tone",
           "evidence_median_views": 18.0,
           "mature_sample": 37,
-          "sample_size": 44,
+          "sample_size": 46,
           "value": "warm"
         }
       ],
@@ -167,26 +167,26 @@
           "value": "urgency"
         },
         {
-          "average_view_percentage": 58.42,
+          "average_view_percentage": 49.9,
           "dimension": "hook_type",
           "evidence_median_views": 3.0,
-          "mature_sample": 15,
+          "mature_sample": 17,
           "sample_size": 20,
           "value": "consequence_first"
         },
         {
-          "average_view_percentage": 54.94,
-          "dimension": "story_tone",
-          "evidence_median_views": 3.5,
+          "average_view_percentage": 61.85,
+          "dimension": "hook_type",
+          "evidence_median_views": 4.0,
           "mature_sample": 23,
-          "sample_size": 26,
-          "value": "sarcastic"
+          "sample_size": 35,
+          "value": "social_exposure"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-09-30T05:30:28Z",
-      "videos_analyzed": 359
+      "latest_realtime_snapshot": "2026-09-30T11:30:30Z",
+      "videos_analyzed": 366
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
@@ -197,7 +197,7 @@
         },
         {
           "evidence_median_views": 224.0,
-          "sample_size": 75,
+          "sample_size": 82,
           "window": "12-15"
         },
         {
@@ -219,21 +219,21 @@
         }
       ]
     },
-    "generated_at": "2026-09-30T05:30:28Z",
+    "generated_at": "2026-09-30T11:30:30Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 340,
         "2h": 175,
-        "6h": 305,
+        "6h": 321,
         "72h": 309,
-        "7d": 218
+        "7d": 224
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 14 due checkpoints; will retry"
+      "Optional retention returned empty curves for 20 due checkpoints; will retry"
     ]
   },
   "background_categories": [
