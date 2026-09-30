@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d9f473971f86e4494eb9564a",
+  "evidence_version": 2,
+  "execution_id": "ex-dcecd5ec03cd18ff67adb199",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1d668a2b04f3566d424475d9dccbb7fbc7e01eee",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T12:14:52.456334Z",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "We reserved a discount. Somehow relatives arrived expecting a fully paid vacation.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-57faf0cfb66f9d96a4fa",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Promised Guests Free Wedding Hotel Rooms"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712806866"
+  },
+  "youtube_video_id": "F4HYHsn9e1o"
+}
