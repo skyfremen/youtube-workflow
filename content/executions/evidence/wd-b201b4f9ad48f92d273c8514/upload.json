@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b201b4f9ad48f92d273c8514",
+  "evidence_version": 2,
+  "execution_id": "ex-0465e6b57368625accd6f6f2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "975dd57ea89829b7f7a427581d5bdccb27d23db6",
+  "record_type": "upload",
+  "recorded_at": "2026-09-30T12:14:34.308371Z",
+  "request_blob_sha": "8eeaa65a11da29b647eaf48a15e3dc9007ab3703",
+  "request_id": "rq-1d154ea5b8cfd2cedd19f768",
+  "request_path": "content/requests/rq-1d154ea5b8cfd2cedd19f768.json",
+  "request_source_sha": "1a2c7c19ccb1d7b5b5a8113782d626e231805e8b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Everyone blamed me for extra office days. I had requested the opposite.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6ee00469d98f89817f42",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boss Made Me the Face of a Policy I Opposed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-01T05:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36712804369"
+  },
+  "youtube_video_id": "DpRKdOlvN-E"
+}
