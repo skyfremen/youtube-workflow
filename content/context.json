@@ -248,13 +248,6 @@
   "context_version": 3,
   "recent_story_cards": [
     {
-      "conflict": "Her brother says he chose the resort because it was cheaper and expected her to absorb the blame because she has no children, while parents in the family think she excluded their kids.",
-      "payoff": "she promised she wouldn't be noisy",
-      "premise": "A woman discovers her brother has been telling relatives she banned children from a family vacation, even though he was the one who booked an adults-only resort.",
-      "title": "My Brother Blamed Me for His Adults-Only Vacation",
-      "twist": "At dinner his own daughter asks why Dad said she could not come because her aunt wanted a quiet holiday, exposing the story in front of everyone."
-    },
-    {
       "conflict": "The manager says clients value responsiveness and she usually answers quickly anyway, while clients now expect unpaid weekend support as part of their contract.",
       "payoff": "rotate what?",
       "premise": "A woman discovers her manager has been presenting her weekend availability as a team benefit to clients without ever asking her.",
@@ -421,6 +414,13 @@
       "premise": "A bride discovers her maid of honor has been privately telling bridesmaids that the bride cannot afford their dresses and collecting extra money to 'cover' her.",
       "title": "My Maid of Honor Invented My Wedding Debt",
       "twist": "One bridesmaid quietly offers to forgive the bride's supposed debt during dress fitting, exposing a collection the bride never knew existed."
+    },
+    {
+      "conflict": "The supervisor says he waits for complete diagnosis before acting, while outages last longer and the team appears dependent on him.",
+      "payoff": "permission to make us wait",
+      "premise": "A man discovers his supervisor has been taking credit for fixing outages by deliberately withholding simple solutions until executives join the incident call.",
+      "title": "Our Supervisor Was Turning Outages Into Hero Moments",
+      "twist": "During the next outage a junior engineer applies the known fix before the supervisor arrives, restoring service instantly and revealing how routine the 'heroic' recovery actually is."
     }
   ]
 }
