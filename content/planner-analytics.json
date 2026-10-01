@@ -102,7 +102,7 @@
       {
         "average_view_percentage": 70.69,
         "dimension": "category",
-        "evidence_median_views": 592.5,
+        "evidence_median_views": 592.0,
         "mature_sample": 16,
         "sample_size": 33,
         "value": "wedding"
@@ -150,14 +150,6 @@
     ],
     "weak_patterns": [
       {
-        "average_view_percentage": 22.44,
-        "dimension": "story_tone",
-        "evidence_median_views": 3.0,
-        "mature_sample": 9,
-        "sample_size": 16,
-        "value": "conversational"
-      },
-      {
         "average_view_percentage": 29.43,
         "dimension": "hook_type",
         "evidence_median_views": 3.0,
@@ -180,22 +172,30 @@
         "mature_sample": 24,
         "sample_size": 26,
         "value": "friends"
+      },
+      {
+        "average_view_percentage": 58.42,
+        "dimension": "hook_type",
+        "evidence_median_views": 4.0,
+        "mature_sample": 19,
+        "sample_size": 21,
+        "value": "consequence_first"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-01T11:30:29Z",
+    "latest_realtime_snapshot": "2026-10-01T17:30:29Z",
     "videos_analyzed": 390
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 535.0,
+        "evidence_median_views": 684.0,
         "sample_size": 105,
         "window": "08-11"
       },
       {
-        "evidence_median_views": 166.0,
+        "evidence_median_views": 141.5,
         "sample_size": 94,
         "window": "12-15"
       },
@@ -218,15 +218,15 @@
       }
     ]
   },
-  "generated_at": "2026-10-01T11:30:29Z",
+  "generated_at": "2026-10-01T17:30:29Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 364,
+      "24h": 366,
       "2h": 184,
       "6h": 345,
-      "72h": 325,
-      "7d": 255
+      "72h": 340,
+      "7d": 258
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
