@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f2bb4bf8e3b22882b154767e",
+  "created_at": "2026-10-01T12:08:46.737675Z",
+  "evidence_version": 2,
+  "execution_id": "ex-d39f6c124c9b14bd1458f18e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b159f5ea2089b4dd53b6d71dabfe1e7fad1d33fe",
+  "record_type": "intent",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Missing meetings made me look unreliable until a client explained who chose the times.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-09fdbf05e8e1e8577e18",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Scheduled Clients When She Knew I Was Unavailable"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859098124"
+  }
+}
