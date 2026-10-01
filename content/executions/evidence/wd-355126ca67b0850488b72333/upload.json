@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-355126ca67b0850488b72333",
+  "evidence_version": 2,
+  "execution_id": "ex-d926a592cbd5acbb1562c201",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e2afe33a7d5e12620fc1a4df82dcacc2e138160c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T00:09:56.433756Z",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Relatives thought I kept her away. I didn't even know most of the gatherings existed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1a6eba4851d4fb41867c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Made Me the Villain for Every Event She Skipped"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794320930"
+  },
+  "youtube_video_id": "DuS-9-DEiuI"
+}
