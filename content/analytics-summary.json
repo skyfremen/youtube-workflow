@@ -40,16 +40,16 @@
       "sample_size": 4
     },
     "community": {
-      "mature_engaged_sample": 1,
-      "mature_sample": 1,
-      "median_average_view_percentage": 19.67,
-      "median_engaged_views_per_view_percentage": 33.33,
+      "mature_engaged_sample": 2,
+      "mature_sample": 2,
+      "median_average_view_percentage": 14.84,
+      "median_engaged_views_per_view_percentage": 23.81,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 1.0,
       "median_views_2h": 0.0,
       "median_views_6h": 0.5,
-      "median_views_72h": 3.5,
+      "median_views_72h": 5.0,
       "median_views_7d": null,
       "sample_24h": 2,
       "sample_2h": 2,
@@ -138,7 +138,7 @@
       "mature_engaged_sample": 1,
       "mature_sample": 1,
       "median_average_view_percentage": 115.3,
-      "median_engaged_views_per_view_percentage": 12.5,
+      "median_engaged_views_per_view_percentage": 11.11,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.0,
@@ -183,13 +183,13 @@
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
       "median_views_72h": 13.0,
-      "median_views_7d": 23.0,
+      "median_views_7d": 20.0,
       "sample_24h": 54,
       "sample_2h": 23,
-      "sample_6h": 48,
+      "sample_6h": 51,
       "sample_72h": 45,
-      "sample_7d": 35,
-      "sample_size": 57
+      "sample_7d": 36,
+      "sample_size": 59
     },
     "family_comedy": {
       "mature_engaged_sample": 2,
@@ -302,7 +302,7 @@
       "sample_2h": 11,
       "sample_6h": 23,
       "sample_72h": 26,
-      "sample_7d": 16,
+      "sample_7d": 18,
       "sample_size": 26
     },
     "friendship": {
@@ -490,9 +490,9 @@
       "median_views_7d": 8.0,
       "sample_24h": 25,
       "sample_2h": 12,
-      "sample_6h": 21,
+      "sample_6h": 22,
       "sample_72h": 24,
-      "sample_7d": 18,
+      "sample_7d": 19,
       "sample_size": 26
     },
     "parenting": {
@@ -506,12 +506,12 @@
       "median_views_2h": 2.0,
       "median_views_6h": 1.0,
       "median_views_72h": 6.0,
-      "median_views_7d": 7.5,
+      "median_views_7d": 6.0,
       "sample_24h": 9,
       "sample_2h": 6,
       "sample_6h": 9,
       "sample_72h": 9,
-      "sample_7d": 8,
+      "sample_7d": 9,
       "sample_size": 9
     },
     "parents": {
@@ -604,10 +604,10 @@
       "median_views_7d": null,
       "sample_24h": 1,
       "sample_2h": 0,
-      "sample_6h": 1,
+      "sample_6h": 2,
       "sample_72h": 0,
       "sample_7d": 0,
-      "sample_size": 1
+      "sample_size": 2
     },
     "relationship": {
       "mature_engaged_sample": 20,
@@ -620,13 +620,13 @@
       "median_views_2h": 1.0,
       "median_views_6h": 1.0,
       "median_views_72h": 7.5,
-      "median_views_7d": 4.5,
+      "median_views_7d": 3.0,
       "sample_24h": 27,
       "sample_2h": 16,
-      "sample_6h": 24,
+      "sample_6h": 26,
       "sample_72h": 22,
-      "sample_7d": 16,
-      "sample_size": 28
+      "sample_7d": 17,
+      "sample_size": 29
     },
     "relationship betrayal": {
       "mature_engaged_sample": 1,
@@ -696,12 +696,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 8.0,
-      "median_views_7d": 25.0,
+      "median_views_7d": 22.0,
       "sample_24h": 16,
       "sample_2h": 11,
       "sample_6h": 15,
       "sample_72h": 15,
-      "sample_7d": 9,
+      "sample_7d": 10,
       "sample_size": 16
     },
     "school": {
@@ -865,15 +865,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 474.0,
       "median_views_2h": 1.5,
-      "median_views_6h": 160.0,
+      "median_views_6h": 88.0,
       "median_views_72h": 592.5,
       "median_views_7d": 977.0,
       "sample_24h": 25,
       "sample_2h": 12,
-      "sample_6h": 25,
+      "sample_6h": 30,
       "sample_72h": 16,
       "sample_7d": 11,
-      "sample_size": 32
+      "sample_size": 33
     },
     "work": {
       "mature_engaged_sample": 14,
@@ -884,15 +884,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 59.0,
       "median_views_2h": 4.0,
-      "median_views_6h": 20.5,
+      "median_views_6h": 2.0,
       "median_views_72h": 31.0,
       "median_views_7d": 185.0,
       "sample_24h": 20,
       "sample_2h": 12,
-      "sample_6h": 22,
+      "sample_6h": 26,
       "sample_72h": 15,
       "sample_7d": 11,
-      "sample_size": 25
+      "sample_size": 27
     },
     "workplace": {
       "mature_engaged_sample": 31,
@@ -905,12 +905,12 @@
       "median_views_2h": 1.5,
       "median_views_6h": 1.0,
       "median_views_72h": 6.0,
-      "median_views_7d": 13.0,
+      "median_views_7d": 6.0,
       "sample_24h": 34,
       "sample_2h": 14,
       "sample_6h": 30,
       "sample_72h": 33,
-      "sample_7d": 23,
+      "sample_7d": 25,
       "sample_size": 35
     }
   },
@@ -1197,31 +1197,31 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 5.0,
-      "median_views_7d": 6.0,
+      "median_views_7d": 5.5,
       "sample_24h": 104,
       "sample_2h": 61,
-      "sample_6h": 104,
+      "sample_6h": 114,
       "sample_72h": 82,
-      "sample_7d": 36,
-      "sample_size": 115
+      "sample_7d": 38,
+      "sample_size": 119
     },
     "55_64": {
-      "mature_engaged_sample": 30,
-      "mature_sample": 31,
-      "median_average_view_percentage": 65.97,
-      "median_engaged_views_per_view_percentage": 47.24,
+      "mature_engaged_sample": 31,
+      "mature_sample": 32,
+      "median_average_view_percentage": 62.38,
+      "median_engaged_views_per_view_percentage": 46.98,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 129.5,
       "median_views_2h": 0.0,
       "median_views_6h": 28.0,
       "median_views_72h": 16.5,
-      "median_views_7d": 1002.0,
+      "median_views_7d": 6.0,
       "sample_24h": 38,
       "sample_2h": 16,
       "sample_6h": 37,
       "sample_72h": 34,
-      "sample_7d": 5,
+      "sample_7d": 9,
       "sample_size": 38
     },
     "65_74": {
@@ -1235,12 +1235,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.5,
       "median_views_72h": 8.0,
-      "median_views_7d": 15.0,
+      "median_views_7d": 8.0,
       "sample_24h": 25,
       "sample_2h": 15,
       "sample_6h": 24,
       "sample_72h": 25,
-      "sample_7d": 22,
+      "sample_7d": 25,
       "sample_size": 25
     },
     "75_plus": {
@@ -1271,18 +1271,18 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": 2.0,
-      "median_views_6h": 5.5,
+      "median_views_6h": 2.5,
       "median_views_72h": 5.5,
       "median_views_7d": 5.0,
       "sample_24h": 41,
       "sample_2h": 23,
-      "sample_6h": 40,
+      "sample_6h": 46,
       "sample_72h": 26,
       "sample_7d": 25,
-      "sample_size": 47
+      "sample_size": 50
     }
   },
-  "generated_at": "2026-10-01T05:30:28Z",
+  "generated_at": "2026-10-01T11:30:29Z",
   "geography_analysis": {
     "sample_rows": 50,
     "top": [
@@ -1799,15 +1799,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 103.5,
       "median_views_2h": 1.0,
-      "median_views_6h": 20.0,
+      "median_views_6h": 8.0,
       "median_views_72h": 151.0,
       "median_views_7d": 168.0,
       "sample_24h": 46,
       "sample_2h": 24,
-      "sample_6h": 45,
+      "sample_6h": 49,
       "sample_72h": 35,
       "sample_7d": 22,
-      "sample_size": 49
+      "sample_size": 51
     },
     "confession": {
       "mature_engaged_sample": 2,
@@ -1818,12 +1818,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 88.0,
       "median_views_2h": 1.0,
-      "median_views_6h": 57.0,
+      "median_views_6h": 84.0,
       "median_views_72h": 315.5,
       "median_views_7d": 556.0,
       "sample_24h": 3,
       "sample_2h": 3,
-      "sample_6h": 3,
+      "sample_6h": 5,
       "sample_72h": 2,
       "sample_7d": 1,
       "sample_size": 5
@@ -1837,15 +1837,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 2.5,
+      "median_views_6h": 2.0,
       "median_views_72h": 4.0,
       "median_views_7d": 2.0,
       "sample_24h": 20,
       "sample_2h": 9,
-      "sample_6h": 20,
+      "sample_6h": 21,
       "sample_72h": 20,
-      "sample_7d": 7,
-      "sample_size": 20
+      "sample_7d": 9,
+      "sample_size": 21
     },
     "contradiction": {
       "mature_engaged_sample": 39,
@@ -1861,10 +1861,10 @@
       "median_views_7d": 5.0,
       "sample_24h": 58,
       "sample_2h": 26,
-      "sample_6h": 56,
+      "sample_6h": 58,
       "sample_72h": 49,
-      "sample_7d": 39,
-      "sample_size": 61
+      "sample_7d": 41,
+      "sample_size": 62
     },
     "discovery": {
       "mature_engaged_sample": 63,
@@ -1877,13 +1877,13 @@
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
       "median_views_72h": 9.5,
-      "median_views_7d": 15.0,
+      "median_views_7d": 12.5,
       "sample_24h": 74,
       "sample_2h": 46,
-      "sample_6h": 69,
+      "sample_6h": 74,
       "sample_72h": 68,
-      "sample_7d": 49,
-      "sample_size": 78
+      "sample_7d": 52,
+      "sample_size": 80
     },
     "money_stakes": {
       "mature_engaged_sample": 35,
@@ -1896,29 +1896,29 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 3.5,
-      "median_views_7d": 15.5,
+      "median_views_7d": 6.0,
       "sample_24h": 44,
       "sample_2h": 22,
-      "sample_6h": 42,
+      "sample_6h": 43,
       "sample_72h": 36,
-      "sample_7d": 24,
-      "sample_size": 46
+      "sample_7d": 25,
+      "sample_size": 47
     },
     "social_exposure": {
-      "mature_engaged_sample": 25,
-      "mature_sample": 26,
-      "median_average_view_percentage": 63.78,
-      "median_engaged_views_per_view_percentage": 50.0,
+      "mature_engaged_sample": 26,
+      "mature_sample": 27,
+      "median_average_view_percentage": 61.85,
+      "median_engaged_views_per_view_percentage": 47.95,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 3.0,
-      "median_views_72h": 6.0,
+      "median_views_6h": 2.5,
+      "median_views_72h": 7.0,
       "median_views_7d": 16.0,
       "sample_24h": 35,
       "sample_2h": 18,
-      "sample_6h": 35,
+      "sample_6h": 36,
       "sample_72h": 29,
       "sample_7d": 20,
       "sample_size": 38
@@ -1958,29 +1958,29 @@
       "sample_2h": 8,
       "sample_6h": 11,
       "sample_72h": 15,
-      "sample_7d": 13,
+      "sample_7d": 14,
       "sample_size": 15
     }
   },
   "lead_gender_performance": {
     "female": {
-      "mature_engaged_sample": 170,
-      "mature_sample": 174,
-      "median_average_view_percentage": 60.92,
-      "median_engaged_views_per_view_percentage": 47.52,
+      "mature_engaged_sample": 171,
+      "mature_sample": 175,
+      "median_average_view_percentage": 60.7,
+      "median_engaged_views_per_view_percentage": 47.36,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.0,
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
       "median_views_72h": 9.0,
-      "median_views_7d": 9.5,
+      "median_views_7d": 8.0,
       "sample_24h": 207,
       "sample_2h": 104,
-      "sample_6h": 182,
+      "sample_6h": 192,
       "sample_72h": 189,
-      "sample_7d": 146,
-      "sample_size": 219
+      "sample_7d": 151,
+      "sample_size": 223
     },
     "male": {
       "mature_engaged_sample": 129,
@@ -1993,13 +1993,13 @@
       "median_views_2h": 0.5,
       "median_views_6h": 2.0,
       "median_views_72h": 6.0,
-      "median_views_7d": 9.0,
+      "median_views_7d": 8.0,
       "sample_24h": 157,
       "sample_2h": 80,
-      "sample_6h": 147,
+      "sample_6h": 153,
       "sample_72h": 136,
-      "sample_7d": 100,
-      "sample_size": 164
+      "sample_7d": 104,
+      "sample_size": 167
     }
   },
   "learning": {
@@ -2007,9 +2007,9 @@
     "checkpoint_samples": {
       "24h": 364,
       "2h": 184,
-      "6h": 329,
+      "6h": 345,
       "72h": 325,
-      "7d": 246
+      "7d": 255
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
@@ -2093,7 +2093,7 @@
     },
     {
       "category": "property",
-      "sample_size": 1
+      "sample_size": 2
     },
     {
       "category": "relationship betrayal",
@@ -2173,15 +2173,15 @@
         "median_subscribers_gained": 0.0,
         "median_views_24h": 46.0,
         "median_views_2h": 0.0,
-        "median_views_6h": 13.0,
+        "median_views_6h": 3.0,
         "median_views_72h": 96.0,
         "median_views_7d": 1002.0,
         "sample_24h": 69,
         "sample_2h": 39,
-        "sample_6h": 73,
+        "sample_6h": 89,
         "sample_72h": 33,
         "sample_7d": 5,
-        "sample_size": 85
+        "sample_size": 92
       },
       "21_40m": {
         "mature_engaged_sample": 30,
@@ -2194,12 +2194,12 @@
         "median_views_2h": 0.0,
         "median_views_6h": 2.0,
         "median_views_72h": 6.0,
-        "median_views_7d": 987.0,
+        "median_views_7d": 4.5,
         "sample_24h": 39,
         "sample_2h": 18,
         "sample_6h": 39,
         "sample_72h": 36,
-        "sample_7d": 5,
+        "sample_7d": 14,
         "sample_size": 39
       },
       "41_60m": {
@@ -2222,10 +2222,10 @@
         "sample_size": 234
       },
       "over_60m": {
-        "mature_engaged_sample": 19,
-        "mature_sample": 20,
-        "median_average_view_percentage": 39.51,
-        "median_engaged_views_per_view_percentage": 42.86,
+        "mature_engaged_sample": 20,
+        "mature_sample": 21,
+        "median_average_view_percentage": 25.69,
+        "median_engaged_views_per_view_percentage": 38.09,
         "median_shares": 0.0,
         "median_subscribers_gained": 0.0,
         "median_views_24h": 2.0,
@@ -2247,7 +2247,7 @@
       "1060": 1,
       "120": 14,
       "15.18": 1,
-      "20": 83,
+      "20": 90,
       "237.32": 1,
       "240": 1,
       "245.02": 1,
@@ -2462,12 +2462,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 637.0,
       "median_views_2h": 76.0,
-      "median_views_6h": 125.0,
+      "median_views_6h": 124.5,
       "median_views_72h": 939.0,
-      "median_views_7d": 987.0,
+      "median_views_7d": 988.0,
       "sample_24h": 25,
       "sample_2h": 13,
-      "sample_6h": 27,
+      "sample_6h": 28,
       "sample_72h": 19,
       "sample_7d": 11,
       "sample_size": 28
@@ -2476,17 +2476,17 @@
       "mature_engaged_sample": 16,
       "mature_sample": 16,
       "median_average_view_percentage": 72.02,
-      "median_engaged_views_per_view_percentage": 52.02,
+      "median_engaged_views_per_view_percentage": 52.07,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 961.0,
       "median_views_2h": 54.0,
-      "median_views_6h": 318.0,
+      "median_views_6h": 301.5,
       "median_views_72h": 977.0,
       "median_views_7d": 772.0,
       "sample_24h": 21,
       "sample_2h": 14,
-      "sample_6h": 21,
+      "sample_6h": 24,
       "sample_72h": 16,
       "sample_7d": 11,
       "sample_size": 24
@@ -2500,12 +2500,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 16.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 5.5,
+      "median_views_6h": 3.0,
       "median_views_72h": 225.5,
       "median_views_7d": 558.5,
       "sample_24h": 24,
       "sample_2h": 18,
-      "sample_6h": 24,
+      "sample_6h": 27,
       "sample_72h": 18,
       "sample_7d": 10,
       "sample_size": 27
@@ -2519,15 +2519,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 13.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 6.5,
+      "median_views_6h": 1.0,
       "median_views_72h": 184.0,
       "median_views_7d": 512.5,
       "sample_24h": 20,
       "sample_2h": 6,
-      "sample_6h": 20,
+      "sample_6h": 23,
       "sample_72h": 15,
       "sample_7d": 10,
-      "sample_size": 22
+      "sample_size": 23
     },
     "14": {
       "mature_engaged_sample": 14,
@@ -2540,13 +2540,13 @@
       "median_views_2h": null,
       "median_views_6h": 1.0,
       "median_views_72h": 132.0,
-      "median_views_7d": 446.0,
+      "median_views_7d": 239.5,
       "sample_24h": 22,
       "sample_2h": 0,
-      "sample_6h": 21,
+      "sample_6h": 24,
       "sample_72h": 17,
-      "sample_7d": 10,
-      "sample_size": 22
+      "sample_7d": 12,
+      "sample_size": 25
     },
     "15": {
       "mature_engaged_sample": 13,
@@ -2557,15 +2557,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 80.0,
       "median_views_2h": 42.0,
-      "median_views_6h": 10.0,
+      "median_views_6h": 2.0,
       "median_views_72h": 238.0,
-      "median_views_7d": 456.0,
+      "median_views_7d": 380.0,
       "sample_24h": 16,
       "sample_2h": 9,
-      "sample_6h": 16,
+      "sample_6h": 19,
       "sample_72h": 13,
-      "sample_7d": 9,
-      "sample_size": 16
+      "sample_7d": 10,
+      "sample_size": 19
     },
     "16": {
       "mature_engaged_sample": 17,
@@ -2578,31 +2578,31 @@
       "median_views_2h": 15.0,
       "median_views_6h": 33.0,
       "median_views_72h": 291.0,
-      "median_views_7d": 641.0,
+      "median_views_7d": 556.0,
       "sample_24h": 16,
       "sample_2h": 13,
       "sample_6h": 13,
       "sample_72h": 17,
-      "sample_7d": 12,
+      "sample_7d": 14,
       "sample_size": 17
     },
     "17": {
-      "mature_engaged_sample": 12,
-      "mature_sample": 12,
-      "median_average_view_percentage": 65.22,
-      "median_engaged_views_per_view_percentage": 53.44,
+      "mature_engaged_sample": 13,
+      "mature_sample": 13,
+      "median_average_view_percentage": 61.13,
+      "median_engaged_views_per_view_percentage": 52.3,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 233.5,
       "median_views_2h": 7.0,
       "median_views_6h": 29.0,
       "median_views_72h": 372.5,
-      "median_views_7d": 436.0,
+      "median_views_7d": 381.0,
       "sample_24h": 14,
       "sample_2h": 13,
       "sample_6h": 13,
       "sample_72h": 14,
-      "sample_7d": 10,
+      "sample_7d": 11,
       "sample_size": 14
     },
     "18": {
@@ -2621,7 +2621,7 @@
       "sample_2h": 4,
       "sample_6h": 14,
       "sample_72h": 15,
-      "sample_7d": 10,
+      "sample_7d": 12,
       "sample_size": 15
     },
     "19": {
@@ -2640,7 +2640,7 @@
       "sample_2h": 0,
       "sample_6h": 12,
       "sample_72h": 13,
-      "sample_7d": 10,
+      "sample_7d": 11,
       "sample_size": 13
     },
     "20": {
@@ -2915,7 +2915,7 @@
       "mature_engaged_sample": 3,
       "mature_sample": 3,
       "median_average_view_percentage": 118.94,
-      "median_engaged_views_per_view_percentage": 50.15,
+      "median_engaged_views_per_view_percentage": 50.07,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 557.0,
@@ -3055,7 +3055,7 @@
       "median_views_2h": 280.0,
       "median_views_6h": 109.5,
       "median_views_72h": 780.0,
-      "median_views_7d": 749.0,
+      "median_views_7d": 749.5,
       "sample_24h": 15,
       "sample_2h": 2,
       "sample_6h": 16,
@@ -3091,12 +3091,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 754.0,
       "median_views_2h": 65.5,
-      "median_views_6h": 227.0,
+      "median_views_6h": 151.0,
       "median_views_72h": 1003.5,
       "median_views_7d": 1000.0,
       "sample_24h": 6,
       "sample_2h": 6,
-      "sample_6h": 6,
+      "sample_6h": 7,
       "sample_72h": 4,
       "sample_7d": 1,
       "sample_size": 7
@@ -3105,17 +3105,17 @@
       "mature_engaged_sample": 12,
       "mature_sample": 12,
       "median_average_view_percentage": 74.51,
-      "median_engaged_views_per_view_percentage": 55.3,
+      "median_engaged_views_per_view_percentage": 55.36,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 955.5,
       "median_views_2h": 137.0,
-      "median_views_6h": 374.5,
+      "median_views_6h": 474.0,
       "median_views_72h": 900.5,
       "median_views_7d": 664.0,
       "sample_24h": 14,
       "sample_2h": 6,
-      "sample_6h": 14,
+      "sample_6h": 15,
       "sample_72h": 12,
       "sample_7d": 10,
       "sample_size": 15
@@ -3129,12 +3129,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 984.5,
       "median_views_2h": 54.0,
-      "median_views_6h": 353.0,
+      "median_views_6h": 318.0,
       "median_views_72h": 994.5,
       "median_views_7d": 1002.0,
       "sample_24h": 6,
       "sample_2h": 6,
-      "sample_6h": 6,
+      "sample_6h": 7,
       "sample_72h": 4,
       "sample_7d": 1,
       "sample_size": 7
@@ -3148,12 +3148,12 @@
       "median_subscribers_gained": null,
       "median_views_24h": 10.0,
       "median_views_2h": 1.0,
-      "median_views_6h": 8.0,
+      "median_views_6h": 4.5,
       "median_views_72h": null,
       "median_views_7d": null,
       "sample_24h": 1,
       "sample_2h": 2,
-      "sample_6h": 1,
+      "sample_6h": 2,
       "sample_72h": 0,
       "sample_7d": 0,
       "sample_size": 2
@@ -3167,12 +3167,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 171.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 101.0,
+      "median_views_6h": 60.0,
       "median_views_72h": 275.5,
       "median_views_7d": 594.0,
       "sample_24h": 14,
       "sample_2h": 7,
-      "sample_6h": 14,
+      "sample_6h": 15,
       "sample_72h": 12,
       "sample_7d": 9,
       "sample_size": 15
@@ -3191,7 +3191,7 @@
       "median_views_7d": null,
       "sample_24h": 4,
       "sample_2h": 5,
-      "sample_6h": 4,
+      "sample_6h": 5,
       "sample_72h": 2,
       "sample_7d": 0,
       "sample_size": 5
@@ -3205,12 +3205,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 2.0,
+      "median_views_6h": 1.0,
       "median_views_72h": 265.0,
       "median_views_7d": 523.0,
       "sample_24h": 6,
       "sample_2h": 6,
-      "sample_6h": 6,
+      "sample_6h": 7,
       "sample_72h": 4,
       "sample_7d": 1,
       "sample_size": 7
@@ -3224,12 +3224,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 100.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 48.0,
+      "median_views_6h": 37.5,
       "median_views_72h": 500.0,
       "median_views_7d": 560.0,
       "sample_24h": 13,
       "sample_2h": 6,
-      "sample_6h": 13,
+      "sample_6h": 14,
       "sample_72h": 11,
       "sample_7d": 9,
       "sample_size": 14
@@ -3248,7 +3248,7 @@
       "median_views_7d": 6.0,
       "sample_24h": 6,
       "sample_2h": 0,
-      "sample_6h": 6,
+      "sample_6h": 7,
       "sample_72h": 4,
       "sample_7d": 1,
       "sample_size": 7
@@ -3267,10 +3267,10 @@
       "median_views_7d": null,
       "sample_24h": 1,
       "sample_2h": 0,
-      "sample_6h": 1,
+      "sample_6h": 2,
       "sample_72h": 0,
       "sample_7d": 0,
-      "sample_size": 1
+      "sample_size": 2
     },
     "14:00": {
       "mature_engaged_sample": 12,
@@ -3281,15 +3281,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 95.0,
       "median_views_2h": null,
-      "median_views_6h": 27.0,
+      "median_views_6h": 23.0,
       "median_views_72h": 166.0,
-      "median_views_7d": 446.0,
+      "median_views_7d": 313.0,
       "sample_24h": 15,
       "sample_2h": 0,
-      "sample_6h": 14,
+      "sample_6h": 15,
       "sample_72h": 13,
-      "sample_7d": 10,
-      "sample_size": 15
+      "sample_7d": 11,
+      "sample_size": 16
     },
     "14:20": {
       "mature_engaged_sample": 1,
@@ -3300,15 +3300,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": null,
-      "median_views_6h": 1.0,
+      "median_views_6h": 0.5,
       "median_views_72h": 9.0,
       "median_views_7d": null,
       "sample_24h": 3,
       "sample_2h": 0,
-      "sample_6h": 3,
+      "sample_6h": 4,
       "sample_72h": 1,
       "sample_7d": 0,
-      "sample_size": 3
+      "sample_size": 4
     },
     "14:40": {
       "mature_engaged_sample": 1,
@@ -3321,13 +3321,13 @@
       "median_views_2h": null,
       "median_views_6h": 0.0,
       "median_views_72h": 0.0,
-      "median_views_7d": null,
+      "median_views_7d": 0.0,
       "sample_24h": 4,
       "sample_2h": 0,
-      "sample_6h": 4,
+      "sample_6h": 5,
       "sample_72h": 3,
-      "sample_7d": 0,
-      "sample_size": 4
+      "sample_7d": 1,
+      "sample_size": 5
     },
     "15:00": {
       "mature_engaged_sample": 10,
@@ -3338,15 +3338,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 145.0,
       "median_views_2h": 74.5,
-      "median_views_6h": 96.0,
+      "median_views_6h": 78.0,
       "median_views_72h": 393.0,
       "median_views_7d": 456.0,
       "sample_24h": 11,
       "sample_2h": 8,
-      "sample_6h": 11,
+      "sample_6h": 12,
       "sample_72h": 10,
       "sample_7d": 9,
-      "sample_size": 11
+      "sample_size": 12
     },
     "15:20": {
       "mature_engaged_sample": 3,
@@ -3357,15 +3357,15 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 0.5,
+      "median_views_6h": 1.0,
       "median_views_72h": 4.0,
-      "median_views_7d": null,
+      "median_views_7d": 2.0,
       "sample_24h": 4,
       "sample_2h": 1,
-      "sample_6h": 4,
+      "sample_6h": 5,
       "sample_72h": 3,
-      "sample_7d": 0,
-      "sample_size": 4
+      "sample_7d": 1,
+      "sample_size": 5
     },
     "15:40": {
       "mature_engaged_sample": 0,
@@ -3381,10 +3381,10 @@
       "median_views_7d": null,
       "sample_24h": 1,
       "sample_2h": 0,
-      "sample_6h": 1,
+      "sample_6h": 2,
       "sample_72h": 0,
       "sample_7d": 0,
-      "sample_size": 1
+      "sample_size": 2
     },
     "16:00": {
       "mature_engaged_sample": 13,
@@ -3397,12 +3397,12 @@
       "median_views_2h": 24.5,
       "median_views_6h": 49.5,
       "median_views_72h": 495.0,
-      "median_views_7d": 616.0,
+      "median_views_7d": 556.0,
       "sample_24h": 13,
       "sample_2h": 10,
       "sample_6h": 10,
       "sample_72h": 13,
-      "sample_7d": 11,
+      "sample_7d": 12,
       "sample_size": 13
     },
     "16:20": {
@@ -3454,12 +3454,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 6.0,
-      "median_views_7d": null,
+      "median_views_7d": 6.0,
       "sample_24h": 2,
       "sample_2h": 2,
       "sample_6h": 2,
       "sample_72h": 2,
-      "sample_7d": 0,
+      "sample_7d": 1,
       "sample_size": 2
     },
     "17:00": {
@@ -3482,22 +3482,22 @@
       "sample_size": 10
     },
     "17:20": {
-      "mature_engaged_sample": 2,
-      "mature_sample": 2,
-      "median_average_view_percentage": 69.65,
-      "median_engaged_views_per_view_percentage": 75.0,
+      "mature_engaged_sample": 3,
+      "mature_sample": 3,
+      "median_average_view_percentage": 37.96,
+      "median_engaged_views_per_view_percentage": 50.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 1.5,
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 2.5,
-      "median_views_7d": null,
+      "median_views_7d": 0.0,
       "sample_24h": 4,
       "sample_2h": 4,
       "sample_6h": 4,
       "sample_72h": 4,
-      "sample_7d": 0,
+      "sample_7d": 1,
       "sample_size": 4
     },
     "18:00": {
@@ -3511,12 +3511,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": 2.0,
-      "median_views_7d": 2.5,
+      "median_views_7d": 3.0,
       "sample_24h": 12,
       "sample_2h": 2,
       "sample_6h": 11,
       "sample_72h": 12,
-      "sample_7d": 10,
+      "sample_7d": 11,
       "sample_size": 12
     },
     "18:20": {
@@ -3549,12 +3549,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": 3.5,
-      "median_views_7d": null,
+      "median_views_7d": 2.0,
       "sample_24h": 2,
       "sample_2h": 1,
       "sample_6h": 2,
       "sample_72h": 2,
-      "sample_7d": 0,
+      "sample_7d": 1,
       "sample_size": 2
     },
     "19:00": {
@@ -3587,12 +3587,12 @@
       "median_views_2h": null,
       "median_views_6h": 0.0,
       "median_views_72h": 3.0,
-      "median_views_7d": null,
+      "median_views_7d": 5.0,
       "sample_24h": 3,
       "sample_2h": 0,
       "sample_6h": 3,
       "sample_72h": 3,
-      "sample_7d": 0,
+      "sample_7d": 1,
       "sample_size": 3
     },
     "20:00": {
@@ -3739,12 +3739,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 599.0,
       "median_views_2h": 53.5,
-      "median_views_6h": 187.0,
+      "median_views_6h": 181.0,
       "median_views_72h": 535.0,
       "median_views_7d": 511.0,
       "sample_24h": 93,
       "sample_2h": 44,
-      "sample_6h": 82,
+      "sample_6h": 86,
       "sample_72h": 71,
       "sample_7d": 45,
       "sample_size": 105
@@ -3758,33 +3758,33 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 13.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 4.0,
+      "median_views_6h": 1.0,
       "median_views_72h": 166.0,
-      "median_views_7d": 500.0,
+      "median_views_7d": 460.5,
       "sample_24h": 82,
       "sample_2h": 33,
-      "sample_6h": 81,
+      "sample_6h": 93,
       "sample_72h": 63,
-      "sample_7d": 39,
-      "sample_size": 87
+      "sample_7d": 42,
+      "sample_size": 94
     },
     "16-19": {
-      "mature_engaged_sample": 53,
-      "mature_sample": 55,
-      "median_average_view_percentage": 44.7,
-      "median_engaged_views_per_view_percentage": 46.33,
+      "mature_engaged_sample": 54,
+      "mature_sample": 56,
+      "median_average_view_percentage": 44.47,
+      "median_engaged_views_per_view_percentage": 45.71,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.0,
       "median_views_2h": 5.5,
       "median_views_6h": 2.0,
       "median_views_72h": 6.0,
-      "median_views_7d": 150.5,
+      "median_views_7d": 44.0,
       "sample_24h": 58,
       "sample_2h": 30,
       "sample_6h": 52,
       "sample_72h": 59,
-      "sample_7d": 42,
+      "sample_7d": 48,
       "sample_size": 59
     },
     "20-23": {
@@ -4123,7 +4123,7 @@
   },
   "shorts_feed_diagnostics": {
     "classification_counts": {
-      "insufficient_evidence": 340,
+      "insufficient_evidence": 347,
       "strong_distribution_strong_response": 20,
       "strong_distribution_weak_response": 23
     },
@@ -4478,12 +4478,12 @@
       "median_views_2h": 17.0,
       "median_views_6h": 2.0,
       "median_views_72h": 242.5,
-      "median_views_7d": 485.0,
+      "median_views_7d": 243.5,
       "sample_24h": 2,
       "sample_2h": 2,
       "sample_6h": 1,
       "sample_72h": 2,
-      "sample_7d": 1,
+      "sample_7d": 2,
       "sample_size": 2
     },
     "calm": {
@@ -4538,7 +4538,7 @@
       "median_views_7d": 6.0,
       "sample_24h": 15,
       "sample_2h": 8,
-      "sample_6h": 14,
+      "sample_6h": 15,
       "sample_72h": 10,
       "sample_7d": 7,
       "sample_size": 16
@@ -4554,12 +4554,12 @@
       "median_views_2h": 2.0,
       "median_views_6h": 2.0,
       "median_views_72h": 8.0,
-      "median_views_7d": 7.5,
+      "median_views_7d": 5.0,
       "sample_24h": 103,
       "sample_2h": 53,
-      "sample_6h": 90,
+      "sample_6h": 94,
       "sample_72h": 98,
-      "sample_7d": 60,
+      "sample_7d": 65,
       "sample_size": 109
     },
     "dramatic_comedy": {
@@ -4573,13 +4573,13 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 5.5,
-      "median_views_7d": 8.0,
+      "median_views_7d": 6.0,
       "sample_24h": 84,
       "sample_2h": 37,
-      "sample_6h": 76,
+      "sample_6h": 79,
       "sample_72h": 80,
-      "sample_7d": 61,
-      "sample_size": 87
+      "sample_7d": 64,
+      "sample_size": 90
     },
     "expressive": {
       "mature_engaged_sample": 0,
@@ -4601,23 +4601,23 @@
       "sample_size": 1
     },
     "natural": {
-      "mature_engaged_sample": 19,
-      "mature_sample": 19,
-      "median_average_view_percentage": 67.19,
+      "mature_engaged_sample": 20,
+      "mature_sample": 20,
+      "median_average_view_percentage": 62.93,
       "median_engaged_views_per_view_percentage": 50.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 6.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 3.0,
+      "median_views_6h": 1.0,
       "median_views_72h": 11.0,
       "median_views_7d": 115.0,
       "sample_24h": 43,
       "sample_2h": 22,
-      "sample_6h": 45,
+      "sample_6h": 51,
       "sample_72h": 21,
       "sample_7d": 13,
-      "sample_size": 50
+      "sample_size": 53
     },
     "sarcastic": {
       "mature_engaged_sample": 24,
@@ -4652,10 +4652,10 @@
       "median_views_7d": 22.0,
       "sample_24h": 46,
       "sample_2h": 28,
-      "sample_6h": 43,
+      "sample_6h": 45,
       "sample_72h": 43,
       "sample_7d": 41,
-      "sample_size": 48
+      "sample_size": 49
     }
   },
   "top_examples": [
@@ -4828,7 +4828,7 @@
           "views": 1104
         },
         "7d": {
-          "actual_age_hours": 145.51,
+          "actual_age_hours": 151.51,
           "views": 1112
         }
       },
@@ -4946,23 +4946,23 @@
   },
   "trend_performance": {
     "evergreen": {
-      "mature_engaged_sample": 203,
-      "mature_sample": 207,
-      "median_average_view_percentage": 63.06,
-      "median_engaged_views_per_view_percentage": 48.65,
+      "mature_engaged_sample": 204,
+      "mature_sample": 208,
+      "median_average_view_percentage": 62.78,
+      "median_engaged_views_per_view_percentage": 48.5,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.5,
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
-      "median_views_72h": 6.0,
-      "median_views_7d": 11.0,
+      "median_views_72h": 7.0,
+      "median_views_7d": 7.0,
       "sample_24h": 266,
       "sample_2h": 142,
-      "sample_6h": 255,
+      "sample_6h": 271,
       "sample_72h": 225,
-      "sample_7d": 151,
-      "sample_size": 283
+      "sample_7d": 160,
+      "sample_size": 290
     },
     "trend_aware": {
       "mature_engaged_sample": 26,
@@ -5350,7 +5350,7 @@
       "mature_engaged_sample": 1,
       "mature_sample": 1,
       "median_average_view_percentage": 10.87,
-      "median_engaged_views_per_view_percentage": 10.0,
+      "median_engaged_views_per_view_percentage": 9.09,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.0,
@@ -5366,9 +5366,9 @@
       "sample_size": 1
     }
   },
-  "videos_analyzed": 383,
+  "videos_analyzed": 390,
   "warnings": [
-    "Optional retention returned empty curves for 15 due checkpoints; will retry"
+    "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ],
   "weak_retention_examples": [
     {
@@ -5426,7 +5426,7 @@
           "views": 0
         },
         "7d": {
-          "actual_age_hours": 154.51,
+          "actual_age_hours": 160.51,
           "views": 0
         }
       },
