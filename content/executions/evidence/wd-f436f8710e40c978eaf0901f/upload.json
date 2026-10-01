@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f436f8710e40c978eaf0901f",
+  "evidence_version": 2,
+  "execution_id": "ex-a751b2018eeceb673ee02eaf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6a550b7f002cd9b168d34636d2fb095cd029bb20",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T12:08:47.395952Z",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "At rehearsal, two women discovered the groom had told each of them a different story.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-03b9c587edb42fc81613",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Gave His Ex My Mom's Front-Row Seat"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T07:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859108400"
+  },
+  "youtube_video_id": "EZOXFlWLDRM"
+}
