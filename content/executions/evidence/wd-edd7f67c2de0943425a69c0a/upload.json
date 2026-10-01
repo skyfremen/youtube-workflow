@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-edd7f67c2de0943425a69c0a",
+  "evidence_version": 2,
+  "execution_id": "ex-7fe80eb649bf7ebec0ed0f70",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "380dd934fbc2cd84f6c8dc74f54c08e3de7a0607",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T12:07:02.714268Z",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Dad thought he was helping a neighbor. The stranger had actually paid six months upfront.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0d62ef88c28fe540ed46",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Secretly Rented Dad's Parking Space"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T07:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859105778"
+  },
+  "youtube_video_id": "iqMAhIkRytY"
+}
