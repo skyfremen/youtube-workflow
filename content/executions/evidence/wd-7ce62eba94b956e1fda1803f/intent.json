@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-7ce62eba94b956e1fda1803f",
+  "created_at": "2026-10-01T00:10:48.612593Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9f015cfa29bbe07fd9eb4bcb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b97812086283c58c85537ac202e958acae5cd3be",
+  "record_type": "intent",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Our photographer vanished before speeches because somebody else had been promised her time.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-99b7abdbe875c1cbbf49",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Gave Away Our Wedding Photographer"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794310009"
+  }
+}
