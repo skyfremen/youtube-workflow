@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e56c746eebd869bc464ddb53",
+  "evidence_version": 2,
+  "execution_id": "ex-858e0cc0c55a66272b7b1738",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3fc533b205d4773e4baad49391e2229aea090ee1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T12:07:13.539662Z",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Guests received a cash-only instruction we never wrote and were told to hand him the envelopes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-854cca65aca7eb591b8e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Made Himself the Wedding Cash Collector"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T06:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859100627"
+  },
+  "youtube_video_id": "reFIJE_YLmE"
+}
