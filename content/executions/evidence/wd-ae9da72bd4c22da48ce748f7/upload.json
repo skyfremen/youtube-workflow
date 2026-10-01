@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ae9da72bd4c22da48ce748f7",
+  "evidence_version": 2,
+  "execution_id": "ex-d48ad156f46ff1917ebaca73",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4c6e4d24745140a5bd41fa61968abd67a8fa2422",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T00:14:00.859531Z",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My parents thought I kept abandoning them. The appointment times kept moving after I arranged leave.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0a6b97efd8b4b3661bd5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Changed Dad's Appointments After I Took Leave"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T01:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794315880"
+  },
+  "youtube_video_id": "OF8SpCf7_QY"
+}
