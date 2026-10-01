@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d7e50c7befa5340e32d09748",
+  "created_at": "2026-10-01T00:10:35.231021Z",
+  "evidence_version": 2,
+  "execution_id": "ex-f376f61c2690b2d45de917c2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "520c257a75f4538b7c44b1434351c6411d22491c",
+  "record_type": "intent",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I paid more because he said the landlord priced the rooms differently. The lease said otherwise.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-397b9e324e63e85f868f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Roommate Invented a Higher Rent for My Room"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794323419"
+  }
+}
