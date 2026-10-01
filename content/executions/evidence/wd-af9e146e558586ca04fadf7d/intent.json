@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-af9e146e558586ca04fadf7d",
+  "created_at": "2026-10-01T00:09:19.557344Z",
+  "evidence_version": 2,
+  "execution_id": "ex-da0bb86f199cb5edd79a6b50",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "913d105d019e09ee212ccb14322e5127b57793dd",
+  "record_type": "intent",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I arrived to move house and found bare concrete where all my belongings had been.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-40cc6728366f7db23b5c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Emptied My Storage Unit Without Asking"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T03:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794327183"
+  }
+}
