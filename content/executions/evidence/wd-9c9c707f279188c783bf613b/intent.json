@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-9c9c707f279188c783bf613b",
+  "created_at": "2026-10-01T12:08:44.976931Z",
+  "evidence_version": 2,
+  "execution_id": "ex-827c41f4c5015392a84e8e5a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3fbad1a5e3a460bc238f4d649e63f0329f0de497",
+  "record_type": "intent",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Moved chairs were strange. Coming home early explained who had been enjoying the view.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5dd6a333b3a4ff186772",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Landlord's Son Used My Apartment for Dates"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859103346"
+  }
+}
