@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cb7e9f3a40507d62eb0b33b2",
+  "evidence_version": 2,
+  "execution_id": "ex-8f22c254d8f06a5518763e2d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7f0cbda302828af3a5e91f807487470408c1eb98",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T00:11:35.234349Z",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Guests arrived carrying food because my aunt told them our reception couldn't feed everyone.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-78738527dc1217198a62",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Catered Wedding Became a Secret Potluck"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T02:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794319370"
+  },
+  "youtube_video_id": "39dSqsZ8jqE"
+}
