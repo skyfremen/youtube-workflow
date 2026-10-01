@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-0b07e6021b6ac59f08d60589",
+  "created_at": "2026-10-01T00:09:59.886328Z",
+  "evidence_version": 2,
+  "execution_id": "ex-15cbd97b982bb8d4d4a3344a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4f78e23e92ca9f3f0e5d555f141a637f2f1b05ee",
+  "record_type": "intent",
+  "request_blob_sha": "842a8f9f968dcb209bf963fd988b78e60a58debb",
+  "request_id": "rq-3aef594c75f870a179fa9df3",
+  "request_path": "content/requests/rq-3aef594c75f870a179fa9df3.json",
+  "request_source_sha": "2f8b5822ae9f71b83eebe9af134388fc18916ca9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "I thought I was training backup coverage. The new hire knew a plan I didn't.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b136187318360c466ea0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "I Trained My Replacement Before Anyone Told Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36794317542"
+  }
+}
