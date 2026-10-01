@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-5db032994d0c1b7f8ba629dd",
+  "created_at": "2026-10-01T12:10:28.749988Z",
+  "evidence_version": 2,
+  "execution_id": "ex-f4c41e5213fa379b1cb1a867",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d60393c60dfdfd4fa68a76e443ad5f75fa85bb06",
+  "record_type": "intent",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "My best projects vanished from my review and appeared under a coworker's name.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b40c276dccc44ad324d3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Work Became Someone Else's Performance Review"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T04:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859080379"
+  }
+}
