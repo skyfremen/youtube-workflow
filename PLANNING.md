@@ -21,9 +21,10 @@ The count is the only planning difference. Do not change creative behavior based
    - no more than 3 winners may share the same proof-and-resolution combination;
    - use at least 5 materially different resolution modes;
    - no more than 6 titles may begin with `My`.
-4. Fully author only the selected winners according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
-5. Write exactly one new immutable file under `content/drafts/` with `winner_count` set to the caller-provided value and all selected winners in one `winners[]` array.
-6. Check the **Finalize Draft** workflow triggered by that exact draft commit. If it succeeds, stop.
+4. For every selected winning premise, run a private **8-hook tournament** before authoring the narration. Generate at least 8 materially different opening-hook candidates for that same premise, varying the opening mechanism where naturally possible rather than producing superficial rewrites of one sentence. Judge the candidates specifically for likely cold-viewer engaged-view conversion (EVR): prioritize immediate first-clause comprehensibility, a concrete violation/contradiction/loss/stake, specific consequential detail when natural, and an unanswered question that makes the next sentence necessary. Reject any candidate that needs background explanation, begins with setup or reaction instead of the actual problem, hides the core conflict, or relies mainly on dramatic wording. Select exactly one winning hook and discard the alternatives; do not persist hook candidates.
+5. Fully author only the selected winners using the tournament-selected hook and according to the Creative Rules and Draft Contract. Do not persist rejected or runner-up ideas.
+6. Write exactly one new immutable file under `content/drafts/` with `winner_count` set to the caller-provided value and all selected winners in one `winners[]` array.
+7. Check the **Finalize Draft** workflow triggered by that exact draft commit. If it succeeds, stop.
 
 Use a collision-resistant filename such as `draft-YYYYMMDDTHHMMSS-<8 random lowercase hex>.json`. Never overwrite a draft.
 
@@ -36,6 +37,7 @@ Use `analytics_summary` as an explicit batch-allocation signal according to the 
 - A pattern may be exploited only when it meets `minimum_pattern_sample` at a mature checkpoint. Exploit mechanisms and audience needs, never exact premises, titles, characters, evidence devices, or twists.
 - Evaluate performance at `2h`, `24h`, `72h`, and `7d`. Use `2h` diagnostically, `24h` provisionally, `72h` as the primary creative decision point, and `7d` as confirmation. Treat `6h` as an early supporting signal only.
 - When available, compare engaged-view conversion, engaged views, average view duration, average percentage viewed, retention shape, likes, comments, shares, subscriber conversion, and the proportions reaching 100, 500, and 1,000 views. Separate low distribution from weak viewer response; do not promote or reject a pattern based on raw views alone.
+- For the 8-hook tournament, treat engaged-view conversion (EVR) as the primary opening-quality objective. Use EVR-oriented evidence to learn which opening mechanisms stop cold viewers, while keeping downstream average view percentage, retention, and completion signals as separate evidence about the story after the viewer stays. Do not choose a tournament hook because its mechanism historically received more raw views if its cold-viewer stopping power is weaker.
 - Treat any pattern below `minimum_pattern_sample` as anecdotal.
 - Use `top_examples` to learn from hook, conflict, escalation, payoff, replay, and ending mechanisms without cloning premises, titles, characters, twists, or exact hooks.
 - Use `hook_type_performance` only with adequate samples. Reuse a mechanism only when it naturally fits a genuinely different story.
