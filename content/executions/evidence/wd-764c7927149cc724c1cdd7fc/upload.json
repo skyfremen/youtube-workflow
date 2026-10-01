@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-764c7927149cc724c1cdd7fc",
+  "evidence_version": 2,
+  "execution_id": "ex-880c81a9f939823980e30143",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6b658ea74607a730d2508886738b9a2b62e6667f",
+  "record_type": "upload",
+  "recorded_at": "2026-10-01T12:07:19.794498Z",
+  "request_blob_sha": "bf602e65ed878935fba173bc5dc38b07988d4c5f",
+  "request_id": "rq-0dcaa19ec9149c0bfb287d20",
+  "request_path": "content/requests/rq-0dcaa19ec9149c0bfb287d20.json",
+  "request_source_sha": "533915af020b60ab23afd8c93dda9b4f3ec8617c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "We thought we were paying a repair. Dad thought he was helping one of us.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0d218c45064d9d7a685c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Invented Two Emergencies to Build a Family Fund"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-02T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36859086138"
+  },
+  "youtube_video_id": "bddMYcGmxIw"
+}
