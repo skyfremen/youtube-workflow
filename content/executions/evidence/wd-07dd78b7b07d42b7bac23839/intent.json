@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-07dd78b7b07d42b7bac23839",
+  "created_at": "2026-10-02T00:17:10.953196Z",
+  "evidence_version": 2,
+  "execution_id": "ex-22ddfb9a73995350984490ff",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bca3d2592bb03ba7cf6de82dfb4280efe23c2ec2",
+  "record_type": "intent",
+  "request_blob_sha": "915c936d6701e6d0669765651522b9353e5f11aa",
+  "request_id": "rq-d4fa44ca7753fcc526bada21",
+  "request_path": "content/requests/rq-d4fa44ca7753fcc526bada21.json",
+  "request_source_sha": "821525e97e0809268d50a5cbaaee066669fcbe95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Unexpected tenants reveal where Grandma intended the rent to go.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6ab551a31c141cf52c3e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Uncle Rented Grandma's House Before the Will Was Read"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T02:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36944737815"
+  }
+}
