@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ec547c6f5a2ddaf6f44bac76",
+  "evidence_version": 2,
+  "execution_id": "ex-d37336821d5a536aa1589e53",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ffe6631de683ed78eb930106badc606e9804d8fa",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T12:14:35.502183Z",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unexpected return exposes a secret designer-rental inventory.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f84def87e4807a198dc1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Stranger Returned the Dress From My Own Closet"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004915721"
+  },
+  "youtube_video_id": "qDPE4HxUjQA"
+}
