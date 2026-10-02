@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4041e7bc823165ee64c2aad2",
+  "evidence_version": 2,
+  "execution_id": "ex-de9d18c8add6099f949f6e41",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "634f939ed6e6875cb5c91104cd82c71bd80ff8ad",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T12:14:59.725361Z",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A familiar dent exposes the heirloom that never reached restoration.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ed9d82ceb7f3551fd01b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Wore a Replica While Grandma's Necklace Was Auctioned"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004909672"
+  },
+  "youtube_video_id": "3Ih5Gsm-Bnk"
+}
