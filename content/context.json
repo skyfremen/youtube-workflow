@@ -143,7 +143,7 @@
         {
           "average_view_percentage": 54.67,
           "dimension": "category",
-          "evidence_median_views": 20.0,
+          "evidence_median_views": 17.0,
           "mature_sample": 43,
           "sample_size": 65,
           "value": "family"
@@ -177,7 +177,7 @@
         {
           "average_view_percentage": 58.12,
           "dimension": "story_tone",
-          "evidence_median_views": 4.5,
+          "evidence_median_views": 4.0,
           "mature_sample": 25,
           "sample_size": 26,
           "value": "sarcastic"
@@ -185,18 +185,18 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-02T11:30:32Z",
+      "latest_realtime_snapshot": "2026-10-02T17:30:30Z",
       "videos_analyzed": 414
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 685.0,
+          "evidence_median_views": 731.0,
           "sample_size": 117,
           "window": "08-11"
         },
         {
-          "evidence_median_views": 128.5,
+          "evidence_median_views": 103.0,
           "sample_size": 106,
           "window": "12-15"
         },
@@ -219,21 +219,21 @@
         }
       ]
     },
-    "generated_at": "2026-10-02T11:30:32Z",
+    "generated_at": "2026-10-02T17:30:30Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 388,
+        "24h": 390,
         "2h": 193,
         "6h": 369,
-        "72h": 342,
-        "7d": 279
+        "72h": 359,
+        "7d": 282
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
