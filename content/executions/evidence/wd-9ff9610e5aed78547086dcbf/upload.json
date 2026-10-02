@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9ff9610e5aed78547086dcbf",
+  "evidence_version": 2,
+  "execution_id": "ex-63d460cd2e9f844c56d6fb58",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9411532383148686e97b6ef46ac3f53d5544ed39",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T12:19:37.129676Z",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A client welcome call exposes technical approval that never happened.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-fb728a677bc711630173",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "They Used My Certification to Win a Bid I Rejected"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004903866"
+  },
+  "youtube_video_id": "1c4slIBynRI"
+}
