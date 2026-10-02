@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6d3bb9f82b7d88b8a65443fe",
+  "evidence_version": 2,
+  "execution_id": "ex-5c63b34c4986f8898d72e084",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "94be15cc91ceaf70602e06473bf6f45bb781aac2",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T12:14:43.793742Z",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise officiant reveals what the groom thinks the altar is worth.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1eaee8359524341113a3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Fiancé Turned Our Wedding Into a Promotion Interview"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T04:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004899934"
+  },
+  "youtube_video_id": "tAEbjkGd0vQ"
+}
