@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3859f6e74f180c35d61a2cb2",
+  "evidence_version": 2,
+  "execution_id": "ex-67c461d62b4ef86a284ac9cc",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6b6684b9cf97c7feca7f9f91c4f93e88f9451d01",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T12:14:09.984656Z",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Labeled leftovers reveal a catering business the cook never started.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6b9484890819bc6b0588",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Husband Sold the Dinners I Cooked for Our Family"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T06:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004913683"
+  },
+  "youtube_video_id": "wwzo4dkhRsU"
+}
