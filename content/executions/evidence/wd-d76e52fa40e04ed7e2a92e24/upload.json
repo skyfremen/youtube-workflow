@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d76e52fa40e04ed7e2a92e24",
+  "evidence_version": 2,
+  "execution_id": "ex-4e9fa73c97dc4fff022df694",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6e3f56166bebc4ad9c8c559c3f335c24c33739f3",
+  "record_type": "upload",
+  "recorded_at": "2026-10-02T00:19:46.300214Z",
+  "request_blob_sha": "915c936d6701e6d0669765651522b9353e5f11aa",
+  "request_id": "rq-d4fa44ca7753fcc526bada21",
+  "request_path": "content/requests/rq-d4fa44ca7753fcc526bada21.json",
+  "request_source_sha": "821525e97e0809268d50a5cbaaee066669fcbe95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A fake family emergency hides a mother's fear of being left behind.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f20ddb415c197b2276d6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Canceled My Interviews So I Would Babysit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36944735882"
+  },
+  "youtube_video_id": "vFGT1X5Babg"
+}
