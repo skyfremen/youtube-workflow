@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-77dc659e715dbb7173d3299e",
+  "created_at": "2026-10-02T12:14:27.150418Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4952b2f9a9aeec27850dca18",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9fa12f0b1267425f3d7126895fc70397d73e92aa",
+  "record_type": "intent",
+  "request_blob_sha": "8b63424ecb966530fdd8c1dc9b342b80bde792bd",
+  "request_id": "rq-0289ce8af806068260ad425e",
+  "request_path": "content/requests/rq-0289ce8af806068260ad425e.json",
+  "request_source_sha": "7dbfc9e68d03d661abb1ec01236f159bc2a465c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A rehearsal reading reveals how private doubts entered the ceremony.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b87fa6c00da6647c1e8f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Officiant Quoted My Private Counseling Notes"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37004898072"
+  }
+}
