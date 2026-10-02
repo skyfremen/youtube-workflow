@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e2340e9c2624800494fd97c3",
+  "created_at": "2026-10-02T00:19:21.805706Z",
+  "evidence_version": 2,
+  "execution_id": "ex-25c7ff63f2bf92f0cd32eaa9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2c0de31817a2e478ae851cb23dfface43d335eea",
+  "record_type": "intent",
+  "request_blob_sha": "915c936d6701e6d0669765651522b9353e5f11aa",
+  "request_id": "rq-d4fa44ca7753fcc526bada21",
+  "request_path": "content/requests/rq-d4fa44ca7753fcc526bada21.json",
+  "request_source_sha": "821525e97e0809268d50a5cbaaee066669fcbe95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An anonymous salary poll exposes a much larger pattern of lies.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a9d7d7afac572e6f4a5f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Boss Asked the Team to Vote on My Raise"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T01:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36944734071"
+  }
+}
