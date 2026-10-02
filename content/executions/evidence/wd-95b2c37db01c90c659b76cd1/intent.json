@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-95b2c37db01c90c659b76cd1",
+  "created_at": "2026-10-02T00:18:37.491969Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a0c5d6a6d8e74c6e199b825c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4a9557a7200f4419501864ac3f335028964ff400",
+  "record_type": "intent",
+  "request_blob_sha": "915c936d6701e6d0669765651522b9353e5f11aa",
+  "request_id": "rq-d4fa44ca7753fcc526bada21",
+  "request_path": "content/requests/rq-d4fa44ca7753fcc526bada21.json",
+  "request_source_sha": "821525e97e0809268d50a5cbaaee066669fcbe95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing piece of lace exposes a promise the bride never made.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c1e63b5c9a1f3c55ad65",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "He Promised Away Grandma's Wedding Veil"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-03T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "36944724668"
+  }
+}
