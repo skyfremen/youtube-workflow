@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f23f78ebba4ad0f9fee2e2cc",
+  "created_at": "2026-10-03T12:14:50.113618Z",
+  "evidence_version": 2,
+  "execution_id": "ex-835c666078130138c5508b6e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f64b495e5366d38e28801e9061f203603d77bc61",
+  "record_type": "intent",
+  "request_blob_sha": "68dc7f2d76d7816a84326e94146040bb4ad3909e",
+  "request_id": "rq-c37dce846e2d8d9e33c8b087",
+  "request_path": "content/requests/rq-c37dce846e2d8d9e33c8b087.json",
+  "request_source_sha": "eaf86e448cc4e0b43593a4ab3bf1dfc1733388fb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A public charity tribute conceals a manager's missing bonus budget.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-426169f6aa47d8c072ee",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Company Donated My Bonus Without Asking"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T05:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37121949066"
+  }
+}
