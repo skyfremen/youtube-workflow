@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-9840954228bb506b52195dc7",
+  "created_at": "2026-10-03T00:11:07.889972Z",
+  "evidence_version": 2,
+  "execution_id": "ex-f58c238ce0c329449f4c5b3c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c978098016a5784aba6a4acc45873af61cde6126",
+  "record_type": "intent",
+  "request_blob_sha": "208e2d85b15280e863ec45836182976f96a3ee91",
+  "request_id": "rq-a658e474ea9d408d2c603555",
+  "request_path": "content/requests/rq-a658e474ea9d408d2c603555.json",
+  "request_source_sha": "e0a68a4a52ed702d487d49773f7438c1c71f877c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A routine client request exposes a company maintaining a dead colleague's identity.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a3068cf97d9c17187cd7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Client Asked to Meet an Engineer Who Had Died"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T01:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37080366995"
+  }
+}
