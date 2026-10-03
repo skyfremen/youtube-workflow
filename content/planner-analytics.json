@@ -184,7 +184,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-03T11:30:29Z",
+    "latest_realtime_snapshot": "2026-10-03T17:30:29Z",
     "videos_analyzed": 438
   },
   "distribution_signals": {
@@ -195,7 +195,7 @@
         "window": "08-11"
       },
       {
-        "evidence_median_views": 38.0,
+        "evidence_median_views": 10.0,
         "sample_size": 118,
         "window": "12-15"
       },
@@ -218,20 +218,21 @@
       }
     ]
   },
-  "generated_at": "2026-10-03T11:30:29Z",
+  "generated_at": "2026-10-03T17:30:29Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 412,
+      "24h": 414,
       "2h": 202,
       "6h": 393,
-      "72h": 366,
+      "72h": 383,
       "7d": 309
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
+    "Optional Reporting download 20539464654 unavailable: HTTPError",
     "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ]
 }

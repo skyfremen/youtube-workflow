@@ -12,10 +12,11 @@
     "retention": true,
     "traffic_source": true
   },
-  "generated_at": "2026-10-03T11:30:29Z",
-  "latest_realtime_snapshot": "realtime/2026-10-03/analytics-20261003T113029Z.json",
-  "latest_reporting_date": "2026-10-01T07:00:00Z",
+  "generated_at": "2026-10-03T17:30:29Z",
+  "latest_realtime_snapshot": "realtime/2026-10-03/analytics-20261003T173029Z.json",
+  "latest_reporting_date": "2026-10-02T07:00:00Z",
   "warnings": [
+    "Optional Reporting download 20539464654 unavailable: HTTPError",
     "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ]
 }
