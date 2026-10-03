@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-178991b21f4609a179c0519a",
+  "created_at": "2026-10-03T00:09:26.905228Z",
+  "evidence_version": 2,
+  "execution_id": "ex-eaca6afdc0a4721280e1b7aa",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a63df658ad5deebe2e323dd637bb7592f036f3f4",
+  "record_type": "intent",
+  "request_blob_sha": "208e2d85b15280e863ec45836182976f96a3ee91",
+  "request_id": "rq-a658e474ea9d408d2c603555",
+  "request_path": "content/requests/rq-a658e474ea9d408d2c603555.json",
+  "request_source_sha": "e0a68a4a52ed702d487d49773f7438c1c71f877c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unexpected sick day exposes a landlord's secret weekday rental business.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8201f669de70ae1abd26",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Tourists Were Eating Lunch in My Apartment"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37080372768"
+  }
+}
