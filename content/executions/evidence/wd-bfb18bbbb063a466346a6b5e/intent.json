@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-bfb18bbbb063a466346a6b5e",
+  "created_at": "2026-10-03T00:09:53.201096Z",
+  "evidence_version": 2,
+  "execution_id": "ex-68fc826719300d65b2d2fd15",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4c5e17be2bb93185f9384db0cd9a05fca4848bdc",
+  "record_type": "intent",
+  "request_blob_sha": "208e2d85b15280e863ec45836182976f96a3ee91",
+  "request_id": "rq-a658e474ea9d408d2c603555",
+  "request_path": "content/requests/rq-a658e474ea9d408d2c603555.json",
+  "request_source_sha": "e0a68a4a52ed702d487d49773f7438c1c71f877c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An anniversary program exposes a sale that included both an heirloom and its owner.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2d8f480a8e8752bce7cb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Sold My Piano and Included a Performance"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37080368306"
+  }
+}
