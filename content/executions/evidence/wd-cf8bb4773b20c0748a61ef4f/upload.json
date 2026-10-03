@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cf8bb4773b20c0748a61ef4f",
+  "evidence_version": 2,
+  "execution_id": "ex-ae4de7df5ad6e4099cdc8ebb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e463007a0de168d9017061b0d416ceeb582fd19a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-03T00:09:51.163791Z",
+  "request_blob_sha": "208e2d85b15280e863ec45836182976f96a3ee91",
+  "request_id": "rq-a658e474ea9d408d2c603555",
+  "request_path": "content/requests/rq-a658e474ea9d408d2c603555.json",
+  "request_source_sha": "e0a68a4a52ed702d487d49773f7438c1c71f877c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A rehearsal joke exposes paid advertisements hidden inside wedding speeches.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9c3a84fd619dff5bcb68",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Best Man's Toast Included a Discount Code"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37080360686"
+  },
+  "youtube_video_id": "SypZ92mFdmw"
+}
