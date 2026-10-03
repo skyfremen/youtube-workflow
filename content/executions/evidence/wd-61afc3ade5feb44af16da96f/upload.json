@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-61afc3ade5feb44af16da96f",
+  "evidence_version": 2,
+  "execution_id": "ex-d93d6a55cbc5c05d4e7306b2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2de56467cc4be67964b32e0350585d57a1ecff46",
+  "record_type": "upload",
+  "recorded_at": "2026-10-03T12:16:43.796572Z",
+  "request_blob_sha": "68dc7f2d76d7816a84326e94146040bb4ad3909e",
+  "request_id": "rq-c37dce846e2d8d9e33c8b087",
+  "request_path": "content/requests/rq-c37dce846e2d8d9e33c8b087.json",
+  "request_source_sha": "eaf86e448cc4e0b43593a4ab3bf1dfc1733388fb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A school-boundary deception leaves two children believing they have been given away.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ec1444d6e1ce9afa25c8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The School Believed We Were Raising Our Grandchildren"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37121951822"
+  },
+  "youtube_video_id": "LnOwuGJ7smo"
+}
