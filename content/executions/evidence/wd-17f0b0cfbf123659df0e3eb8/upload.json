@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-17f0b0cfbf123659df0e3eb8",
+  "evidence_version": 2,
+  "execution_id": "ex-0390698413f38b652fd02e11",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ea89fdb812bbf8948468a82fc2ba19a1e4844547",
+  "record_type": "upload",
+  "recorded_at": "2026-10-03T12:17:26.308950Z",
+  "request_blob_sha": "68dc7f2d76d7816a84326e94146040bb4ad3909e",
+  "request_id": "rq-c37dce846e2d8d9e33c8b087",
+  "request_path": "content/requests/rq-c37dce846e2d8d9e33c8b087.json",
+  "request_source_sha": "eaf86e448cc4e0b43593a4ab3bf1dfc1733388fb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A renovation bill exposes a contractor filling neighborhood pools from one homeowner's tap.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-291f67586243db88e672",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Contractor Sold Water From Our House"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37121953614"
+  },
+  "youtube_video_id": "tdhP9w0Pl60"
+}
