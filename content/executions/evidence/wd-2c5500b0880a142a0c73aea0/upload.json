@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2c5500b0880a142a0c73aea0",
+  "evidence_version": 2,
+  "execution_id": "ex-1d04c5d8b51e243346b19d5f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "15b9cac8c8d13f552185ec3bea1fb294b643d239",
+  "record_type": "upload",
+  "recorded_at": "2026-10-03T00:08:26.958551Z",
+  "request_blob_sha": "208e2d85b15280e863ec45836182976f96a3ee91",
+  "request_id": "rq-a658e474ea9d408d2c603555",
+  "request_path": "content/requests/rq-a658e474ea9d408d2c603555.json",
+  "request_source_sha": "e0a68a4a52ed702d487d49773f7438c1c71f877c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A vacation extension costs a professional exam and rewrites who made the decision.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1c0a061a01bfab573ea6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Husband Canceled the Exam for My Promotion"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37080371283"
+  },
+  "youtube_video_id": "ssxit_nX3Es"
+}
