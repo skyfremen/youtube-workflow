@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-6c1f568bbbb466b6dd1b8588",
+  "created_at": "2026-10-03T12:15:10.226257Z",
+  "evidence_version": 2,
+  "execution_id": "ex-7c1c18ab20982a41cbbf4283",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "28d963a0fe35ea48aeedf68db225786a31f54282",
+  "record_type": "intent",
+  "request_blob_sha": "68dc7f2d76d7816a84326e94146040bb4ad3909e",
+  "request_id": "rq-c37dce846e2d8d9e33c8b087",
+  "request_path": "content/requests/rq-c37dce846e2d8d9e33c8b087.json",
+  "request_source_sha": "eaf86e448cc4e0b43593a4ab3bf1dfc1733388fb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A promised caregiving arrangement hides a sister's plan to take over an apartment.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-baa687fb8c7fd4a66d2f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Traded My Caregiving for an Inheritance"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37121950851"
+  }
+}
