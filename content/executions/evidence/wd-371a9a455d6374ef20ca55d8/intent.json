@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-371a9a455d6374ef20ca55d8",
+  "created_at": "2026-10-03T12:16:23.600695Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4c334af0899b69452e73c9ee",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f5e3595f7c822e5e01f0dfe5096ed36165372cf2",
+  "record_type": "intent",
+  "request_blob_sha": "68dc7f2d76d7816a84326e94146040bb4ad3909e",
+  "request_id": "rq-c37dce846e2d8d9e33c8b087",
+  "request_path": "content/requests/rq-c37dce846e2d8d9e33c8b087.json",
+  "request_source_sha": "eaf86e448cc4e0b43593a4ab3bf1dfc1733388fb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise wedding coordinator arrives with a reconciliation speech the groom never approved.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2b012bfc4d893b6664e9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Bride Hired My Estranged Mother to Run Our Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-04T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37121944823"
+  }
+}
