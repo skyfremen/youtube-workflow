@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-7cf060c0740ac49358414221",
+  "created_at": "2026-10-04T00:10:53.352096Z",
+  "evidence_version": 2,
+  "execution_id": "ex-1c1a35d59dc2c620e7c1ce13",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6340dc0e83ac2cb9a9d9629aa693a34e083e8c97",
+  "record_type": "intent",
+  "request_blob_sha": "c8fa05e6c57395eb816d9349ff21c90e6e9f4b19",
+  "request_id": "rq-7986ee169feb1c89ccd36617",
+  "request_path": "content/requests/rq-7986ee169feb1c89ccd36617.json",
+  "request_source_sha": "5be82606b3b557bbc6f5467344688c376ad237b6",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A harassment complaint becomes bargaining power inside the employee's promotion assessment.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f58833dc4b9895d0b9f3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Client I Reported Wrote My Performance Review"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37163670651"
+  }
+}
