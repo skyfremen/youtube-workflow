@@ -102,7 +102,7 @@
       {
         "average_view_percentage": 64.08,
         "dimension": "category",
-        "evidence_median_views": 576.0,
+        "evidence_median_views": 576.5,
         "mature_sample": 31,
         "sample_size": 54,
         "value": "wedding"
@@ -184,18 +184,18 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-04T11:30:36Z",
+    "latest_realtime_snapshot": "2026-10-04T17:30:28Z",
     "videos_analyzed": 462
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 731.0,
+        "evidence_median_views": 780.0,
         "sample_size": 141,
         "window": "08-11"
       },
       {
-        "evidence_median_views": 8.5,
+        "evidence_median_views": 7.0,
         "sample_size": 130,
         "window": "12-15"
       },
@@ -218,14 +218,14 @@
       }
     ]
   },
-  "generated_at": "2026-10-04T11:30:36Z",
+  "generated_at": "2026-10-04T17:30:28Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 436,
+      "24h": 438,
       "2h": 211,
       "6h": 417,
-      "72h": 390,
+      "72h": 407,
       "7d": 325
     },
     "minimum_pattern_sample": 12,
