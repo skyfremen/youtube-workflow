@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-35a27fc9a4bf3ee05f4fbff1",
+  "evidence_version": 2,
+  "execution_id": "ex-6117f248df799c8787596294",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0994044814c6f947a30cc6ee1a16a1fd8cd89e92",
+  "record_type": "upload",
+  "recorded_at": "2026-10-04T12:15:25.045136Z",
+  "request_blob_sha": "4e47e21ea295df11e3caea2334932d7262754503",
+  "request_id": "rq-0102a592173f5c60b24d18dd",
+  "request_path": "content/requests/rq-0102a592173f5c60b24d18dd.json",
+  "request_source_sha": "9fc0f67d591b5dcac379b239b9185cb310a5f9d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Executives test a new manager by ordering her to dismiss the mentor who previously protected her job.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-18691f430f20ba955f2d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Promotion Came With Someone Else's Termination"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T05:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37201060867"
+  },
+  "youtube_video_id": "Ok4PwqpYvmE"
+}
