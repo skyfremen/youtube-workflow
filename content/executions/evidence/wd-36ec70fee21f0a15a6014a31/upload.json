@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-36ec70fee21f0a15a6014a31",
+  "evidence_version": 2,
+  "execution_id": "ex-e8b0afa0e4fade1c4636b71c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0f4283b2d8bd343589c9fd23be269e8749e31e7a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-04T00:08:25.803396Z",
+  "request_blob_sha": "c8fa05e6c57395eb816d9349ff21c90e6e9f4b19",
+  "request_id": "rq-7986ee169feb1c89ccd36617",
+  "request_path": "content/requests/rq-7986ee169feb1c89ccd36617.json",
+  "request_source_sha": "5be82606b3b557bbc6f5467344688c376ad237b6",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A failed car loan exposes a salesperson's profitable sale of a trade-in to his brother.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-30f52276694307445459",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Dealership Sold My Car Before Approving the New One"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37163678403"
+  },
+  "youtube_video_id": "QHeVM9_pVqA"
+}
