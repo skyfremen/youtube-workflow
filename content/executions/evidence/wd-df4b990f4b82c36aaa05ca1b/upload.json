@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-df4b990f4b82c36aaa05ca1b",
+  "evidence_version": 2,
+  "execution_id": "ex-25755747688470251fc2e3f5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c711c26c81b5fd8ef9599bd778d50905a5efb76e",
+  "record_type": "upload",
+  "recorded_at": "2026-10-04T00:10:30.347420Z",
+  "request_blob_sha": "c8fa05e6c57395eb816d9349ff21c90e6e9f4b19",
+  "request_id": "rq-7986ee169feb1c89ccd36617",
+  "request_path": "content/requests/rq-7986ee169feb1c89ccd36617.json",
+  "request_source_sha": "5be82606b3b557bbc6f5467344688c376ad237b6",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Coworkers bringing funeral donations discover that the supposedly dead mother is alive.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a3072298c10370c7143b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Son Used My Obituary to Get Paid Leave"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37163674365"
+  },
+  "youtube_video_id": "RF_ekBR5CMM"
+}
