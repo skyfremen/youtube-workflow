@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-8d523a67efd9e9ebd3fb3b46",
+  "created_at": "2026-10-04T12:15:44.065408Z",
+  "evidence_version": 2,
+  "execution_id": "ex-7cd807e77088f4d46444122a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cf4a2939b738e04d62cb00840023e36e88e6e8bf",
+  "record_type": "intent",
+  "request_blob_sha": "4e47e21ea295df11e3caea2334932d7262754503",
+  "request_id": "rq-0102a592173f5c60b24d18dd",
+  "request_path": "content/requests/rq-0102a592173f5c60b24d18dd.json",
+  "request_source_sha": "9fc0f67d591b5dcac379b239b9185cb310a5f9d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An advertised childcare benefit depends on pressured, untrained employees while an absent director collects the budget.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3bcf903e1d908001ba4b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Office Nursery Was Staffed During Lunch Breaks"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T05:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37201063395"
+  }
+}
