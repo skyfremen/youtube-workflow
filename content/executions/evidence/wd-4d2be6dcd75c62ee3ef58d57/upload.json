@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4d2be6dcd75c62ee3ef58d57",
+  "evidence_version": 2,
+  "execution_id": "ex-f3e3ffb2d621cc2429424c49",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4a879d30f16c41cdfc27ed9c657bc6e19a6f201d",
+  "record_type": "upload",
+  "recorded_at": "2026-10-04T12:14:05.540873Z",
+  "request_blob_sha": "4e47e21ea295df11e3caea2334932d7262754503",
+  "request_id": "rq-0102a592173f5c60b24d18dd",
+  "request_path": "content/requests/rq-0102a592173f5c60b24d18dd.json",
+  "request_source_sha": "9fc0f67d591b5dcac379b239b9185cb310a5f9d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A sleep application turns recognizable private recordings into premium relaxation content.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1f63bc3eba4baf6263e2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Strangers Paid to Hear Me Talk in My Sleep"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T07:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37201070971"
+  },
+  "youtube_video_id": "rNmz-NytxLU"
+}
