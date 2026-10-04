@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-cbd42f4c53408660bb1677d2",
+  "created_at": "2026-10-04T00:09:21.456506Z",
+  "evidence_version": 2,
+  "execution_id": "ex-27cd8cea96e98aa65eab8474",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8be0e0f8b175142741645dc5054a41e0a94d79c3",
+  "record_type": "intent",
+  "request_blob_sha": "c8fa05e6c57395eb816d9349ff21c90e6e9f4b19",
+  "request_id": "rq-7986ee169feb1c89ccd36617",
+  "request_path": "content/requests/rq-7986ee169feb1c89ccd36617.json",
+  "request_source_sha": "5be82606b3b557bbc6f5467344688c376ad237b6",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A honeymoon surprise becomes a deadline designed to force a bride to surrender her name.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-31bad743d80bf45a1141",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Honeymoon Ticket Used a Name I Refused"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37163667171"
+  }
+}
