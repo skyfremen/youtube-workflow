@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0aa7477b0d3a9d84b4e17660",
+  "evidence_version": 2,
+  "execution_id": "ex-9ea7ca28ce191bb717b778aa",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5c86850eb23a6f0e8dcd654a9c4c7d5b6a914ae8",
+  "record_type": "upload",
+  "recorded_at": "2026-10-04T00:10:11.594040Z",
+  "request_blob_sha": "c8fa05e6c57395eb816d9349ff21c90e6e9f4b19",
+  "request_id": "rq-7986ee169feb1c89ccd36617",
+  "request_path": "content/requests/rq-7986ee169feb1c89ccd36617.json",
+  "request_source_sha": "5be82606b3b557bbc6f5467344688c376ad237b6",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Empty gift boxes reveal a family rescue funded and announced without the groom's consent.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e0dfe82f813391f1473f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Gifts Were Gone Before the Ceremony"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-05T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37163668217"
+  },
+  "youtube_video_id": "ws24hRkqWq8"
+}
