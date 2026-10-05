@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1bae4864ee0ad614cbd50452",
+  "evidence_version": 2,
+  "execution_id": "ex-31b07d53868d559642c01b5d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d97ae8ae6fe1077500c80743923fdb06e6d296d7",
+  "record_type": "upload",
+  "recorded_at": "2026-10-05T12:31:17.277011Z",
+  "request_blob_sha": "26367649c4d087b16ecdf32867c86e5323789c60",
+  "request_id": "rq-860e02fb94bf0e83e6bdc8b6",
+  "request_path": "content/requests/rq-860e02fb94bf0e83e6bdc8b6.json",
+  "request_source_sha": "d28a06d782039e252659fc816179c0bae1043196",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family announces a transplant before the supposed donor has consented, and the intended recipient makes the most unexpected refusal.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4bc71d758c6ae71ab7b7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Parents Promised My Kidney to My Brother"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T06:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37309322239"
+  },
+  "youtube_video_id": "JteS4vEXwW0"
+}
