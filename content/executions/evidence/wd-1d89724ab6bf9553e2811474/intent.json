@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1d89724ab6bf9553e2811474",
+  "created_at": "2026-10-05T00:16:09.018629Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0efccdcafdb758fe1a523223",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "aadd6daa486ef03e60f0eaa2a1feabb43d249f16",
+  "record_type": "intent",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An aunt turns her niece into a fictional daughter for pageant prizes and parenting sponsorships.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-fb727b042c30510e4f0b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Sister Entered My Daughter as Her Own Child"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T01:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246174820"
+  }
+}
