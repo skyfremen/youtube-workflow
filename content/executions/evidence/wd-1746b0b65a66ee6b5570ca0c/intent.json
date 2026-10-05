@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1746b0b65a66ee6b5570ca0c",
+  "created_at": "2026-10-05T12:29:48.545770Z",
+  "evidence_version": 2,
+  "execution_id": "ex-d5f6d35ec0b17fa33608e32a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "01bd58970a6d555b175f0f2d2f15aff144ee2a97",
+  "record_type": "intent",
+  "request_blob_sha": "26367649c4d087b16ecdf32867c86e5323789c60",
+  "request_id": "rq-860e02fb94bf0e83e6bdc8b6",
+  "request_path": "content/requests/rq-860e02fb94bf0e83e6bdc8b6.json",
+  "request_source_sha": "d28a06d782039e252659fc816179c0bae1043196",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cemetery visit exposes a brother's secret sale and the painful reason his mother bought adjoining family plots in the first place.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a091e2f5e6c61229863d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom's Burial Plot Belonged to Another Family"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T06:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37309319685"
+  }
+}
