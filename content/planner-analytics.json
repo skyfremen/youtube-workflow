@@ -63,12 +63,12 @@
         "views": 137980
       },
       {
-        "engaged_view_rate_percentage": 27.16,
-        "engaged_views": 740,
+        "engaged_view_rate_percentage": 27.15,
+        "engaged_views": 739,
         "estimated_minutes_watched": 290,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 1.91,
-        "views": 2725
+        "view_share_percentage": 1.9,
+        "views": 2722
       },
       {
         "engaged_view_rate_percentage": 57.11,
@@ -100,52 +100,52 @@
     "soft_evidence_only": true,
     "supported_patterns": [
       {
-        "average_view_percentage": 64.66,
+        "average_view_percentage": 65.34,
         "dimension": "category",
-        "evidence_median_views": 576.5,
-        "mature_sample": 32,
-        "sample_size": 54,
+        "evidence_median_views": 575.5,
+        "mature_sample": 38,
+        "sample_size": 60,
         "value": "wedding"
       },
       {
-        "average_view_percentage": 68.02,
+        "average_view_percentage": 66.76,
         "dimension": "hook_type",
-        "evidence_median_views": 151.0,
-        "mature_sample": 48,
-        "sample_size": 73,
+        "evidence_median_views": 178.0,
+        "mature_sample": 54,
+        "sample_size": 77,
         "value": "accusation"
       },
       {
-        "average_view_percentage": 68.1,
+        "average_view_percentage": 61.89,
+        "dimension": "story_tone",
+        "evidence_median_views": 124.0,
+        "mature_sample": 60,
+        "sample_size": 86,
+        "value": "natural"
+      },
+      {
+        "average_view_percentage": 64.73,
         "dimension": "category",
         "evidence_median_views": 31.0,
-        "mature_sample": 25,
-        "sample_size": 47,
+        "mature_sample": 29,
+        "sample_size": 53,
         "value": "work"
       },
       {
-        "average_view_percentage": 52.42,
+        "average_view_percentage": 53.32,
         "dimension": "story_tone",
         "evidence_median_views": 23.0,
-        "mature_sample": 44,
-        "sample_size": 64,
+        "mature_sample": 47,
+        "sample_size": 65,
         "value": "warm"
       },
       {
-        "average_view_percentage": 54.72,
+        "average_view_percentage": 54.94,
         "dimension": "category",
-        "evidence_median_views": 17.0,
-        "mature_sample": 55,
-        "sample_size": 74,
+        "evidence_median_views": 20.0,
+        "mature_sample": 59,
+        "sample_size": 75,
         "value": "family"
-      },
-      {
-        "average_view_percentage": 58.67,
-        "dimension": "story_tone",
-        "evidence_median_views": 16.0,
-        "mature_sample": 49,
-        "sample_size": 81,
-        "value": "natural"
       }
     ],
     "weak_patterns": [
@@ -156,14 +156,6 @@
         "mature_sample": 14,
         "sample_size": 15,
         "value": "urgency"
-      },
-      {
-        "average_view_percentage": 65.63,
-        "dimension": "hook_type",
-        "evidence_median_views": 4.0,
-        "mature_sample": 54,
-        "sample_size": 77,
-        "value": "contradiction"
       },
       {
         "average_view_percentage": 49.92,
@@ -180,23 +172,31 @@
         "mature_sample": 27,
         "sample_size": 29,
         "value": "trend_aware"
+      },
+      {
+        "average_view_percentage": 57.55,
+        "dimension": "hook_type",
+        "evidence_median_views": 5.0,
+        "mature_sample": 49,
+        "sample_size": 57,
+        "value": "money_stakes"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-04T23:30:31Z",
-    "videos_analyzed": 462
+    "latest_realtime_snapshot": "2026-10-05T05:30:29Z",
+    "videos_analyzed": 479
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
         "evidence_median_views": 780.0,
-        "sample_size": 141,
+        "sample_size": 153,
         "window": "08-11"
       },
       {
         "evidence_median_views": 7.0,
-        "sample_size": 130,
+        "sample_size": 135,
         "window": "12-15"
       },
       {
@@ -218,21 +218,20 @@
       }
     ]
   },
-  "generated_at": "2026-10-04T23:30:31Z",
+  "generated_at": "2026-10-05T05:30:29Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 456,
-      "2h": 211,
-      "6h": 417,
+      "24h": 460,
+      "2h": 220,
+      "6h": 425,
       "72h": 414,
-      "7d": 325
+      "7d": 340
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 14 due checkpoints; will retry",
-    "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
+    "Optional retention returned empty curves for 14 due checkpoints; will retry"
   ]
 }
