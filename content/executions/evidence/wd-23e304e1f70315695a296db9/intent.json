@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-23e304e1f70315695a296db9",
+  "created_at": "2026-10-05T00:15:18.841450Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a43523a45ae96858ccd91e04",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "608df4cd724f8e25b879bed43adeae33720fca7e",
+  "record_type": "intent",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposedly vacant recovery room becomes an advertisement containing a patient's personal family message.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-00f93d02da4149420c71",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Product Shoot Took Over My Hospital Room"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246179824"
+  }
+}
