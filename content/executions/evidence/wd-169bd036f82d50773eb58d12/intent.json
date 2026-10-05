@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-169bd036f82d50773eb58d12",
+  "created_at": "2026-10-05T00:13:17.409676Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4d007464cd8972448cd5bda7",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6ff302b6da9789a4c219987e61c059aa6650dabd",
+  "record_type": "intent",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A company disguises an intern as a senior consultant while charging clients for expertise she does not have.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2d4d789a502efc3a4cf5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Client Paid for Me but Got an Intern"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T01:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246173145"
+  }
+}
