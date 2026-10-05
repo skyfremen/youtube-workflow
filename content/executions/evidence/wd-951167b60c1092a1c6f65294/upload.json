@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-951167b60c1092a1c6f65294",
+  "evidence_version": 2,
+  "execution_id": "ex-c35d8586253c1a4079a4b129",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4bfad39f60c0fcf576b85eae5eeda718df264886",
+  "record_type": "upload",
+  "recorded_at": "2026-10-05T12:32:25.189718Z",
+  "request_blob_sha": "26367649c4d087b16ecdf32867c86e5323789c60",
+  "request_id": "rq-860e02fb94bf0e83e6bdc8b6",
+  "request_path": "content/requests/rq-860e02fb94bf0e83e6bdc8b6.json",
+  "request_source_sha": "d28a06d782039e252659fc816179c0bae1043196",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A home address stolen from an expense claim becomes the shield for a company selling work it cannot deliver.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-aeaf668b3cafc373531b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Debt Collectors Came to My House for My Employer"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T05:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37309313790"
+  },
+  "youtube_video_id": "_gYb70_4Wqg"
+}
