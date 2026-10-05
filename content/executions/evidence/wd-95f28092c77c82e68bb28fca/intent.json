@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-95f28092c77c82e68bb28fca",
+  "created_at": "2026-10-05T00:13:10.391008Z",
+  "evidence_version": 2,
+  "execution_id": "ex-88e128bf693b566c56746409",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "627876eb431f687d8512ed7c2621c1397ea55450",
+  "record_type": "intent",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Deleted overtime secretly funds a ghost employee who believes his wages are an earned scholarship.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-cbc146fec67a8daf08a3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Manager Put His Son on Our Payroll"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246171480"
+  }
+}
