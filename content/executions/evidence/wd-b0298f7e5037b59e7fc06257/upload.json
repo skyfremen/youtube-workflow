@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b0298f7e5037b59e7fc06257",
+  "evidence_version": 2,
+  "execution_id": "ex-cdd6efee60a41e92d9d0ca63",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "34d1bf8b5abc6224eadadd40118abbb2c403d0b8",
+  "record_type": "upload",
+  "recorded_at": "2026-10-05T00:13:37.251936Z",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A security blacklist reveals that the groom concealed an unfinished divorce and used the wedding as leverage.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9528c53471c87b52adcb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Wedding Security Had a List of Forbidden Words"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246168092"
+  },
+  "youtube_video_id": "qI1zyNjv4lE"
+}
