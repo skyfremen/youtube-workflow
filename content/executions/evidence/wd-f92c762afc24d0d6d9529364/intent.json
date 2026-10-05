@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f92c762afc24d0d6d9529364",
+  "created_at": "2026-10-05T12:30:52.855228Z",
+  "evidence_version": 2,
+  "execution_id": "ex-b6785ef25c4a7a77d53390fe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d4a00a1e3d91888bcbdecc1786dc9b7d0be3ce55",
+  "record_type": "intent",
+  "request_blob_sha": "26367649c4d087b16ecdf32867c86e5323789c60",
+  "request_id": "rq-860e02fb94bf0e83e6bdc8b6",
+  "request_path": "content/requests/rq-860e02fb94bf0e83e6bdc8b6.json",
+  "request_source_sha": "d28a06d782039e252659fc816179c0bae1043196",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Paid cars, invented community rules, and a hidden legal bill turn private driveways into a neighborhood revolt.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-127ba4d0aa26d804d2da",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My HOA Sold Parking in My Driveway"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37309328106"
+  }
+}
