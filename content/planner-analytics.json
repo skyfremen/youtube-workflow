@@ -184,18 +184,18 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-05T11:30:30Z",
+    "latest_realtime_snapshot": "2026-10-05T17:30:32Z",
     "videos_analyzed": 486
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 780.0,
+        "evidence_median_views": 765.0,
         "sample_size": 153,
         "window": "08-11"
       },
       {
-        "evidence_median_views": 7.0,
+        "evidence_median_views": 6.0,
         "sample_size": 142,
         "window": "12-15"
       },
@@ -218,14 +218,14 @@
       }
     ]
   },
-  "generated_at": "2026-10-05T11:30:30Z",
+  "generated_at": "2026-10-05T17:30:32Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 460,
+      "24h": 462,
       "2h": 220,
       "6h": 441,
-      "72h": 414,
+      "72h": 431,
       "7d": 342
     },
     "minimum_pattern_sample": 12,
