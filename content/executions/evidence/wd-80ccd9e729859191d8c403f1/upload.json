@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-80ccd9e729859191d8c403f1",
+  "evidence_version": 2,
+  "execution_id": "ex-f402ed23a6c9570a078a3005",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "02f06acc17d259b170e28859afa49e9eb1d5a4eb",
+  "record_type": "upload",
+  "recorded_at": "2026-10-05T00:15:36.179337Z",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An office auction exposes a hidden dismissal and a replacement who was told the employee resigned.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-15b8f8b9ab707cd50a07",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Desk Was Auctioned Before I Was Fired"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T00:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246169654"
+  },
+  "youtube_video_id": "CEerhtvMhkI"
+}
