@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-94a308b8c7532eff274773f2",
+  "evidence_version": 2,
+  "execution_id": "ex-cb5f424414928e82d4ccd246",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "517a4a0951dacf1dab65a1bac9c70a7ffa3ba8dd",
+  "record_type": "upload",
+  "recorded_at": "2026-10-05T00:12:27.655576Z",
+  "request_blob_sha": "c567dfe436987cff26f48961f5c241ef232c3d65",
+  "request_id": "rq-f8ffc712eb30a8c3aa1baa76",
+  "request_path": "content/requests/rq-f8ffc712eb30a8c3aa1baa76.json",
+  "request_source_sha": "c7cdb4fbda75e678ab87ae745de3d480324950a7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Relatives attending a comedy discover their private messages have been turned into characters and punchlines.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c5084b1e1360bdec96bb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Family's Group Chat Became a Stage Show"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T03:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37246184528"
+  },
+  "youtube_video_id": "7lQ_EQzkk5I"
+}
