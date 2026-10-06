@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-315e96dbcc1bb265622a2721",
+  "evidence_version": 2,
+  "execution_id": "ex-be1e80547359759174f606c8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "65eb1562c43e4f16019823c489d5a38337b7b263",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:18:38.442252Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposedly independent interviewer is actually the manager's favored candidate collecting a rival's transition plan.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b3e35c2c0489ccd2ed3b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Promotion Interview Included My Boss's Wife"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392478505"
+  },
+  "youtube_video_id": "LQYPqv6I3Ts"
+}
