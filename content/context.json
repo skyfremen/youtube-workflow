@@ -57,19 +57,19 @@
       "dominant_traffic_sources": [
         {
           "engaged_view_rate_percentage": 48.82,
-          "engaged_views": 69822,
-          "estimated_minutes_watched": 49069,
+          "engaged_views": 69820,
+          "estimated_minutes_watched": 49068,
           "insightTrafficSourceType": "SHORTS",
           "view_share_percentage": 96.5,
-          "views": 143017
+          "views": 143012
         },
         {
-          "engaged_view_rate_percentage": 26.68,
-          "engaged_views": 773,
+          "engaged_view_rate_percentage": 26.7,
+          "engaged_views": 772,
           "estimated_minutes_watched": 304,
           "insightTrafficSourceType": "YT_SEARCH",
           "view_share_percentage": 1.95,
-          "views": 2897
+          "views": 2891
         },
         {
           "engaged_view_rate_percentage": 57.28,
@@ -101,52 +101,52 @@
       "soft_evidence_only": true,
       "supported_patterns": [
         {
-          "average_view_percentage": 65.14,
+          "average_view_percentage": 64.69,
           "dimension": "category",
-          "evidence_median_views": 575.5,
-          "mature_sample": 41,
-          "sample_size": 60,
+          "evidence_median_views": 687.0,
+          "mature_sample": 46,
+          "sample_size": 65,
           "value": "wedding"
         },
         {
-          "average_view_percentage": 65.88,
+          "average_view_percentage": 64.88,
+          "dimension": "category",
+          "evidence_median_views": 185.0,
+          "mature_sample": 35,
+          "sample_size": 59,
+          "value": "work"
+        },
+        {
+          "average_view_percentage": 64.96,
           "dimension": "hook_type",
-          "evidence_median_views": 178.0,
-          "mature_sample": 55,
-          "sample_size": 80,
+          "evidence_median_views": 181.5,
+          "mature_sample": 58,
+          "sample_size": 86,
           "value": "accusation"
         },
         {
           "average_view_percentage": 54.43,
           "dimension": "category",
-          "evidence_median_views": 127.0,
+          "evidence_median_views": 95.0,
           "mature_sample": 11,
-          "sample_size": 13,
+          "sample_size": 14,
           "value": "consumer"
         },
         {
           "average_view_percentage": 59.3,
           "dimension": "story_tone",
           "evidence_median_views": 94.5,
-          "mature_sample": 64,
-          "sample_size": 87,
+          "mature_sample": 68,
+          "sample_size": 93,
           "value": "natural"
         },
         {
-          "average_view_percentage": 61.99,
-          "dimension": "category",
-          "evidence_median_views": 31.0,
-          "mature_sample": 32,
-          "sample_size": 54,
-          "value": "work"
-        },
-        {
-          "average_view_percentage": 53.88,
-          "dimension": "story_tone",
-          "evidence_median_views": 23.0,
-          "mature_sample": 48,
-          "sample_size": 67,
-          "value": "warm"
+          "average_view_percentage": 63.37,
+          "dimension": "hook_type",
+          "evidence_median_views": 27.0,
+          "mature_sample": 42,
+          "sample_size": 55,
+          "value": "social_exposure"
         }
       ],
       "weak_patterns": [
@@ -175,29 +175,29 @@
           "value": "trend_aware"
         },
         {
-          "average_view_percentage": 57.55,
+          "average_view_percentage": 67.19,
           "dimension": "hook_type",
           "evidence_median_views": 5.0,
-          "mature_sample": 51,
-          "sample_size": 58,
-          "value": "money_stakes"
+          "mature_sample": 61,
+          "sample_size": 79,
+          "value": "contradiction"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-05T23:30:30Z",
-      "videos_analyzed": 486
+      "latest_realtime_snapshot": "2026-10-06T05:30:29Z",
+      "videos_analyzed": 503
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
           "evidence_median_views": 765.0,
-          "sample_size": 153,
+          "sample_size": 165,
           "window": "08-11"
         },
         {
           "evidence_median_views": 6.0,
-          "sample_size": 142,
+          "sample_size": 147,
           "window": "12-15"
         },
         {
@@ -219,21 +219,22 @@
         }
       ]
     },
-    "generated_at": "2026-10-05T23:30:30Z",
+    "generated_at": "2026-10-06T05:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 480,
-        "2h": 220,
-        "6h": 441,
+        "24h": 484,
+        "2h": 229,
+        "6h": 449,
         "72h": 438,
-        "7d": 342
+        "7d": 359
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 14 due checkpoints; will retry"
+      "Optional retention returned empty curves for 14 due checkpoints; will retry",
+      "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
     ]
   },
   "background_categories": [
