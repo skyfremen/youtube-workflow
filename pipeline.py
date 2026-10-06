@@ -75,7 +75,7 @@ def publish_slots(path=PUBLISH_SLOTS):
     if not isinstance(x,dict) or set(x)!={"timezone","slots"}: raise VError("INVALID_PUBLISH_SLOT_CONFIG",str(path),type(x).__name__,"object with timezone and slots",False)
     if clean(x.get("timezone"))!="Asia/Singapore": raise VError("INVALID_PUBLISH_SLOT_TIMEZONE","timezone",x.get("timezone"),"Asia/Singapore",False)
     raw=x.get("slots")
-    if not isinstance(raw,list) or len(raw)!=24: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 24 daily slots",False)
+    if not isinstance(raw,list) or len(raw)!=8: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 8 daily slots",False)
     out=[]
     for index,value in enumerate(raw):
         m=re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)",str(value))
@@ -83,7 +83,7 @@ def publish_slots(path=PUBLISH_SLOTS):
         slot=(int(m.group(1)),int(m.group(2)))
         if slot[1] not in {0,10,20,30,40,50}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 10, 20, 30, 40, or 50",False)
         out.append(slot)
-    if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"24 unique daily slots",False)
+    if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"8 unique daily slots",False)
     if out!=sorted(out): raise VError("UNSORTED_PUBLISH_SLOTS","slots",raw,"ascending daily order",False)
     return out
 
@@ -627,11 +627,11 @@ def self_test():
     ok("5 defaults",d["winners"][0]["lead_gender"]=="female" and d["winners"][0]["story_tone"]=="natural")
     ok("6 repeated hook stripped",not d["winners"][0]["narration"].casefold().startswith(d["winners"][0]["hook"].casefold()))
     ok("7 payoff fallback",d["winners"][0]["payoff"]=="Nobody could answer after that.")
-    now=datetime(2030,1,1,7,50,tzinfo=SGT); slots=allocate_publish_slots(3,now,occupied=set()); ok("8 exact ten minutes allowed",slots[0]=="2030-01-01T00:00:00Z")
-    slots=allocate_publish_slots(2,datetime(2030,1,1,7,50,1,tzinfo=SGT),occupied=set()); ok("9 buffered slot skipped",slots[0]=="2030-01-01T00:20:00Z")
-    occupied={datetime(2030,1,1,0,40,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,8,29,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T01:00:00Z","2030-01-01T01:20:00Z"])
-    slots=allocate_publish_slots(1,datetime(2030,1,1,19,21,tzinfo=SGT),occupied=set()); ok("10a evening rollover",slots[0]=="2030-01-02T00:00:00Z")
-    slots=allocate_publish_slots(1,datetime(2030,1,1,23,1,tzinfo=SGT),occupied=set()); ok("10b next-day rollover",slots[0]=="2030-01-02T00:00:00Z")
+    now=datetime(2030,1,1,7,50,tzinfo=SGT); slots=allocate_publish_slots(3,now,occupied=set()); ok("8 next three-hour slot selected",slots[0]=="2030-01-01T01:00:00Z")
+    slots=allocate_publish_slots(2,datetime(2030,1,1,7,50,1,tzinfo=SGT),occupied=set()); ok("9 buffered time advances to next slot",slots[0]=="2030-01-01T01:00:00Z")
+    occupied={datetime(2030,1,1,1,0,tzinfo=timezone.utc)}; slots=allocate_publish_slots(2,datetime(2030,1,1,8,29,tzinfo=SGT),occupied=occupied); ok("10 occupied slot skipped",slots==["2030-01-01T04:00:00Z","2030-01-01T07:00:00Z"])
+    slots=allocate_publish_slots(1,datetime(2030,1,1,19,21,tzinfo=SGT),occupied=set()); ok("10a evening slot selected",slots[0]=="2030-01-01T13:00:00Z")
+    slots=allocate_publish_slots(1,datetime(2030,1,1,23,1,tzinfo=SGT),occupied=set()); ok("10b next-day rollover",slots[0]=="2030-01-01T16:00:00Z")
     test_slots=["2030-01-01T03:00:00Z","2030-01-01T04:00:00Z","2030-01-01T05:00:00Z"]
     batch=make_batch("draft-selftest01",raw,d,r,test_slots); validate_batch(batch,REQS/(batch["request_id"]+".json"),r); ok("11 batch validates",len(batch["items"])==3); ok("12 unique content ids",len({x["content_id"] for x in batch["items"]})==3)
     ok("13 scheduled private",all(x["visibility"]=="private" and x["publication"]["mode"]=="scheduled" for x in batch["items"])); ok("14 contract hash",CONTRACT_HASH=="db118b20737d06509071754851388e51af427b7930cd48708b3e427415fce1de")
