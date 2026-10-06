@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-a3281fc4052c979dc2d47abe",
+  "created_at": "2026-10-06T00:16:31.981893Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8d2a79107651adc6943274e9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6721ff7f2a523cff769c9f4ae882ca3c08fa0676",
+  "record_type": "intent",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A quality warning is edited into an approval until the designer and the blamed employee compare what management told each of them.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ecba3522f22fb3b73a2a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Recall Notice Used My Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T02:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392484525"
+  }
+}
