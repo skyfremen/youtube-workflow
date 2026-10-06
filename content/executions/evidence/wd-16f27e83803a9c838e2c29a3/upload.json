@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-16f27e83803a9c838e2c29a3",
+  "evidence_version": 2,
+  "execution_id": "ex-85eb24067eabd233a073edbd",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "defef3a1d709addd211f652536761d4caeda9400",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:14:58.995097Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cake-cutting surprise traps a bride and her new in-laws inside a housing promise neither side knowingly made.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-631af725a68b2fc32526",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Cake Contained Keys for His Parents"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T00:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392474242"
+  },
+  "youtube_video_id": "7CW_svFMXH8"
+}
