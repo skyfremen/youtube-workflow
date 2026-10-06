@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-478a2978b76f3294e776395b",
+  "evidence_version": 2,
+  "execution_id": "ex-d5aeaab03bc44ce8abdcdc88",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e149ff5bcd6352ff2edadd09330182c7e5163604",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T12:15:46.014699Z",
+  "request_blob_sha": "c60e35b39b0c2b14029285287172f429b60c6e15",
+  "request_id": "rq-42b159a1d7c3b7593b07def4",
+  "request_path": "content/requests/rq-42b159a1d7c3b7593b07def4.json",
+  "request_source_sha": "7e74098975e82b4c72761e7e334e2249be86e9fa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A false wedding translation turns a mother's refusal to surrender her bakery into the public gift investors were promised.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7b96b5ed7adf76cbbf1b",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Interpreter Rewrote My Mother's Wedding Speech"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37461234410"
+  },
+  "youtube_video_id": "kRt7xPKqDac"
+}
