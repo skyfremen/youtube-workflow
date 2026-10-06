@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-6292b5506f9506df243b8801",
+  "created_at": "2026-10-06T12:15:48.203123Z",
+  "evidence_version": 2,
+  "execution_id": "ex-05723e2b137a340d97fd7444",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0fd86111bde735dd89dbcdd5d1c41b93df3d1c3a",
+  "record_type": "intent",
+  "request_blob_sha": "c60e35b39b0c2b14029285287172f429b60c6e15",
+  "request_id": "rq-42b159a1d7c3b7593b07def4",
+  "request_path": "content/requests/rq-42b159a1d7c3b7593b07def4.json",
+  "request_source_sha": "7e74098975e82b4c72761e7e334e2249be86e9fa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Timed visits and premium baby photos expose a family fundraiser built around a healthy newborn's invented illness.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b47e280ae3285daf87ee",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Parents Sold Tickets to Meet My Newborn"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37461239564"
+  }
+}
