@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-6bc97c7c1bda26581f743d0f",
+  "created_at": "2026-10-06T00:18:42.329172Z",
+  "evidence_version": 2,
+  "execution_id": "ex-3c62deb351930c60ceaeb723",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ed021a42d52243f1b0dd1ab37386b5521c7b2c13",
+  "record_type": "intent",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A secret competition turns a family-trained routine into a salon's trophy and unauthorized breeding business.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-07c38bcd2ccdc0ff10b2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Groomer Entered My Dog in a Show"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T03:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392490299"
+  }
+}
