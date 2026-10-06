@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-072b024cb8787b471e13321a",
+  "created_at": "2026-10-06T12:18:27.298548Z",
+  "evidence_version": 2,
+  "execution_id": "ex-09de71b92c4112d4069eb6cf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c9629a69531cd70bc5a4e50cd68bc02e3b17bba0",
+  "record_type": "intent",
+  "request_blob_sha": "c60e35b39b0c2b14029285287172f429b60c6e15",
+  "request_id": "rq-42b159a1d7c3b7593b07def4",
+  "request_path": "content/requests/rq-42b159a1d7c3b7593b07def4.json",
+  "request_source_sha": "7e74098975e82b4c72761e7e334e2249be86e9fa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposedly compassionate restructuring forces two parents to compete publicly using private family hardships neither chose to reveal.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-461125810974bb5c52d3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Office Voted Which Parent Deserved a Job"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37461237043"
+  }
+}
