@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ff0d7bd3d7633449109eba9e",
+  "created_at": "2026-10-06T00:16:45.837300Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e66f9aaa4987c6a570184bfe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "13d8be30e3254771299abf5f26dce4b7f9c3e93f",
+  "record_type": "intent",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A fabricated sacrifice pits a scholarship student against a donor's child until both learn the school told them different stories.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a47a6721324345663e04",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The School Gave My Scholarship to a Donor's Son"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T02:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392488354"
+  }
+}
