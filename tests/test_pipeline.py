@@ -433,15 +433,15 @@ class PublicationSlotTests(unittest.TestCase):
 
     def test_remote_and_finalized_request_slots_are_both_reserved(self):
         now = p.datetime(2030, 1, 1, 7, 50, tzinfo=p.SGT)
-        remote = {p.datetime(2030, 1, 1, 0, 0, tzinfo=p.timezone.utc)}
-        finalized = {p.datetime(2030, 1, 1, 0, 20, tzinfo=p.timezone.utc)}
+        remote = {p.datetime(2030, 1, 1, 1, 0, tzinfo=p.timezone.utc)}
+        finalized = {p.datetime(2030, 1, 1, 4, 0, tzinfo=p.timezone.utc)}
 
         with patch.object(p, "youtube_scheduled_slots", return_value=remote), patch.object(
             p, "request_publish_slots", return_value=finalized, create=True
         ):
             slots = p.allocate_publish_slots(1, now)
 
-        self.assertEqual(slots, ["2030-01-01T00:40:00Z"])
+        self.assertEqual(slots, ["2030-01-01T07:00:00Z"])
 
     def test_finalize_workflow_serializes_slot_allocation_from_latest_main(self):
         workflow = (p.ROOT / ".github" / "workflows" / "finalize-draft.yml").read_text(
