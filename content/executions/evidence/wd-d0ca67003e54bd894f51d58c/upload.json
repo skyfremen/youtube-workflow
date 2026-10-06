@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d0ca67003e54bd894f51d58c",
+  "evidence_version": 2,
+  "execution_id": "ex-05c80281642ce9d7fb7530fe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cecbf3bb3e371e4d1815b67d59b615b3717087bc",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:15:37.792673Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An inheritance becomes collateral in a business deal built on matching lies to two different families.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-dca19057ca005804fc77",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Bank Valued My Jewelry for His Business Loan"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T03:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392492559"
+  },
+  "youtube_video_id": "ACHDZGD66To"
+}
