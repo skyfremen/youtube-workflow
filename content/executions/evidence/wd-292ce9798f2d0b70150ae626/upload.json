@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-292ce9798f2d0b70150ae626",
+  "evidence_version": 2,
+  "execution_id": "ex-daddb2a70d08b0a313dc7158",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5d65e2d1faf1ec854620c9602751ab4377f14589",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:16:39.576599Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An internal leave market turns one employee's earned time into company revenue while her own requests keep being denied.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-121b5636e05dd5d4fa6a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Company Sold My Vacation Days to Coworkers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T01:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392480653"
+  },
+  "youtube_video_id": "6CZHXDiOx_4"
+}
