@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-837bb4e5d997a5548d3173f3",
+  "created_at": "2026-10-06T00:15:47.755386Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c33c431b99c9814da182907d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f42d657bc7ac1109503fddac52ff8f4120607ee0",
+  "record_type": "intent",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding toast reveals that a bride's job has been traded into her new family's business plans without her consent.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3230a58138e822bcb9ac",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Boss Announced My Resignation at My Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T00:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392471996"
+  }
+}
