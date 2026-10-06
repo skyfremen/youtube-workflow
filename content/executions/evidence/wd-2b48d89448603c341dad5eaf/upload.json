@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2b48d89448603c341dad5eaf",
+  "evidence_version": 2,
+  "execution_id": "ex-987b9ff65bb6455f934e9eb4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "dbdd2988b0c8a36ca2e3915815f0d091f6a3a7e1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:15:17.368472Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cloned training voice delivers layoffs, leaving the real speaker responsible for decisions and emotions she never expressed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5f8a963474ec89be4fb4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Voice Fired Six Coworkers While I Was Away"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T02:20:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392486351"
+  },
+  "youtube_video_id": "9a8k134rAfk"
+}
