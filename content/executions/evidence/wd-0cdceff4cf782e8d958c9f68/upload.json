@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0cdceff4cf782e8d958c9f68",
+  "evidence_version": 2,
+  "execution_id": "ex-9d78ad7c4773453eed8089cf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "133b96cea0e82d40c055f527f2444df075699a3a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-06T00:14:54.365188Z",
+  "request_blob_sha": "ea669f38839eff46475ff77c11c376f427ba73bf",
+  "request_id": "rq-94d40b0d4d902f3ae13ef348",
+  "request_path": "content/requests/rq-94d40b0d4d902f3ae13ef348.json",
+  "request_source_sha": "973aba34fd9a763c5eed20f6847caf11f2230768",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A supposedly supernatural reading is traced to confidential notes, ticket records, and an audience selected before the show began.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3c99e822bd05f496b647",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Psychic Knew a Sentence From My Therapy Notes"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T03:40:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37392494838"
+  },
+  "youtube_video_id": "ihcaqwK4Kvg"
+}
