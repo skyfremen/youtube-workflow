@@ -105,7 +105,7 @@
           "dimension": "category",
           "evidence_median_views": 686.0,
           "mature_sample": 46,
-          "sample_size": 65,
+          "sample_size": 66,
           "value": "wedding"
         },
         {
@@ -113,7 +113,7 @@
           "dimension": "hook_type",
           "evidence_median_views": 164.5,
           "mature_sample": 58,
-          "sample_size": 88,
+          "sample_size": 89,
           "value": "accusation"
         },
         {
@@ -121,7 +121,7 @@
           "dimension": "category",
           "evidence_median_views": 108.0,
           "mature_sample": 36,
-          "sample_size": 60,
+          "sample_size": 61,
           "value": "work"
         },
         {
@@ -145,7 +145,7 @@
           "dimension": "story_tone",
           "evidence_median_views": 16.0,
           "mature_sample": 70,
-          "sample_size": 94,
+          "sample_size": 95,
           "value": "natural"
         }
       ],
@@ -185,13 +185,13 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-06T11:30:33Z",
-      "videos_analyzed": 510
+      "latest_realtime_snapshot": "2026-10-06T17:30:30Z",
+      "videos_analyzed": 512
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 765.0,
+          "evidence_median_views": 689.0,
           "sample_size": 165,
           "window": "08-11"
         },
@@ -214,26 +214,26 @@
         },
         {
           "evidence_median_views": 3.0,
-          "sample_size": 44,
+          "sample_size": 45,
           "window": "20-23"
         }
       ]
     },
-    "generated_at": "2026-10-06T11:30:33Z",
+    "generated_at": "2026-10-06T17:30:30Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 484,
-        "2h": 229,
-        "6h": 465,
-        "72h": 438,
+        "24h": 486,
+        "2h": 230,
+        "6h": 466,
+        "72h": 455,
         "7d": 366
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
