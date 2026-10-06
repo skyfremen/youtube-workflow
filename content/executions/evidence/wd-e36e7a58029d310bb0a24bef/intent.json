@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e36e7a58029d310bb0a24bef",
+  "created_at": "2026-10-06T12:20:32.401545Z",
+  "evidence_version": 2,
+  "execution_id": "ex-1f518cf3e59a5fa95488af07",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d1bc61b1818a77f0006c83680b77b197b14a7023",
+  "record_type": "intent",
+  "request_blob_sha": "c60e35b39b0c2b14029285287172f429b60c6e15",
+  "request_id": "rq-42b159a1d7c3b7593b07def4",
+  "request_path": "content/requests/rq-42b159a1d7c3b7593b07def4.json",
+  "request_source_sha": "7e74098975e82b4c72761e7e334e2249be86e9fa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing-dog fundraiser depends on keeping the searching owner cast as the villain even after the animal recognizes him.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-80657e36a773172697de",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Animal Rescue Fundraised With My Missing Dog"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-06T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37461242353"
+  }
+}
