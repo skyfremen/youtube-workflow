@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-964a6ec47d564cedaf856326",
+  "created_at": "2026-10-06T12:18:04.878151Z",
+  "evidence_version": 2,
+  "execution_id": "ex-465f4a1b3e4852821785e4ae",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a4e0882721f21859488569690f7f2c1305aec879",
+  "record_type": "intent",
+  "request_blob_sha": "c60e35b39b0c2b14029285287172f429b60c6e15",
+  "request_id": "rq-42b159a1d7c3b7593b07def4",
+  "request_path": "content/requests/rq-42b159a1d7c3b7593b07def4.json",
+  "request_source_sha": "7e74098975e82b4c72761e7e334e2249be86e9fa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A recruitment game turns private performance failures into entertainment and reveals that its new job can exist only by replacing the employee onstage.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-56f42cd754ff46d2ba75",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Game Show Offered My Job as the Grand Prize"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37461245284"
+  }
+}
