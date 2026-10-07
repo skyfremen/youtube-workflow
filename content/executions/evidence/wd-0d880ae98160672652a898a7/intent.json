@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-0d880ae98160672652a898a7",
+  "created_at": "2026-10-07T00:11:18.540761Z",
+  "evidence_version": 2,
+  "execution_id": "ex-007284b099a9431de37504fe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2a84f25d0cb7e152c7eafd14d88d63386335eca4",
+  "record_type": "intent",
+  "request_blob_sha": "c244ea0717d5ec5dd0cb8b46edf5e6a200b49e24",
+  "request_id": "rq-1caf09e9d6a2762907ea76b3",
+  "request_path": "content/requests/rq-1caf09e9d6a2762907ea76b3.json",
+  "request_source_sha": "9bd667cefeee96a9a0a110006e237aa7fe836017",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A process server disguised as a ring bearer turns an unpaid family-business debt into a public wedding ambush.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-77fba73a4753c97c34ba",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Ring Bearer Served My Father a Lawsuit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37549698991"
+  }
+}
