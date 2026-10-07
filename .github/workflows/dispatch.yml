@@ -135,7 +135,7 @@ jobs:
           while IFS= read -r execution_id; do
             payload="$(python - "${execution_id}" "${SOURCE_SHA}" <<'PY'
           import json, sys
-          print(json.dumps({"ref":"main","inputs":{"execution_id":sys.argv[1],"source_sha":sys.argv[2]}},separators=(",",":")))
+          print(json.dumps({"ref":"wacky-v2-stable","inputs":{"execution_id":sys.argv[1],"source_sha":sys.argv[2]}},separators=(",",":")))
           PY
             )"
             curl --fail --silent --show-error -X POST \
