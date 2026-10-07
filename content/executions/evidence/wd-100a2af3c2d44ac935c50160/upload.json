@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-100a2af3c2d44ac935c50160",
+  "evidence_version": 2,
+  "execution_id": "ex-76e0eec36af4e68a736185a6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "58a890fdfcaa59ef5d446e8020fa67124137d690",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T00:06:48.052164Z",
+  "request_blob_sha": "c244ea0717d5ec5dd0cb8b46edf5e6a200b49e24",
+  "request_id": "rq-1caf09e9d6a2762907ea76b3",
+  "request_path": "content/requests/rq-1caf09e9d6a2762907ea76b3.json",
+  "request_source_sha": "9bd667cefeee96a9a0a110006e237aa7fe836017",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A husband manufactures public arguments to manipulate a divorce-betting market and discovers that his planned fake separation has real consequences.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0e502f4f06ba9ead7279",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Strangers Were Betting on My Divorce Date"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37549705310"
+  },
+  "youtube_video_id": "WaN0yzxyV9Q"
+}
