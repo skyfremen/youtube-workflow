@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b98265744e4fac2e7faf3c33",
+  "evidence_version": 2,
+  "execution_id": "ex-89b13e9b647c2aae4dc42c02",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7888ddd678f2b2ad375543725bde504376431eb8",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T00:10:18.910663Z",
+  "request_blob_sha": "c244ea0717d5ec5dd0cb8b46edf5e6a200b49e24",
+  "request_id": "rq-1caf09e9d6a2762907ea76b3",
+  "request_path": "content/requests/rq-1caf09e9d6a2762907ea76b3.json",
+  "request_source_sha": "9bd667cefeee96a9a0a110006e237aa7fe836017",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A transparency product sells a remote employee's home life while converting customer tips into management's private revenue.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-09bb5730c34d26b0fcd7",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Customers Were Watching Me Work From Home"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37549701158"
+  },
+  "youtube_video_id": "YJhEDsuLOlQ"
+}
