@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-be8ab6103c385a1d1e0c86ab",
+  "evidence_version": 2,
+  "execution_id": "ex-699f8c5c059defa5f0926111",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c764f6ee15ac702ba8b65989a4cb2551f7167414",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T23:55:52.153738Z",
+  "request_blob_sha": "94784a2928e24855815935d6e8fe3c53d57a4dd7",
+  "request_id": "rq-9ad5540392bcd54be721b307",
+  "request_path": "content/requests/rq-9ad5540392bcd54be721b307.json",
+  "request_source_sha": "4dae3a6f25a2d5053833ad644a2d645c31fe0380",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A seated traveler is accused of using a canceled ticket after staff secretly resell her occupied seat.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a740e8c356d18d5c1800",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Airline Declared Me Absent While I Was Onboard"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-08T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37704375774"
+  },
+  "youtube_video_id": "3qWXgenb8Ms"
+}
