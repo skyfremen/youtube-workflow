@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-30a29ecdabb870eca064e991",
+  "evidence_version": 2,
+  "execution_id": "ex-bd562917131abd1d81fb538f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d81344925f3c5793dae1d8e9285b51a6cc073d53",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T23:55:32.853517Z",
+  "request_blob_sha": "94784a2928e24855815935d6e8fe3c53d57a4dd7",
+  "request_id": "rq-9ad5540392bcd54be721b307",
+  "request_path": "content/requests/rq-9ad5540392bcd54be721b307.json",
+  "request_source_sha": "4dae3a6f25a2d5053833ad644a2d645c31fe0380",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride finds her restaurant's missing food in the wedding kitchen and learns the theft was only part of her fiancé's plan.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d20aaa8ab05d967c9a14",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Dinner Came From My Missing Stock"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37704379802"
+  },
+  "youtube_video_id": "evt7N98eOvw"
+}
