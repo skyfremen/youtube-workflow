@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cacab4fd3f83c8ee775cfe33",
+  "evidence_version": 2,
+  "execution_id": "ex-b1ad234aea89e91df8b9ab0b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bc7c49d5fea02f8d3086406c824ce6bf3ee06032",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T00:08:07.209893Z",
+  "request_blob_sha": "c244ea0717d5ec5dd0cb8b46edf5e6a200b49e24",
+  "request_id": "rq-1caf09e9d6a2762907ea76b3",
+  "request_path": "content/requests/rq-1caf09e9d6a2762907ea76b3.json",
+  "request_source_sha": "9bd667cefeee96a9a0a110006e237aa7fe836017",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An early marriage filing built from an edited rehearsal turns a wedding into evidence of consent the bride never gave.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-da0533b674b5cbfe981a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Marriage License Predated the Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37549696893"
+  },
+  "youtube_video_id": "9mqBgPOLW3c"
+}
