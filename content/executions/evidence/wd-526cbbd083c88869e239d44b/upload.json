@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-526cbbd083c88869e239d44b",
+  "evidence_version": 2,
+  "execution_id": "ex-a8ad9bc31e825459f84a0c0e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c4d6b093f853d2d2d6c574863a9d26cf1da37ee1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-07T00:10:13.789969Z",
+  "request_blob_sha": "c244ea0717d5ec5dd0cb8b46edf5e6a200b49e24",
+  "request_id": "rq-1caf09e9d6a2762907ea76b3",
+  "request_path": "content/requests/rq-1caf09e9d6a2762907ea76b3.json",
+  "request_source_sha": "9bd667cefeee96a9a0a110006e237aa7fe836017",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Unauthorized repair charges escalate into a theft report against the registered owner until the releasing mechanic refuses to support the lie.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-211f52cc4b560be154b6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Repair Shop Reported My Car Stolen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-07T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "19515ae096885a0628749f5767d4670fa4f18bae",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37549703275"
+  },
+  "youtube_video_id": "2ONgSeTDOo8"
+}
