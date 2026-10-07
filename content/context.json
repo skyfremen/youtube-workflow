@@ -109,20 +109,20 @@
           "value": "wedding"
         },
         {
+          "average_view_percentage": 54.43,
+          "dimension": "category",
+          "evidence_median_views": 179.5,
+          "mature_sample": 11,
+          "sample_size": 15,
+          "value": "consumer"
+        },
+        {
           "average_view_percentage": 61.46,
           "dimension": "hook_type",
           "evidence_median_views": 107.0,
           "mature_sample": 64,
-          "sample_size": 95,
+          "sample_size": 96,
           "value": "accusation"
-        },
-        {
-          "average_view_percentage": 54.43,
-          "dimension": "category",
-          "evidence_median_views": 61.0,
-          "mature_sample": 11,
-          "sample_size": 14,
-          "value": "consumer"
         },
         {
           "average_view_percentage": 51.52,
@@ -137,7 +137,7 @@
           "dimension": "category",
           "evidence_median_views": 22.0,
           "mature_sample": 43,
-          "sample_size": 66,
+          "sample_size": 67,
           "value": "work"
         },
         {
@@ -185,13 +185,13 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-07T11:30:29Z",
-      "videos_analyzed": 529
+      "latest_realtime_snapshot": "2026-10-07T17:30:31Z",
+      "videos_analyzed": 531
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 689.0,
+          "evidence_median_views": 661.0,
           "sample_size": 177,
           "window": "08-11"
         },
@@ -214,27 +214,26 @@
         },
         {
           "evidence_median_views": 3.0,
-          "sample_size": 45,
+          "sample_size": 46,
           "window": "20-23"
         }
       ]
     },
-    "generated_at": "2026-10-07T11:30:29Z",
+    "generated_at": "2026-10-07T17:30:31Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 510,
-        "2h": 238,
-        "6h": 483,
-        "72h": 462,
+        "24h": 514,
+        "2h": 239,
+        "6h": 485,
+        "72h": 479,
         "7d": 390
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry",
-      "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
