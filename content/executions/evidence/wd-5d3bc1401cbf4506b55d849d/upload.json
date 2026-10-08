@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5d3bc1401cbf4506b55d849d",
+  "evidence_version": 2,
+  "execution_id": "ex-f104189d1856b42faacef9a5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "02f5a170d35b5b254ecbe1026a4e5a0094c158d8",
+  "record_type": "upload",
+  "recorded_at": "2026-10-08T00:15:41.513665Z",
+  "request_blob_sha": "27b5dff450d410d601edd4c4c8d0c4f492cd563e",
+  "request_id": "rq-2d522a6d68b7332e3927abb9",
+  "request_path": "content/requests/rq-2d522a6d68b7332e3927abb9.json",
+  "request_source_sha": "e1ef50dd35d9f0aa260a904282def3c2f6d2712c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Workers discover their company is collecting desk fees from employees, outside renters, and clients for the same workspaces.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1dd961416b5871511f51",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Employer Charged Me Rent for My Desk"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-08T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b9069ded08db45322994b34fa0164ebc2549d8ed",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37706178140"
+  },
+  "youtube_video_id": "rRyTR_2R-SA"
+}
