@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-09392a8301c554c6a34355f5",
+  "evidence_version": 2,
+  "execution_id": "ex-a633b131f9b6a6e42e16f4ce",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c2a26080f2d9c4156ba829d7fce0ea74deedfdaa",
+  "record_type": "upload",
+  "recorded_at": "2026-10-08T00:15:00.890396Z",
+  "request_blob_sha": "27b5dff450d410d601edd4c4c8d0c4f492cd563e",
+  "request_id": "rq-2d522a6d68b7332e3927abb9",
+  "request_path": "content/requests/rq-2d522a6d68b7332e3927abb9.json",
+  "request_source_sha": "e1ef50dd35d9f0aa260a904282def3c2f6d2712c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride learns her fiancé preserved an old wedding deposit by pretending his former bride had simply changed her name.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-121205c37c140aecbc74",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Contract Named His Ex as the Bride"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-08T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b9069ded08db45322994b34fa0164ebc2549d8ed",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37706175764"
+  },
+  "youtube_video_id": "UPZX-zP0WTU"
+}
