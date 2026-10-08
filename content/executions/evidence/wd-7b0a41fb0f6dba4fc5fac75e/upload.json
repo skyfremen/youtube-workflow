@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7b0a41fb0f6dba4fc5fac75e",
+  "evidence_version": 2,
+  "execution_id": "ex-181e1fbec1f1f27d1515d269",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "38c8ae6ed0d759b7dd6c35b54c7a00bfa09289d5",
+  "record_type": "upload",
+  "recorded_at": "2026-10-08T12:07:38.033392Z",
+  "request_blob_sha": "8b27bdf82f5c09acd5c21cf7c8ffec68db1703fd",
+  "request_id": "rq-b293a11b9f1d921faea01b3c",
+  "request_path": "content/requests/rq-b293a11b9f1d921faea01b3c.json",
+  "request_source_sha": "f04dd447a5eaf9bd746dab1c5809d11a05556924",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Wedding guests discover their passport scans were converted into fake tour bookings to finance the reception.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-52c9bb258c5e119a7bc5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Check-In Collected Guests' Passports"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-09T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "703b16ba61d61d036277a982ab827a07d440cb18",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37773907364"
+  },
+  "youtube_video_id": "Q5RheWEOl0U"
+}
