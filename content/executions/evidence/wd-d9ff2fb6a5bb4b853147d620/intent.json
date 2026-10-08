@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d9ff2fb6a5bb4b853147d620",
+  "created_at": "2026-10-08T00:16:33.777328Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8ff859523bd512e5bc40bc9d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "66e9dbc1c460060794c7efd900aeda33cd58c6f1",
+  "record_type": "intent",
+  "request_blob_sha": "27b5dff450d410d601edd4c4c8d0c4f492cd563e",
+  "request_id": "rq-2d522a6d68b7332e3927abb9",
+  "request_path": "content/requests/rq-2d522a6d68b7332e3927abb9.json",
+  "request_source_sha": "e1ef50dd35d9f0aa260a904282def3c2f6d2712c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding program exposes a bride's unfinished fertility assessment while quietly hiding the test her fiancé refused.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d78feb8e5de7f44182f1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Program Included My Fertility Results"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-08T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b9069ded08db45322994b34fa0164ebc2549d8ed",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37706180513"
+  }
+}
