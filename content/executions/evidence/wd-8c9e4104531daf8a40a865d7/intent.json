@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-8c9e4104531daf8a40a865d7",
+  "created_at": "2026-10-08T12:07:01.435903Z",
+  "evidence_version": 2,
+  "execution_id": "ex-378ac86164a5a6e826adcc01",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b240d2b54daee83816fbf5c6ede76cdcb64a63c5",
+  "record_type": "intent",
+  "request_blob_sha": "8b27bdf82f5c09acd5c21cf7c8ffec68db1703fd",
+  "request_id": "rq-b293a11b9f1d921faea01b3c",
+  "request_path": "content/requests/rq-b293a11b9f1d921faea01b3c.json",
+  "request_source_sha": "f04dd447a5eaf9bd746dab1c5809d11a05556924",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Students lose lessons to unpaid conference work that a corporation believes it has funded as paid internships.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c3d0f61b271a20b95de6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The School Rented Students as Event Staff"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-09T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "703b16ba61d61d036277a982ab827a07d440cb18",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37773917752"
+  }
+}
