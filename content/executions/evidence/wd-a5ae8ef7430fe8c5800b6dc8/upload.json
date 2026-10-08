@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a5ae8ef7430fe8c5800b6dc8",
+  "evidence_version": 2,
+  "execution_id": "ex-e99aa7a3f99df64049b12e65",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2321dff54bcc4ca2e7e889134aeba1a3d6f7e430",
+  "record_type": "upload",
+  "recorded_at": "2026-10-08T00:13:47.860332Z",
+  "request_blob_sha": "27b5dff450d410d601edd4c4c8d0c4f492cd563e",
+  "request_id": "rq-2d522a6d68b7332e3927abb9",
+  "request_path": "content/requests/rq-2d522a6d68b7332e3927abb9.json",
+  "request_source_sha": "e1ef50dd35d9f0aa260a904282def3c2f6d2712c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A customer blamed for faking an allergy learns the bakery knowingly concealed a dangerous ingredient substitution.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-36d2857a626946c2abc8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Bakery Put My Face on a Fraud Warning"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-08T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b9069ded08db45322994b34fa0164ebc2549d8ed",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37706182838"
+  },
+  "youtube_video_id": "dvf9hDd1c6s"
+}
