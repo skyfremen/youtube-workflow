@@ -539,7 +539,8 @@ def validate_result(x,path=None):
     if not isinstance(x,dict) or set(x)!=keys: raise VError("INVALID_RESULT_FIELDS","$",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V2 result fields",False)
     if x["result_version"]!=2 or not CID_RE.fullmatch(str(x["content_id"])) or not EID_RE.fullmatch(str(x["execution_id"])): raise VError("INVALID_RESULT_IDENTITY","$",x,"V2 result identity",False)
     if path and Path(path).name!=x["content_id"]+".json": raise VError("RESULT_FILENAME_MISMATCH",str(path),Path(path).name,x["content_id"]+".json",False)
-    if x["status"]!="scheduled" or x["visibility"]!="private" or x["verified"] is not True: raise VError("RESULT_NOT_VERIFIED_SCHEDULED","$",x,"scheduled/private/verified",False)
+    lifecycle=(x["status"],x["visibility"])
+    if x["verified"] is not True or lifecycle not in {("scheduled","private"),("published","public")}: raise VError("RESULT_NOT_VERIFIED_LIFECYCLE","$",x,"scheduled/private/verified or published/public/verified",False)
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}",str(x["youtube_video_id"])): raise VError("INVALID_YOUTUBE_VIDEO_ID","youtube_video_id",x["youtube_video_id"],"11 chars",False)
     instant(x["publish_at"],"publish_at"); return x
 def validate_result_relationships(root,result,execution,item):
