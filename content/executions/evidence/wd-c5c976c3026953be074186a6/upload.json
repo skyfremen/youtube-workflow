@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c5c976c3026953be074186a6",
+  "evidence_version": 2,
+  "execution_id": "ex-93a21d2d82eb196f6cd33bde",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a4e61ae9d156e57e97401ff9e309c981b65bb7ea",
+  "record_type": "upload",
+  "recorded_at": "2026-10-09T12:10:15.449267Z",
+  "request_blob_sha": "b711a6ffa99b110d70d5bcf15acd465265e3eb6d",
+  "request_id": "rq-6dd47474c82c7a1c519df04b",
+  "request_path": "content/requests/rq-6dd47474c82c7a1c519df04b.json",
+  "request_source_sha": "9c873bd3fa2c4e9f34e7bced973201943180f7a3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding stops when the bride learns her rings, honeymoon, and best man's money were all part of the same hidden debt.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9ab5cff1a974a9753ddc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Jeweler Repossessed Our Rings at the Altar"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-10T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "db13e92ba53c020b6cc5706871b59254dcc042e6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37927552409"
+  },
+  "youtube_video_id": "tlkxlscwqs8"
+}
