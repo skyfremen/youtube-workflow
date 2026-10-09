@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0d9f42b7eafa7aa20d2deb82",
+  "evidence_version": 2,
+  "execution_id": "ex-6d2bf5baef4e3c256faa3ffd",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fe31a1e24e868be6b80f6d103a4f9184ab30288b",
+  "record_type": "upload",
+  "recorded_at": "2026-10-09T12:08:46.172381Z",
+  "request_blob_sha": "b711a6ffa99b110d70d5bcf15acd465265e3eb6d",
+  "request_id": "rq-6dd47474c82c7a1c519df04b",
+  "request_path": "content/requests/rq-6dd47474c82c7a1c519df04b.json",
+  "request_source_sha": "9c873bd3fa2c4e9f34e7bced973201943180f7a3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unauthorized viewing becomes surreal when a landlord tells buyers the genuine tenant and her belongings are staged.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c7473022fb51105b53c1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Landlord Called Me an Actor in My Own Home"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-10T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "db13e92ba53c020b6cc5706871b59254dcc042e6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37927559572"
+  },
+  "youtube_video_id": "PBEL6q5_AdQ"
+}
