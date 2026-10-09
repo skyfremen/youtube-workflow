@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-fb285c6ac01f33c7ab7dbb27",
+  "evidence_version": 2,
+  "execution_id": "ex-2be1b60678babaf8f21347fe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4ecfdf8591afc22e40d18046faac4c244e6f1c23",
+  "record_type": "upload",
+  "recorded_at": "2026-10-09T12:09:11.070207Z",
+  "request_blob_sha": "b711a6ffa99b110d70d5bcf15acd465265e3eb6d",
+  "request_id": "rq-6dd47474c82c7a1c519df04b",
+  "request_path": "content/requests/rq-6dd47474c82c7a1c519df04b.json",
+  "request_source_sha": "9c873bd3fa2c4e9f34e7bced973201943180f7a3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An emotional genetic reunion unravels when the supposed relative reveals who wrote her role.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5bcc8700a869ec6228bf",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A DNA Company Hired an Actor to Be My Sister"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-10T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "db13e92ba53c020b6cc5706871b59254dcc042e6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37927561935"
+  },
+  "youtube_video_id": "UUbiL0I6_0E"
+}
