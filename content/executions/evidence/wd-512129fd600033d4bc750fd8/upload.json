@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-512129fd600033d4bc750fd8",
+  "evidence_version": 2,
+  "execution_id": "ex-bfa3ed80ea448634d0933650",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f8954bdb4df5231d0c01b42223ca2c75e6f2fb5c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-09T00:10:17.096766Z",
+  "request_blob_sha": "69fa0c548188d6ecdedd98ede8677c5158373ebb",
+  "request_id": "rq-e06f0bedce10695e2ebded1d",
+  "request_path": "content/requests/rq-e06f0bedce10695e2ebded1d.json",
+  "request_source_sha": "37b2ee5a542e6d91a74b543650943a8b9dd5f6d0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A familiar coffee-shop menu leads a daughter to a font built from several families' private memorial notes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ac6dbb00f0a418037130",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Funeral Home Sold My Father's Handwriting"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-10T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "6f73a905a0edaf5a1e186ede8bcb65e11b0d78d6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37862623069"
+  },
+  "youtube_video_id": "y9Fh6fVLIt0"
+}
