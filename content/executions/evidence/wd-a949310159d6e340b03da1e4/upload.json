@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a949310159d6e340b03da1e4",
+  "evidence_version": 2,
+  "execution_id": "ex-0b08a31735601eab0c0d3331",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a370c9a33f9f4f4ec86a0329e11a6e72765abdba",
+  "record_type": "upload",
+  "recorded_at": "2026-10-09T12:09:39.054955Z",
+  "request_blob_sha": "b711a6ffa99b110d70d5bcf15acd465265e3eb6d",
+  "request_id": "rq-6dd47474c82c7a1c519df04b",
+  "request_path": "content/requests/rq-6dd47474c82c7a1c519df04b.json",
+  "request_source_sha": "9c873bd3fa2c4e9f34e7bced973201943180f7a3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A paid-up storage unit reappears as furniture in the manager's rental property, exposing a rigged auction scheme.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-28898e11d873e715b7ab",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Storage Manager Bought My Unit at His Auction"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-10T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "db13e92ba53c020b6cc5706871b59254dcc042e6",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "37927557225"
+  },
+  "youtube_video_id": "mJEOgU8yB9w"
+}
