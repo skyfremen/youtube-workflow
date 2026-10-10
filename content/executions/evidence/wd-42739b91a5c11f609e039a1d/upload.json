@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-42739b91a5c11f609e039a1d",
+  "evidence_version": 2,
+  "execution_id": "ex-34b87111970f1694fcb74580",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5471f454e9310ed722a1f19efc8b9b772a4ddc5d",
+  "record_type": "upload",
+  "recorded_at": "2026-10-10T00:16:48.137854Z",
+  "request_blob_sha": "5965ca3b2a3b2cced32b92c156f725cd4838e0e0",
+  "request_id": "rq-47de5b72d8b2859cb22482ff",
+  "request_path": "content/requests/rq-47de5b72d8b2859cb22482ff.json",
+  "request_source_sha": "337ed74198ae29d3ba14752a9ebb0832b1c6a0d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A homeowner discovers that crowds crossing her garden are paying her neighbor for a shortcut he invented online.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d9d93df1d7d2f35c5ddf",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Navigation App Turned My Backyard Into a Tourist Route"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "a25bb90001952e6076c558a8ecf2cacbeaa4d660",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38007800440"
+  },
+  "youtube_video_id": "vOnLu5vZFQw"
+}
