@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-50551f01ee9f1767791ef1df",
+  "evidence_version": 2,
+  "execution_id": "ex-38df88b248b5170ae7a327ac",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "09991753fd55be6e866539811ba58242d28c1add",
+  "record_type": "upload",
+  "recorded_at": "2026-10-10T12:08:26.080335Z",
+  "request_blob_sha": "df19a604b8f674cd4f59e60afdf263b1668cfaf8",
+  "request_id": "rq-bf66c06cf55878732b2b1331",
+  "request_path": "content/requests/rq-bf66c06cf55878732b2b1331.json",
+  "request_source_sha": "c29926b15204bf3f6fe75ade32d67e045a05880d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding gift reveal collapses when the bride learns that the car belongs to her new sister-in-law.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-23c82494131f2dac5ec9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Brother Gave My Car to His Bride"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b33b8c60686f9e6819918cc7d854e8b1c9c26ffe",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38050405819"
+  },
+  "youtube_video_id": "0acEmcL6t2M"
+}
