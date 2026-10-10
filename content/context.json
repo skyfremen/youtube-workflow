@@ -56,28 +56,28 @@
       ],
       "dominant_traffic_sources": [
         {
-          "engaged_view_rate_percentage": 52.2,
-          "engaged_views": 68467,
-          "estimated_minutes_watched": 50254,
+          "engaged_view_rate_percentage": 52.15,
+          "engaged_views": 68610,
+          "estimated_minutes_watched": 50351,
           "insightTrafficSourceType": "SHORTS",
-          "view_share_percentage": 96.2,
-          "views": 131168
+          "view_share_percentage": 96.1,
+          "views": 131552
         },
         {
-          "engaged_view_rate_percentage": 24.61,
-          "engaged_views": 814,
-          "estimated_minutes_watched": 336,
+          "engaged_view_rate_percentage": 24.43,
+          "engaged_views": 844,
+          "estimated_minutes_watched": 347,
           "insightTrafficSourceType": "YT_SEARCH",
-          "view_share_percentage": 2.43,
-          "views": 3308
+          "view_share_percentage": 2.52,
+          "views": 3455
         },
         {
-          "engaged_view_rate_percentage": 60.22,
-          "engaged_views": 760,
-          "estimated_minutes_watched": 543,
+          "engaged_view_rate_percentage": 60.14,
+          "engaged_views": 765,
+          "estimated_minutes_watched": 545,
           "insightTrafficSourceType": "YT_OTHER_PAGE",
           "view_share_percentage": 0.93,
-          "views": 1262
+          "views": 1272
         },
         {
           "engaged_view_rate_percentage": 52.65,
@@ -88,12 +88,12 @@
           "views": 359
         },
         {
-          "engaged_view_rate_percentage": 58.68,
-          "engaged_views": 71,
-          "estimated_minutes_watched": 162,
+          "engaged_view_rate_percentage": 60.47,
+          "engaged_views": 78,
+          "estimated_minutes_watched": 167,
           "insightTrafficSourceType": "EXT_URL",
           "view_share_percentage": 0.09,
-          "views": 121
+          "views": 129
         }
       ]
     },
@@ -101,10 +101,10 @@
       "soft_evidence_only": true,
       "supported_patterns": [
         {
-          "average_view_percentage": 58.72,
+          "average_view_percentage": 56.6,
           "dimension": "category",
           "evidence_median_views": 126.5,
-          "mature_sample": 68,
+          "mature_sample": 69,
           "sample_size": 76,
           "value": "wedding"
         },
@@ -125,11 +125,11 @@
           "value": "consumer"
         },
         {
-          "average_view_percentage": 54.2,
+          "average_view_percentage": 55.1,
           "dimension": "hook_type",
           "evidence_median_views": 31.0,
           "mature_sample": 88,
-          "sample_size": 101,
+          "sample_size": 102,
           "value": "accusation"
         },
         {
@@ -175,7 +175,7 @@
           "value": "consequence_first"
         },
         {
-          "average_view_percentage": 30.21,
+          "average_view_percentage": 35.97,
           "dimension": "trend_lane",
           "evidence_median_views": 5.0,
           "mature_sample": 27,
@@ -185,8 +185,8 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-10T17:30:28Z",
-      "videos_analyzed": 554
+      "latest_realtime_snapshot": "2026-10-10T23:30:30Z",
+      "videos_analyzed": 556
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
@@ -209,7 +209,7 @@
       "weak_publish_windows_sgt": [
         {
           "evidence_median_views": 2.0,
-          "sample_size": 48,
+          "sample_size": 49,
           "window": "04-07"
         },
         {
@@ -219,21 +219,22 @@
         }
       ]
     },
-    "generated_at": "2026-10-10T17:30:28Z",
+    "generated_at": "2026-10-10T23:30:30Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 546,
-        "2h": 250,
-        "6h": 508,
-        "72h": 535,
+        "24h": 548,
+        "2h": 251,
+        "6h": 510,
+        "72h": 537,
         "7d": 462
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 24 due checkpoints; will retry"
+      "Optional retention returned empty curves for 20 due checkpoints; will retry",
+      "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
     ]
   },
   "background_categories": [
