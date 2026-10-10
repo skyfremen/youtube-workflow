@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c8949d11b992a44e1245762b",
+  "evidence_version": 2,
+  "execution_id": "ex-0337ab394708f48e46e16df8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "29469d7c73863a43b4407d3ed1831d10d2e87ddc",
+  "record_type": "upload",
+  "recorded_at": "2026-10-10T00:16:56.082872Z",
+  "request_blob_sha": "5965ca3b2a3b2cced32b92c156f725cd4838e0e0",
+  "request_id": "rq-47de5b72d8b2859cb22482ff",
+  "request_path": "content/requests/rq-47de5b72d8b2859cb22482ff.json",
+  "request_source_sha": "337ed74198ae29d3ba14752a9ebb0832b1c6a0d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two brides arrive for the same supposedly exclusive ceremony and discover that one groom secretly accepted the arrangement.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e320e8a971df80008875",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Another Bride Was Walking Down My Aisle"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "a25bb90001952e6076c558a8ecf2cacbeaa4d660",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38007793272"
+  },
+  "youtube_video_id": "clo1zRNkEyg"
+}
