@@ -1,0 +1,47 @@
+{
+  "affected_winners": [
+    {
+      "winner": {
+        "background_category": "crafting",
+        "category": "family",
+        "conflict": "The sister must reclaim the only car she owns while her parents insist that correcting the lie during the reception would humiliate the new bride.",
+        "description": "A wedding gift reveal collapses when the bride learns that the car belongs to her new sister-in-law.",
+        "emoji_cues": [
+          "celebration",
+          "shock",
+          "betrayal",
+          "courage"
+        ],
+        "hook": "My brother gave my car to his bride during their wedding reception. My parents handed her a copied key, and everyone applauded while I was still holding the real one.",
+        "hook_type": "social_exposure",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF SHE DESERVED THE TRUTH",
+        "narration": "He had parked my car beneath a ribbon and told two hundred guests it was his surprise gift. When I stepped forward, Mum whispered that I could sort it out after the honeymoon. His bride hugged me for helping keep the secret, so I realized she genuinely thought he owned it. My brother pulled me aside and said family should make sacrifices on important days. I needed that car for work on Monday. Dad had borrowed it the week before, copied the key, and changed the registration papers in the glove box for the photographs. Then the bride mentioned that my brother's luxury car was being detailed. It had actually been repossessed three days earlier. My parents had helped with this gift so she would not discover his debts before the ceremony. I told her quietly and showed her the insurance app in my name. My brother grabbed the microphone and accused me of ruining his marriage over an old car. His bride took the microphone from him. She announced that the gift belonged to me, returned the copied key, and asked what else he had borrowed to impress her. Half the guests stopped dancing. I drove home alone, and she left with her sister. My parents still call it a misunderstanding. He had not given his bride my car; he had given her proof of the man she married.",
+        "payoff": "He had not given his bride my car; he had given her proof of the man she married.",
+        "premise": "A brother secretly gives his sister's car to his bride as a wedding present, expecting family pressure to make the owner surrender it.",
+        "story_tone": "dramatic",
+        "title": "My Brother Gave My Car to His Bride",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The parents supplied a copied key because the brother's luxury car had been repossessed, and the bride believes this replacement proves he is financially secure."
+      },
+      "winner_index": 0
+    }
+  ],
+  "draft_id": "draft-20261010T200000-b7e4c912",
+  "error_code": "DRAFT_VALIDATION_FAILED",
+  "field": "winners",
+  "observed_value": "violations=1",
+  "repairable": true,
+  "required_constraint": "all winners satisfy planner-repairable constraints",
+  "violations": [
+    {
+      "error_code": "NARRATION_TOO_LONG",
+      "field": "winners[0].narration",
+      "observed_value": "estimated_seconds=55.03",
+      "required_constraint": "35-55s",
+      "winner_index": 0,
+      "winner_title": "My Brother Gave My Car to His Bride"
+    }
+  ]
+}
