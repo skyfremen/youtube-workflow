@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-07dbfe291f2ddf5a861017f9",
+  "created_at": "2026-10-10T12:09:38.244935Z",
+  "evidence_version": 2,
+  "execution_id": "ex-7b9920e38e63c1074cb99635",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3b9583d7c2c22cb6e7bfbddfc0194fd0abaee5ec",
+  "record_type": "intent",
+  "request_blob_sha": "df19a604b8f674cd4f59e60afdf263b1668cfaf8",
+  "request_id": "rq-bf66c06cf55878732b2b1331",
+  "request_path": "content/requests/rq-bf66c06cf55878732b2b1331.json",
+  "request_source_sha": "c29926b15204bf3f6fe75ade32d67e045a05880d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Workers learn that an attractive rival job listing was created by their own employer to identify people planning to leave.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0e556aed88591135eef0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Competitor Job Was My Employer's Trap"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b33b8c60686f9e6819918cc7d854e8b1c9c26ffe",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38050409928"
+  }
+}
