@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ed215d1457d13103e33f2958",
+  "created_at": "2026-10-10T00:17:49.989071Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8a49f5d7049c352abff3b01b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5d5ffc460136bab0b9697f41d0243ad062744e5a",
+  "record_type": "intent",
+  "request_blob_sha": "5965ca3b2a3b2cced32b92c156f725cd4838e0e0",
+  "request_id": "rq-47de5b72d8b2859cb22482ff",
+  "request_path": "content/requests/rq-47de5b72d8b2859cb22482ff.json",
+  "request_source_sha": "337ed74198ae29d3ba14752a9ebb0832b1c6a0d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two families arrive to collect the same vehicle and discover the dealership intends to make their needs compete.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4c3093eed438e6397b1e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Dealership Sold My Car to Two Families"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "a25bb90001952e6076c558a8ecf2cacbeaa4d660",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38007796753"
+  }
+}
