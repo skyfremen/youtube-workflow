@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8bd5070a01fb8fe874e675b5",
+  "evidence_version": 2,
+  "execution_id": "ex-40d88d6eab32c067f5907e92",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1a06b676f743ca7d4b0ddc1add31c94fa3ea1748",
+  "record_type": "upload",
+  "recorded_at": "2026-10-10T12:05:43.775750Z",
+  "request_blob_sha": "df19a604b8f674cd4f59e60afdf263b1668cfaf8",
+  "request_id": "rq-bf66c06cf55878732b2b1331",
+  "request_path": "content/requests/rq-bf66c06cf55878732b2b1331.json",
+  "request_source_sha": "c29926b15204bf3f6fe75ade32d67e045a05880d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Tenants discover that their expensive replacement locks all accept the same key.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1a21f18d177acafcf708",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Every Neighbor's Key Opened My Front Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b33b8c60686f9e6819918cc7d854e8b1c9c26ffe",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38050407918"
+  },
+  "youtube_video_id": "FlSgOIs0nN4"
+}
