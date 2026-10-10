@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e092fd4d956d6c4f6822fe9a",
+  "created_at": "2026-10-10T00:14:43.142415Z",
+  "evidence_version": 2,
+  "execution_id": "ex-43bf98621f68a0dccf41f2f3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "699812d77568208e8ef2355121d0dd2575b7eb93",
+  "record_type": "intent",
+  "request_blob_sha": "5965ca3b2a3b2cced32b92c156f725cd4838e0e0",
+  "request_id": "rq-47de5b72d8b2859cb22482ff",
+  "request_path": "content/requests/rq-47de5b72d8b2859cb22482ff.json",
+  "request_source_sha": "337ed74198ae29d3ba14752a9ebb0832b1c6a0d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A student is punished for claiming the invention a school quietly transferred to its corporate sponsor.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7c01178bc53de31c6d64",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The School Accused My Daughter of Copying Herself"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "a25bb90001952e6076c558a8ecf2cacbeaa4d660",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38007798744"
+  }
+}
