@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-74afb0188e1249e461024c79",
+  "evidence_version": 2,
+  "execution_id": "ex-49fde87cd618c713063d37e0",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "99037bdc9a3af49e88fe701fa96e1e3545ccb35f",
+  "record_type": "upload",
+  "recorded_at": "2026-10-10T00:15:48.321153Z",
+  "request_blob_sha": "5965ca3b2a3b2cced32b92c156f725cd4838e0e0",
+  "request_id": "rq-47de5b72d8b2859cb22482ff",
+  "request_path": "content/requests/rq-47de5b72d8b2859cb22482ff.json",
+  "request_source_sha": "337ed74198ae29d3ba14752a9ebb0832b1c6a0d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Employees discover their private cars have been turned into an unpaid courier fleet without their knowledge.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-13b77b38872344152ca3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Employer Loaded Deliveries Into My Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-11T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "a25bb90001952e6076c558a8ecf2cacbeaa4d660",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38007794940"
+  },
+  "youtube_video_id": "Mlf10Hmpw1o"
+}
