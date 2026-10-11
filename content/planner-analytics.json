@@ -102,9 +102,9 @@
       {
         "average_view_percentage": 39.11,
         "dimension": "category",
-        "evidence_median_views": 178.5,
+        "evidence_median_views": 166.0,
         "mature_sample": 15,
-        "sample_size": 19,
+        "sample_size": 20,
         "value": "consumer"
       },
       {
@@ -116,26 +116,18 @@
         "value": "wedding"
       },
       {
-        "average_view_percentage": 55.1,
-        "dimension": "hook_type",
-        "evidence_median_views": 31.0,
-        "mature_sample": 88,
-        "sample_size": 103,
-        "value": "accusation"
-      },
-      {
         "average_view_percentage": 59.02,
         "dimension": "hook_type",
-        "evidence_median_views": 27.0,
+        "evidence_median_views": 26.5,
         "mature_sample": 61,
         "sample_size": 67,
         "value": "social_exposure"
       },
       {
-        "average_view_percentage": 49.95,
+        "average_view_percentage": 49.9,
         "dimension": "story_tone",
-        "evidence_median_views": 22.0,
-        "mature_sample": 68,
+        "evidence_median_views": 21.0,
+        "mature_sample": 69,
         "sample_size": 77,
         "value": "warm"
       },
@@ -146,6 +138,14 @@
         "mature_sample": 33,
         "sample_size": 35,
         "value": "workplace"
+      },
+      {
+        "average_view_percentage": 55.75,
+        "dimension": "hook_type",
+        "evidence_median_views": 12.5,
+        "mature_sample": 89,
+        "sample_size": 104,
+        "value": "accusation"
       }
     ],
     "weak_patterns": [
@@ -184,8 +184,8 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-11T05:30:29Z",
-    "videos_analyzed": 558
+    "latest_realtime_snapshot": "2026-10-11T11:30:29Z",
+    "videos_analyzed": 560
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -196,12 +196,12 @@
       },
       {
         "evidence_median_views": 6.0,
-        "sample_size": 163,
+        "sample_size": 164,
         "window": "12-15"
       },
       {
         "evidence_median_views": 6.0,
-        "sample_size": 63,
+        "sample_size": 64,
         "window": "16-19"
       }
     ],
@@ -218,24 +218,20 @@
       }
     ]
   },
-  "generated_at": "2026-10-11T05:30:29Z",
+  "generated_at": "2026-10-11T11:30:29Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 550,
-      "2h": 252,
-      "6h": 512,
-      "72h": 539,
-      "7d": 479
+      "24h": 552,
+      "2h": 253,
+      "6h": 514,
+      "72h": 541,
+      "7d": 486
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional Reporting download 20583136466 unavailable: HTTPError",
-    "Optional Reporting download 20583619017 unavailable: HTTPError",
-    "Optional Reporting reports for 173aa8f3-8d0a-4e4f-8029-b0e6bbdcab67 unavailable: HTTPError",
-    "Optional Reporting reports for 9df0c339-57fd-4b8c-a674-7427001c81c8 unavailable: HTTPError",
-    "Optional Reporting reports for b3d4580d-6230-425e-96eb-efb6f46d8ae0 unavailable: HTTPError"
+    "Optional retention returned empty curves for 23 due checkpoints; will retry"
   ]
 }
