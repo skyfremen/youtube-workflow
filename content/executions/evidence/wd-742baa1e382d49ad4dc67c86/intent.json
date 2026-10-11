@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-742baa1e382d49ad4dc67c86",
+  "created_at": "2026-10-11T00:39:09.198024Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4047dcf42fe2d147eee9d208",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6ff7bd253be34adbc04de9c7b5647cce170b5fd1",
+  "record_type": "intent",
+  "request_blob_sha": "df19a604b8f674cd4f59e60afdf263b1668cfaf8",
+  "request_id": "rq-bf66c06cf55878732b2b1331",
+  "request_path": "content/requests/rq-bf66c06cf55878732b2b1331.json",
+  "request_source_sha": "c29926b15204bf3f6fe75ade32d67e045a05880d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A client discovers that a tattoo artist turned her private medical scar into a profitable design with a fabricated history.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3ecb70d00878d8b42f91",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Stranger Was Wearing My Surgical Scar"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-12T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b440603001921105d2e87ba201a1f45777798b64",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38098528828"
+  }
+}
