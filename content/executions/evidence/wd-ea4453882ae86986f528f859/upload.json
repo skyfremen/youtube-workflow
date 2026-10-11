@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ea4453882ae86986f528f859",
+  "evidence_version": 2,
+  "execution_id": "ex-3fc4561d05f460e90ae2b7b1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "eb6aa9c0f7b6cfdeafb7942337ffa90e2276fb7c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-11T12:18:18.146593Z",
+  "request_blob_sha": "acaf39a5adaabed706dfe0eec081469d76e3879f",
+  "request_id": "rq-d9dc11707c96e96cbb341753",
+  "request_path": "content/requests/rq-d9dc11707c96e96cbb341753.json",
+  "request_source_sha": "19cc3300526365bfe820dffa208cba4594fc2da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's housing bargain excludes his wife while still counting on her care, until she makes a choice nobody thought to offer her.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d2f7e1bc119e2f5046d9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Offered the House, but Mom Wasn't Included"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-12T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c728108300809cfeb8aa064f9975b2fa95ed731d",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38138176797"
+  },
+  "youtube_video_id": "y29-MV-zKpc"
+}
