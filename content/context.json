@@ -109,10 +109,10 @@
           "value": "consumer"
         },
         {
-          "average_view_percentage": 56.6,
+          "average_view_percentage": 56.54,
           "dimension": "category",
           "evidence_median_views": 119.5,
-          "mature_sample": 69,
+          "mature_sample": 70,
           "sample_size": 77,
           "value": "wedding"
         },
@@ -121,7 +121,7 @@
           "dimension": "hook_type",
           "evidence_median_views": 26.5,
           "mature_sample": 61,
-          "sample_size": 67,
+          "sample_size": 69,
           "value": "social_exposure"
         },
         {
@@ -185,13 +185,13 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-11T11:30:29Z",
-      "videos_analyzed": 560
+      "latest_realtime_snapshot": "2026-10-11T17:30:28Z",
+      "videos_analyzed": 562
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 422.5,
+          "evidence_median_views": 420.0,
           "sample_size": 181,
           "window": "08-11"
         },
@@ -214,26 +214,26 @@
         },
         {
           "evidence_median_views": 3.0,
-          "sample_size": 48,
+          "sample_size": 49,
           "window": "20-23"
         }
       ]
     },
-    "generated_at": "2026-10-11T11:30:29Z",
+    "generated_at": "2026-10-11T17:30:28Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 552,
-        "2h": 253,
-        "6h": 514,
-        "72h": 541,
+        "24h": 554,
+        "2h": 254,
+        "6h": 516,
+        "72h": 543,
         "7d": 486
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
