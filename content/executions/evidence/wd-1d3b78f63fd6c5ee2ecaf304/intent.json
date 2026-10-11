@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1d3b78f63fd6c5ee2ecaf304",
+  "created_at": "2026-10-11T12:16:28.560441Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0e07cd7d6aad86752019a7d5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1a272e153c8ea9042f672d7e17b199ff06dcf4d2",
+  "record_type": "intent",
+  "request_blob_sha": "acaf39a5adaabed706dfe0eec081469d76e3879f",
+  "request_id": "rq-d9dc11707c96e96cbb341753",
+  "request_path": "content/requests/rq-d9dc11707c96e96cbb341753.json",
+  "request_source_sha": "19cc3300526365bfe820dffa208cba4594fc2da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A new supervisor is told to fire his own father in public, then discovers the boss has already chosen a family replacement of his own.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-090636fcb1c5fac3342a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Promotion Lunch Dad Couldn't Finish"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-12T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c728108300809cfeb8aa064f9975b2fa95ed731d",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38138172139"
+  }
+}
