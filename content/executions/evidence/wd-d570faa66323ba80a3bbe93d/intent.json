@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d570faa66323ba80a3bbe93d",
+  "created_at": "2026-10-11T12:17:40.253299Z",
+  "evidence_version": 2,
+  "execution_id": "ex-de02a6eabd9d8c01fbcb32a8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bec5addf947a313ccad71ef772b1b9fcd4ade2ca",
+  "record_type": "intent",
+  "request_blob_sha": "acaf39a5adaabed706dfe0eec081469d76e3879f",
+  "request_id": "rq-d9dc11707c96e96cbb341753",
+  "request_path": "content/requests/rq-d9dc11707c96e96cbb341753.json",
+  "request_source_sha": "19cc3300526365bfe820dffa208cba4594fc2da0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A delayed car repair turns out to be a husband's plan to block a job interview, until his wife stops waiting for permission.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9f6fb30e2f47ca2d2b57",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Mechanic Was Waiting for My Husband"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-12T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "c728108300809cfeb8aa064f9975b2fa95ed731d",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38138175202"
+  }
+}
