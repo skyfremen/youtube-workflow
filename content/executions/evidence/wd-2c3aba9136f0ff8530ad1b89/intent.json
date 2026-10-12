@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-2c3aba9136f0ff8530ad1b89",
+  "created_at": "2026-10-12T12:17:51.077524Z",
+  "evidence_version": 2,
+  "execution_id": "ex-cf440e7e60360b7a3605cfad",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a579b7764ae522a91f18b9eb287d5f1cbe7e009d",
+  "record_type": "intent",
+  "request_blob_sha": "06833bcf9b52af32ab7dee7d15aa1c88516f70a3",
+  "request_id": "rq-1eda55929b158b350f39c59c",
+  "request_path": "content/requests/rq-1eda55929b158b350f39c59c.json",
+  "request_source_sha": "0bc13564bdd038c20db599afd3326a6c234569cb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A manager makes employees vote on a coworker's job, then discovers the team refuses to carry responsibility for the dismissal he already chose.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e23318e072a11a17f1f4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Layoff Vote Nobody Accepted"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38247212625"
+  }
+}
