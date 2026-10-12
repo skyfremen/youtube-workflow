@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b9c64c33b0a743195efaa268",
+  "evidence_version": 2,
+  "execution_id": "ex-9633b164440b455d75439809",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d83f66e95ced8ecfb71d7d2da5e18f2bd9a46fe1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-12T12:14:44.459956Z",
+  "request_blob_sha": "06833bcf9b52af32ab7dee7d15aa1c88516f70a3",
+  "request_id": "rq-1eda55929b158b350f39c59c",
+  "request_path": "content/requests/rq-1eda55929b158b350f39c59c.json",
+  "request_source_sha": "0bc13564bdd038c20db599afd3326a6c234569cb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family turns a possible kidney donation into a public obligation until both sisters reject the promise made without their consent.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-505e286293ccbafb18cc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Donation My Family Announced for Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38247222846"
+  },
+  "youtube_video_id": "KsoMDjMaTaE"
+}
