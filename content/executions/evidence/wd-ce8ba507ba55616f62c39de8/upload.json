@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ce8ba507ba55616f62c39de8",
+  "evidence_version": 2,
+  "execution_id": "ex-35b21446454ae5d02017b3de",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "781641c9893b2749b801d7be408ab55072d0b313",
+  "record_type": "upload",
+  "recorded_at": "2026-10-12T00:07:59.474868Z",
+  "request_blob_sha": "eda397251d2a9692862264c4b2fbabf7058e4806",
+  "request_id": "rq-9ea1f8c6c796eefed1692c36",
+  "request_path": "content/requests/rq-9ea1f8c6c796eefed1692c36.json",
+  "request_source_sha": "94d079c0d703941332753801be633c6b3b9111cd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family intervention becomes an attempted handover when parents reveal an overseas move that neither of their daughters agreed to.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-175abda591942bb840af",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Intervention Was Actually a Handover"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "89023d019eea5cc3bae5e47b787f0cc079f99e5f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38186491078"
+  },
+  "youtube_video_id": "e8ObJjXheqE"
+}
