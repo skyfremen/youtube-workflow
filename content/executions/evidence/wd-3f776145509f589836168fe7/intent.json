@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-3f776145509f589836168fe7",
+  "created_at": "2026-10-12T12:17:10.705718Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5eadb015e540ecde6af7018b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3ca3a161f0ea4e59e74737e96daf9c2597af5e6e",
+  "record_type": "intent",
+  "request_blob_sha": "06833bcf9b52af32ab7dee7d15aa1c88516f70a3",
+  "request_id": "rq-1eda55929b158b350f39c59c",
+  "request_path": "content/requests/rq-1eda55929b158b350f39c59c.json",
+  "request_source_sha": "0bc13564bdd038c20db599afd3326a6c234569cb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom uses the wedding ceremony to pressure his bride into signing an agreement she has never seen, until his staged witness breaks.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ffca70b6de68d35507cd",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Prenup Arrived During Our Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38247219116"
+  }
+}
