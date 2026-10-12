@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-3bb411b53c2b7cb7abfee474",
+  "created_at": "2026-10-12T12:16:35.444202Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4fe685ffd8cfc4a8a1f2937d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5ab9b37b21738f770ecc1853264a8a9ca324d231",
+  "record_type": "intent",
+  "request_blob_sha": "06833bcf9b52af32ab7dee7d15aa1c88516f70a3",
+  "request_id": "rq-1eda55929b158b350f39c59c",
+  "request_path": "content/requests/rq-1eda55929b158b350f39c59c.json",
+  "request_source_sha": "0bc13564bdd038c20db599afd3326a6c234569cb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden daughter appears at an anniversary dinner, leaving a wife to separate compassion for the child from judgment of her husband's three-year lie.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e38dcb7f32401bfdc4d9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Girl at Our Anniversary Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-14T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38247228974"
+  }
+}
