@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-6bda70ad516b10606fc89156",
+  "evidence_version": 2,
+  "execution_id": "ex-767fadd3469a4cca5831a6b9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "97759582637def5aed1efdcad9f8429fa2b1f08e",
+  "record_type": "upload",
+  "recorded_at": "2026-10-12T00:11:01.057735Z",
+  "request_blob_sha": "eda397251d2a9692862264c4b2fbabf7058e4806",
+  "request_id": "rq-9ea1f8c6c796eefed1692c36",
+  "request_path": "content/requests/rq-9ea1f8c6c796eefed1692c36.json",
+  "request_source_sha": "94d079c0d703941332753801be633c6b3b9111cd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom turns his reception into a private sales pitch, leaving the bride's parents standing until the table he sold turns against him.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d37e04197793cbdce9eb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Groom Sold My Parents' Wedding Seats"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-12T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "89023d019eea5cc3bae5e47b787f0cc079f99e5f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38186488188"
+  },
+  "youtube_video_id": "WmxTbSWSHXc"
+}
