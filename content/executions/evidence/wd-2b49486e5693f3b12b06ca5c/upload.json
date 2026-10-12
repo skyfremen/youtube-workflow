@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2b49486e5693f3b12b06ca5c",
+  "evidence_version": 2,
+  "execution_id": "ex-aec4134493823690fb5639ce",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7a1964c623bee4289cdb5b21bd0ace48ffc6c479",
+  "record_type": "upload",
+  "recorded_at": "2026-10-12T12:15:25.328768Z",
+  "request_blob_sha": "06833bcf9b52af32ab7dee7d15aa1c88516f70a3",
+  "request_id": "rq-1eda55929b158b350f39c59c",
+  "request_path": "content/requests/rq-1eda55929b158b350f39c59c.json",
+  "request_source_sha": "0bc13564bdd038c20db599afd3326a6c234569cb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A board president's plan to remove an expecting family unravels when his daughter arrives to measure the apartment she was promised.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-6d4944f471d3f1c9db3a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "She Measured the Nursery Before the Vote"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38247225516"
+  },
+  "youtube_video_id": "kGzAWIjue1E"
+}
