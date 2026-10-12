@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-7f4f9bbff56c03b5a1f0d287",
+  "created_at": "2026-10-12T00:08:47.291986Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c11aecd32a6fbd305d900b93",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "919be3bd56cf8787f83f8dd02d740868df01f77b",
+  "record_type": "intent",
+  "request_blob_sha": "eda397251d2a9692862264c4b2fbabf7058e4806",
+  "request_id": "rq-9ea1f8c6c796eefed1692c36",
+  "request_path": "content/requests/rq-9ea1f8c6c796eefed1692c36.json",
+  "request_source_sha": "94d079c0d703941332753801be633c6b3b9111cd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mother is publicly blamed for splitting up another family until the requested airplane seats turn out to be about a sponsored camera angle.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a5ab0998f9bc03572ac0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Family That Needed My Airplane Seats"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-13T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "89023d019eea5cc3bae5e47b787f0cc079f99e5f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38186492525"
+  }
+}
