@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7269c09501c447256c7397f0",
+  "evidence_version": 2,
+  "execution_id": "ex-2c0ef366cb91058dc902fc86",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "46af2187c627903f96cdf1f03957553ffe214d5f",
+  "record_type": "upload",
+  "recorded_at": "2026-10-13T00:18:26.688908Z",
+  "request_blob_sha": "363a121ecbb5740b1fcfe197df4de86a2b052700",
+  "request_id": "rq-9990bfed4153c2243517edc6",
+  "request_path": "content/requests/rq-9990bfed4153c2243517edc6.json",
+  "request_source_sha": "9b5dfa40ce4242da6b2bc49432043dd4dd8b867f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A performance review reveals that an employee's discounted apartment is leverage for unpaid on-call work.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e68420ad6ee473e32473",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Landlord Sat In on My Performance Review"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-14T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38325892589"
+  },
+  "youtube_video_id": "O6LFJVChaU4"
+}
