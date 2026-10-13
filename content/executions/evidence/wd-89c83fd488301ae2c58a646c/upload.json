@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-89c83fd488301ae2c58a646c",
+  "evidence_version": 2,
+  "execution_id": "ex-d49ac0710dc76827483b2549",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7d5f6ed6d11960425d75564698d7d11f34bc30d5",
+  "record_type": "upload",
+  "recorded_at": "2026-10-13T12:14:07.103875Z",
+  "request_blob_sha": "5178e508731616c59120f8d4140d5054f3181cf4",
+  "request_id": "rq-000a72c10ededb88ece2a73a",
+  "request_path": "content/requests/rq-000a72c10ededb88ece2a73a.json",
+  "request_source_sha": "7e86870d6121daeff72d2536fa460eb8f730d3a1",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A sponsored funeral livestream casts actors as the deceased man's family while his real children sit behind the cameras.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-d205b0ed5f996a193f7a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Actors Played Us at Dad's Funeral"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-15T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "efc5905d4d4d34fdd7d65d717b2b432f1ee13f83",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38394912692"
+  },
+  "youtube_video_id": "v7JU-Hlk3U8"
+}
