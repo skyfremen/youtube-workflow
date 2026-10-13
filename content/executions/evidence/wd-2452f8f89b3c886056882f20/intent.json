@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-2452f8f89b3c886056882f20",
+  "created_at": "2026-10-13T00:18:01.707657Z",
+  "evidence_version": 2,
+  "execution_id": "ex-eaa0342b6c0f284d08165c8c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f3a057f27139afcced9ab748cd1b2531325f53d1",
+  "record_type": "intent",
+  "request_blob_sha": "363a121ecbb5740b1fcfe197df4de86a2b052700",
+  "request_id": "rq-9990bfed4153c2243517edc6",
+  "request_path": "content/requests/rq-9990bfed4153c2243517edc6.json",
+  "request_source_sha": "9b5dfa40ce4242da6b2bc49432043dd4dd8b867f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An employee returns from vacation and discovers her boss invented her death to cover his missed deadline.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2644406a1998b6977999",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "My Desk Became a Memorial While I Was Alive"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-14T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38325894491"
+  }
+}
