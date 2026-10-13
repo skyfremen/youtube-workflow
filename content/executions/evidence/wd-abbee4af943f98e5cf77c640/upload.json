@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-abbee4af943f98e5cf77c640",
+  "evidence_version": 2,
+  "execution_id": "ex-3ff37bf42292a1d1ecc1188e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "68fc2723da6e44bd56dd0a2b35302c132d042e38",
+  "record_type": "upload",
+  "recorded_at": "2026-10-13T00:16:21.014781Z",
+  "request_blob_sha": "363a121ecbb5740b1fcfe197df4de86a2b052700",
+  "request_id": "rq-9990bfed4153c2243517edc6",
+  "request_path": "content/requests/rq-9990bfed4153c2243517edc6.json",
+  "request_source_sha": "9b5dfa40ce4242da6b2bc49432043dd4dd8b867f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride discovers that her groom funded their wedding by disguising it as a corporate retreat.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9f0f22c629f2c6bac425",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Our Wedding Guests Were Wearing Company Badges"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-14T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b12066d11b3f238215d261b7667463299b73e541",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38325885946"
+  },
+  "youtube_video_id": "vw-AKvYdZ-g"
+}
