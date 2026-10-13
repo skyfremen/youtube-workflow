@@ -104,23 +104,23 @@
         "dimension": "category",
         "evidence_median_views": 103.0,
         "mature_sample": 73,
-        "sample_size": 79,
+        "sample_size": 80,
         "value": "wedding"
       },
       {
-        "average_view_percentage": 39.11,
+        "average_view_percentage": 46.77,
         "dimension": "category",
-        "evidence_median_views": 100.0,
-        "mature_sample": 17,
+        "evidence_median_views": 34.0,
+        "mature_sample": 18,
         "sample_size": 23,
         "value": "consumer"
       },
       {
-        "average_view_percentage": 57.75,
+        "average_view_percentage": 56.47,
         "dimension": "hook_type",
         "evidence_median_views": 28.0,
-        "mature_sample": 64,
-        "sample_size": 71,
+        "mature_sample": 65,
+        "sample_size": 72,
         "value": "social_exposure"
       },
       {
@@ -136,7 +136,7 @@
         "dimension": "category",
         "evidence_median_views": 13.0,
         "mature_sample": 33,
-        "sample_size": 37,
+        "sample_size": 38,
         "value": "workplace"
       },
       {
@@ -184,13 +184,13 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-13T11:30:33Z",
-    "videos_analyzed": 576
+    "latest_realtime_snapshot": "2026-10-13T17:30:31Z",
+    "videos_analyzed": 578
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 414.0,
+        "evidence_median_views": 408.0,
         "sample_size": 183,
         "window": "08-11"
       },
@@ -213,20 +213,20 @@
       },
       {
         "evidence_median_views": 3.0,
-        "sample_size": 50,
+        "sample_size": 51,
         "window": "20-23"
       }
     ]
   },
-  "generated_at": "2026-10-13T11:30:33Z",
+  "generated_at": "2026-10-13T17:30:31Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 568,
-      "2h": 261,
-      "6h": 530,
-      "72h": 556,
-      "7d": 529
+      "24h": 570,
+      "2h": 262,
+      "6h": 532,
+      "72h": 558,
+      "7d": 531
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
