@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-e5613c2717183f2db18f9ccd",
+  "created_at": "2026-10-13T12:13:39.856557Z",
+  "evidence_version": 2,
+  "execution_id": "ex-3608e16ddc678ece3a47d47f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "67148d4f6b6428504625c73f0a6022fb1ae2051a",
+  "record_type": "intent",
+  "request_blob_sha": "5178e508731616c59120f8d4140d5054f3181cf4",
+  "request_id": "rq-000a72c10ededb88ece2a73a",
+  "request_path": "content/requests/rq-000a72c10ededb88ece2a73a.json",
+  "request_source_sha": "7e86870d6121daeff72d2536fa460eb8f730d3a1",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A shop anniversary becomes a public announcement that a daughter has resigned from her career without her consent.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b1b4984e3335bdc0f8b9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Quit My Job Without Telling Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-14T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "efc5905d4d4d34fdd7d65d717b2b432f1ee13f83",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38394905191"
+  }
+}
