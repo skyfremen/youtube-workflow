@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-c35be699fe4a2790085a2d7a",
+  "created_at": "2026-10-14T12:17:36.431569Z",
+  "evidence_version": 2,
+  "execution_id": "ex-51030ee72052c7b87edb8b1d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b9c5e78959603de6693164b86474508fdacd7d8a",
+  "record_type": "intent",
+  "request_blob_sha": "7dcc6212416e9f015fb18267731d92224e64a5f2",
+  "request_id": "rq-037d514fce15ca78e9e2f8b0",
+  "request_path": "content/requests/rq-037d514fce15ca78e9e2f8b0.json",
+  "request_source_sha": "85df13f933e19177c120951d46b9eabd0fb2fac9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A birthday diner learns her mother bought the restaurant's cooperation in a public weigh-in.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2cd1699d8f16dcbcef94",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Restaurant Had a Different Menu for Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-16T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38561959392"
+  }
+}
