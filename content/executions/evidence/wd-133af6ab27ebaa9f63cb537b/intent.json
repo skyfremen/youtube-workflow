@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-133af6ab27ebaa9f63cb537b",
+  "created_at": "2026-10-14T12:20:28.931305Z",
+  "evidence_version": 2,
+  "execution_id": "ex-11eebc753d6c0c8f236b728c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ed35ed183267427dd39f650c2a6c9183bd9f4024",
+  "record_type": "intent",
+  "request_blob_sha": "7dcc6212416e9f015fb18267731d92224e64a5f2",
+  "request_id": "rq-037d514fce15ca78e9e2f8b0",
+  "request_path": "content/requests/rq-037d514fce15ca78e9e2f8b0.json",
+  "request_source_sha": "85df13f933e19177c120951d46b9eabd0fb2fac9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A café owner fires an employee for helping a competing bakery, then tries to claim the rescue as publicity.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-2b513b7b1b1b78bf9767",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Fired for Lending the Fire Extinguisher"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-16T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38561964227"
+  }
+}
