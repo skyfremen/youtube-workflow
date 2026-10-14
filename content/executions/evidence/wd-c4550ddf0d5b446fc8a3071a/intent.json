@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-c4550ddf0d5b446fc8a3071a",
+  "created_at": "2026-10-14T00:18:49.936864Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4982e0c2421a7073792cc32e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e232d2f54d8a6c4ce0ca86426ef31a894b3262a3",
+  "record_type": "intent",
+  "request_blob_sha": "43f89770da79e2f23563c4e8ea58d4259f5c33a6",
+  "request_id": "rq-02d4de2fff9eafddef3210d2",
+  "request_path": "content/requests/rq-02d4de2fff9eafddef3210d2.json",
+  "request_source_sha": "a10cf8e023c73c080459cd320eba199e316db70d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A homeowner discovers her neighbor has sold access to her garden as a wedding venue under the homeowner's own surname.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ef5091cc5a8f55f45071",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "A Wedding Started in My Backyard"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-15T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "efc5905d4d4d34fdd7d65d717b2b432f1ee13f83",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38488687191"
+  }
+}
