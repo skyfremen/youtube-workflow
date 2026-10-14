@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d33f40bf331a42c321f90e9f",
+  "created_at": "2026-10-14T03:08:16.000111Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4dde483e6186a8bfbb87c66f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "418c460bc4066baf3fdd2fa25dd5f7f650eea907",
+  "record_type": "intent",
+  "request_blob_sha": "43f89770da79e2f23563c4e8ea58d4259f5c33a6",
+  "request_id": "rq-02d4de2fff9eafddef3210d2",
+  "request_path": "content/requests/rq-02d4de2fff9eafddef3210d2.json",
+  "request_source_sha": "a10cf8e023c73c080459cd320eba199e316db70d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Six bridesmaids learn during the reception that their $600 dress fees were really a secret honeymoon fund.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-4cbb7c15dd130e92ba9f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Bridesmaid Dresses Were Already Paid For"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-15T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38504261745"
+  }
+}
