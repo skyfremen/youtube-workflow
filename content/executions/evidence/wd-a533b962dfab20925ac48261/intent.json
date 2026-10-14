@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-a533b962dfab20925ac48261",
+  "created_at": "2026-10-14T00:19:55.424869Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8abf6223d713d5ad6f1a3bba",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b34745df96d9433a8c1321f9c0db79c565e5a132",
+  "record_type": "intent",
+  "request_blob_sha": "43f89770da79e2f23563c4e8ea58d4259f5c33a6",
+  "request_id": "rq-02d4de2fff9eafddef3210d2",
+  "request_path": "content/requests/rq-02d4de2fff9eafddef3210d2.json",
+  "request_source_sha": "a10cf8e023c73c080459cd320eba199e316db70d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A manager forces employees to bid unpaid weekends for leave they already earned, until his own three-week trip explains the scheme.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-7d846a4826d4470d46e8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Auction for Our Approved Vacation Days"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-15T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "efc5905d4d4d34fdd7d65d717b2b432f1ee13f83",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38488680825"
+  }
+}
