@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-314a822607b957eb84b9a51e",
+  "evidence_version": 2,
+  "execution_id": "ex-d71bb791d880330400052757",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0a757de7ccfacf75b52bfe505623acc4b313530a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-15T01:48:04.679663Z",
+  "request_blob_sha": "1f999a886397709cf3623c8cc8d7c9b0d89d35e0",
+  "request_id": "rq-2cb407a71b8c7c920646a71f",
+  "request_path": "content/requests/rq-2cb407a71b8c7c920646a71f.json",
+  "request_source_sha": "5c169b71ab7c9f0a3fb0eeb56969fad10ece1fd3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A paid locksmith discovers that withholding a house key makes an honest review worse, not better.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e265715d960406cd4da0",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Key Came with a Five-Star Condition"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-16T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "2",
+    "run_id": "38658514978"
+  },
+  "youtube_video_id": "WJ1QO7Hn6PM"
+}
