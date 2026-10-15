@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-212cb0bdbd05261e34f474c3",
+  "created_at": "2026-10-15T12:19:46.069193Z",
+  "evidence_version": 2,
+  "execution_id": "ex-d63e128a8155e8b5efbac9a9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1251f3e02ca53393c9c42f028a3ac3cb925a6129",
+  "record_type": "intent",
+  "request_blob_sha": "1266a5522e062bc5b0b5dfb01e6612aae09d9f93",
+  "request_id": "rq-9fef54d37584cff7c02babb2",
+  "request_path": "content/requests/rq-9fef54d37584cff7c02babb2.json",
+  "request_source_sha": "4131d25a72f21c3b3fdf39f873669ad37069141e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's drinking challenge forces his son to choose whose approval belongs in his recovery.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-055699a76e45a900abc4",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad Dropped the Token into His Beer"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-17T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38732762203"
+  }
+}
