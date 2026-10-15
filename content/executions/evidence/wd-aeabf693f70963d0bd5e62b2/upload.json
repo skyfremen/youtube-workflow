@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-aeabf693f70963d0bd5e62b2",
+  "evidence_version": 2,
+  "execution_id": "ex-fc9a5f24083e7e4b24e6266e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "20b3aa517ef56ec5279c99334e9deaf90152276c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-15T12:17:25.730069Z",
+  "request_blob_sha": "1266a5522e062bc5b0b5dfb01e6612aae09d9f93",
+  "request_id": "rq-9fef54d37584cff7c02babb2",
+  "request_path": "content/requests/rq-9fef54d37584cff7c02babb2.json",
+  "request_source_sha": "4131d25a72f21c3b3fdf39f873669ad37069141e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Cash for a fishing trip reveals who was really keeping a father and son apart.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8b1faa038a99148f2d5c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Price of Visiting His Dad"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-17T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38732764753"
+  },
+  "youtube_video_id": "Ols1IGYiqxQ"
+}
