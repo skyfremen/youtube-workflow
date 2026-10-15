@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-614c15bbef67fdb3421331fc",
+  "created_at": "2026-10-15T00:16:28.387653Z",
+  "evidence_version": 2,
+  "execution_id": "ex-ff8b200ef730ff58477183aa",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f43c8eddb281189cb52663565c0acdf4be5f079d",
+  "record_type": "intent",
+  "request_blob_sha": "1f999a886397709cf3623c8cc8d7c9b0d89d35e0",
+  "request_id": "rq-2cb407a71b8c7c920646a71f",
+  "request_path": "content/requests/rq-2cb407a71b8c7c920646a71f.json",
+  "request_source_sha": "5c169b71ab7c9f0a3fb0eeb56969fad10ece1fd3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A husband tries to rehearse a divorce with a substitute wife, until the actress discovers the real wife never agreed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-18f5688df9b3aa0154fa",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Woman Who Went to Counseling as Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-17T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38658520896"
+  }
+}
