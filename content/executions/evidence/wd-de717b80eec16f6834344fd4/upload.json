@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-de717b80eec16f6834344fd4",
+  "evidence_version": 2,
+  "execution_id": "ex-2646b13c988e86405cff7d13",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "85285c3ce92c8e1e177f9d5b998ed5836fe5f611",
+  "record_type": "upload",
+  "recorded_at": "2026-10-15T12:16:35.136213Z",
+  "request_blob_sha": "1266a5522e062bc5b0b5dfb01e6612aae09d9f93",
+  "request_id": "rq-9fef54d37584cff7c02babb2",
+  "request_path": "content/requests/rq-9fef54d37584cff7c02babb2.json",
+  "request_source_sha": "4131d25a72f21c3b3fdf39f873669ad37069141e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding gift payment exposes the surveillance the groom calls protection.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-90ec2a4dfb974cffcfe9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Family Friend My Groom Had Hired"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-17T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38732756211"
+  },
+  "youtube_video_id": "FWjsRvV_RV4"
+}
