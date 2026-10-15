@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-ded33f80c18bce8735ba8320",
+  "created_at": "2026-10-15T00:19:47.069198Z",
+  "evidence_version": 2,
+  "execution_id": "ex-3b8c339fc7f1cb7aad647254",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c40999428552c92644f9c3689df5b25762d8aecb",
+  "record_type": "intent",
+  "request_blob_sha": "1f999a886397709cf3623c8cc8d7c9b0d89d35e0",
+  "request_id": "rq-2cb407a71b8c7c920646a71f",
+  "request_path": "content/requests/rq-2cb407a71b8c7c920646a71f.json",
+  "request_source_sha": "5c169b71ab7c9f0a3fb0eeb56969fad10ece1fd3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A retirement presentation becomes a publicity stunt until both people refuse the reconciliation their boss invented.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-87a5ab06da98e81295e2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Man Holding My Retirement Gift"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-16T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38658516734"
+  }
+}
