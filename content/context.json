@@ -57,11 +57,11 @@
       "dominant_traffic_sources": [
         {
           "engaged_view_rate_percentage": 52.47,
-          "engaged_views": 75800,
-          "estimated_minutes_watched": 53099,
+          "engaged_views": 75797,
+          "estimated_minutes_watched": 53097,
           "insightTrafficSourceType": "SHORTS",
           "view_share_percentage": 96.08,
-          "views": 144465
+          "views": 144460
         },
         {
           "engaged_view_rate_percentage": 23.85,
@@ -101,51 +101,51 @@
       "soft_evidence_only": true,
       "supported_patterns": [
         {
-          "average_view_percentage": 56.47,
+          "average_view_percentage": 55.99,
           "dimension": "category",
           "evidence_median_views": 65.0,
-          "mature_sample": 75,
-          "sample_size": 81,
+          "mature_sample": 76,
+          "sample_size": 82,
           "value": "wedding"
         },
         {
           "average_view_percentage": 59.02,
           "dimension": "hook_type",
-          "evidence_median_views": 40.5,
+          "evidence_median_views": 52.0,
           "mature_sample": 69,
           "sample_size": 76,
           "value": "social_exposure"
         },
         {
-          "average_view_percentage": 44.67,
-          "dimension": "story_tone",
-          "evidence_median_views": 21.5,
-          "mature_sample": 70,
-          "sample_size": 81,
-          "value": "warm"
-        },
-        {
-          "average_view_percentage": 53.57,
-          "dimension": "category",
-          "evidence_median_views": 16.5,
-          "mature_sample": 80,
-          "sample_size": 89,
-          "value": "family"
-        },
-        {
           "average_view_percentage": 54.43,
           "dimension": "category",
-          "evidence_median_views": 16.0,
+          "evidence_median_views": 25.0,
           "mature_sample": 21,
           "sample_size": 26,
           "value": "consumer"
+        },
+        {
+          "average_view_percentage": 46.36,
+          "dimension": "story_tone",
+          "evidence_median_views": 23.0,
+          "mature_sample": 67,
+          "sample_size": 78,
+          "value": "warm"
+        },
+        {
+          "average_view_percentage": 54.0,
+          "dimension": "category",
+          "evidence_median_views": 22.0,
+          "mature_sample": 78,
+          "sample_size": 87,
+          "value": "family"
         },
         {
           "average_view_percentage": 58.41,
           "dimension": "hook_type",
           "evidence_median_views": 13.0,
           "mature_sample": 102,
-          "sample_size": 116,
+          "sample_size": 117,
           "value": "accusation"
         }
       ],
@@ -185,13 +185,13 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-16T11:30:33Z",
-      "videos_analyzed": 565
+      "latest_realtime_snapshot": "2026-10-16T17:30:32Z",
+      "videos_analyzed": 561
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 405.0,
+          "evidence_median_views": 408.0,
           "sample_size": 179,
           "window": "08-11"
         },
@@ -214,27 +214,26 @@
         },
         {
           "evidence_median_views": 3.0,
-          "sample_size": 48,
+          "sample_size": 45,
           "window": "20-23"
         }
       ]
     },
-    "generated_at": "2026-10-16T11:30:33Z",
+    "generated_at": "2026-10-16T17:30:32Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 559,
-        "2h": 266,
-        "6h": 538,
-        "72h": 545,
-        "7d": 517
+        "24h": 555,
+        "2h": 262,
+        "6h": 534,
+        "72h": 541,
+        "7d": 513
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 19 due checkpoints; will retry",
-      "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
+      "Optional retention returned empty curves for 20 due checkpoints; will retry"
     ]
   },
   "background_categories": [
