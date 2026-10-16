@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e8b5996ffe07c47a5848be12",
+  "evidence_version": 2,
+  "execution_id": "ex-1f71af3ccc6f5a81daea012c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "23fe0a8c7f5bfe6ce86eabaf1906af6bd252edd8",
+  "record_type": "upload",
+  "recorded_at": "2026-10-16T00:16:09.178307Z",
+  "request_blob_sha": "91a3602525625b6446598fa61a17dab7f4b54176",
+  "request_id": "rq-4b88526bcbbad13258490228",
+  "request_path": "content/requests/rq-4b88526bcbbad13258490228.json",
+  "request_source_sha": "3a2a066bc560e633aa514cd1a6fa26916369ce88",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "At her wedding, a bride refuses to make her stepdaughter earn dessert by replacing her mother.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9248dd2e880fe69c7466",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Place Card My Groom Wanted Hidden"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-17T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38827830450"
+  },
+  "youtube_video_id": "dBl1FkOafEw"
+}
