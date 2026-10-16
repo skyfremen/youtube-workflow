@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-51e1338d5cb34f57f5b58b56",
+  "evidence_version": 2,
+  "execution_id": "ex-0680dda2b395e6697f793b74",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0a148b23048cdc9e6eda5112e76d899b675c792a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-16T12:11:40.039519Z",
+  "request_blob_sha": "9e76ab71c5b9af20a3cbf5aa2fdc13a228cd284d",
+  "request_id": "rq-2d6f6fe37b20520f3ced1257",
+  "request_path": "content/requests/rq-2d6f6fe37b20520f3ced1257.json",
+  "request_source_sha": "8063f5a2ce6440dc202560fdf9dbc38ff823b700",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A café employee refuses to let a bathroom break become a public test of obedience.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a03ff37fb5ae6ee2174e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Packet My Boss Put Against My Apron"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-18T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38898176909"
+  },
+  "youtube_video_id": "mU27JPqvHso"
+}
