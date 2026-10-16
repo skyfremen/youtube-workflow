@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-55a220cd85a6c5c708a4950e",
+  "created_at": "2026-10-16T00:18:38.316650Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8f6d15515d0272c3c059d837",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2549fe84087fa736caa4e047019643752fbad825",
+  "record_type": "intent",
+  "request_blob_sha": "91a3602525625b6446598fa61a17dab7f4b54176",
+  "request_id": "rq-4b88526bcbbad13258490228",
+  "request_path": "content/requests/rq-4b88526bcbbad13258490228.json",
+  "request_source_sha": "3a2a066bc560e633aa514cd1a6fa26916369ce88",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A fired employee confronts the gap between a company's lifelong-loyalty campaign and the way it treated her.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-398f271cac366ecdbdaf",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Tattoo on Their Hiring Banner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-18T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38827834963"
+  }
+}
