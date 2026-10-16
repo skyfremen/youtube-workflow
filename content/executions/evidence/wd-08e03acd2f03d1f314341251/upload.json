@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-08e03acd2f03d1f314341251",
+  "evidence_version": 2,
+  "execution_id": "ex-560767d97a19ec4e6268229f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6233109b2fe78098b5246c83cd9ec429e977b596",
+  "record_type": "upload",
+  "recorded_at": "2026-10-16T12:16:09.046440Z",
+  "request_blob_sha": "9e76ab71c5b9af20a3cbf5aa2fdc13a228cd284d",
+  "request_id": "rq-2d6f6fe37b20520f3ced1257",
+  "request_path": "content/requests/rq-2d6f6fe37b20520f3ced1257.json",
+  "request_source_sha": "8063f5a2ce6440dc202560fdf9dbc38ff823b700",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A homecoming bill forces a recovering son to ask what his father actually saved for him.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1e07e51afd414b281d2e",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Rent Dad Charged for an Empty Bed"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-18T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38898171211"
+  },
+  "youtube_video_id": "byzNnGexBYQ"
+}
