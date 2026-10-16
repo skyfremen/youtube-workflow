@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-07cd5966f1cc434277eed521",
+  "evidence_version": 2,
+  "execution_id": "ex-84978ad387b1163964b1b673",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5ac29fed94edc092645bfd2c0a6d30bdc5f6e113",
+  "record_type": "upload",
+  "recorded_at": "2026-10-16T12:15:13.537673Z",
+  "request_blob_sha": "9e76ab71c5b9af20a3cbf5aa2fdc13a228cd284d",
+  "request_id": "rq-2d6f6fe37b20520f3ced1257",
+  "request_path": "content/requests/rq-2d6f6fe37b20520f3ced1257.json",
+  "request_source_sha": "8063f5a2ce6440dc202560fdf9dbc38ff823b700",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bus full of tourists refuses to become an audience for their guide's unwanted reconciliation attempt.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e7358dadabaccf3be267",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Castle Tour That Stopped at His Ex's House"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38898182227"
+  },
+  "youtube_video_id": "vQZxDQ2EJcw"
+}
