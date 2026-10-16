@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-a3495ab33c315dc69bad0512",
+  "created_at": "2026-10-16T00:15:26.687435Z",
+  "evidence_version": 2,
+  "execution_id": "ex-954db1050a6876581b02d78c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e2856b0447263d76a60d0cab54d6e8cffb6a765d",
+  "record_type": "intent",
+  "request_blob_sha": "91a3602525625b6446598fa61a17dab7f4b54176",
+  "request_id": "rq-4b88526bcbbad13258490228",
+  "request_path": "content/requests/rq-4b88526bcbbad13258490228.json",
+  "request_source_sha": "3a2a066bc560e633aa514cd1a6fa26916369ce88",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A donated wig becomes a public test of who gets to decide when someone is ready to give it up.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-794e7b9f235a03273b6c",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Empty Bag She Brought for My Wig"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-18T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38827837235"
+  }
+}
