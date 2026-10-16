@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-76283688841a668338382bf5",
+  "evidence_version": 2,
+  "execution_id": "ex-c82da9e6ec21eeed84a1ca6f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d4ce648cb30516fbc3c8d008c3fdcaa6d3841e04",
+  "record_type": "upload",
+  "recorded_at": "2026-10-16T12:14:22.930679Z",
+  "request_blob_sha": "9e76ab71c5b9af20a3cbf5aa2fdc13a228cd284d",
+  "request_id": "rq-2d6f6fe37b20520f3ced1257",
+  "request_path": "content/requests/rq-2d6f6fe37b20520f3ced1257.json",
+  "request_source_sha": "8063f5a2ce6440dc202560fdf9dbc38ff823b700",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A teenage mover learns that his father's supposed family favor came with a full commercial fee.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0c650e67ae7ba98f35ad",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Schoolbag Beside Our Piano"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-18T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38898174039"
+  },
+  "youtube_video_id": "7J7LF8fJa48"
+}
