@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-efc7a2fdb3a8db43e71d1fa8",
+  "evidence_version": 2,
+  "execution_id": "ex-a5c2684a2bd609882fe26bfb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fee2b6c619d98ee3e58ddcb9c2bbe511fed8a64a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-17T12:18:17.011290Z",
+  "request_blob_sha": "437342b90e410aef6c94d1aba792d5f1bd750696",
+  "request_id": "rq-35f30d83bf822b55c09eb923",
+  "request_path": "content/requests/rq-35f30d83bf822b55c09eb923.json",
+  "request_source_sha": "08c377a9d1a2c8d36071d89b2c5ed26c92c76d5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding toast becomes a demand that the newlyweds take sides in the bride's parents' divorce.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5c5853fb7b69d0ebd217",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Dad's Toast Came with Divorce Papers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39031542646"
+  },
+  "youtube_video_id": "h4F2UpTlkDc"
+}
