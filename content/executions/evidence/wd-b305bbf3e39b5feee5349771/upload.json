@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b305bbf3e39b5feee5349771",
+  "evidence_version": 2,
+  "execution_id": "ex-fd298420d2f9f70288d68a72",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "23c54cc3a000908632ef2fb351549268c54b810e",
+  "record_type": "upload",
+  "recorded_at": "2026-10-17T00:18:10.831148Z",
+  "request_blob_sha": "43953fe1ffbf1e649d47a440f353a2101190799f",
+  "request_id": "rq-f86f86e10e7072115e163523",
+  "request_path": "content/requests/rq-f86f86e10e7072115e163523.json",
+  "request_source_sha": "e53730ea8cf99319ba83e79799485254a4096b95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A costly rescue becomes a second demand on the woman who already sold her engagement ring to help.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1d8029dff25a04294661",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "What He Wanted Back After Bail"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38985102472"
+  },
+  "youtube_video_id": "gwt_ItRkTm4"
+}
