@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-0bba4ba3e02e6a7ca11fe5f7",
+  "created_at": "2026-10-17T12:19:10.657541Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c014302d3e94c6305189b084",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9928a2f8b4fc1ebeaf41647383ffa0574ce05ea0",
+  "record_type": "intent",
+  "request_blob_sha": "437342b90e410aef6c94d1aba792d5f1bd750696",
+  "request_id": "rq-35f30d83bf822b55c09eb923",
+  "request_path": "content/requests/rq-35f30d83bf822b55c09eb923.json",
+  "request_source_sha": "08c377a9d1a2c8d36071d89b2c5ed26c92c76d5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A fake death notice turns a daughter's holiday lie into a demand that her living mother disappear.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-702d131ead375a4e199f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Mom Found Her Own Obituary"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39031544140"
+  }
+}
