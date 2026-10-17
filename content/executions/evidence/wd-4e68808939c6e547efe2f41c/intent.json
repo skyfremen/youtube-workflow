@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-4e68808939c6e547efe2f41c",
+  "created_at": "2026-10-17T12:18:31.728247Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e67da6c04814e861198094f2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8d986efad9072e78a565c53d69ccffe330ba51d1",
+  "record_type": "intent",
+  "request_blob_sha": "437342b90e410aef6c94d1aba792d5f1bd750696",
+  "request_id": "rq-35f30d83bf822b55c09eb923",
+  "request_path": "content/requests/rq-35f30d83bf822b55c09eb923.json",
+  "request_source_sha": "08c377a9d1a2c8d36071d89b2c5ed26c92c76d5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing pet reveals that a husband has been rehearsing a story in which his wife is the one who abandoned it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3b8a73286ec3723e7d23",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Blanket in My Cat's Adoption Photo"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39031545620"
+  }
+}
