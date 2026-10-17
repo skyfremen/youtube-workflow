@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-4565408df2f0d6e66f47cd68",
+  "created_at": "2026-10-17T00:15:15.668006Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6ac719872ca5974fcf31450d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b0fad7e4c45c8e8c1832ee32c96bb961ff401959",
+  "record_type": "intent",
+  "request_blob_sha": "43953fe1ffbf1e649d47a440f353a2101190799f",
+  "request_id": "rq-f86f86e10e7072115e163523",
+  "request_path": "content/requests/rq-f86f86e10e7072115e163523.json",
+  "request_source_sha": "e53730ea8cf99319ba83e79799485254a4096b95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride discovers that her custom dress was treated as its maker's personal wardrobe.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ea1552c432b0bf918f44",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Woman Already Wearing My Wedding Dress"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38985100888"
+  }
+}
