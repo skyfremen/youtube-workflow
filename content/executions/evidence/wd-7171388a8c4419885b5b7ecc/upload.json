@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7171388a8c4419885b5b7ecc",
+  "evidence_version": 2,
+  "execution_id": "ex-de0dd82eb1b74eade9608861",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9faf35087b129ebab126c156eeb734f3eba6b2c1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-17T12:20:20.575025Z",
+  "request_blob_sha": "437342b90e410aef6c94d1aba792d5f1bd750696",
+  "request_id": "rq-35f30d83bf822b55c09eb923",
+  "request_path": "content/requests/rq-35f30d83bf822b55c09eb923.json",
+  "request_source_sha": "08c377a9d1a2c8d36071d89b2c5ed26c92c76d5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A part-time worker's independent lottery win exposes a manager's selective definition of belonging to the team.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e1884727e0b1707aeeb5",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Full-Time Staff Only, Until My Ticket Won"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39031548278"
+  },
+  "youtube_video_id": "xXLZJBFzRTY"
+}
