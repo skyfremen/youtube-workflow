@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-9738a820d89b4190605a196f",
+  "created_at": "2026-10-17T00:16:47.915109Z",
+  "evidence_version": 2,
+  "execution_id": "ex-089a4545694b5012286a3f7e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4714ac22a38cd7aade3316a0e78630117f0e11f3",
+  "record_type": "intent",
+  "request_blob_sha": "43953fe1ffbf1e649d47a440f353a2101190799f",
+  "request_id": "rq-f86f86e10e7072115e163523",
+  "request_path": "content/requests/rq-f86f86e10e7072115e163523.json",
+  "request_source_sha": "e53730ea8cf99319ba83e79799485254a4096b95",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hidden resident turns moving day into a confrontation over a son's broken promise to his mother.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f8795e7bc10abea791c2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Tea Tin Behind the Locked Attic Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-19T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "38985104077"
+  }
+}
