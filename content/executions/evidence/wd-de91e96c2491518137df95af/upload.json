@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-de91e96c2491518137df95af",
+  "evidence_version": 2,
+  "execution_id": "ex-2ab5b5ca58e7023064c47a4a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "69a41d2a11e2fb0b087f83a160812f100ea635c6",
+  "record_type": "upload",
+  "recorded_at": "2026-10-18T00:06:21.567126Z",
+  "request_blob_sha": "3c1df7fa2c43cf7021e7090fcdad3caa728b7598",
+  "request_id": "rq-e48b39d6a7019513a056bd44",
+  "request_path": "content/requests/rq-e48b39d6a7019513a056bd44.json",
+  "request_source_sha": "bdb4447e3179510744009e5ef541274ac2c3d78b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A daughter refuses to sell silence or turn one year of contact into a lifetime of fatherhood.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-f5f9984d429d46166120",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Funeral Singer Wouldn't Take Double"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39081172964"
+  },
+  "youtube_video_id": "NS5UwQvW26c"
+}
