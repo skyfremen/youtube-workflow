@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-246148a75cd6b8240615aa57",
+  "created_at": "2026-10-18T00:10:37.146672Z",
+  "evidence_version": 2,
+  "execution_id": "ex-aa9d19509d3e5ce0e48e335f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fa077ac337383a7d16d895670f0a3666dd7fadf3",
+  "record_type": "intent",
+  "request_blob_sha": "3c1df7fa2c43cf7021e7090fcdad3caa728b7598",
+  "request_id": "rq-e48b39d6a7019513a056bd44",
+  "request_path": "content/requests/rq-e48b39d6a7019513a056bd44.json",
+  "request_source_sha": "bdb4447e3179510744009e5ef541274ac2c3d78b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A secret balcony booking leaves a tenant and a would-be bride refusing the same performance.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8970c1d325eaf4848928",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Proposal Outside My Dinner Window"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39081171691"
+  }
+}
