@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4b909afcf6ed8e2787a3d49f",
+  "evidence_version": 2,
+  "execution_id": "ex-6e099c4c8c24defe56ced0d7",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7fdf39b5dade71556cb6f542a066f2e8586fcf4e",
+  "record_type": "upload",
+  "recorded_at": "2026-10-18T00:09:37.455872Z",
+  "request_blob_sha": "3c1df7fa2c43cf7021e7090fcdad3caa728b7598",
+  "request_id": "rq-e48b39d6a7019513a056bd44",
+  "request_path": "content/requests/rq-e48b39d6a7019513a056bd44.json",
+  "request_source_sha": "bdb4447e3179510744009e5ef541274ac2c3d78b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An illustrator is accused of copying the work her boss secretly needs her to create.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-61fdef37692a89896b69",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The AI Demo Needed My Pencil"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39081168966"
+  },
+  "youtube_video_id": "6Npfnsg9B74"
+}
