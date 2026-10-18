@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1243d4810b20de297d50fa3f",
+  "created_at": "2026-10-18T00:07:33.162948Z",
+  "evidence_version": 2,
+  "execution_id": "ex-89f0a7c3d03b9485ebe18b3d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "df20fba50f2903b98d33b57f061dab1c2f9c6aea",
+  "record_type": "intent",
+  "request_blob_sha": "3c1df7fa2c43cf7021e7090fcdad3caa728b7598",
+  "request_id": "rq-e48b39d6a7019513a056bd44",
+  "request_path": "content/requests/rq-e48b39d6a7019513a056bd44.json",
+  "request_source_sha": "bdb4447e3179510744009e5ef541274ac2c3d78b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A polished wedding speech costs a bride something an actor cannot replace.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-5b1a07fc6db590d09fc6",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Bride Hired a Replacement Dad"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-20T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39081167598"
+  }
+}
