@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-6c3cd03169509709929e763d",
+  "created_at": "2026-10-18T12:17:41.306412Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2a6aadccbb5be6a924521297",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d3307fc1035fea96cafff8360c91262cae39de14",
+  "record_type": "intent",
+  "request_blob_sha": "7c3d31bc1f752575eb5b8489770170951cd45f8b",
+  "request_id": "rq-a65c898e687a5b5d5e92e8ac",
+  "request_path": "content/requests/rq-a65c898e687a5b5d5e92e8ac.json",
+  "request_source_sha": "c6b36589601838947cee7d8a0f3305e61d0716f9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride's former boss mistakes catering her wedding for putting her back on his payroll.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a8a7769d4137dd2cbb3a",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Apron on My Bridal Chair"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39126353106"
+  }
+}
