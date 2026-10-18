@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5fa5ca6fc2bf830943e569ea",
+  "evidence_version": 2,
+  "execution_id": "ex-d6ab822e9193d7cc6bc15b17",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "44ff5c2778def29a18a38a78acaae40aa4a880c0",
+  "record_type": "upload",
+  "recorded_at": "2026-10-18T12:17:52.824461Z",
+  "request_blob_sha": "7c3d31bc1f752575eb5b8489770170951cd45f8b",
+  "request_id": "rq-a65c898e687a5b5d5e92e8ac",
+  "request_path": "content/requests/rq-a65c898e687a5b5d5e92e8ac.json",
+  "request_source_sha": "c6b36589601838947cee7d8a0f3305e61d0716f9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A custom table reveals what the carpenter really meant by reclaimed wood.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-73acd4e809f2aae08de2",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The House Number Under My New Table"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39126358673"
+  },
+  "youtube_video_id": "_S7t289znTw"
+}
