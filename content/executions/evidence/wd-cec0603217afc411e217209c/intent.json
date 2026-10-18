@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-cec0603217afc411e217209c",
+  "created_at": "2026-10-18T12:20:10.621542Z",
+  "evidence_version": 2,
+  "execution_id": "ex-50bf973f605d840c28e770c4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ff359097deecebd85ba0d36aaca918a960817862",
+  "record_type": "intent",
+  "request_blob_sha": "7c3d31bc1f752575eb5b8489770170951cd45f8b",
+  "request_id": "rq-a65c898e687a5b5d5e92e8ac",
+  "request_path": "content/requests/rq-a65c898e687a5b5d5e92e8ac.json",
+  "request_source_sha": "c6b36589601838947cee7d8a0f3305e61d0716f9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A promised refund becomes a demand for a testimonial that the customer refuses to fake.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a41cc178566dbe069a59",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Refund Behind the Ring Light"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39126357327"
+  }
+}
