@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-456241a89dad29de06a5d019",
+  "created_at": "2026-10-18T12:21:34.435058Z",
+  "evidence_version": 2,
+  "execution_id": "ex-b5f5fa84cc7897249bc2cfcf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2e828a0f8ffe2e3fb9330b497e5d464e7b08771b",
+  "record_type": "intent",
+  "request_blob_sha": "7c3d31bc1f752575eb5b8489770170951cd45f8b",
+  "request_id": "rq-a65c898e687a5b5d5e92e8ac",
+  "request_path": "content/requests/rq-a65c898e687a5b5d5e92e8ac.json",
+  "request_source_sha": "c6b36589601838947cee7d8a0f3305e61d0716f9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A management interview turns into a demand to deliver the employer's bad news to the applicant's own father.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-49611824ab066197cd4d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Two Lunches Outside the Interview"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39126356065"
+  }
+}
