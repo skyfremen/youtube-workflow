@@ -4,23 +4,23 @@
     "dominant_countries": [
       {
         "average_view_duration": 43,
-        "average_view_percentage": 78.86,
+        "average_view_percentage": 78.82,
         "country": "US",
         "engaged_view_rate_percentage": 53.01,
-        "engaged_views": 45153,
-        "estimated_minutes_watched": 33679,
-        "view_share_percentage": 63.84,
-        "views": 85186
+        "engaged_views": 45251,
+        "estimated_minutes_watched": 33728,
+        "view_share_percentage": 63.88,
+        "views": 85367
       },
       {
         "average_view_duration": 36,
-        "average_view_percentage": 67.21,
+        "average_view_percentage": 67.22,
         "country": "GB",
-        "engaged_view_rate_percentage": 53.01,
-        "engaged_views": 5748,
-        "estimated_minutes_watched": 3547,
+        "engaged_view_rate_percentage": 53.02,
+        "engaged_views": 5761,
+        "estimated_minutes_watched": 3555,
         "view_share_percentage": 8.13,
-        "views": 10843
+        "views": 10866
       },
       {
         "average_view_duration": 38,
@@ -29,7 +29,7 @@
         "engaged_view_rate_percentage": 56.41,
         "engaged_views": 3628,
         "estimated_minutes_watched": 2359,
-        "view_share_percentage": 4.82,
+        "view_share_percentage": 4.81,
         "views": 6432
       },
       {
@@ -49,34 +49,34 @@
         "engaged_view_rate_percentage": 51.99,
         "engaged_views": 1670,
         "estimated_minutes_watched": 795,
-        "view_share_percentage": 2.41,
+        "view_share_percentage": 2.4,
         "views": 3212
       }
     ],
     "dominant_traffic_sources": [
       {
-        "engaged_view_rate_percentage": 52.48,
-        "engaged_views": 72471,
-        "estimated_minutes_watched": 50141,
+        "engaged_view_rate_percentage": 52.49,
+        "engaged_views": 72609,
+        "estimated_minutes_watched": 50206,
         "insightTrafficSourceType": "SHORTS",
-        "view_share_percentage": 96.0,
-        "views": 138097
+        "view_share_percentage": 95.97,
+        "views": 138341
       },
       {
-        "engaged_view_rate_percentage": 23.43,
-        "engaged_views": 901,
-        "estimated_minutes_watched": 360,
+        "engaged_view_rate_percentage": 23.47,
+        "engaged_views": 915,
+        "estimated_minutes_watched": 366,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 2.67,
-        "views": 3846
+        "view_share_percentage": 2.7,
+        "views": 3898
       },
       {
-        "engaged_view_rate_percentage": 60.36,
-        "engaged_views": 842,
+        "engaged_view_rate_percentage": 60.39,
+        "engaged_views": 843,
         "estimated_minutes_watched": 587,
         "insightTrafficSourceType": "YT_OTHER_PAGE",
         "view_share_percentage": 0.97,
-        "views": 1395
+        "views": 1396
       },
       {
         "engaged_view_rate_percentage": 53.57,
@@ -100,7 +100,7 @@
     "soft_evidence_only": true,
     "supported_patterns": [
       {
-        "average_view_percentage": 60.98,
+        "average_view_percentage": 62.85,
         "dimension": "category",
         "evidence_median_views": 200.0,
         "mature_sample": 22,
@@ -110,68 +110,52 @@
       {
         "average_view_percentage": 59.02,
         "dimension": "hook_type",
-        "evidence_median_views": 127.0,
+        "evidence_median_views": 156.0,
         "mature_sample": 71,
-        "sample_size": 78,
+        "sample_size": 77,
         "value": "social_exposure"
       },
       {
         "average_view_percentage": 55.99,
         "dimension": "category",
-        "evidence_median_views": 84.5,
+        "evidence_median_views": 103.0,
         "mature_sample": 76,
         "sample_size": 82,
         "value": "wedding"
       },
       {
-        "average_view_percentage": 54.72,
+        "average_view_percentage": 62.18,
+        "dimension": "story_tone",
+        "evidence_median_views": 69.5,
+        "mature_sample": 24,
+        "sample_size": 33,
+        "value": "conversational"
+      },
+      {
+        "average_view_percentage": 66.8,
         "dimension": "category",
-        "evidence_median_views": 24.5,
-        "mature_sample": 75,
-        "sample_size": 85,
-        "value": "family"
+        "evidence_median_views": 56.5,
+        "mature_sample": 28,
+        "sample_size": 35,
+        "value": "workplace"
       },
       {
-        "average_view_percentage": 58.12,
+        "average_view_percentage": 58.29,
         "dimension": "story_tone",
-        "evidence_median_views": 24.0,
-        "mature_sample": 21,
-        "sample_size": 22,
+        "evidence_median_views": 35.0,
+        "mature_sample": 20,
+        "sample_size": 21,
         "value": "sarcastic"
-      },
-      {
-        "average_view_percentage": 45.11,
-        "dimension": "story_tone",
-        "evidence_median_views": 21.0,
-        "mature_sample": 61,
-        "sample_size": 74,
-        "value": "warm"
       }
     ],
     "weak_patterns": [
       {
-        "average_view_percentage": 43.2,
-        "dimension": "hook_type",
-        "evidence_median_views": 2.5,
-        "mature_sample": 11,
-        "sample_size": 12,
-        "value": "urgency"
-      },
-      {
-        "average_view_percentage": 48.22,
-        "dimension": "category",
-        "evidence_median_views": 3.0,
-        "mature_sample": 18,
-        "sample_size": 19,
-        "value": "friends"
-      },
-      {
-        "average_view_percentage": 55.05,
+        "average_view_percentage": 58.47,
         "dimension": "category",
         "evidence_median_views": 3.5,
-        "mature_sample": 10,
-        "sample_size": 12,
-        "value": "housing"
+        "mature_sample": 17,
+        "sample_size": 18,
+        "value": "friends"
       },
       {
         "average_view_percentage": 58.34,
@@ -180,12 +164,28 @@
         "mature_sample": 19,
         "sample_size": 20,
         "value": "consequence_first"
+      },
+      {
+        "average_view_percentage": 37.54,
+        "dimension": "trend_lane",
+        "evidence_median_views": 5.5,
+        "mature_sample": 22,
+        "sample_size": 24,
+        "value": "trend_aware"
+      },
+      {
+        "average_view_percentage": 59.56,
+        "dimension": "story_tone",
+        "evidence_median_views": 5.5,
+        "mature_sample": 30,
+        "sample_size": 32,
+        "value": "comedy"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-18T17:30:28Z",
-    "videos_analyzed": 529
+    "latest_realtime_snapshot": "2026-10-18T23:30:27Z",
+    "videos_analyzed": 525
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -208,30 +208,30 @@
     "weak_publish_windows_sgt": [
       {
         "evidence_median_views": 2.0,
-        "sample_size": 44,
+        "sample_size": 41,
         "window": "04-07"
       },
       {
         "evidence_median_views": 3.0,
-        "sample_size": 55,
+        "sample_size": 54,
         "window": "00-03"
       }
     ]
   },
-  "generated_at": "2026-10-18T17:30:28Z",
+  "generated_at": "2026-10-18T23:30:27Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 523,
-      "2h": 246,
-      "6h": 507,
-      "72h": 509,
-      "7d": 481
+      "24h": 519,
+      "2h": 243,
+      "6h": 504,
+      "72h": 505,
+      "7d": 477
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 13 due checkpoints; will retry"
+    "Optional retention returned empty curves for 11 due checkpoints; will retry"
   ]
 }
