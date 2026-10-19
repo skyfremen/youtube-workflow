@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-894077d9ce020afd37babb05",
+  "created_at": "2026-10-19T12:22:47.006586Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a87ac776261bdee6c0588bb4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7bff8b5b3ba8aae288b08f4cb185fa9e16bc3c6d",
+  "record_type": "intent",
+  "request_blob_sha": "1f6961e6ff97b4ca333823b110312b02b5c198f8",
+  "request_id": "rq-64355ae0806277ec20f06939",
+  "request_path": "content/requests/rq-64355ae0806277ec20f06939.json",
+  "request_source_sha": "0b8f752f79561789d6d3b6ed68dc7f0bffd9e1f3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A comforting private nickname becomes part of a son's paid appeal for his mother's home.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-15704ee294a83ea2e6c1",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Message That Needed My House Sold"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-22T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39250642413"
+  }
+}
