@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-99fe4959ff7a53359adb8a47",
+  "created_at": "2026-10-19T00:15:45.249569Z",
+  "evidence_version": 2,
+  "execution_id": "ex-1ba04d3bef809eb6bee54e35",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d9310ecc50bb8b256f26b1e900336e1bab28166c",
+  "record_type": "intent",
+  "request_blob_sha": "3282a2af5c1951d1806a2d8cb8efa1572a844c14",
+  "request_id": "rq-3909c81ff247fcbd592f5b48",
+  "request_path": "content/requests/rq-3909c81ff247fcbd592f5b48.json",
+  "request_source_sha": "c89cc45ab3ee82fbaf6ce633874b1d83b1f331c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A company dinner reveals who an employee's boss believes should decide her future.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-8eafa66b83cdfc6b5bfb",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Promotion Offer in My Husband's Hands"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39179477536"
+  }
+}
