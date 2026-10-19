@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-81b9ae451706b1a4c307765e",
+  "evidence_version": 2,
+  "execution_id": "ex-3b914e84c38206684611dbd1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "79c6b0c6fe611421a001ac9bf538320987d23dff",
+  "record_type": "upload",
+  "recorded_at": "2026-10-19T12:25:00.812245Z",
+  "request_blob_sha": "1f6961e6ff97b4ca333823b110312b02b5c198f8",
+  "request_id": "rq-64355ae0806277ec20f06939",
+  "request_path": "content/requests/rq-64355ae0806277ec20f06939.json",
+  "request_source_sha": "0b8f752f79561789d6d3b6ed68dc7f0bffd9e1f3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A customer promotion turns two employees' livelihoods into a popularity contest neither can afford to lose.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-c6d6b935896b29270dd3",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "Two Names Beside the Token Jars"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-22T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39250639405"
+  },
+  "youtube_video_id": "jGyfjkXwbBg"
+}
