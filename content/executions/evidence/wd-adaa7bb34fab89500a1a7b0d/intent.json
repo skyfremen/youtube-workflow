@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-adaa7bb34fab89500a1a7b0d",
+  "created_at": "2026-10-19T12:23:53.850298Z",
+  "evidence_version": 2,
+  "execution_id": "ex-1f87e9b98e447d5aaa2915fb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fd6934869e63d051210f8ebd53c81ed243f8297c",
+  "record_type": "intent",
+  "request_blob_sha": "1f6961e6ff97b4ca333823b110312b02b5c198f8",
+  "request_id": "rq-64355ae0806277ec20f06939",
+  "request_path": "content/requests/rq-64355ae0806277ec20f06939.json",
+  "request_source_sha": "0b8f752f79561789d6d3b6ed68dc7f0bffd9e1f3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding flower budget becomes a sale of hair its owner never agreed to cut.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-3e2dc67ac62369ad4932",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Measuring Tape in Mom's Kitchen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-22T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39250636094"
+  }
+}
