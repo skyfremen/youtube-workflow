@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f5e56be44fbde5d9dbdb90f2",
+  "created_at": "2026-10-19T00:16:05.168433Z",
+  "evidence_version": 2,
+  "execution_id": "ex-23017385584dead5b685d7e1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a6d839e77a262aac1c4b826f6624f1b85058cda7",
+  "record_type": "intent",
+  "request_blob_sha": "3282a2af5c1951d1806a2d8cb8efa1572a844c14",
+  "request_id": "rq-3909c81ff247fcbd592f5b48",
+  "request_path": "content/requests/rq-3909c81ff247fcbd592f5b48.json",
+  "request_source_sha": "c89cc45ab3ee82fbaf6ce633874b1d83b1f331c2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding planner stages a dramatic interruption and discovers that the damage does not reset between takes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-0f61804821534fe2f0dc",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Objection She Wanted to Film Twice"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-21T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39179476079"
+  }
+}
