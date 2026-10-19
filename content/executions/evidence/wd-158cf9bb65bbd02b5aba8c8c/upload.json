@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-158cf9bb65bbd02b5aba8c8c",
+  "evidence_version": 2,
+  "execution_id": "ex-c4c90a3a706caee25b115224",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "391de91af19d08fe193d67f1ce76452b131863f1",
+  "record_type": "upload",
+  "recorded_at": "2026-10-19T12:21:29.419543Z",
+  "request_blob_sha": "1f6961e6ff97b4ca333823b110312b02b5c198f8",
+  "request_id": "rq-64355ae0806277ec20f06939",
+  "request_path": "content/requests/rq-64355ae0806277ec20f06939.json",
+  "request_source_sha": "0b8f752f79561789d6d3b6ed68dc7f0bffd9e1f3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's business promise becomes an engagement announcement neither intended participant agreed to.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9530aaf2cbc9293dff5f",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Engagement Toast with the Wrong Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-22T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39250630295"
+  },
+  "youtube_video_id": "cDJv7E3VVAE"
+}
