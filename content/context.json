@@ -105,7 +105,7 @@
           "dimension": "category",
           "evidence_median_views": 209.0,
           "mature_sample": 23,
-          "sample_size": 26,
+          "sample_size": 27,
           "value": "consumer"
         },
         {
@@ -133,19 +133,19 @@
           "value": "confession"
         },
         {
-          "average_view_percentage": 54.98,
+          "average_view_percentage": 55.47,
           "dimension": "category",
           "evidence_median_views": 31.0,
-          "mature_sample": 73,
+          "mature_sample": 74,
           "sample_size": 81,
           "value": "family"
         },
         {
-          "average_view_percentage": 48.17,
+          "average_view_percentage": 53.75,
           "dimension": "story_tone",
-          "evidence_median_views": 25.0,
-          "mature_sample": 54,
-          "sample_size": 66,
+          "evidence_median_views": 31.0,
+          "mature_sample": 55,
+          "sample_size": 64,
           "value": "warm"
         }
       ],
@@ -153,45 +153,45 @@
         {
           "average_view_percentage": 58.47,
           "dimension": "category",
-          "evidence_median_views": 3.5,
+          "evidence_median_views": 4.0,
           "mature_sample": 17,
-          "sample_size": 18,
+          "sample_size": 17,
           "value": "friends"
         },
         {
-          "average_view_percentage": 62.2,
+          "average_view_percentage": 65.44,
           "dimension": "story_tone",
-          "evidence_median_views": 5.0,
-          "mature_sample": 20,
-          "sample_size": 21,
-          "value": "comedy"
-        },
-        {
-          "average_view_percentage": 42.09,
-          "dimension": "hook_type",
           "evidence_median_views": 5.0,
           "mature_sample": 18,
           "sample_size": 19,
+          "value": "comedy"
+        },
+        {
+          "average_view_percentage": 58.34,
+          "dimension": "hook_type",
+          "evidence_median_views": 5.5,
+          "mature_sample": 17,
+          "sample_size": 18,
           "value": "consequence_first"
         },
         {
-          "average_view_percentage": 57.87,
+          "average_view_percentage": 58.18,
           "dimension": "hook_type",
           "evidence_median_views": 6.0,
-          "mature_sample": 58,
-          "sample_size": 62,
+          "mature_sample": 57,
+          "sample_size": 61,
           "value": "money_stakes"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-20T11:30:29Z",
-      "videos_analyzed": 503
+      "latest_realtime_snapshot": "2026-10-20T17:30:29Z",
+      "videos_analyzed": 500
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 408.0,
+          "evidence_median_views": 397.5,
           "sample_size": 168,
           "window": "08-11"
         },
@@ -201,9 +201,9 @@
           "window": "16-19"
         },
         {
-          "evidence_median_views": 5.5,
-          "sample_size": 162,
-          "window": "12-15"
+          "evidence_median_views": 5.0,
+          "sample_size": 51,
+          "window": "00-03"
         }
       ],
       "weak_publish_windows_sgt": [
@@ -214,26 +214,26 @@
         },
         {
           "evidence_median_views": 4.0,
-          "sample_size": 36,
+          "sample_size": 34,
           "window": "20-23"
         }
       ]
     },
-    "generated_at": "2026-10-20T11:30:29Z",
+    "generated_at": "2026-10-20T17:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 497,
-        "2h": 232,
-        "6h": 485,
-        "72h": 483,
-        "7d": 455
+        "24h": 494,
+        "2h": 230,
+        "6h": 482,
+        "72h": 480,
+        "7d": 452
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 19 due checkpoints; will retry"
+      "Optional retention returned empty curves for 20 due checkpoints; will retry"
     ]
   },
   "background_categories": [
