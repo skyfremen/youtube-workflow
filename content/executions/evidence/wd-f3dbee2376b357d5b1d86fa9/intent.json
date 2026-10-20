@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-f3dbee2376b357d5b1d86fa9",
+  "created_at": "2026-10-20T12:18:58.711719Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6142d21133547c43d9005bf7",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6092183b428fb3eafb3ff47b7aa0696990902718",
+  "record_type": "intent",
+  "request_blob_sha": "6fd07cf3e5f3f5168d88c04e9067728375d61539",
+  "request_id": "rq-bbd01312234c2f0ad9fb888e",
+  "request_path": "content/requests/rq-bbd01312234c2f0ad9fb888e.json",
+  "request_source_sha": "4c9e6f0e6852ca6837dc91cd0f2a5690cb674c55",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An ex-husband's job application asks the person he abandoned to certify that he stayed.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1a50de9bfc35a129eca8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Caring Years on His Application"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-23T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39420503617"
+  }
+}
