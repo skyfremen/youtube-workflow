@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d6cb50d702401ee1293a81ff",
+  "created_at": "2026-10-20T12:21:06.184470Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e287ea36e44066c993bd2b5b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ec103b0c6121a5b72392d668698cec6cd74fbd51",
+  "record_type": "intent",
+  "request_blob_sha": "6fd07cf3e5f3f5168d88c04e9067728375d61539",
+  "request_id": "rq-bbd01312234c2f0ad9fb888e",
+  "request_path": "content/requests/rq-bbd01312234c2f0ad9fb888e.json",
+  "request_source_sha": "4c9e6f0e6852ca6837dc91cd0f2a5690cb674c55",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A daughter refuses to disguise her father's new relationship as part of her mother's care.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-ddf9b4f2ba2ead492bb9",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Nurse Dad Wanted Me to Introduce"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-23T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39420500509"
+  }
+}
