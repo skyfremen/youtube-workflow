@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-25d36993ddcf7ff91bb4341d",
+  "created_at": "2026-10-20T12:19:08.024260Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c345fee390d418cd7de3ebd5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "da319e72e398ce47ae7e1bdb4e9f14218a4963c6",
+  "record_type": "intent",
+  "request_blob_sha": "6fd07cf3e5f3f5168d88c04e9067728375d61539",
+  "request_id": "rq-bbd01312234c2f0ad9fb888e",
+  "request_path": "content/requests/rq-bbd01312234c2f0ad9fb888e.json",
+  "request_source_sha": "4c9e6f0e6852ca6837dc91cd0f2a5690cb674c55",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A final staff meeting offers independence with a price tag and the same boss holding the references.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-74521d8a59253e0053ae",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Starter Kits Under Our Layoff Chairs"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-23T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39420506800"
+  }
+}
