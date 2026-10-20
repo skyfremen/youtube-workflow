@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1a61c3b41abed2b9b2ab0844",
+  "created_at": "2026-10-20T12:19:55.202146Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0193a79cf75f28fe886b52a5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "417b29b4f01f4d4bee1014a13dc106a93fabd8ae",
+  "record_type": "intent",
+  "request_blob_sha": "6fd07cf3e5f3f5168d88c04e9067728375d61539",
+  "request_id": "rq-bbd01312234c2f0ad9fb888e",
+  "request_path": "content/requests/rq-bbd01312234c2f0ad9fb888e.json",
+  "request_source_sha": "4c9e6f0e6852ca6837dc91cd0f2a5690cb674c55",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A coffee invitation exposes an open marriage with permission for only one partner.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-9c771d46feba50133a62",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Rule That Only Applied on Night Shifts"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-23T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39420510174"
+  }
+}
