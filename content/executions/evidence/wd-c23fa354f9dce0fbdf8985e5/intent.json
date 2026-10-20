@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-c23fa354f9dce0fbdf8985e5",
+  "created_at": "2026-10-20T12:22:49.426360Z",
+  "evidence_version": 2,
+  "execution_id": "ex-ec671cc68bbfbc73feb425de",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "32e3ba4b24d8879c23cd2f4b4bcef14244c7a3a9",
+  "record_type": "intent",
+  "request_blob_sha": "6fd07cf3e5f3f5168d88c04e9067728375d61539",
+  "request_id": "rq-bbd01312234c2f0ad9fb888e",
+  "request_path": "content/requests/rq-bbd01312234c2f0ad9fb888e.json",
+  "request_source_sha": "4c9e6f0e6852ca6837dc91cd0f2a5690cb674c55",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An ex-husband buys room hire, then discovers the group's support is not his to direct.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-145c06ef051609174821",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Flowers at My Divorce Support Group"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T01:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39420513539"
+  }
+}
