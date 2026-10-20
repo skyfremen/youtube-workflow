@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9a8635342fc39fd3848119b0",
+  "evidence_version": 2,
+  "execution_id": "ex-0c01525d8fba59eff0f9268e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "14497a51488b8fd2d291fff096f1b0f6227769ae",
+  "record_type": "upload",
+  "recorded_at": "2026-10-20T00:22:40.781727Z",
+  "request_blob_sha": "dd08c63828aa0aa6da27d08a436fe745483d3fdb",
+  "request_id": "rq-caaca7b402c7a2c1ac6ddfb1",
+  "request_path": "content/requests/rq-caaca7b402c7a2c1ac6ddfb1.json",
+  "request_source_sha": "81b9912bfa0c830651a6db618fe185b128571c0e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A coach's private promise puts both competitors' achievements at risk before they step onto the court.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-b8f2ebd1f12faecb012d",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Final He Wanted Me to Give Away"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-23T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39346701730"
+  },
+  "youtube_video_id": "A2JUgUf_aq4"
+}
