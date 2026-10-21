@@ -78,6 +78,33 @@ class DraftValidationTests(unittest.TestCase):
         self.assertEqual(short[0]["field"], "winners[0].narration")
         self.assertEqual(short[1]["field"], "winners[2].narration")
 
+    def test_planned_youtube_metadata_propagates_without_changing_description(self):
+        hashtags=["#WackyDramas","#Shorts"]+[f"#DramaTopic{i}" for i in range(8)]
+        tags=["wacky dramas","shorts"]+[f"drama topic {i}" for i in range(8)]
+        source=winner(valid_narration(),hashtags=hashtags,tags=tags)
+        normalized=p.normalize_draft(draft_doc(source))
+        self.assertEqual(p.collect_draft_violations(normalized), [])
+        with patch.object(p,"bg_contract",return_value=valid_background_contract()):
+            item=p.make_item("draft-testtags01",0,normalized["winners"][0],{},"2030-01-01T00:00:00Z")
+        self.assertEqual(item["youtube"]["hashtags"],hashtags)
+        self.assertEqual(item["youtube"]["tags"],tags)
+        self.assertEqual(item["youtube"]["description"],source["description"])
+        p.validate_item(item,None)
+
+    def test_invalid_planned_metadata_is_reported_by_winner(self):
+        bad=winner(valid_narration(),hashtags=["#WackyDramas","#Shorts"]+["#Repeated"]*8,tags=["repeated"]*10)
+        violations=p.collect_draft_violations(p.normalize_draft(draft_doc(bad)))
+        self.assertEqual({v["error_code"] for v in violations},{"INVALID_YOUTUBE_HASHTAGS","INVALID_YOUTUBE_TAGS"})
+        self.assertEqual({v["winner_index"] for v in violations},{0})
+
+    def test_legacy_draft_preserves_existing_upload_metadata_fallback(self):
+        normalized=p.normalize_draft(draft_doc(winner(valid_narration())))
+        self.assertEqual(p.collect_draft_violations(normalized),[])
+        with patch.object(p,"bg_contract",return_value=valid_background_contract()):
+            item=p.make_item("draft-testlegacy01",0,normalized["winners"][0],{},"2030-01-01T00:00:00Z")
+        self.assertEqual(item["youtube"]["hashtags"],["#WackyDramas","#Shorts"])
+        self.assertEqual(item["youtube"]["tags"],["Wacky Dramas","Shorts"])
+
     def test_valid_draft_has_no_creative_violations(self):
         normalized = p.normalize_draft(draft_doc(winner(valid_narration())))
         self.assertEqual(p.collect_draft_violations(normalized), [])
