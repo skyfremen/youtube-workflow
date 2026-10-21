@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8501d9e7ce49143ad181c73b",
+  "evidence_version": 2,
+  "execution_id": "ex-23f347fb7ab6d32021722b4d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "973a8780992e22db9c19dbc095227e53a5b33004",
+  "record_type": "upload",
+  "recorded_at": "2026-10-21T12:18:01.382986Z",
+  "request_blob_sha": "4e79aca5dc52c17787c085659d8324b890c06918",
+  "request_id": "rq-bb3ba6f162f5acf6295f01ea",
+  "request_path": "content/requests/rq-bb3ba6f162f5acf6295f01ea.json",
+  "request_source_sha": "e5cad8d19573b18d037a3fa31bfe9563b6b45e4c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A delayed furniture order appears in a sponsored apartment reveal, forcing two customers to compare what the store promised them.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-62cef909bffa0ab66260",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Delivery Label Under Her Sofa"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "29cf9d8a843b419398d2ab0b4da1e252aefb5155",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39597411835"
+  },
+  "youtube_video_id": "GYWOnCg6FSE"
+}
