@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b07f7360a2cf29f16d6ff2d3",
+  "evidence_version": 2,
+  "execution_id": "ex-95e0535fb3c52e4a866cccb4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7ba3591193f38822053bfad9d9297be0c9d00fa6",
+  "record_type": "upload",
+  "recorded_at": "2026-10-21T00:11:13.121690Z",
+  "request_blob_sha": "e4004c0edeaf9d8f145a91918f738c5a8df58b8c",
+  "request_id": "rq-831d48b9f08f32ee3a29d5dd",
+  "request_path": "content/requests/rq-831d48b9f08f32ee3a29d5dd.json",
+  "request_source_sha": "0e8732615d49e1f672833b513c92409ab03ea7b4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A professor builds a fairness campaign around tuition money belonging to a student who never volunteered it.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-a5a415d0de88a1124093",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Scholarship He Shared Before Asking Me"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T13:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39519012218"
+  },
+  "youtube_video_id": "uBe2mhB0rVQ"
+}
