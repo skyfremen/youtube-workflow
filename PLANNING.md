@@ -135,6 +135,15 @@ Every winner follows the same creative contract. Tell addictive, relatable every
 - Trend-aware planning is disabled. Every winner must set `trend_aware` to `false` and `trend_topic` to `null` for deterministic contract compatibility. Do not perform trend research or select a premise because it is currently trending.
 - No background music.
 
+## Episode-specific YouTube hashtags and searchable tags — ChatGPT planning only
+
+After the final story, title and existing `description` are accepted, generate two additional fields on **every newly planned winner**: `hashtags` and `tags`. Keep the existing description generation and wording rules **unchanged**. Generate these once during ChatGPT planning, freeze them in the immutable draft, and pass them unchanged through deterministic finalization and production. The uploader must not invent story-specific tags. Do not change existing immutable drafts or requests; historical drafts without the new fields retain the existing two-hashtag/two-tag fallback.
+
+- `hashtags`: **10–15 distinct hashtags**, including `#WackyDramas` and `#Shorts`. Each begins with `#` and contains 2–40 ASCII letters/digits after it. Make at least eight others specific to the story's actual setting, relationship, accusation, betrayal, stakes, action or emotional payoff. No irrelevant trending tags, duplicate/case variants or unearned twist spoilers.
+- `tags`: **10–15 distinct YouTube Studio search phrases** (no `#`), each 2–60 characters using letters, numbers, spaces, apostrophes and hyphens; combined length plus one separator per tag must not exceed 400 characters. Include `wacky dramas` and `shorts` where relevant, and make the others natural, story-specific search terms. Avoid repetitive keyword stuffing.
+- Both arrays must independently have at least ten unique entries, ignoring case. Check every tag against the **actual** hook, narration, twist and payoff. Do not reveal an undisclosed twist, invent a relationship or claim an outcome the story never delivers. Preserve the publisher's existing unique upload-tracking marker.
+- New winners must include both fields. Repairs preserve unaffected winners and regenerate tags only for a winner whose story/title changes. Deterministic preflight validates the format and counts; older committed drafts lacking either field remain valid for backward compatibility. The uploader's normal description and tracking behavior stay unchanged.
+
 ## Hook types
 
 Supported opening mechanisms:
@@ -172,6 +181,8 @@ Only the declared-count plus array shape is valid: `winner_count` together with 
       "narration": "...",
       "title": "...",
       "description": "...",
+      "hashtags": ["#WackyDramas", "#Shorts", "#WorkplaceDrama", "#OfficeDrama", "#FalseAccusation", "#WorkplaceBetrayal", "#ToxicBoss", "#OfficePolitics", "#CaughtLying", "#StoryTime"],
+      "tags": ["wacky dramas", "shorts", "workplace drama", "office drama", "false accusation", "workplace betrayal", "toxic boss", "office politics", "manager blames employee", "dramatic story"],
       "lead_gender": "female",
       "story_tone": "dramatic",
       "payoff": "...",
