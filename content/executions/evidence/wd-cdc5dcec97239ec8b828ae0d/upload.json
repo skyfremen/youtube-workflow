@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cdc5dcec97239ec8b828ae0d",
+  "evidence_version": 2,
+  "execution_id": "ex-45963275538fa5286a403969",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0519dcefd652fed554f263a7e5d32f4a1fffb20c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-21T15:47:56.608207Z",
+  "request_blob_sha": "738bc32e1bee8b715e9c203075f9cbf731e43745",
+  "request_id": "rq-c6376114e1297e70bd2143e9",
+  "request_path": "content/requests/rq-c6376114e1297e70bd2143e9.json",
+  "request_source_sha": "0d55594b52a8ff1c161c7e679e83e706cd547dac",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride learns her mother secretly ordered a second wedding portrait without her eight-year-old stepdaughter, forcing the family to decide who belongs in the picture.\n\n#WackyDramas #Shorts #WeddingDrama #BlendedFamily #StepdaughterLove #FamilyPortrait #FlowerGirl #WeddingPhotos #FamilyConflict #MotherDaughterDrama #FamilyBelonging #WeddingStory",
+      "tags": [
+        "wd-id-02a3c3da499051bd83d3",
+        "wacky dramas",
+        "shorts",
+        "wedding family drama",
+        "stepdaughter wedding story",
+        "blended family conflict",
+        "wedding photographer drama",
+        "family portrait argument",
+        "flower girl story",
+        "mother of the bride drama",
+        "protecting a stepdaughter",
+        "wedding photo conflict",
+        "emotional family story",
+        "WackyDramas",
+        "WeddingDrama",
+        "BlendedFamily",
+        "StepdaughterLove",
+        "FamilyPortrait",
+        "FlowerGirl",
+        "WeddingPhotos",
+        "FamilyConflict",
+        "MotherDaughterDrama",
+        "FamilyBelonging",
+        "WeddingStory"
+      ],
+      "title": "The Portrait Mom Called a Backup"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-25T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39627824946"
+  },
+  "youtube_video_id": "tUdK_1ITYNo"
+}
