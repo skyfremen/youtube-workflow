@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-022b3d10b54fc0f79f3e76f2",
+  "created_at": "2026-10-21T12:16:07.369598Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0f238a26f7369b052945d98d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d504807b2f7f87f63139cc12746d256bf3866ef2",
+  "record_type": "intent",
+  "request_blob_sha": "4e79aca5dc52c17787c085659d8324b890c06918",
+  "request_id": "rq-bb3ba6f162f5acf6295f01ea",
+  "request_path": "content/requests/rq-bb3ba6f162f5acf6295f01ea.json",
+  "request_source_sha": "e5cad8d19573b18d037a3fa31bfe9563b6b45e4c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A server's private wage advance becomes a receipt promotion until her coworkers discover where the public's help is really going.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-156a8c23a9c1b9ca1412",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Debt Printed Below Every Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-25T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "29cf9d8a843b419398d2ab0b4da1e252aefb5155",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39597419320"
+  }
+}
