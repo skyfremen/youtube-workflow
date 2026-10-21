@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-54273809862e651af76dc03c",
+  "evidence_version": 2,
+  "execution_id": "ex-016b1833a6ec05e391b0c3a6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f919b6cf4facdb51856e1a0e0917fda9ca0c073a",
+  "record_type": "upload",
+  "recorded_at": "2026-10-21T12:17:06.125290Z",
+  "request_blob_sha": "4e79aca5dc52c17787c085659d8324b890c06918",
+  "request_id": "rq-bb3ba6f162f5acf6295f01ea",
+  "request_path": "content/requests/rq-bb3ba6f162f5acf6295f01ea.json",
+  "request_source_sha": "e5cad8d19573b18d037a3fa31bfe9563b6b45e4c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride's ceremony stops for a family employment contract that exposes what marriage into the business would really cost.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-1d911f5fcc98a1fd0027",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Contract Beneath Our Wedding Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "29cf9d8a843b419398d2ab0b4da1e252aefb5155",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39597408275"
+  },
+  "youtube_video_id": "Vtk5K1zJdYU"
+}
