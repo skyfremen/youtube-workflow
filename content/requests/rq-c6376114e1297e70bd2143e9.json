@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "background": {
+        "mode": "concatenated_fit_to_short",
+        "segments": [
+          {
+            "background_id": "px-9736342",
+            "segment_duration_seconds": 88.417,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-6660939",
+            "segment_duration_seconds": 89.32,
+            "segment_start_seconds": 0.0
+          },
+          {
+            "background_id": "px-7480066",
+            "segment_duration_seconds": 69.482,
+            "segment_start_seconds": 0.0
+          }
+        ]
+      },
+      "channel": {
+        "handle": "@WACKYDRAMAS",
+        "name": "Wacky Dramas"
+      },
+      "content_id": "wd-cdc5dcec97239ec8b828ae0d",
+      "narration": {
+        "engine": "kokoro",
+        "speed": 1.75,
+        "voice": "af_bella"
+      },
+      "publication": {
+        "mode": "scheduled",
+        "publish_at": "2026-10-25T10:00:00Z"
+      },
+      "render": {
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "background_music": false,
+        "fps": 30,
+        "h264_profile": "high",
+        "height": 1920,
+        "pixel_format": "yuv420p",
+        "video_codec": "h264",
+        "width": 1080
+      },
+      "request_version": 2,
+      "source_draft_id": "draft-20261021T233215-b8e4a3fd",
+      "story": {
+        "card_emojis": [
+          "😳",
+          "💔",
+          "❤️",
+          "🙃"
+        ],
+        "category": "wedding",
+        "conflict": "The bride must stop her mother from excluding her stepdaughter from the new family portrait while the mother insists her payment entitles her to a backup photo showing only 'original family'.",
+        "hook": "My mother ordered a wedding portrait without my stepdaughter. She scheduled it for the five minutes my eight-year-old was supposed to fix her flower-girl shoes.",
+        "hook_type": "contradiction",
+        "lead_gender": "female",
+        "like_cta": "LIKE IF LILY BELONGED",
+        "premise": "A bride discovers her mother secretly ordered a second wedding portrait that excludes the bride's eight-year-old stepdaughter while the girl is away fixing her flower-girl shoes.",
+        "punchline": "She's the one who stepped out of it.",
+        "script": "Our photographer stopped me before family pictures because Mom had handed him a second shot list. It said 'original family' and left Lily's name off. I asked Mom what that meant. She said marriages end, and she wanted one picture of 'us' without a child I hadn't given birth to. Lily heard her. She froze with one shoe in her hand and asked if she should wait in the hallway. I told Lily she was staying beside me. Mom pulled my aunt over and called me unreasonable for refusing one harmless backup photo. My aunt agreed until my husband said he'd step out too. 'If my daughter isn't family, I'm not either.' Mom pointed out that she'd paid for the photographer and demanded he follow her list. I offered to cover his bill. He said the couple had approved the portraits, not Mom, and asked everyone to get into position. Mom refused. She stood behind the camera, waiting for me to change my mind. We took the photos with Lily in the center. During dinner, she spotted the empty spot where Grandma usually stood. She asked if she'd done something wrong. I told her Grandma had made her own choice, and none of it was Lily's fault. Mom wanted a backup picture in case our family broke apart. She's the one who stepped out of it.",
+        "story_tone": "dramatic",
+        "trend_aware": false,
+        "trend_topic": null,
+        "twist": "The mother, attempting to preserve a picture without the stepdaughter in case the marriage fails, refuses to join the real family portrait and becomes the only missing relative herself."
+      },
+      "visibility": "private",
+      "youtube": {
+        "category_id": "24",
+        "description": "A bride learns her mother secretly ordered a second wedding portrait without her eight-year-old stepdaughter, forcing the family to decide who belongs in the picture.",
+        "hashtags": [
+          "#WackyDramas",
+          "#Shorts",
+          "#WeddingDrama",
+          "#BlendedFamily",
+          "#StepdaughterLove",
+          "#FamilyPortrait",
+          "#FlowerGirl",
+          "#WeddingPhotos",
+          "#FamilyConflict",
+          "#MotherDaughterDrama",
+          "#FamilyBelonging",
+          "#WeddingStory"
+        ],
+        "made_for_kids": false,
+        "tags": [
+          "wacky dramas",
+          "shorts",
+          "wedding family drama",
+          "stepdaughter wedding story",
+          "blended family conflict",
+          "wedding photographer drama",
+          "family portrait argument",
+          "flower girl story",
+          "mother of the bride drama",
+          "protecting a stepdaughter",
+          "wedding photo conflict",
+          "emotional family story"
+        ],
+        "title": "The Portrait Mom Called a Backup"
+      }
+    }
+  ],
+  "request_id": "rq-c6376114e1297e70bd2143e9",
+  "request_version": 2,
+  "source_draft_id": "draft-20261021T233215-b8e4a3fd"
+}
