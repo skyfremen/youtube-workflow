@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-d0d15ec9c6495f98a08bb08c",
+  "created_at": "2026-10-21T12:19:32.673578Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a98f5bca5b2d9f3be4c1990f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c6f20ef0d82396b6e4e2ff55785f3e6076cb29e7",
+  "record_type": "intent",
+  "request_blob_sha": "4e79aca5dc52c17787c085659d8324b890c06918",
+  "request_id": "rq-bb3ba6f162f5acf6295f01ea",
+  "request_path": "content/requests/rq-bb3ba6f162f5acf6295f01ea.json",
+  "request_source_sha": "e5cad8d19573b18d037a3fa31bfe9563b6b45e4c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A library exhibit turns personal storage into public history until the anonymous writer stands up in the audience.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-553701471917f5f35ae8",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Anonymous Diary Behind Library Glass"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-25T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "29cf9d8a843b419398d2ab0b4da1e252aefb5155",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39597422720"
+  }
+}
