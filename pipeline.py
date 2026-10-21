@@ -184,7 +184,7 @@ def build_context():
 def normalize_winner(w,index):
     if not isinstance(w,dict): raise VError("INVALID_WINNER_FIELDS",f"winners[{index}]",type(w).__name__,"winner object")
     hook=clean(w.get("hook")); script=strip_repeated_hook(hook,w.get("narration")); raw_topic=w.get("trend_topic")
-    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"like_cta":clean(w.get("like_cta")),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
+    return {"premise":clean(w.get("premise")),"category":clean(w.get("category")),"conflict":clean(w.get("conflict")),"twist":clean(w.get("twist")),"hook":hook,"hook_type":clean(w.get("hook_type")).casefold(),"narration":script,"title":clean(w.get("title")),"description":truncate_utf8(w.get("description"),5000),"hashtags":w.get("hashtags"),"tags":w.get("tags"),"lead_gender":normalize_gender(w.get("lead_gender")),"story_tone":normalize_tone(w.get("story_tone")),"payoff":resolve_payoff(w.get("payoff"),script),"like_cta":clean(w.get("like_cta")),"emoji_cues":w.get("emoji_cues"),"background_category":clean(w.get("background_category")),"trend_aware":w.get("trend_aware"),"trend_topic":raw_topic.strip() if isinstance(raw_topic,str) else raw_topic}
 def declared_winner_count(x,required=True):
     if "winner_count" not in x:
         if required: raise VError("MISSING_WINNER_COUNT","winner_count",None,"positive integer matching the caller-provided winner_count",False)
@@ -284,6 +284,18 @@ def collect_draft_violations(d):
                 out.append({"winner_index":index,"winner_title":title,"error_code":"NARRATION_TOO_SHORT" if secs<MIN_NARR else "NARRATION_TOO_LONG","field":f"winners[{index}].narration","observed_value":f"estimated_seconds={secs}","required_constraint":f"{MIN_NARR:g}-{MAX_NARR:g}s"})
         if title and len(title)>100:
             out.append({"winner_index":index,"winner_title":title,"error_code":"TITLE_TOO_LONG","field":f"winners[{index}].title","observed_value":len(title),"required_constraint":"<=100"})
+        for field, minimum, maximum in (("hashtags",10,15),("tags",10,15)):
+            values=w.get(field)
+            if values is None: continue  # Legacy immutable drafts retain their original metadata.
+            valid=isinstance(values,list) and minimum<=len(values)<=maximum and all(isinstance(v,str) and v==v.strip() for v in values)
+            if valid:
+                valid=len({v.casefold() for v in values})==len(values)
+            if valid and field=="hashtags":
+                valid=all(re.fullmatch(r"#[A-Za-z0-9]{2,40}",v) for v in values) and {"#wackydramas","#shorts"}.issubset({v.casefold() for v in values})
+            if valid and field=="tags":
+                valid=all(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 '\\-]{1,59}",v) for v in values) and sum(len(v)+1 for v in values)<=400
+            if not valid:
+                out.append({"winner_index":index,"winner_title":title,"error_code":"INVALID_YOUTUBE_"+field.upper(),"field":f"winners[{index}].{field}","observed_value":values,"required_constraint":f"{minimum}-{maximum} distinct, correctly formatted episode-specific {field}"})
     return out
 
 def bg_contract(category,r,seed):
@@ -402,7 +414,7 @@ def make_item(did,index,w,r,publish_at):
     cid=content_id_for(did,index,w); g=w["lead_gender"]; t=w["story_tone"]
     story={"category":w["category"],"premise":w["premise"],"conflict":w["conflict"],"twist":w["twist"],"hook":w["hook"],"hook_type":w["hook_type"],"script":w["narration"],"lead_gender":g,"story_tone":t,"punchline":w["payoff"],"card_emojis":resolve_emojis(w.get("emoji_cues")),"trend_aware":w["trend_aware"],"trend_topic":w["trend_topic"]}
     if clean(w.get("like_cta")): story["like_cta"]=clean(w["like_cta"])
-    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":story,"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":["#WackyDramas","#Shorts"],"tags":["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
+    return {"request_version":2,"content_id":cid,"source_draft_id":did,"channel":{"name":"Wacky Dramas","handle":"@WACKYDRAMAS"},"story":story,"narration":{"engine":"kokoro","voice":voice(g,t),"speed":TTS_SPEED},"background":bg_contract(w.get("background_category"),r,cid),"youtube":{"title":w["title"],"description":w["description"],"hashtags":w.get("hashtags") if w.get("hashtags") is not None else ["#WackyDramas","#Shorts"],"tags":w.get("tags") if w.get("tags") is not None else ["Wacky Dramas","Shorts"],"category_id":"24","made_for_kids":False},"publication":{"mode":"scheduled","publish_at":publish_at},"visibility":"private","render":{"width":1080,"height":1920,"fps":30,"video_codec":"h264","h264_profile":"high","pixel_format":"yuv420p","audio_codec":"aac","audio_sample_rate":48000,"background_music":False}}
 def validate_item(x,r=None):
     top={"request_version","content_id","source_draft_id","channel","story","narration","background","youtube","publication","visibility","render"}
     if not isinstance(x,dict) or set(x)!=top: raise VError("INVALID_REQUEST_ITEM_FIELDS","item",sorted(x) if isinstance(x,dict) else type(x).__name__,"exact V2 item fields",False)
