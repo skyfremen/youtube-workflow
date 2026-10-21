@@ -1,0 +1,39 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7c61ba87ab90f8272af9b5bf",
+  "evidence_version": 2,
+  "execution_id": "ex-add184cc989cc953a3b97012",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b3d1a3e77a7c3d25e2f94493326ff0323eb87dc9",
+  "record_type": "upload",
+  "recorded_at": "2026-10-21T00:09:41.323812Z",
+  "request_blob_sha": "e4004c0edeaf9d8f145a91918f738c5a8df58b8c",
+  "request_id": "rq-831d48b9f08f32ee3a29d5dd",
+  "request_path": "content/requests/rq-831d48b9f08f32ee3a29d5dd.json",
+  "request_source_sha": "0e8732615d49e1f672833b513c92409ab03ea7b4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A rental's quiet-hours inspection begins with the host stepping out from behind the guests' clothes.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-808f80e5904b4034fd92",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Host Inside Our Bedroom Wardrobe"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T16:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39519014937"
+  },
+  "youtube_video_id": "CODpj50oM90"
+}
