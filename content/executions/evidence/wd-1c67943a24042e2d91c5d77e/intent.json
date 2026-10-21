@@ -1,0 +1,37 @@
+{
+  "content_id": "wd-1c67943a24042e2d91c5d77e",
+  "created_at": "2026-10-21T00:11:52.770919Z",
+  "evidence_version": 2,
+  "execution_id": "ex-479f0b7b260bcb618bf32d88",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "960d183057ae2aa847802d4befda6dc0e29e9251",
+  "record_type": "intent",
+  "request_blob_sha": "e4004c0edeaf9d8f145a91918f738c5a8df58b8c",
+  "request_id": "rq-831d48b9f08f32ee3a29d5dd",
+  "request_path": "content/requests/rq-831d48b9f08f32ee3a29d5dd.json",
+  "request_source_sha": "0e8732615d49e1f672833b513c92409ab03ea7b4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A paid driving lesson becomes an instructor's school run and a test the student never agreed to take.\n\n#WackyDramas #Shorts",
+      "tags": [
+        "wd-id-e78ae5c46cad21922156",
+        "Wacky Dramas",
+        "Shorts",
+        "WackyDramas"
+      ],
+      "title": "The Children Waiting in My Driving Lesson"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-24T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "aca77881fffadaef7fcc427d0fe47a6fd0a90310",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "39519007361"
+  }
+}
