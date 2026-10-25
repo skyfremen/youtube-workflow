@@ -75,7 +75,7 @@ def publish_slots(path=PUBLISH_SLOTS):
     if not isinstance(x,dict) or set(x)!={"timezone","slots"}: raise VError("INVALID_PUBLISH_SLOT_CONFIG",str(path),type(x).__name__,"object with timezone and slots",False)
     if clean(x.get("timezone"))!="Asia/Singapore": raise VError("INVALID_PUBLISH_SLOT_TIMEZONE","timezone",x.get("timezone"),"Asia/Singapore",False)
     raw=x.get("slots")
-    if not isinstance(raw,list) or len(raw)!=8: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 8 daily slots",False)
+    if not isinstance(raw,list) or len(raw)!=5: raise VError("INVALID_PUBLISH_SLOTS","slots",type(raw).__name__ if not isinstance(raw,list) else len(raw),"exactly 5 daily slots",False)
     out=[]
     for index,value in enumerate(raw):
         m=re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)",str(value))
@@ -83,7 +83,7 @@ def publish_slots(path=PUBLISH_SLOTS):
         slot=(int(m.group(1)),int(m.group(2)))
         if slot[1] not in {0,10,20,30,40,50}: raise VError("INVALID_PUBLISH_SLOT_MINUTE",f"slots[{index}]",value,"minute 00, 10, 20, 30, 40, or 50",False)
         out.append(slot)
-    if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"8 unique daily slots",False)
+    if len(set(out))!=len(out): raise VError("DUPLICATE_PUBLISH_SLOT","slots",raw,"5 unique daily slots",False)
     if out!=sorted(out): raise VError("UNSORTED_PUBLISH_SLOTS","slots",raw,"ascending daily order",False)
     return out
 
