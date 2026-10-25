@@ -119,7 +119,7 @@
         {
           "average_view_percentage": 46.36,
           "dimension": "story_tone",
-          "evidence_median_views": 38.5,
+          "evidence_median_views": 35.0,
           "mature_sample": 49,
           "sample_size": 52,
           "value": "warm"
@@ -185,31 +185,31 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-25T11:30:27Z",
-      "videos_analyzed": 417
+      "latest_realtime_snapshot": "2026-10-25T17:30:29Z",
+      "videos_analyzed": 414
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 300.0,
+          "evidence_median_views": 297.5,
           "sample_size": 150,
           "window": "08-11"
         },
         {
-          "evidence_median_views": 18.5,
-          "sample_size": 42,
+          "evidence_median_views": 24.0,
+          "sample_size": 41,
           "window": "00-03"
         },
         {
           "evidence_median_views": 5.0,
-          "sample_size": 30,
-          "window": "16-19"
+          "sample_size": 150,
+          "window": "12-15"
         }
       ],
       "weak_publish_windows_sgt": [
         {
           "evidence_median_views": 3.0,
-          "sample_size": 22,
+          "sample_size": 20,
           "window": "20-23"
         },
         {
@@ -219,15 +219,15 @@
         }
       ]
     },
-    "generated_at": "2026-10-25T11:30:27Z",
+    "generated_at": "2026-10-25T17:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 411,
-        "2h": 192,
-        "6h": 416,
-        "72h": 397,
-        "7d": 369
+        "24h": 410,
+        "2h": 190,
+        "6h": 414,
+        "72h": 396,
+        "7d": 368
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
