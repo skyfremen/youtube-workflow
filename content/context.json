@@ -117,14 +117,6 @@
           "value": "wedding"
         },
         {
-          "average_view_percentage": 62.88,
-          "dimension": "category",
-          "evidence_median_views": 42.5,
-          "mature_sample": 24,
-          "sample_size": 31,
-          "value": "consumer"
-        },
-        {
           "average_view_percentage": 60.43,
           "dimension": "hook_type",
           "evidence_median_views": 32.0,
@@ -133,20 +125,28 @@
           "value": "confession"
         },
         {
+          "average_view_percentage": 62.87,
+          "dimension": "category",
+          "evidence_median_views": 31.0,
+          "mature_sample": 25,
+          "sample_size": 31,
+          "value": "consumer"
+        },
+        {
+          "average_view_percentage": 54.17,
+          "dimension": "category",
+          "evidence_median_views": 31.0,
+          "mature_sample": 65,
+          "sample_size": 71,
+          "value": "family"
+        },
+        {
           "average_view_percentage": 45.45,
           "dimension": "story_tone",
           "evidence_median_views": 31.0,
           "mature_sample": 48,
           "sample_size": 51,
           "value": "warm"
-        },
-        {
-          "average_view_percentage": 54.17,
-          "dimension": "category",
-          "evidence_median_views": 28.5,
-          "mature_sample": 65,
-          "sample_size": 72,
-          "value": "family"
         }
       ],
       "weak_patterns": [
@@ -167,37 +167,37 @@
           "value": "property"
         },
         {
-          "average_view_percentage": 58.33,
-          "dimension": "hook_type",
-          "evidence_median_views": 8.0,
-          "mature_sample": 40,
-          "sample_size": 45,
-          "value": "money_stakes"
-        },
-        {
           "average_view_percentage": 52.82,
           "dimension": "story_tone",
           "evidence_median_views": 10.0,
           "mature_sample": 95,
           "sample_size": 101,
           "value": "natural"
+        },
+        {
+          "average_view_percentage": 58.64,
+          "dimension": "hook_type",
+          "evidence_median_views": 10.0,
+          "mature_sample": 38,
+          "sample_size": 43,
+          "value": "money_stakes"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-26T11:30:28Z",
-      "videos_analyzed": 393
+      "latest_realtime_snapshot": "2026-10-26T17:30:29Z",
+      "videos_analyzed": 390
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 284.5,
+          "evidence_median_views": 282.0,
           "sample_size": 144,
           "window": "08-11"
         },
         {
-          "evidence_median_views": 18.5,
-          "sample_size": 40,
+          "evidence_median_views": 24.0,
+          "sample_size": 39,
           "window": "00-03"
         },
         {
@@ -208,32 +208,32 @@
       ],
       "weak_publish_windows_sgt": [
         {
-          "evidence_median_views": 3.0,
-          "sample_size": 20,
-          "window": "20-23"
-        },
-        {
           "evidence_median_views": 4.0,
           "sample_size": 144,
           "window": "12-15"
+        },
+        {
+          "evidence_median_views": 6.0,
+          "sample_size": 21,
+          "window": "04-07"
         }
       ]
     },
-    "generated_at": "2026-10-26T11:30:28Z",
+    "generated_at": "2026-10-26T17:30:29Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 393,
-        "2h": 176,
-        "6h": 393,
-        "72h": 381,
-        "7d": 353
+        "24h": 390,
+        "2h": 174,
+        "6h": 390,
+        "72h": 380,
+        "7d": 352
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
