@@ -102,7 +102,7 @@
       {
         "average_view_percentage": 52.46,
         "dimension": "hook_type",
-        "evidence_median_views": 101.5,
+        "evidence_median_views": 91.0,
         "mature_sample": 55,
         "sample_size": 60,
         "value": "social_exposure"
@@ -140,15 +140,23 @@
         "value": "confession"
       },
       {
-        "average_view_percentage": 53.27,
-        "dimension": "story_tone",
-        "evidence_median_views": 19.0,
-        "mature_sample": 44,
-        "sample_size": 54,
-        "value": "conversational"
+        "average_view_percentage": 52.95,
+        "dimension": "hook_type",
+        "evidence_median_views": 17.0,
+        "mature_sample": 63,
+        "sample_size": 66,
+        "value": "contradiction"
       }
     ],
     "weak_patterns": [
+      {
+        "average_view_percentage": 18.45,
+        "dimension": "category",
+        "evidence_median_views": 5.0,
+        "mature_sample": 12,
+        "sample_size": 16,
+        "value": "workplace"
+      },
       {
         "average_view_percentage": 48.95,
         "dimension": "category",
@@ -156,14 +164,6 @@
         "mature_sample": 12,
         "sample_size": 14,
         "value": "property"
-      },
-      {
-        "average_view_percentage": 18.45,
-        "dimension": "category",
-        "evidence_median_views": 7.5,
-        "mature_sample": 12,
-        "sample_size": 16,
-        "value": "workplace"
       },
       {
         "average_view_percentage": 45.05,
@@ -184,7 +184,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-28T11:30:30Z",
+    "latest_realtime_snapshot": "2026-10-28T17:30:31Z",
     "videos_analyzed": 347
   },
   "distribution_signals": {
@@ -218,7 +218,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-28T11:30:30Z",
+  "generated_at": "2026-10-28T17:30:31Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
@@ -226,13 +226,12 @@
       "2h": 151,
       "6h": 347,
       "72h": 347,
-      "7d": 323
+      "7d": 325
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 23 due checkpoints; will retry",
-    "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
+    "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ]
 }
