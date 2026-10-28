@@ -100,20 +100,12 @@
     "soft_evidence_only": true,
     "supported_patterns": [
       {
-        "average_view_percentage": 52.43,
+        "average_view_percentage": 52.46,
         "dimension": "hook_type",
         "evidence_median_views": 101.5,
-        "mature_sample": 56,
-        "sample_size": 61,
+        "mature_sample": 55,
+        "sample_size": 60,
         "value": "social_exposure"
-      },
-      {
-        "average_view_percentage": 55.46,
-        "dimension": "category",
-        "evidence_median_views": 47.0,
-        "mature_sample": 77,
-        "sample_size": 80,
-        "value": "wedding"
       },
       {
         "average_view_percentage": 54.17,
@@ -122,6 +114,14 @@
         "mature_sample": 63,
         "sample_size": 65,
         "value": "family"
+      },
+      {
+        "average_view_percentage": 55.48,
+        "dimension": "category",
+        "evidence_median_views": 40.0,
+        "mature_sample": 78,
+        "sample_size": 80,
+        "value": "wedding"
       },
       {
         "average_view_percentage": 46.36,
@@ -140,12 +140,12 @@
         "value": "confession"
       },
       {
-        "average_view_percentage": 55.28,
-        "dimension": "category",
-        "evidence_median_views": 21.0,
-        "mature_sample": 27,
-        "sample_size": 31,
-        "value": "consumer"
+        "average_view_percentage": 53.27,
+        "dimension": "story_tone",
+        "evidence_median_views": 19.0,
+        "mature_sample": 44,
+        "sample_size": 54,
+        "value": "conversational"
       }
     ],
     "weak_patterns": [
@@ -174,18 +174,18 @@
         "value": "work"
       },
       {
-        "average_view_percentage": 52.87,
+        "average_view_percentage": 52.92,
         "dimension": "story_tone",
-        "evidence_median_views": 11.0,
-        "mature_sample": 90,
-        "sample_size": 94,
+        "evidence_median_views": 12.0,
+        "mature_sample": 89,
+        "sample_size": 93,
         "value": "natural"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-28T05:30:29Z",
-    "videos_analyzed": 348
+    "latest_realtime_snapshot": "2026-10-28T11:30:30Z",
+    "videos_analyzed": 347
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -195,8 +195,8 @@
         "window": "08-11"
       },
       {
-        "evidence_median_views": 30.0,
-        "sample_size": 20,
+        "evidence_median_views": 31.0,
+        "sample_size": 19,
         "window": "16-19"
       },
       {
@@ -218,20 +218,21 @@
       }
     ]
   },
-  "generated_at": "2026-10-28T05:30:29Z",
+  "generated_at": "2026-10-28T11:30:30Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 348,
-      "2h": 152,
-      "6h": 348,
-      "72h": 348,
-      "7d": 322
+      "24h": 347,
+      "2h": 151,
+      "6h": 347,
+      "72h": 347,
+      "7d": 323
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 24 due checkpoints; will retry"
+    "Optional retention returned empty curves for 23 due checkpoints; will retry",
+    "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
   ]
 }
