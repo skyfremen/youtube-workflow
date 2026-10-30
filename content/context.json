@@ -103,7 +103,7 @@
         {
           "average_view_percentage": 52.4,
           "dimension": "hook_type",
-          "evidence_median_views": 49.5,
+          "evidence_median_views": 47.0,
           "mature_sample": 49,
           "sample_size": 54,
           "value": "social_exposure"
@@ -141,12 +141,12 @@
           "value": "wedding"
         },
         {
-          "average_view_percentage": 54.45,
+          "average_view_percentage": 52.46,
           "dimension": "story_tone",
-          "evidence_median_views": 16.5,
-          "mature_sample": 35,
-          "sample_size": 36,
-          "value": "dramatic_comedy"
+          "evidence_median_views": 15.0,
+          "mature_sample": 81,
+          "sample_size": 88,
+          "value": "dramatic"
         }
       ],
       "weak_patterns": [
@@ -159,20 +159,20 @@
           "value": "workplace"
         },
         {
+          "average_view_percentage": 50.17,
+          "dimension": "story_tone",
+          "evidence_median_views": 6.0,
+          "mature_sample": 39,
+          "sample_size": 49,
+          "value": "conversational"
+        },
+        {
           "average_view_percentage": 44.14,
           "dimension": "category",
           "evidence_median_views": 6.0,
           "mature_sample": 11,
           "sample_size": 13,
           "value": "property"
-        },
-        {
-          "average_view_percentage": 50.17,
-          "dimension": "story_tone",
-          "evidence_median_views": 7.0,
-          "mature_sample": 39,
-          "sample_size": 49,
-          "value": "conversational"
         },
         {
           "average_view_percentage": 31.65,
@@ -185,7 +185,7 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-10-30T11:30:30Z",
+      "latest_realtime_snapshot": "2026-10-30T17:30:31Z",
       "videos_analyzed": 306
     },
     "distribution_signals": {
@@ -219,7 +219,7 @@
         }
       ]
     },
-    "generated_at": "2026-10-30T11:30:30Z",
+    "generated_at": "2026-10-30T17:30:31Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
@@ -227,13 +227,14 @@
         "2h": 134,
         "6h": 306,
         "72h": 306,
-        "7d": 298
+        "7d": 300
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 22 due checkpoints; will retry"
+      "Optional retention returned empty curves for 21 due checkpoints; will retry",
+      "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
     ]
   },
   "background_categories": [
