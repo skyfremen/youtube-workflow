@@ -56,19 +56,19 @@
     "dominant_traffic_sources": [
       {
         "engaged_view_rate_percentage": 52.69,
-        "engaged_views": 32591,
+        "engaged_views": 32592,
         "estimated_minutes_watched": 19590,
         "insightTrafficSourceType": "SHORTS",
-        "view_share_percentage": 94.55,
-        "views": 61853
+        "view_share_percentage": 94.52,
+        "views": 61855
       },
       {
-        "engaged_view_rate_percentage": 21.15,
-        "engaged_views": 557,
-        "estimated_minutes_watched": 216,
+        "engaged_view_rate_percentage": 21.29,
+        "engaged_views": 565,
+        "estimated_minutes_watched": 219,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 4.03,
-        "views": 2634
+        "view_share_percentage": 4.06,
+        "views": 2654
       },
       {
         "engaged_view_rate_percentage": 59.66,
@@ -116,7 +116,7 @@
         "value": "warm"
       },
       {
-        "average_view_percentage": 54.58,
+        "average_view_percentage": 54.37,
         "dimension": "category",
         "evidence_median_views": 33.0,
         "mature_sample": 54,
@@ -134,18 +134,18 @@
       {
         "average_view_percentage": 52.92,
         "dimension": "category",
-        "evidence_median_views": 17.0,
+        "evidence_median_views": 18.5,
         "mature_sample": 69,
         "sample_size": 71,
         "value": "wedding"
       },
       {
-        "average_view_percentage": 52.46,
+        "average_view_percentage": 54.45,
         "dimension": "story_tone",
-        "evidence_median_views": 15.0,
-        "mature_sample": 81,
-        "sample_size": 88,
-        "value": "dramatic"
+        "evidence_median_views": 16.5,
+        "mature_sample": 35,
+        "sample_size": 36,
+        "value": "dramatic_comedy"
       }
     ],
     "weak_patterns": [
@@ -184,7 +184,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-10-30T17:30:31Z",
+    "latest_realtime_snapshot": "2026-10-30T23:30:29Z",
     "videos_analyzed": 306
   },
   "distribution_signals": {
@@ -218,7 +218,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-30T17:30:31Z",
+  "generated_at": "2026-10-30T23:30:29Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
@@ -226,13 +226,12 @@
       "2h": 134,
       "6h": 306,
       "72h": 306,
-      "7d": 300
+      "7d": 302
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 21 due checkpoints; will retry",
-    "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
+    "Optional retention returned empty curves for 22 due checkpoints; will retry"
   ]
 }
