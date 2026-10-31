@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-61efeac1d72d2d83746756e3",
+  "evidence_version": 2,
+  "execution_id": "ex-d5305bd0d9bf0b6e8b889d1c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7079fb1c6f5310c81f9a99caf15c4f43582cd1fa",
+  "record_type": "upload",
+  "recorded_at": "2026-10-31T12:09:47.300624Z",
+  "request_blob_sha": "434f42dfff9d0425aa512ea74d6e470c9ebc9a8d",
+  "request_id": "rq-af51caa970533e75339c2dbc",
+  "request_path": "content/requests/rq-af51caa970533e75339c2dbc.json",
+  "request_source_sha": "c3a92b7ac7d82901326651af72932574180d9702",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding reception becomes an investment launch when the bride discovers where the couple's cash gifts were redirected.\n\n#WackyDramas #Shorts #WeddingDrama #StartupDrama #WeddingGifts #GroomBetrayal #MoneySecrets #ReceptionDrama #PublicPressure #StoryTime",
+      "tags": [
+        "wd-id-817579f00c82a040cfc9",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "startup drama",
+        "wedding gift conflict",
+        "groom money secret",
+        "reception investment pitch",
+        "cash registry betrayal",
+        "bride discovers startup",
+        "dramatic story",
+        "WackyDramas",
+        "WeddingDrama",
+        "StartupDrama",
+        "WeddingGifts",
+        "GroomBetrayal",
+        "MoneySecrets",
+        "ReceptionDrama",
+        "PublicPressure",
+        "StoryTime"
+      ],
+      "title": "The Startup Pitch After Our First Dance"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-31T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41199247847"
+  },
+  "youtube_video_id": "SGlBELQwvqI"
+}
