@@ -376,7 +376,7 @@
       "median_views_7d": 7.5,
       "sample_24h": 12,
       "sample_2h": 7,
-      "sample_6h": 12,
+      "sample_6h": 13,
       "sample_72h": 12,
       "sample_7d": 12,
       "sample_size": 13
@@ -564,10 +564,10 @@
         "engaged_views": 29136,
         "estimated_minutes_watched": 17327,
         "view_share_percentage": 100.0,
-        "views": 56767
+        "views": 56766
       }
     ],
-    "views_total": 56767
+    "views_total": 56766
   },
   "demographics_analysis": {
     "sample_rows": 16,
@@ -825,12 +825,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 6.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 2.5,
+      "median_views_6h": 3.0,
       "median_views_72h": 13.0,
       "median_views_7d": 13.5,
       "sample_24h": 204,
       "sample_2h": 95,
-      "sample_6h": 206,
+      "sample_6h": 207,
       "sample_72h": 204,
       "sample_7d": 204,
       "sample_size": 207
@@ -874,7 +874,7 @@
       "sample_size": 25
     }
   },
-  "generated_at": "2026-10-31T11:30:29Z",
+  "generated_at": "2026-10-31T17:30:31Z",
   "geography_analysis": {
     "sample_rows": 39,
     "top": [
@@ -1395,12 +1395,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 31.0,
       "median_views_2h": 1.0,
-      "median_views_6h": 9.5,
+      "median_views_6h": 11.0,
       "median_views_72h": 32.0,
       "median_views_7d": 33.0,
       "sample_24h": 51,
       "sample_2h": 21,
-      "sample_6h": 52,
+      "sample_6h": 53,
       "sample_72h": 51,
       "sample_7d": 51,
       "sample_size": 53
@@ -1421,7 +1421,7 @@
       "median_views_7d": 20.0,
       "sample_24h": 221,
       "sample_2h": 97,
-      "sample_6h": 223,
+      "sample_6h": 224,
       "sample_72h": 221,
       "sample_7d": 221,
       "sample_size": 224
@@ -1451,7 +1451,7 @@
     "checkpoint_samples": {
       "24h": 282,
       "2h": 127,
-      "6h": 284,
+      "6h": 285,
       "72h": 282,
       "7d": 282
     },
@@ -1621,7 +1621,7 @@
         "median_views_7d": 22.5,
         "sample_24h": 154,
         "sample_2h": 76,
-        "sample_6h": 156,
+        "sample_6h": 157,
         "sample_72h": 154,
         "sample_7d": 154,
         "sample_size": 157
@@ -1858,12 +1858,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 30.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 11.0,
+      "median_views_6h": 11.5,
       "median_views_72h": 31.0,
       "median_views_7d": 31.0,
       "sample_24h": 19,
       "sample_2h": 20,
-      "sample_6h": 19,
+      "sample_6h": 20,
       "sample_72h": 19,
       "sample_7d": 19,
       "sample_size": 20
@@ -2411,12 +2411,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 30.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 11.0,
+      "median_views_6h": 11.5,
       "median_views_72h": 31.0,
       "median_views_7d": 31.0,
       "sample_24h": 19,
       "sample_2h": 20,
-      "sample_6h": 19,
+      "sample_6h": 20,
       "sample_72h": 19,
       "sample_7d": 19,
       "sample_size": 20
@@ -2527,12 +2527,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 30.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 11.0,
+      "median_views_6h": 11.5,
       "median_views_72h": 31.0,
       "median_views_7d": 31.0,
       "sample_24h": 19,
       "sample_2h": 20,
-      "sample_6h": 19,
+      "sample_6h": 20,
       "sample_72h": 19,
       "sample_7d": 19,
       "sample_size": 20
@@ -3317,12 +3317,12 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 8.5,
       "median_views_2h": 0.0,
-      "median_views_6h": 3.5,
+      "median_views_6h": 4.0,
       "median_views_72h": 20.0,
       "median_views_7d": 22.5,
       "sample_24h": 32,
       "sample_2h": 12,
-      "sample_6h": 32,
+      "sample_6h": 33,
       "sample_72h": 32,
       "sample_7d": 32,
       "sample_size": 33
@@ -3709,7 +3709,7 @@
       "median_views_7d": 15.5,
       "sample_24h": 282,
       "sample_2h": 127,
-      "sample_6h": 284,
+      "sample_6h": 285,
       "sample_72h": 282,
       "sample_7d": 282,
       "sample_size": 285
@@ -3718,7 +3718,7 @@
   "trend_topic_performance": {},
   "videos_analyzed": 285,
   "warnings": [
-    "Optional retention returned empty curves for 21 due checkpoints; will retry"
+    "Optional retention returned empty curves for 19 due checkpoints; will retry"
   ],
   "weak_retention_examples": [
     {
