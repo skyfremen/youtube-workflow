@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-bf8ff455d2a7130e92001398",
+  "created_at": "2026-10-31T00:09:50.231531Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4f983e05c919765ce2520018",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a54c8a5b8c79c1d22f39c313ccacd2d76c63a1c7",
+  "record_type": "intent",
+  "request_blob_sha": "97b0367088cb14b3f5390a47276300b9ec45cf86",
+  "request_id": "rq-c8455b246bca248d24f31dbd",
+  "request_path": "content/requests/rq-c8455b246bca248d24f31dbd.json",
+  "request_source_sha": "e1853d45541ccb4795f6eab6b581afe51bb45c2a",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Home buyers expect an included housekeeper until the woman in the back room reveals the lease her landlord concealed.\n\n#WackyDramas #Shorts #PropertyDrama #TenantDrama #LandlordTrouble #ApartmentSale #HousekeeperLie #RentalConflict #OpenHouseDrama #StoryTime",
+      "tags": [
+        "wd-id-a7afd6e814f052e90685",
+        "wacky dramas",
+        "shorts",
+        "property drama",
+        "tenant drama",
+        "landlord conflict",
+        "apartment sale lie",
+        "live-in housekeeper",
+        "open house conflict",
+        "rental lease story",
+        "home buyer drama",
+        "WackyDramas",
+        "PropertyDrama",
+        "TenantDrama",
+        "LandlordTrouble",
+        "ApartmentSale",
+        "HousekeeperLie",
+        "RentalConflict",
+        "OpenHouseDrama",
+        "StoryTime"
+      ],
+      "title": "The Housekeeper Included with the Apartment"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-31T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41147817340"
+  }
+}
