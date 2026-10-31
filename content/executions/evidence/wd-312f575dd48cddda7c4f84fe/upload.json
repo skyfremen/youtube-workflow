@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-312f575dd48cddda7c4f84fe",
+  "evidence_version": 2,
+  "execution_id": "ex-dd4faddf1bf52f6b78a69fad",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ab462c0216986e3a827e0fd7faa8bec4ec2f2c33",
+  "record_type": "upload",
+  "recorded_at": "2026-10-31T00:07:50.802165Z",
+  "request_blob_sha": "97b0367088cb14b3f5390a47276300b9ec45cf86",
+  "request_id": "rq-c8455b246bca248d24f31dbd",
+  "request_path": "content/requests/rq-c8455b246bca248d24f31dbd.json",
+  "request_source_sha": "e1853d45541ccb4795f6eab6b581afe51bb45c2a",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A surprise family-tree gift becomes an unverified reunion when a genealogist tries to sell certainty beside the birthday cake.\n\n#WackyDramas #Shorts #FamilyMystery #DNAStory #GenealogyDrama #SecretDaughter #BirthdayDrama #IdentityMystery #FamilyReunion #StoryTime",
+      "tags": [
+        "wd-id-9a09190614631ae58b84",
+        "wacky dramas",
+        "shorts",
+        "family mystery",
+        "DNA story",
+        "genealogy drama",
+        "secret daughter story",
+        "birthday surprise conflict",
+        "unverified family match",
+        "family reunion drama",
+        "identity mystery",
+        "WackyDramas",
+        "FamilyMystery",
+        "DNAStory",
+        "GenealogyDrama",
+        "SecretDaughter",
+        "BirthdayDrama",
+        "IdentityMystery",
+        "FamilyReunion",
+        "StoryTime"
+      ],
+      "title": "The DNA Kits Beside Dad's Birthday Cake"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-31T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41147819914"
+  },
+  "youtube_video_id": "-Urm1BnQp64"
+}
