@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-33f7f4607ee563a01a5cc128",
+  "evidence_version": 2,
+  "execution_id": "ex-b172148748e6bb5db5145924",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8f3dcab38b491f4afcd2152d6af17b640f1ca9a4",
+  "record_type": "upload",
+  "recorded_at": "2026-10-31T12:07:13.702585Z",
+  "request_blob_sha": "434f42dfff9d0425aa512ea74d6e470c9ebc9a8d",
+  "request_id": "rq-af51caa970533e75339c2dbc",
+  "request_path": "content/requests/rq-af51caa970533e75339c2dbc.json",
+  "request_source_sha": "c3a92b7ac7d82901326651af72932574180d9702",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Opening night reveals a therapist's stage version of a client's private life and a reconciliation the client never agreed to perform.\n\n#WackyDramas #Shorts #PrivacyDrama #TherapyStory #StagePlay #PrivateSessions #FamilyConflict #TrustBetrayal #OpeningNight #StoryTime",
+      "tags": [
+        "wd-id-07677acf4d0038562dc4",
+        "wacky dramas",
+        "shorts",
+        "privacy drama",
+        "therapy story",
+        "private session betrayal",
+        "stage play conflict",
+        "therapist uses client story",
+        "opening night drama",
+        "estranged mother story",
+        "trust betrayal",
+        "WackyDramas",
+        "PrivacyDrama",
+        "TherapyStory",
+        "StagePlay",
+        "PrivateSessions",
+        "FamilyConflict",
+        "TrustBetrayal",
+        "OpeningNight",
+        "StoryTime"
+      ],
+      "title": "The Actress Repeating My Therapy Sessions"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-01T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41199252438"
+  },
+  "youtube_video_id": "7zd9O83k8_A"
+}
