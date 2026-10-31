@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b7ee035a8f7fe4a6e0c4c893",
+  "evidence_version": 2,
+  "execution_id": "ex-d2bc37c38e747c7258ec86f1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "143b141ef43ca652cec7d389b3e5e36697d3514c",
+  "record_type": "upload",
+  "recorded_at": "2026-10-31T00:10:40.094002Z",
+  "request_blob_sha": "97b0367088cb14b3f5390a47276300b9ec45cf86",
+  "request_id": "rq-c8455b246bca248d24f31dbd",
+  "request_path": "content/requests/rq-c8455b246bca248d24f31dbd.json",
+  "request_source_sha": "e1853d45541ccb4795f6eab6b581afe51bb45c2a",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A public caregiving award exposes the sister doing the work and the promise that persuaded their father to support the wrong nominee.\n\n#WackyDramas #Shorts #FamilyDrama #CaregiverStory #SiblingBetrayal #CareAward #FamilySecrets #UnpaidCare #PublicCredit #StoryTime",
+      "tags": [
+        "wd-id-94b79f0ceceadf0212bc",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "caregiver story",
+        "sibling betrayal",
+        "care award conflict",
+        "unpaid family care",
+        "brother takes credit",
+        "father care story",
+        "dramatic family story",
+        "WackyDramas",
+        "FamilyDrama",
+        "CaregiverStory",
+        "SiblingBetrayal",
+        "CareAward",
+        "FamilySecrets",
+        "UnpaidCare",
+        "PublicCredit",
+        "StoryTime"
+      ],
+      "title": "The Assistant Named in Dad's Care Award"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-10-31T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41147814878"
+  },
+  "youtube_video_id": "5gM8gFSB1_I"
+}
