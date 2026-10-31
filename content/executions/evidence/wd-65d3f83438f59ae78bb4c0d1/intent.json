@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-65d3f83438f59ae78bb4c0d1",
+  "created_at": "2026-10-31T12:08:55.978535Z",
+  "evidence_version": 2,
+  "execution_id": "ex-59eb6cf41dea79e4baaa89bb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "877a90189128fc345f30724b73374fb7782d0899",
+  "record_type": "intent",
+  "request_blob_sha": "434f42dfff9d0425aa512ea74d6e470c9ebc9a8d",
+  "request_id": "rq-af51caa970533e75339c2dbc",
+  "request_path": "content/requests/rq-af51caa970533e75339c2dbc.json",
+  "request_source_sha": "c3a92b7ac7d82901326651af72932574180d9702",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A repair estimate becomes a public parts auction before the car's owner has agreed to sell anything.\n\n#WackyDramas #Shorts #MechanicDrama #CarRepair #CustomerDrama #AutoShop #CarParts #PublicEmbarrassment #ConsumerStory #StoryTime",
+      "tags": [
+        "wd-id-5e2c3af25c6dccdff945",
+        "wacky dramas",
+        "shorts",
+        "mechanic drama",
+        "car repair conflict",
+        "auto shop story",
+        "car parts auction",
+        "customer rights drama",
+        "repair estimate dispute",
+        "mechanic sells parts",
+        "consumer drama",
+        "WackyDramas",
+        "MechanicDrama",
+        "CarRepair",
+        "CustomerDrama",
+        "AutoShop",
+        "CarParts",
+        "PublicEmbarrassment",
+        "ConsumerStory",
+        "StoryTime"
+      ],
+      "title": "The Bids Written Beside My Car Parts"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-01T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41199250922"
+  }
+}
