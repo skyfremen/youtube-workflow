@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-e9efbd36b636107d046f763c",
+  "created_at": "2026-11-01T00:17:14.910923Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0a35ef32e31e5ba051d431fd",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "eadd541494b5f29e1f445f05e8bddc70ab35bd14",
+  "record_type": "intent",
+  "request_blob_sha": "adf9dfcf611e43b125f714f6fdee635d76b757a5",
+  "request_id": "rq-cc39cc8cfab78ecf559aef24",
+  "request_path": "content/requests/rq-cc39cc8cfab78ecf559aef24.json",
+  "request_source_sha": "864c0bbdcf6d0618ec2fad275edbaf4d523f2d68",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "After a cancellation, stranded passengers are told to compete publicly for hotel rooms that may never have been available.\n\n#WackyDramas #Shorts #TravelDrama #CancelledFlight #AirportStory #HotelVoucher #GateAgent #StrandedPassengers #PublicContest #TravelNightmare",
+      "tags": [
+        "wd-id-f2bd5ac74996b8f56ef9",
+        "wacky dramas",
+        "shorts",
+        "travel drama",
+        "cancelled flight story",
+        "airport hotel vouchers",
+        "stranded passengers",
+        "gate agent contest",
+        "airline cancellation",
+        "airport overnight",
+        "passenger solidarity",
+        "WackyDramas",
+        "TravelDrama",
+        "CancelledFlight",
+        "AirportStory",
+        "HotelVoucher",
+        "GateAgent",
+        "StrandedPassengers",
+        "PublicContest",
+        "TravelNightmare"
+      ],
+      "title": "The Applause Beside Gate Twelve"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-02T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41255358955"
+  }
+}
