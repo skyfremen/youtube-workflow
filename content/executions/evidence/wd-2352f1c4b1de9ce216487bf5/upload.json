@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2352f1c4b1de9ce216487bf5",
+  "evidence_version": 2,
+  "execution_id": "ex-87a59ebb072b2a3cc3e0b62a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "13ca26f753cfbfa90d11bcf5bc91fbd945cd50ee",
+  "record_type": "upload",
+  "recorded_at": "2026-11-01T12:16:19.152406Z",
+  "request_blob_sha": "ee4ceb9c2707f1f621556ae6024479f1a4449df2",
+  "request_id": "rq-df7f78f375ea55efd95fd691",
+  "request_path": "content/requests/rq-df7f78f375ea55efd95fd691.json",
+  "request_source_sha": "f59e519c1c7f3a4aea1b87bf45d7384f2643670b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride notices the ring placed on her finger is a replica and finds her late mother's original on someone else at the reception.\n\n#WackyDramas #Shorts #WeddingDrama #FamilyHeirloom #WeddingRing #BrideStory #GroomBetrayal #MissingInitials #ReceptionDrama #BrokenPromise",
+      "tags": [
+        "wd-id-ded3045f7159bff3337f",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "replica wedding ring",
+        "family heirloom stolen",
+        "bride discovers fake ring",
+        "groom betrayal story",
+        "late mother's ring",
+        "wedding reception conflict",
+        "broken promise",
+        "WackyDramas",
+        "WeddingDrama",
+        "FamilyHeirloom",
+        "WeddingRing",
+        "BrideStory",
+        "GroomBetrayal",
+        "MissingInitials",
+        "ReceptionDrama",
+        "BrokenPromise"
+      ],
+      "title": "The Missing Initials Inside My Ring"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-02T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41304907346"
+  },
+  "youtube_video_id": "9AA7SiVtVZg"
+}
