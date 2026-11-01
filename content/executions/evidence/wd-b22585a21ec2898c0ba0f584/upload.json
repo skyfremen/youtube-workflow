@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b22585a21ec2898c0ba0f584",
+  "evidence_version": 2,
+  "execution_id": "ex-10ab1a67e1f4c83c1a409448",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1a6f40150d139aaffd7018ac6af7b8491a79dab3",
+  "record_type": "upload",
+  "recorded_at": "2026-11-01T12:14:41.415639Z",
+  "request_blob_sha": "ee4ceb9c2707f1f621556ae6024479f1a4449df2",
+  "request_id": "rq-df7f78f375ea55efd95fd691",
+  "request_path": "content/requests/rq-df7f78f375ea55efd95fd691.json",
+  "request_source_sha": "f59e519c1c7f3a4aea1b87bf45d7384f2643670b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman discovers her brother supplied their late mother's journals to a shop that sells invented letters in the mother's handwriting.\n\n#WackyDramas #Shorts #Handwriting #FamilySecret #FakeLetter #LateMother #BrotherBetrayal #Forgiveness #PrivateJournals #IdentityDrama",
+      "tags": [
+        "wd-id-e0ea2de59b170baeb57b",
+        "wacky dramas",
+        "shorts",
+        "fake apology letter",
+        "late mother's handwriting",
+        "private journals used",
+        "family secret story",
+        "invented forgiveness",
+        "brother betrayal",
+        "handwriting service",
+        "grief and truth",
+        "WackyDramas",
+        "Handwriting",
+        "FamilySecret",
+        "FakeLetter",
+        "LateMother",
+        "BrotherBetrayal",
+        "Forgiveness",
+        "PrivateJournals",
+        "IdentityDrama"
+      ],
+      "title": "The Apology Written in Mom's Hand"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-03T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41304913438"
+  },
+  "youtube_video_id": "QR_ByeLm8ws"
+}
