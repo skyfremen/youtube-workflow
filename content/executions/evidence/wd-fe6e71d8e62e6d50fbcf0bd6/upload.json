@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-fe6e71d8e62e6d50fbcf0bd6",
+  "evidence_version": 2,
+  "execution_id": "ex-9d664ab3e0e4e6e056efe035",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7a1168ebd11339bebf2860480bc8aaa97119f957",
+  "record_type": "upload",
+  "recorded_at": "2026-11-01T12:11:39.708295Z",
+  "request_blob_sha": "ee4ceb9c2707f1f621556ae6024479f1a4449df2",
+  "request_id": "rq-df7f78f375ea55efd95fd691",
+  "request_path": "content/requests/rq-df7f78f375ea55efd95fd691.json",
+  "request_source_sha": "f59e519c1c7f3a4aea1b87bf45d7384f2643670b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A dog owner arrives at daycare pickup and finds her pet being presented to families as an abandoned dog available for adoption.\n\n#WackyDramas #Shorts #PetDaycare #DogAdoption #DogOwner #AdoptionParade #PetDrama #DogPickup #FalseSurrender #MiloStory",
+      "tags": [
+        "wd-id-6225fb07cca5fc6d0449",
+        "wacky dramas",
+        "shorts",
+        "pet daycare drama",
+        "dog adoption mixup",
+        "dog owner story",
+        "false pet surrender",
+        "adopt me sash",
+        "daycare membership pressure",
+        "dog pickup surprise",
+        "pet adoption parade",
+        "WackyDramas",
+        "PetDaycare",
+        "DogAdoption",
+        "DogOwner",
+        "AdoptionParade",
+        "PetDrama",
+        "DogPickup",
+        "FalseSurrender",
+        "MiloStory"
+      ],
+      "title": "The Adopt Me Sash at Pickup"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-02T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41304911412"
+  },
+  "youtube_video_id": "FJMwBf5jSng"
+}
