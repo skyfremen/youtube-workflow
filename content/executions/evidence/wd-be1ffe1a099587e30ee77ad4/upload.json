@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-be1ffe1a099587e30ee77ad4",
+  "evidence_version": 2,
+  "execution_id": "ex-d8f6d2420d1a5efb63c353e4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a9b373205bbdf237e9012bb6c5e0d0ebf230505e",
+  "record_type": "upload",
+  "recorded_at": "2026-11-01T12:14:25.234337Z",
+  "request_blob_sha": "ee4ceb9c2707f1f621556ae6024479f1a4449df2",
+  "request_id": "rq-df7f78f375ea55efd95fd691",
+  "request_path": "content/requests/rq-df7f78f375ea55efd95fd691.json",
+  "request_source_sha": "f59e519c1c7f3a4aea1b87bf45d7384f2643670b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "At family dinner, a rent-paying daughter learns her parents promised her bedroom to her brother after falsely claiming she volunteered.\n\n#WackyDramas #Shorts #FamilyDrama #EvictionStory #SiblingConflict #WelcomeHome #RentPayingDaughter #FamilyPressure #BedroomDrama #BrokenTrust",
+      "tags": [
+        "wd-id-24028d186ca500c7abf2",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "parents evict daughter",
+        "brother moves back home",
+        "rent paying daughter",
+        "family dinner conflict",
+        "bedroom taken away",
+        "sibling stands up for sister",
+        "welcome home lie",
+        "WackyDramas",
+        "FamilyDrama",
+        "EvictionStory",
+        "SiblingConflict",
+        "WelcomeHome",
+        "RentPayingDaughter",
+        "FamilyPressure",
+        "BedroomDrama",
+        "BrokenTrust"
+      ],
+      "title": "The Welcome Banner Above My Bedroom"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-02T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41304909559"
+  },
+  "youtube_video_id": "ZNTlbM31akU"
+}
