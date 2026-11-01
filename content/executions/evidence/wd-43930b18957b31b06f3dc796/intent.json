@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-43930b18957b31b06f3dc796",
+  "created_at": "2026-11-01T00:15:14.674740Z",
+  "evidence_version": 2,
+  "execution_id": "ex-75d0867ffd7c24cd8adb0882",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4453fa109c5609a6ffd5ddbe0ed5b0ad228bf296",
+  "record_type": "intent",
+  "request_blob_sha": "adf9dfcf611e43b125f714f6fdee635d76b757a5",
+  "request_id": "rq-cc39cc8cfab78ecf559aef24",
+  "request_path": "content/requests/rq-cc39cc8cfab78ecf559aef24.json",
+  "request_source_sha": "864c0bbdcf6d0618ec2fad275edbaf4d523f2d68",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Ten minutes before her wedding, a bride learns the groom cancelled their marriage license while planning to keep the ceremony, gifts, and secret.\n\n#WackyDramas #Shorts #WeddingDrama #MarriageLicense #BrokenTrust #BrideStory #WeddingSecrets #FamilyPressure #GiftTable #RelationshipBetrayal",
+      "tags": [
+        "wd-id-291405edbbee62a8ca04",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "cancelled marriage license",
+        "groom kept wedding secret",
+        "bride discovers betrayal",
+        "symbolic wedding conflict",
+        "wedding gift deception",
+        "family trust drama",
+        "relationship story",
+        "WackyDramas",
+        "WeddingDrama",
+        "MarriageLicense",
+        "BrokenTrust",
+        "BrideStory",
+        "WeddingSecrets",
+        "FamilyPressure",
+        "GiftTable",
+        "RelationshipBetrayal"
+      ],
+      "title": "The Missing License Before My Aisle"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-01T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41255355190"
+  }
+}
