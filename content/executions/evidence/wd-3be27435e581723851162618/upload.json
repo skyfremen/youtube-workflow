@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3be27435e581723851162618",
+  "evidence_version": 2,
+  "execution_id": "ex-3aed4b1908f97f72365b1e58",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9174fcba5c29ab111feb273390214cea4ddfd22d",
+  "record_type": "upload",
+  "recorded_at": "2026-11-02T00:08:45.704273Z",
+  "request_blob_sha": "01093a1ed5162b2d74fdbbdedd919ae1245df9a4",
+  "request_id": "rq-8e6fd77c6c537248ac837373",
+  "request_path": "content/requests/rq-8e6fd77c6c537248ac837373.json",
+  "request_source_sha": "592e7a293e3fae41ad7088f4c244cbf1fe504848",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Parents return home to discover their babysitter selling tickets to strangers for a live workshop built around their toddler's bedtime.\n\n#WackyDramas #Shorts #BabysitterDrama #BedtimeRoutine #ChildcareStory #PrivacyBreach #ToddlerBedtime #LiveWorkshop #FamilyHome #ParentingDrama",
+      "tags": [
+        "wd-id-10bffbca51519085ac11",
+        "wacky dramas",
+        "shorts",
+        "babysitter drama",
+        "toddler bedtime workshop",
+        "childcare privacy breach",
+        "strangers in family home",
+        "paid parenting class",
+        "unauthorized recording",
+        "babysitter sold tickets",
+        "parenting story",
+        "WackyDramas",
+        "BabysitterDrama",
+        "BedtimeRoutine",
+        "ChildcareStory",
+        "PrivacyBreach",
+        "ToddlerBedtime",
+        "LiveWorkshop",
+        "FamilyHome",
+        "ParentingDrama"
+      ],
+      "title": "Six Clipboards Beside His Bedtime"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-03T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41364956839"
+  },
+  "youtube_video_id": "e-zw38305uw"
+}
