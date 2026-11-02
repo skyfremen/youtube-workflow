@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-613a50b301d63d67e38bf727",
+  "created_at": "2026-11-02T12:09:06.998970Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5aac1016ecf00a3e2e2afb8a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a870a5939efdd2acaffd678969e57d0d3f06cff6",
+  "record_type": "intent",
+  "request_blob_sha": "55de7e0c04bde55523511de19d65015bfd189554",
+  "request_id": "rq-60ba9f26d9f71842300bc7f3",
+  "request_path": "content/requests/rq-60ba9f26d9f71842300bc7f3.json",
+  "request_source_sha": "267ef7ce146006ef70bb0ca899bfa8aec87fc59f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A daughter discovers that hospital visiting hours were never full; her brother had been selling access to their own father.\n\n#WackyDramas #Shorts #FamilyDrama #HospitalVisit #BrotherBetrayal #CaregiverConflict #VisitingHours #FamilyMoney #SecretFees #DadStory #SiblingDrama #StoryTime",
+      "tags": [
+        "wd-id-96fdc817a42cc418a8cb",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "hospital visiting hours",
+        "brother charges relatives",
+        "caregiver family conflict",
+        "secret visiting fees",
+        "sibling betrayal story",
+        "father in hospital",
+        "family money dispute",
+        "hospital visit drama",
+        "dramatic story time",
+        "WackyDramas",
+        "FamilyDrama",
+        "HospitalVisit",
+        "BrotherBetrayal",
+        "CaregiverConflict",
+        "VisitingHours",
+        "FamilyMoney",
+        "SecretFees",
+        "DadStory",
+        "SiblingDrama",
+        "StoryTime"
+      ],
+      "title": "The Visiting Slots My Brother Sold"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-04T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41441644786"
+  }
+}
