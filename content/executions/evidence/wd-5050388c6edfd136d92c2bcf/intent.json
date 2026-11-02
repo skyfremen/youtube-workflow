@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-5050388c6edfd136d92c2bcf",
+  "created_at": "2026-11-02T12:10:10.720417Z",
+  "evidence_version": 2,
+  "execution_id": "ex-3655cf778841a051b453183e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "61769edcca666f525a8bd744ed0f82ee7bc81fb4",
+  "record_type": "intent",
+  "request_blob_sha": "55de7e0c04bde55523511de19d65015bfd189554",
+  "request_id": "rq-60ba9f26d9f71842300bc7f3",
+  "request_path": "content/requests/rq-60ba9f26d9f71842300bc7f3.json",
+  "request_source_sha": "267ef7ce146006ef70bb0ca899bfa8aec87fc59f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Colored wristbands split one wedding into premium guests and budget guests, until the bride made the room choose what family meant.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingGuests #BrideStory #GroomDrama #MotherInLawDrama #FamilyBetrayal #ReceptionDrama #WeddingMeal #ColoredWristbands #StoryTime",
+      "tags": [
+        "wd-id-db9d3c1bdee1af7ab35c",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "wedding guest meals",
+        "bride and groom conflict",
+        "mother in law drama",
+        "family contribution dispute",
+        "reception wristbands",
+        "wedding betrayal story",
+        "two wedding menus",
+        "family wedding conflict",
+        "dramatic story time",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingGuests",
+        "BrideStory",
+        "GroomDrama",
+        "MotherInLawDrama",
+        "FamilyBetrayal",
+        "ReceptionDrama",
+        "WeddingMeal",
+        "ColoredWristbands",
+        "StoryTime"
+      ],
+      "title": "The Wristbands That Priced Our Wedding Guests"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-04T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41441641205"
+  }
+}
