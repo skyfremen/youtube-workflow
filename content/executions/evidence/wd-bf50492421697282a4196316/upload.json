@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-bf50492421697282a4196316",
+  "evidence_version": 2,
+  "execution_id": "ex-95fa0520e0cfc96b055c1d5f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bd08b3c4872c56646e6f94d672ce185b08d6b3d2",
+  "record_type": "upload",
+  "recorded_at": "2026-11-02T00:08:37.714028Z",
+  "request_blob_sha": "01093a1ed5162b2d74fdbbdedd919ae1245df9a4",
+  "request_id": "rq-8e6fd77c6c537248ac837373",
+  "request_path": "content/requests/rq-8e6fd77c6c537248ac837373.json",
+  "request_source_sha": "592e7a293e3fae41ad7088f4c244cbf1fe504848",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A gym reveals a member's pregnancy on a public milestone board and falsely presents her as the success story for a prenatal class.\n\n#WackyDramas #Shorts #GymDrama #PregnancyReveal #PrivacyBreach #MilestoneBoard #FamilyNews #PrenatalClass #MembershipFreeze #PublicAnnouncement",
+      "tags": [
+        "wd-id-b1427918c67935f3aad0",
+        "wacky dramas",
+        "shorts",
+        "gym drama",
+        "pregnancy announced early",
+        "private pregnancy reveal",
+        "gym milestone board",
+        "prenatal class promotion",
+        "family news shared",
+        "membership privacy",
+        "public announcement story",
+        "WackyDramas",
+        "GymDrama",
+        "PregnancyReveal",
+        "PrivacyBreach",
+        "MilestoneBoard",
+        "FamilyNews",
+        "PrenatalClass",
+        "MembershipFreeze",
+        "PublicAnnouncement"
+      ],
+      "title": "The Milestone Board Before I Told Mom"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-03T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41364955056"
+  },
+  "youtube_video_id": "yQuAdTn9bl4"
+}
