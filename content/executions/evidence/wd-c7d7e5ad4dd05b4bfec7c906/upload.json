@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c7d7e5ad4dd05b4bfec7c906",
+  "evidence_version": 2,
+  "execution_id": "ex-a319661db11fca033d8a2930",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0880abeeeae31c7b94829252e6362b5fbf2edec7",
+  "record_type": "upload",
+  "recorded_at": "2026-11-03T00:10:09.429765Z",
+  "request_blob_sha": "c00e86a78989f4410eb749c1f7d595f51158ce4f",
+  "request_id": "rq-0bccce32a72fb85a591a6db7",
+  "request_path": "content/requests/rq-0bccce32a72fb85a591a6db7.json",
+  "request_source_sha": "759e87378c775100ef6c420c750256e382558b25",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride discovers that her groom and his mother treated the train of her custom wedding dress as material for someone else's future veil.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingDress #BrideStory #GroomBetrayal #MotherInLawDrama #FirstDance #FamilyLace #WeddingReception #DressDisaster #StoryTime",
+      "tags": [
+        "wd-id-0166d760dd349d135a89",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "wedding dress train",
+        "mother in law conflict",
+        "groom betrays bride",
+        "first dance drama",
+        "custom wedding dress",
+        "sister returns fabric",
+        "wedding reception story",
+        "family wedding betrayal",
+        "dramatic story time",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingDress",
+        "BrideStory",
+        "GroomBetrayal",
+        "MotherInLawDrama",
+        "FirstDance",
+        "FamilyLace",
+        "WeddingReception",
+        "DressDisaster",
+        "StoryTime"
+      ],
+      "title": "The Scissors Behind Her First Dance"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-04T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41549895097"
+  },
+  "youtube_video_id": "OvQ3fCW3PsQ"
+}
