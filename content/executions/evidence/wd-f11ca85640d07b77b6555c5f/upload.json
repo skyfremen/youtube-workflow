@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f11ca85640d07b77b6555c5f",
+  "evidence_version": 2,
+  "execution_id": "ex-1c0d731caf59a34de2ef0a70",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6f312c8b9bb0acf7bca9a3278089c04a0ce6a849",
+  "record_type": "upload",
+  "recorded_at": "2026-11-03T12:09:42.262714Z",
+  "request_blob_sha": "c5c1c893130d99270d3be8a45d630892f0ae501b",
+  "request_id": "rq-f588ed9bae7bd1f7a483f3ed",
+  "request_path": "content/requests/rq-f588ed9bae7bd1f7a483f3ed.json",
+  "request_source_sha": "4cd059cfa5aaec0d199620cb4ff0517db5581620",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride refuses to begin after discovering that the groom's mother deliberately sent her entire family to the wrong venue.\n\n#WackyDramas #Shorts #WeddingDrama #BrideStory #WeddingShuttle #WrongVenue #MotherInLawDrama #WeddingGuests #FamilyBetrayal #EmptyAisle #WeddingConflict #StoryTime",
+      "tags": [
+        "wd-id-bdc0b9f602615c4721b3",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "family sent to wrong venue",
+        "wedding shuttle conflict",
+        "mother in law betrayal",
+        "bride stops ceremony",
+        "missing wedding guests",
+        "wrong wedding hall",
+        "groom family drama",
+        "empty wedding chairs",
+        "dramatic story time",
+        "WackyDramas",
+        "WeddingDrama",
+        "BrideStory",
+        "WeddingShuttle",
+        "WrongVenue",
+        "MotherInLawDrama",
+        "WeddingGuests",
+        "FamilyBetrayal",
+        "EmptyAisle",
+        "WeddingConflict",
+        "StoryTime"
+      ],
+      "title": "The Shuttle Waiting at the Wrong Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-05T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41632624069"
+  },
+  "youtube_video_id": "wcXnIa-KtQk"
+}
