@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-1dc43c564467eaac3889fa77",
+  "created_at": "2026-11-03T00:08:44.735386Z",
+  "evidence_version": 2,
+  "execution_id": "ex-b2a0b71a41adc12c6c37d673",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6bde38773376ce349aec056f0c233a21ad063d97",
+  "record_type": "intent",
+  "request_blob_sha": "c00e86a78989f4410eb749c1f7d595f51158ce4f",
+  "request_id": "rq-0bccce32a72fb85a591a6db7",
+  "request_path": "content/requests/rq-0bccce32a72fb85a591a6db7.json",
+  "request_source_sha": "759e87378c775100ef6c420c750256e382558b25",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family celebrates an engagement that never happened after the bride-to-be's father answers a rejected suitor from her old phone.\n\n#WackyDramas #Shorts #FamilyDrama #FakeEngagement #ProposalDrama #ParentsBetrayal #FamilyDinner #PhoneImpersonation #RejectedProposal #EngagementRing #FamilyPressure #StoryTime",
+      "tags": [
+        "wd-id-94f9c16e21fa43e4f2fa",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "fake engagement announcement",
+        "parents impersonate daughter",
+        "rejected marriage proposal",
+        "family dinner surprise",
+        "old phone number messages",
+        "engagement ring conflict",
+        "family pressure story",
+        "suitor learns truth",
+        "dramatic story time",
+        "WackyDramas",
+        "FamilyDrama",
+        "FakeEngagement",
+        "ProposalDrama",
+        "ParentsBetrayal",
+        "FamilyDinner",
+        "PhoneImpersonation",
+        "RejectedProposal",
+        "EngagementRing",
+        "FamilyPressure",
+        "StoryTime"
+      ],
+      "title": "The Engagement She Had Already Refused"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-05T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41549898290"
+  }
+}
