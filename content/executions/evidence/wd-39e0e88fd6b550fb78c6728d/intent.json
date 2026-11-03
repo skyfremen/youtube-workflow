@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-39e0e88fd6b550fb78c6728d",
+  "created_at": "2026-11-03T12:09:45.152237Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a50592bc1a4e18e36ef251da",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "23dc69813c548472ea6c9a23581150149b562f03",
+  "record_type": "intent",
+  "request_blob_sha": "c5c1c893130d99270d3be8a45d630892f0ae501b",
+  "request_id": "rq-f588ed9bae7bd1f7a483f3ed",
+  "request_path": "content/requests/rq-f588ed9bae7bd1f7a483f3ed.json",
+  "request_source_sha": "4cd059cfa5aaec0d199620cb4ff0517db5581620",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hotel publicly tests whether a guest deserves her accessible room after giving it to an unsuspecting bridal party.\n\n#WackyDramas #Shorts #HotelDrama #AccessibleRoom #TravelStory #WeddingGuests #HotelManager #AccessibilityMatters #RoomBooking #BridalParty #GuestRights #StoryTime",
+      "tags": [
+        "wd-id-aec40ec2675ba47a1f60",
+        "wacky dramas",
+        "shorts",
+        "hotel drama",
+        "accessible hotel room",
+        "hotel gives away room",
+        "wedding bridal party conflict",
+        "guest with cane story",
+        "hotel accessibility dispute",
+        "bride returns room",
+        "prepaid room booking",
+        "three step test",
+        "dramatic story time",
+        "WackyDramas",
+        "HotelDrama",
+        "AccessibleRoom",
+        "TravelStory",
+        "WeddingGuests",
+        "HotelManager",
+        "AccessibilityMatters",
+        "RoomBooking",
+        "BridalParty",
+        "GuestRights",
+        "StoryTime"
+      ],
+      "title": "The Three Steps Outside Her Hotel Room"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-06T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41632630170"
+  }
+}
