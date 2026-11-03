@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5b1c6a55ec45ecd94749b6ce",
+  "evidence_version": 2,
+  "execution_id": "ex-2c2875f72f139f71c1325cbe",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9282621a5762b8683894bd08a3f0de3adddc5037",
+  "record_type": "upload",
+  "recorded_at": "2026-11-03T00:09:56.214057Z",
+  "request_blob_sha": "c00e86a78989f4410eb749c1f7d595f51158ce4f",
+  "request_id": "rq-0bccce32a72fb85a591a6db7",
+  "request_path": "content/requests/rq-0bccce32a72fb85a591a6db7.json",
+  "request_source_sha": "759e87378c775100ef6c420c750256e382558b25",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss forces employees to vote for a coworker's pay cut, but the only salary excluded from the choice is his own.\n\n#WackyDramas #Shorts #WorkplaceDrama #SalaryCut #BadBoss #OfficeConflict #EmployeeVote #PayTransparency #WorkplaceBetrayal #PayrollDrama #TeamResigns #StoryTime",
+      "tags": [
+        "wd-id-990221a837e48c9ea58b",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "boss salary ballot",
+        "employee pay cut vote",
+        "bad boss story",
+        "office salary conflict",
+        "pay transparency drama",
+        "payroll employee refuses",
+        "team resignation story",
+        "unfair workplace decision",
+        "dramatic story time",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "SalaryCut",
+        "BadBoss",
+        "OfficeConflict",
+        "EmployeeVote",
+        "PayTransparency",
+        "WorkplaceBetrayal",
+        "PayrollDrama",
+        "TeamResigns",
+        "StoryTime"
+      ],
+      "title": "The Salary Missing From His Pay-Cut Ballot"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-05T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41549901613"
+  },
+  "youtube_video_id": "6UAFTUxMzT4"
+}
