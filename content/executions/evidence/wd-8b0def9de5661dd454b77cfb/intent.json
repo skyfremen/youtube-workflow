@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-8b0def9de5661dd454b77cfb",
+  "created_at": "2026-11-03T12:10:52.480810Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9151c90023ca3b968ada9dec",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "dac01b6a159a1cac68c52832a2d55b5e6e475913",
+  "record_type": "intent",
+  "request_blob_sha": "c5c1c893130d99270d3be8a45d630892f0ae501b",
+  "request_id": "rq-f588ed9bae7bd1f7a483f3ed",
+  "request_path": "content/requests/rq-f588ed9bae7bd1f7a483f3ed.json",
+  "request_source_sha": "4cd059cfa5aaec0d199620cb4ff0517db5581620",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Two concertgoers discover that a venue sold the same front-row seat twice and is preparing to sell it again.\n\n#WackyDramas #Shorts #ConcertDrama #TicketDrama #FrontRowSeat #DoubleBooked #VenueConflict #ConcertTickets #SeatResale #CustomerStory #LiveEventDrama #StoryTime",
+      "tags": [
+        "wd-id-01c36fde31d45c5f7d1f",
+        "wacky dramas",
+        "shorts",
+        "concert drama",
+        "front row seat resold",
+        "duplicate concert tickets",
+        "venue double booking",
+        "seat sensor resale",
+        "concert customer conflict",
+        "two valid tickets",
+        "instant ticket resale",
+        "bathroom break seat",
+        "dramatic story time",
+        "WackyDramas",
+        "ConcertDrama",
+        "TicketDrama",
+        "FrontRowSeat",
+        "DoubleBooked",
+        "VenueConflict",
+        "ConcertTickets",
+        "SeatResale",
+        "CustomerStory",
+        "LiveEventDrama",
+        "StoryTime"
+      ],
+      "title": "The Seat Resold During Her Bathroom Break"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-06T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41632633537"
+  }
+}
