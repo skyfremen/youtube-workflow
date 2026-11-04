@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-7cd8bdec262ec30728e1d1c8",
+  "created_at": "2026-11-04T00:15:02.128052Z",
+  "evidence_version": 2,
+  "execution_id": "ex-fcef283402f9bc03d4e8979d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0b2bd023e78ea21ce4e11bfe283f774473e071ae",
+  "record_type": "intent",
+  "request_blob_sha": "94e28b7f86e29ddcbb3cfc04101a6aa922f0e005",
+  "request_id": "rq-f31d6d625403c9cc9127057c",
+  "request_path": "content/requests/rq-f31d6d625403c9cc9127057c.json",
+  "request_source_sha": "eb3c01f750e1660389c9f2a56b1e4f2acee197c9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A candidate watches a recruiter offer her position to the brother invited only to verify her work history.\n\n#WackyDramas #Shorts #WorkplaceDrama #JobInterview #RecruiterDrama #SiblingBetrayal #ReferenceCheck #CareerStory #HiringDrama #StolenCredit #OfficeConflict #StoryTime",
+      "tags": [
+        "wd-id-2e25a134ce8d062db6a5",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "brother takes job interview",
+        "reference check betrayal",
+        "recruiter offers wrong candidate",
+        "sibling career conflict",
+        "stolen work portfolio",
+        "job interview drama",
+        "false supervisor reference",
+        "candidate rejects handover",
+        "dramatic story time",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "JobInterview",
+        "RecruiterDrama",
+        "SiblingBetrayal",
+        "ReferenceCheck",
+        "CareerStory",
+        "HiringDrama",
+        "StolenCredit",
+        "OfficeConflict",
+        "StoryTime"
+      ],
+      "title": "The Reference Who Took Her Interview"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-06T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41744392734"
+  }
+}
