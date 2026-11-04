@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f6546a7aa32b7453098cdea5",
+  "evidence_version": 2,
+  "execution_id": "ex-d2758cfb212a727984fd2774",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d7ce5a90d32f3c68161307601fa02d264ff89cbd",
+  "record_type": "upload",
+  "recorded_at": "2026-11-04T12:16:34.754453Z",
+  "request_blob_sha": "4cd9eb946224bae0e4f408a22f4cf196e08bf44c",
+  "request_id": "rq-2b2bd68d01bed5eeb77892d5",
+  "request_path": "content/requests/rq-2b2bd68d01bed5eeb77892d5.json",
+  "request_source_sha": "b9d60abc916e21e562beb82317f178bdf239f549",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A tenant discovers that her boyfriend and landlord turned her birthday into an occupied open house in exchange for cheaper rent.\n\n#WackyDramas #Shorts #PropertyDrama #BirthdayParty #OpenHouse #LandlordDrama #RelationshipBetrayal #TenantStory #RentConflict #HomePrivacy #BoyfriendDrama #StoryTime",
+      "tags": [
+        "wd-id-b70d1107ed1c331c3e81",
+        "wacky dramas",
+        "shorts",
+        "property drama",
+        "birthday party open house",
+        "landlord shows occupied apartment",
+        "boyfriend trades party for rent",
+        "tenant privacy conflict",
+        "apartment viewing drama",
+        "relationship betrayal story",
+        "birthday guests and buyers",
+        "rent discount secret",
+        "dramatic story time",
+        "WackyDramas",
+        "PropertyDrama",
+        "BirthdayParty",
+        "OpenHouse",
+        "LandlordDrama",
+        "RelationshipBetrayal",
+        "TenantStory",
+        "RentConflict",
+        "HomePrivacy",
+        "BoyfriendDrama",
+        "StoryTime"
+      ],
+      "title": "The Floor Plans at Her Birthday Party"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-07T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41826837933"
+  },
+  "youtube_video_id": "nvGI-CTP0Jg"
+}
