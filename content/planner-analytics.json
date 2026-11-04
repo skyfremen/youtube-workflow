@@ -184,7 +184,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-04T11:30:31Z",
+    "latest_realtime_snapshot": "2026-11-04T17:46:46Z",
     "videos_analyzed": 209
   },
   "distribution_signals": {
@@ -212,26 +212,26 @@
         "window": "20-23"
       },
       {
-        "evidence_median_views": 12.5,
+        "evidence_median_views": 13.0,
         "sample_size": 60,
         "window": "12-15"
       }
     ]
   },
-  "generated_at": "2026-11-04T11:30:31Z",
+  "generated_at": "2026-11-04T17:46:46Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 204,
+      "24h": 206,
       "2h": 103,
-      "6h": 208,
-      "72h": 196,
+      "6h": 209,
+      "72h": 197,
       "7d": 186
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 6 due checkpoints; will retry"
+    "Optional retention returned empty curves for 7 due checkpoints; will retry"
   ]
 }
