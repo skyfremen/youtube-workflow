@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -320,9 +321,15 @@ def youtube_access_token():
 def youtube_get(path,params,token):
     url="https://www.googleapis.com/youtube/v3/"+path+"?"+urlencode(params)
     req=Request(url,headers={"Authorization":f"Bearer {token}","Accept":"application/json"})
-    try:
-        with urlopen(req,timeout=30) as response: return json.load(response)
-    except (HTTPError,URLError,TimeoutError) as exc: raise VError("YOUTUBE_QUERY_FAILED",path,type(exc).__name__,"successful YouTube API query",False) from None
+    for attempt in range(3):
+        try:
+            with urlopen(req,timeout=30) as response: return json.load(response)
+        except (HTTPError,URLError,TimeoutError) as exc:
+            transient=not isinstance(exc,HTTPError) or exc.code in {429,500,502,503,504}
+            if not transient or attempt==2:
+                raise VError("YOUTUBE_QUERY_FAILED",path,type(exc).__name__,"successful YouTube API query",False) from None
+            print(f"YouTube read retry: endpoint={path} attempt={attempt+1}/3 error={type(exc).__name__}",file=sys.stderr)
+            time.sleep(2**attempt)
 def youtube_scheduled_slots():
     token=youtube_access_token(); channels=youtube_get("channels",{"part":"id,contentDetails","mine":"true"},token).get("items",[])
     if len(channels)!=1 or channels[0].get("id")!=EXPECTED_YOUTUBE_CHANNEL_ID: raise VError("YOUTUBE_CHANNEL_MISMATCH","youtube.channel",[x.get("id") for x in channels],EXPECTED_YOUTUBE_CHANNEL_ID,False)
