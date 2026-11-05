@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-4c508c2792bfc96d9ef1d51d",
+  "created_at": "2026-11-05T12:24:22.886860Z",
+  "evidence_version": 2,
+  "execution_id": "ex-64e16be63a71b1445fcd3208",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0a239cc0a5015b1a00c1586175e88ba35c9a9fb3",
+  "record_type": "intent",
+  "request_blob_sha": "9529d6070db0d94db4d7f5a6cc327c673cec0aa9",
+  "request_id": "rq-5b5294f0261ca7dc38a6ca39",
+  "request_path": "content/requests/rq-5b5294f0261ca7dc38a6ca39.json",
+  "request_source_sha": "c698a55c5cac02159ab53142ab480d4584fe8871",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman reaches her new home and discovers that her boyfriend told the movers to auction her furniture to neighbors before unloading it.\n\n#WackyDramas #Shorts #MovingDrama #FurnitureSale #BoyfriendBetrayal #NewApartment #CurbsideAuction #MovingTruck #PropertyConflict #RelationshipDrama #SentimentalFurniture #StoryTime",
+      "tags": [
+        "wd-id-2ada93e58a564b2a0f93",
+        "wacky dramas",
+        "shorts",
+        "moving company drama",
+        "boyfriend sells furniture",
+        "curbside furniture auction",
+        "new apartment conflict",
+        "moving truck betrayal",
+        "neighbors bid on belongings",
+        "unauthorized furniture sale",
+        "relationship moving story",
+        "grandmother sofa drama",
+        "dramatic story time",
+        "WackyDramas",
+        "MovingDrama",
+        "FurnitureSale",
+        "BoyfriendBetrayal",
+        "NewApartment",
+        "CurbsideAuction",
+        "MovingTruck",
+        "PropertyConflict",
+        "RelationshipDrama",
+        "SentimentalFurniture",
+        "StoryTime"
+      ],
+      "title": "The Bids Waiting Beside Her Moving Truck"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-09T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42025973179"
+  }
+}
