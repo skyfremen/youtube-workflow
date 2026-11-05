@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a42f8fffff423c98abc560df",
+  "evidence_version": 2,
+  "execution_id": "ex-bce6695526f40458b03069de",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7f09e67c1a56f3033d08b2272a2d7bf11aa63d5a",
+  "record_type": "upload",
+  "recorded_at": "2026-11-05T12:21:36.744973Z",
+  "request_blob_sha": "9529d6070db0d94db4d7f5a6cc327c673cec0aa9",
+  "request_id": "rq-5b5294f0261ca7dc38a6ca39",
+  "request_path": "content/requests/rq-5b5294f0261ca7dc38a6ca39.json",
+  "request_source_sha": "c698a55c5cac02159ab53142ab480d4584fe8871",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A chef turns a woman's severe allergy into a livestream challenge after her boyfriend enters her to win free anniversary dinners.\n\n#WackyDramas #Shorts #RestaurantDrama #FoodAllergy #AnniversaryDinner #BoyfriendBetrayal #LivestreamChallenge #DiningConflict #AllergySafety #PublicTest #RelationshipDrama #StoryTime",
+      "tags": [
+        "wd-id-a5362a7d9cfe61abc79b",
+        "wacky dramas",
+        "shorts",
+        "restaurant drama",
+        "food allergy challenge",
+        "boyfriend enters girlfriend",
+        "anniversary dinner betrayal",
+        "chef livestream test",
+        "allergy safe meal",
+        "cashew allergy story",
+        "public dining conflict",
+        "free dinner contest",
+        "dramatic story time",
+        "WackyDramas",
+        "RestaurantDrama",
+        "FoodAllergy",
+        "AnniversaryDinner",
+        "BoyfriendBetrayal",
+        "LivestreamChallenge",
+        "DiningConflict",
+        "AllergySafety",
+        "PublicTest",
+        "RelationshipDrama",
+        "StoryTime"
+      ],
+      "title": "The Allergy Test Served at Their Anniversary"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-09T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42025977006"
+  },
+  "youtube_video_id": "Id44RIwHeSI"
+}
