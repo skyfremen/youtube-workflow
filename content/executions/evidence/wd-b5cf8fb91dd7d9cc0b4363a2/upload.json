@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b5cf8fb91dd7d9cc0b4363a2",
+  "evidence_version": 2,
+  "execution_id": "ex-2612d0600803224727631e8c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f9bfb154a4f3db721b4078ec47012cded876c23c",
+  "record_type": "upload",
+  "recorded_at": "2026-11-05T00:09:05.165380Z",
+  "request_blob_sha": "70550c953a30859a29279e6efd3fad75c109e8f2",
+  "request_id": "rq-98f4812b4d48d5f06dc7d370",
+  "request_path": "content/requests/rq-98f4812b4d48d5f06dc7d370.json",
+  "request_source_sha": "9a7770eee20739beb7576971eb4d5eeed5fe4b5f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride reaches the airport and discovers that her groom booked his mother into their honeymoon suite while making only the bride's ticket refundable.\n\n#WackyDramas #Shorts #WeddingDrama #HoneymoonDrama #MotherInLaw #NewlywedConflict #BoardingPass #MarriageBetrayal #AirportDrama #FamilyPressure #BrideStory #StoryTime",
+      "tags": [
+        "wd-id-61149181cdedb6fdc720",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "mother in law honeymoon",
+        "third honeymoon ticket",
+        "groom books mother suite",
+        "refundable bride ticket",
+        "newlywed airport conflict",
+        "honeymoon betrayal story",
+        "bride cancels flight",
+        "family pressure marriage",
+        "dramatic story time",
+        "WackyDramas",
+        "WeddingDrama",
+        "HoneymoonDrama",
+        "MotherInLaw",
+        "NewlywedConflict",
+        "BoardingPass",
+        "MarriageBetrayal",
+        "AirportDrama",
+        "FamilyPressure",
+        "BrideStory",
+        "StoryTime"
+      ],
+      "title": "The Third Boarding Pass After Their Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-08T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41938378666"
+  },
+  "youtube_video_id": "21A_9BofJy4"
+}
