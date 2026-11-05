@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-10b30e02e2ddcf25696df862",
+  "created_at": "2026-11-05T00:10:36.554189Z",
+  "evidence_version": 2,
+  "execution_id": "ex-bbdbf9eada3abad418a88ac1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4f55f2b6209d8e8f639abab1227b353bdd49c52a",
+  "record_type": "intent",
+  "request_blob_sha": "70550c953a30859a29279e6efd3fad75c109e8f2",
+  "request_id": "rq-98f4812b4d48d5f06dc7d370",
+  "request_path": "content/requests/rq-98f4812b4d48d5f06dc7d370.json",
+  "request_source_sha": "9a7770eee20739beb7576971eb4d5eeed5fe4b5f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A tour group learns that its guide will return their passports only after everyone posts a five-star review before leaving for the airport.\n\n#WackyDramas #Shorts #TravelDrama #TourGuide #PassportStory #FiveStarReview #AirportTrip #TravelScam #GroupTour #HonestReview #VacationConflict #StoryTime",
+      "tags": [
+        "wd-id-b63d214d1298b3ce6c6b",
+        "wacky dramas",
+        "shorts",
+        "travel drama",
+        "guide holds passports",
+        "five star review pressure",
+        "tour group passport conflict",
+        "dishonest travel review",
+        "airport deadline story",
+        "assistant guide helps travelers",
+        "group tour drama",
+        "passport pouch on bus",
+        "dramatic story time",
+        "WackyDramas",
+        "TravelDrama",
+        "TourGuide",
+        "PassportStory",
+        "FiveStarReview",
+        "AirportTrip",
+        "TravelScam",
+        "GroupTour",
+        "HonestReview",
+        "VacationConflict",
+        "StoryTime"
+      ],
+      "title": "The Five Stars Before Their Passports Came Back"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-08T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41938385327"
+  }
+}
