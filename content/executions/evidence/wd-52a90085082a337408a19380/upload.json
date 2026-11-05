@@ -1,0 +1,59 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-52a90085082a337408a19380",
+  "evidence_version": 2,
+  "execution_id": "ex-5302d306182e8405b09815eb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f098deff507fc326322cc0a70a87a8d2149ee408",
+  "record_type": "upload",
+  "recorded_at": "2026-11-05T00:15:25.605293Z",
+  "request_blob_sha": "70550c953a30859a29279e6efd3fad75c109e8f2",
+  "request_id": "rq-98f4812b4d48d5f06dc7d370",
+  "request_path": "content/requests/rq-98f4812b4d48d5f06dc7d370.json",
+  "request_source_sha": "9a7770eee20739beb7576971eb4d5eeed5fe4b5f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman learns that her brother sold their mother's memorial-bench naming rights to the employer that dismissed her during an illness.\n\n#WackyDramas #Shorts #MemorialStory #FamilyDrama #SponsorName #SiblingConflict #MemorialBench #WorkplaceBetrayal #FamilySecret #PublicArgument #GriefStory #StoryTime",
+      "tags": [
+        "wd-id-54b5bd3ab351fad6fa55",
+        "wacky dramas",
+        "shorts",
+        "memorial bench drama",
+        "brother sells naming rights",
+        "mother memorial sponsor",
+        "company fired mother",
+        "sibling family conflict",
+        "memorial plaque story",
+        "sponsorship betrayal",
+        "park bench memorial",
+        "family grief drama",
+        "dramatic story time",
+        "WackyDramas",
+        "MemorialStory",
+        "FamilyDrama",
+        "SponsorName",
+        "SiblingConflict",
+        "MemorialBench",
+        "WorkplaceBetrayal",
+        "FamilySecret",
+        "PublicArgument",
+        "GriefStory",
+        "StoryTime"
+      ],
+      "title": "The Sponsor Above Her Mother's Memorial"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-08T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "4c96a38e5cb8d181d8f97733a853f0d763462c6f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "41938388635"
+  },
+  "youtube_video_id": "XJFyxVT7mJk"
+}
