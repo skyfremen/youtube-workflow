@@ -1,0 +1,57 @@
+{
+  "content_id": "wd-92cfba791ed08587d5c1407b",
+  "created_at": "2026-11-05T12:26:33.260665Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8569150bbb7d68e5e30dc448",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8989ff409247374d986278f9359519696aea8276",
+  "record_type": "intent",
+  "request_blob_sha": "9529d6070db0d94db4d7f5a6cc327c673cec0aa9",
+  "request_id": "rq-5b5294f0261ca7dc38a6ca39",
+  "request_path": "content/requests/rq-5b5294f0261ca7dc38a6ca39.json",
+  "request_source_sha": "c698a55c5cac02159ab53142ab480d4584fe8871",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom uses his wedding toast to announce that his bride quit her job and will move overseas for a promotion she never accepted.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingToast #CareerBetrayal #BrideStory #JobResignation #OverseasMove #MarriageConflict #FamilyPressure #PromotionDrama #StoryTime",
+      "tags": [
+        "wd-id-65f0a524e751a209460c",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "groom announces resignation",
+        "wedding toast betrayal",
+        "bride career conflict",
+        "overseas promotion drama",
+        "job resignation lie",
+        "marriage relocation pressure",
+        "bride keeps her job",
+        "family wedding argument",
+        "dramatic story time",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingToast",
+        "CareerBetrayal",
+        "BrideStory",
+        "JobResignation",
+        "OverseasMove",
+        "MarriageConflict",
+        "FamilyPressure",
+        "PromotionDrama",
+        "StoryTime"
+      ],
+      "title": "The Resignation Inside His Wedding Toast"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-08T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42025963016"
+  }
+}
