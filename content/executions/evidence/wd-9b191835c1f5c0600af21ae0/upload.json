@@ -1,0 +1,54 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9b191835c1f5c0600af21ae0",
+  "evidence_version": 2,
+  "execution_id": "ex-6e45f9f6ed178f2d34ac57a6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ec20c22c733833452d88c7e8ac09d31eeb8675b8",
+  "record_type": "upload",
+  "recorded_at": "2026-11-06T00:10:27.774261Z",
+  "request_blob_sha": "7061e7ce3c5aae92aa0f83261196c83652091599",
+  "request_id": "rq-3a7e60497a987ce5a706e0eb",
+  "request_path": "content/requests/rq-3a7e60497a987ce5a706e0eb.json",
+  "request_source_sha": "5e0f9f7f0de1197dc69efc791ede41bf55130916",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An apartment building broadcasts tenants' private door-camera footage on a lobby screen without their consent.\n\n#WackyDramas #Shorts #ApartmentDrama #DoorCamera #TenantPrivacy #LobbyScreen #BuildingConflict #NeighborDispute #HomePrivacy #Surveillance",
+      "tags": [
+        "wd-id-8beb6b22262787055835",
+        "wacky dramas",
+        "shorts",
+        "apartment drama",
+        "door camera",
+        "tenant privacy",
+        "lobby screen",
+        "building conflict",
+        "neighbor dispute",
+        "home privacy",
+        "surveillance",
+        "WackyDramas",
+        "ApartmentDrama",
+        "DoorCamera",
+        "TenantPrivacy",
+        "LobbyScreen",
+        "BuildingConflict",
+        "NeighborDispute",
+        "HomePrivacy"
+      ],
+      "title": "The Live Feed Above Their Apartment Mailboxes"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-10T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42133674870"
+  },
+  "youtube_video_id": "97HcpFpBKoU"
+}
