@@ -1,0 +1,53 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-46492f665493fbcb5b920ada",
+  "evidence_version": 2,
+  "execution_id": "ex-44cbc1c6ebed180375ecb87d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "144928d4cd69211f766fbfa7e30017b6d97271bb",
+  "record_type": "upload",
+  "recorded_at": "2026-11-06T12:08:17.219964Z",
+  "request_blob_sha": "41aebec3cc1eea5e55c7bd9e5ffcacfb8a91882e",
+  "request_id": "rq-fb7249f6b50be261d9954b4a",
+  "request_path": "content/requests/rq-fb7249f6b50be261d9954b4a.json",
+  "request_source_sha": "73b98fd0722bb88c32ba729c35980d3a8d1cb113",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father claims bereavement leave for his living son and asks him to hide when coworkers arrive with sympathy flowers.\n\n#WackyDramas #Shorts #FamilyDrama #BereavementLeave #LivingSon #Caregiving #Grandmother #SympathyFlowers #FatherSon #WorkLeave",
+      "tags": [
+        "wd-id-b5df204c2b366011ffd2",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "bereavement leave",
+        "living son",
+        "caregiving",
+        "grandmother",
+        "sympathy flowers",
+        "father son",
+        "work leave",
+        "WackyDramas",
+        "FamilyDrama",
+        "BereavementLeave",
+        "LivingSon",
+        "SympathyFlowers",
+        "FatherSon",
+        "WorkLeave"
+      ],
+      "title": "The Flowers Sent for a Son Still Shopping"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-10T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d965ee9c7f062949f5bad1a366455ad8c716d25f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42214552798"
+  },
+  "youtube_video_id": "62g9hgqrcb4"
+}
