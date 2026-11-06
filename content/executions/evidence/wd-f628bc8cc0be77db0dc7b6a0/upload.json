@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f628bc8cc0be77db0dc7b6a0",
+  "evidence_version": 2,
+  "execution_id": "ex-ccdd3b75976f3ebc48a2fada",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "63b7c00d2c8be33154ab166351e46e7deac02530",
+  "record_type": "upload",
+  "recorded_at": "2026-11-06T00:05:12.211928Z",
+  "request_blob_sha": "7061e7ce3c5aae92aa0f83261196c83652091599",
+  "request_id": "rq-3a7e60497a987ce5a706e0eb",
+  "request_path": "content/requests/rq-3a7e60497a987ce5a706e0eb.json",
+  "request_source_sha": "5e0f9f7f0de1197dc69efc791ede41bf55130916",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An escape-room host treats a woman's refusal of a proposal as part of the game because her boyfriend paid for a guaranteed yes ending.\n\n#WackyDramas #Shorts #EscapeRoom #ProposalDrama #RelationshipConflict #MarriageProposal #PublicPressure #ConsentMatters #GameHost #BoyfriendDrama",
+      "tags": [
+        "wd-id-4f4444e722e93af4fe99",
+        "wacky dramas",
+        "shorts",
+        "escape room",
+        "proposal drama",
+        "relationship conflict",
+        "marriage proposal",
+        "public pressure",
+        "consent matters",
+        "game host",
+        "boyfriend drama",
+        "WackyDramas",
+        "EscapeRoom",
+        "ProposalDrama",
+        "RelationshipConflict",
+        "MarriageProposal",
+        "PublicPressure",
+        "ConsentMatters",
+        "GameHost",
+        "BoyfriendDrama"
+      ],
+      "title": "The Proposal Ending She Could Not Change"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-10T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42133678379"
+  },
+  "youtube_video_id": "-C9GsLW3QeA"
+}
