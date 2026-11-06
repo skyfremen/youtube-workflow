@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-6e3eb9677e7f4030d898e543",
+  "created_at": "2026-11-06T00:08:51.873202Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0a57830a25bcb614d65062fc",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ec8da10c806cfdca59eb77347365119ca8978354",
+  "record_type": "intent",
+  "request_blob_sha": "7061e7ce3c5aae92aa0f83261196c83652091599",
+  "request_id": "rq-3a7e60497a987ce5a706e0eb",
+  "request_path": "content/requests/rq-3a7e60497a987ce5a706e0eb.json",
+  "request_source_sha": "5e0f9f7f0de1197dc69efc791ede41bf55130916",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom interrupts his vows to ask his ex for another chance while expecting the bride to finish the ceremony.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingVows #BrideStory #ExGirlfriend #MarriageBetrayal #CeremonyConflict #GroomDrama #WeddingGuests",
+      "tags": [
+        "wd-id-c99d30606d8a837bf788",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "wedding vows",
+        "bride story",
+        "ex girlfriend",
+        "marriage betrayal",
+        "ceremony conflict",
+        "groom drama",
+        "wedding guests",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingVows",
+        "BrideStory",
+        "ExGirlfriend",
+        "MarriageBetrayal",
+        "CeremonyConflict",
+        "GroomDrama",
+        "WeddingGuests"
+      ],
+      "title": "The Second Chance Inside His Wedding Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-09T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42133668853"
+  }
+}
