@@ -132,11 +132,11 @@
         "value": "dramatic"
       },
       {
-        "average_view_percentage": 58.08,
+        "average_view_percentage": 53.73,
         "dimension": "story_tone",
-        "evidence_median_views": 42.0,
-        "mature_sample": 16,
-        "sample_size": 22,
+        "evidence_median_views": 42.5,
+        "mature_sample": 15,
+        "sample_size": 21,
         "value": "natural"
       },
       {
@@ -166,26 +166,26 @@
         "value": "conversational"
       },
       {
-        "average_view_percentage": 48.71,
+        "average_view_percentage": 52.37,
         "dimension": "category",
-        "evidence_median_views": 7.0,
-        "mature_sample": 12,
-        "sample_size": 15,
+        "evidence_median_views": 11.5,
+        "mature_sample": 11,
+        "sample_size": 14,
         "value": "work"
       },
       {
-        "average_view_percentage": 56.18,
+        "average_view_percentage": 54.6,
         "dimension": "hook_type",
-        "evidence_median_views": 14.5,
-        "mature_sample": 36,
-        "sample_size": 40,
+        "evidence_median_views": 16.0,
+        "mature_sample": 35,
+        "sample_size": 39,
         "value": "accusation"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-06T11:30:30Z",
-    "videos_analyzed": 176
+    "latest_realtime_snapshot": "2026-11-06T17:30:32Z",
+    "videos_analyzed": 174
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -200,38 +200,38 @@
         "window": "16-19"
       },
       {
-        "evidence_median_views": 26.0,
-        "sample_size": 42,
+        "evidence_median_views": 28.0,
+        "sample_size": 41,
         "window": "00-03"
       }
     ],
     "weak_publish_windows_sgt": [
       {
-        "evidence_median_views": 13.0,
-        "sample_size": 17,
-        "window": "20-23"
-      },
-      {
         "evidence_median_views": 15.0,
         "sample_size": 18,
         "window": "08-11"
+      },
+      {
+        "evidence_median_views": 16.0,
+        "sample_size": 16,
+        "window": "20-23"
       }
     ]
   },
-  "generated_at": "2026-11-06T11:30:30Z",
+  "generated_at": "2026-11-06T17:30:32Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
       "24h": 171,
-      "2h": 91,
-      "6h": 175,
-      "72h": 163,
-      "7d": 146
+      "2h": 90,
+      "6h": 174,
+      "72h": 162,
+      "7d": 144
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 9 due checkpoints; will retry"
+    "Optional retention returned empty curves for 10 due checkpoints; will retry"
   ]
 }
