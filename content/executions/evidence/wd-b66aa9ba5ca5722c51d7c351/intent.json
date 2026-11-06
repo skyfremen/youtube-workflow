@@ -1,0 +1,52 @@
+{
+  "content_id": "wd-b66aa9ba5ca5722c51d7c351",
+  "created_at": "2026-11-06T12:11:50.414432Z",
+  "evidence_version": 2,
+  "execution_id": "ex-693bd94fa4680795b8f9b6e9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a743eb2c34ecfc590fd74c4baa17bde7cc084b4a",
+  "record_type": "intent",
+  "request_blob_sha": "41aebec3cc1eea5e55c7bd9e5ffcacfb8a91882e",
+  "request_id": "rq-fb7249f6b50be261d9954b4a",
+  "request_path": "content/requests/rq-fb7249f6b50be261d9954b4a.json",
+  "request_source_sha": "73b98fd0722bb88c32ba729c35980d3a8d1cb113",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A museum guard accuses a visitor of stealing the handmade coat she wore into the building.\n\n#WackyDramas #Shorts #MuseumDrama #HandmadeCoat #Embroidery #FalseAccusation #ArtistCredit #MuseumVisit #ClothingDesign #FamilyCraft",
+      "tags": [
+        "wd-id-ff7d2e20f65dee9d207b",
+        "wacky dramas",
+        "shorts",
+        "museum drama",
+        "handmade coat",
+        "embroidery",
+        "false accusation",
+        "artist credit",
+        "museum visit",
+        "clothing design",
+        "family craft",
+        "WackyDramas",
+        "MuseumDrama",
+        "HandmadeCoat",
+        "FalseAccusation",
+        "ArtistCredit",
+        "MuseumVisit",
+        "ClothingDesign",
+        "FamilyCraft"
+      ],
+      "title": "The Museum Label Beside Her Handmade Coat"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-10T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d965ee9c7f062949f5bad1a366455ad8c716d25f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42214556438"
+  }
+}
