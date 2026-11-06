@@ -1,0 +1,53 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ffc402ddb80aabbc6828c9a4",
+  "evidence_version": 2,
+  "execution_id": "ex-e180b3fa5c4ef125f987cb35",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "41f427aa4db7376cf57145985a1d0edeaf31b063",
+  "record_type": "upload",
+  "recorded_at": "2026-11-06T12:07:42.985263Z",
+  "request_blob_sha": "41aebec3cc1eea5e55c7bd9e5ffcacfb8a91882e",
+  "request_id": "rq-fb7249f6b50be261d9954b4a",
+  "request_path": "content/requests/rq-fb7249f6b50be261d9954b4a.json",
+  "request_source_sha": "73b98fd0722bb88c32ba729c35980d3a8d1cb113",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding interpreter adds a promise to forgive the groom's affair even though the bride never knew about it.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingVows #Interpreter #MarriageBetrayal #BrideStory #FamilySecret #GroomConfession #Translation",
+      "tags": [
+        "wd-id-f665559dc97e7a015206",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "wedding vows",
+        "interpreter",
+        "marriage betrayal",
+        "bride story",
+        "family secret",
+        "groom confession",
+        "translation",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingVows",
+        "MarriageBetrayal",
+        "BrideStory",
+        "FamilySecret",
+        "GroomConfession"
+      ],
+      "title": "The Promise Added Between Her Wedding Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-10T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "d965ee9c7f062949f5bad1a366455ad8c716d25f",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42214549238"
+  },
+  "youtube_video_id": "UGWT1304h3Q"
+}
