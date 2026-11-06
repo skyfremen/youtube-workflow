@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2b752b36a72f33ca0dcc4d9c",
+  "evidence_version": 2,
+  "execution_id": "ex-ba5d46adfac9bcf5d9d6bceb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "73b57e015490bf4dcd67ca9057679194afb115b2",
+  "record_type": "upload",
+  "recorded_at": "2026-11-06T00:06:38.500512Z",
+  "request_blob_sha": "7061e7ce3c5aae92aa0f83261196c83652091599",
+  "request_id": "rq-3a7e60497a987ce5a706e0eb",
+  "request_path": "content/requests/rq-3a7e60497a987ce5a706e0eb.json",
+  "request_source_sha": "5e0f9f7f0de1197dc69efc791ede41bf55130916",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mother publishes her daughter's teenage diary as her own memoir and asks the daughter to sell copies at the launch.\n\n#WackyDramas #Shorts #FamilyDrama #PrivateDiary #BookSigning #MotherDaughter #MemoirConflict #PrivacyBetrayal #TeenageDiary #FamilySecrets",
+      "tags": [
+        "wd-id-ed86cd3d1a82dd1a4a05",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "private diary",
+        "book signing",
+        "mother daughter",
+        "memoir conflict",
+        "privacy betrayal",
+        "teenage diary",
+        "family secrets",
+        "WackyDramas",
+        "FamilyDrama",
+        "PrivateDiary",
+        "BookSigning",
+        "MotherDaughter",
+        "MemoirConflict",
+        "PrivacyBetrayal",
+        "TeenageDiary",
+        "FamilySecrets"
+      ],
+      "title": "The Diary Behind Her Mother's Book Signing"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-09T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "b2e1342446cbbf344fde6646d1251a6e28c8de2c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42133671801"
+  },
+  "youtube_video_id": "Pw2znze8voE"
+}
