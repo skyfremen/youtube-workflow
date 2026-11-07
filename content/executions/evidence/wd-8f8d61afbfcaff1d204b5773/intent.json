@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-8f8d61afbfcaff1d204b5773",
+  "created_at": "2026-11-07T00:13:45.669351Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0a8848e915fb90617d655b14",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "af7f85a512cea6a54e0e9e6dc8336e00e24ca2d6",
+  "record_type": "intent",
+  "request_blob_sha": "eb4a92e08243a9b116d16a09c05e57502c2318f6",
+  "request_id": "rq-805012a3aa388e93ef70f56c",
+  "request_path": "content/requests/rq-805012a3aa388e93ef70f56c.json",
+  "request_source_sha": "a21d9f6cc1c22aad65577d9b79ae1665cc0ec20b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A son hides his mother's hearing aids and presents her silence as agreement to sell her house.\n\n#WackyDramas #Shorts #FamilyDrama #HearingAids #MothersHouse #SiblingConflict #FamilyDecision #HomeSale #ElderAutonomy #MotherDaughter",
+      "tags": [
+        "wd-id-15382696217d9a5f9f43",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "hearing aids",
+        "mothers house",
+        "sibling conflict",
+        "family decision",
+        "home sale",
+        "elder autonomy",
+        "mother daughter",
+        "WackyDramas",
+        "FamilyDrama",
+        "HearingAids",
+        "MothersHouse",
+        "SiblingConflict",
+        "FamilyDecision",
+        "HomeSale",
+        "ElderAutonomy",
+        "MotherDaughter"
+      ],
+      "title": "The Hearing Aids Missing Before the House Vote"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-11T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42316296494"
+  }
+}
