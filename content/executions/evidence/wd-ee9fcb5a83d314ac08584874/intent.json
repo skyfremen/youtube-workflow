@@ -1,0 +1,52 @@
+{
+  "content_id": "wd-ee9fcb5a83d314ac08584874",
+  "created_at": "2026-11-07T12:13:42.223826Z",
+  "evidence_version": 2,
+  "execution_id": "ex-e09af34ba137ed3209da70c8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "00f14335152300d0f085ab1e3b0fdef567d5ed4e",
+  "record_type": "intent",
+  "request_blob_sha": "bdf929bf96c1ad3f7593fc5bcdc53549dd44e290",
+  "request_id": "rq-e70feb611cfbf283f05a826a",
+  "request_path": "content/requests/rq-e70feb611cfbf283f05a826a.json",
+  "request_source_sha": "c041d8356299ce09da7867cdedb84042acbaa7d0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman discovers that the scrapyard she paid to crush her car has rented it to a worker as a bedroom.\n\n#WackyDramas #Shorts #Scrapyard #CarDisposal #HiddenRent #WorkerHousing #CarBedroom #ConsumerBetrayal #UnsafeHousing #ScrappedCar",
+      "tags": [
+        "wd-id-e7faac39c36cee93f224",
+        "wacky dramas",
+        "shorts",
+        "scrapyard",
+        "car disposal",
+        "hidden rent",
+        "worker housing",
+        "car bedroom",
+        "consumer betrayal",
+        "unsafe housing",
+        "scrapped car",
+        "WackyDramas",
+        "CarDisposal",
+        "HiddenRent",
+        "WorkerHousing",
+        "CarBedroom",
+        "ConsumerBetrayal",
+        "UnsafeHousing",
+        "ScrappedCar"
+      ],
+      "title": "The Bedroom Inside Her Scrapped Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-12T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42370882031"
+  }
+}
