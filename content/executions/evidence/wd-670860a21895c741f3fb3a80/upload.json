@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-670860a21895c741f3fb3a80",
+  "evidence_version": 2,
+  "execution_id": "ex-ba13151673d3333f7ba154d0",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ce62e4645826540ee630cfd2c4b16de8790c5dd6",
+  "record_type": "upload",
+  "recorded_at": "2026-11-07T12:09:12.943690Z",
+  "request_blob_sha": "bdf929bf96c1ad3f7593fc5bcdc53549dd44e290",
+  "request_id": "rq-e70feb611cfbf283f05a826a",
+  "request_path": "content/requests/rq-e70feb611cfbf283f05a826a.json",
+  "request_source_sha": "c041d8356299ce09da7867cdedb84042acbaa7d0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A son introduces his mother as the cleaner at his engagement dinner while offering her house to his future in-laws.\n\n#WackyDramas #Shorts #FamilyDrama #EngagementDinner #MotherAndSon #FamilyHome #CleanerStory #ClassPrejudice #FamilySecrets #MotherRespect",
+      "tags": [
+        "wd-id-67e2a4c76d79e33f816e",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "engagement dinner",
+        "mother and son",
+        "family home",
+        "cleaner story",
+        "class prejudice",
+        "family secrets",
+        "mother respect",
+        "WackyDramas",
+        "FamilyDrama",
+        "EngagementDinner",
+        "MotherAndSon",
+        "FamilyHome",
+        "CleanerStory",
+        "ClassPrejudice",
+        "FamilySecrets",
+        "MotherRespect"
+      ],
+      "title": "The Cleaner Who Owned His Engagement Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-12T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42370878649"
+  },
+  "youtube_video_id": "qPHXBE3Iag0"
+}
