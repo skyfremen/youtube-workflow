@@ -1,0 +1,52 @@
+{
+  "content_id": "wd-9249007c2ce47ec5958a2c06",
+  "created_at": "2026-11-07T12:10:20.810880Z",
+  "evidence_version": 2,
+  "execution_id": "ex-bd9c5e6089b9f43bbf214c6c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b12d86f01210b324a18d411ea1370c1978cabacb",
+  "record_type": "intent",
+  "request_blob_sha": "bdf929bf96c1ad3f7593fc5bcdc53549dd44e290",
+  "request_id": "rq-e70feb611cfbf283f05a826a",
+  "request_path": "content/requests/rq-e70feb611cfbf283f05a826a.json",
+  "request_source_sha": "c041d8356299ce09da7867cdedb84042acbaa7d0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom promises the bridesmaids' unpaid labor to the caterer for a discount and removes their reception seats without telling them.\n\n#WackyDramas #Shorts #WeddingDrama #Bridesmaids #CateringDiscount #UnpaidWork #ReceptionDinner #GroomBetrayal #WeddingGuests #WeddingApron",
+      "tags": [
+        "wd-id-33d2ce75468c7f1a2e65",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "bridesmaids",
+        "catering discount",
+        "unpaid work",
+        "reception dinner",
+        "groom betrayal",
+        "wedding guests",
+        "wedding apron",
+        "WackyDramas",
+        "WeddingDrama",
+        "CateringDiscount",
+        "UnpaidWork",
+        "ReceptionDinner",
+        "GroomBetrayal",
+        "WeddingGuests",
+        "WeddingApron"
+      ],
+      "title": "The Reception Seats Traded for a Catering Discount"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-12T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42370876946"
+  }
+}
