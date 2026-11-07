@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-afc6eac9d9af6e99558dd7e1",
+  "created_at": "2026-11-07T00:17:08.162500Z",
+  "evidence_version": 2,
+  "execution_id": "ex-cfa94dfc0d3ecef1d17be422",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ace69002f52fc811f3d8367ffb036ac582948c5a",
+  "record_type": "intent",
+  "request_blob_sha": "eb4a92e08243a9b116d16a09c05e57502c2318f6",
+  "request_id": "rq-805012a3aa388e93ef70f56c",
+  "request_path": "content/requests/rq-805012a3aa388e93ef70f56c.json",
+  "request_source_sha": "a21d9f6cc1c22aad65577d9b79ae1665cc0ec20b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman finds a learner driver practicing in her valet-parked car after her boyfriend trades access to it for free lessons.\n\n#WackyDramas #Shorts #ValetParking #DrivingLesson #CarOwner #BoyfriendBetrayal #LearnerDriver #HotelParking #BorrowedCar #TrustBroken",
+      "tags": [
+        "wd-id-99b8a7302c0e649302ff",
+        "wacky dramas",
+        "shorts",
+        "valet parking",
+        "driving lesson",
+        "car owner",
+        "boyfriend betrayal",
+        "learner driver",
+        "hotel parking",
+        "borrowed car",
+        "trust broken",
+        "WackyDramas",
+        "ValetParking",
+        "DrivingLesson",
+        "CarOwner",
+        "BoyfriendBetrayal",
+        "LearnerDriver",
+        "HotelParking",
+        "BorrowedCar",
+        "TrustBroken"
+      ],
+      "title": "The Learner Sign on Her Valet-Parked Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-11T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42316299303"
+  }
+}
