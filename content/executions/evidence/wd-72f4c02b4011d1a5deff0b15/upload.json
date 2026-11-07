@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-72f4c02b4011d1a5deff0b15",
+  "evidence_version": 2,
+  "execution_id": "ex-2d7392b705917daf1b225c3f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3d6c876cb48b7ff7b4860e1224fbe9b6a68abce7",
+  "record_type": "upload",
+  "recorded_at": "2026-11-07T12:14:32.177304Z",
+  "request_blob_sha": "bdf929bf96c1ad3f7593fc5bcdc53549dd44e290",
+  "request_id": "rq-e70feb611cfbf283f05a826a",
+  "request_path": "content/requests/rq-e70feb611cfbf283f05a826a.json",
+  "request_source_sha": "c041d8356299ce09da7867cdedb84042acbaa7d0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss lists an employee's home as the company's walk-in customer-service office while she is on maternity leave.\n\n#WackyDramas #Shorts #WorkplaceDrama #MaternityLeave #CustomerService #HomePrivacy #ToxicBoss #ReturnParcels #WorkBoundaries #ServiceOffice",
+      "tags": [
+        "wd-id-32670275b6078af0dfbf",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "maternity leave",
+        "customer service",
+        "home privacy",
+        "toxic boss",
+        "return parcels",
+        "work boundaries",
+        "service office",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "MaternityLeave",
+        "CustomerService",
+        "HomePrivacy",
+        "ToxicBoss",
+        "ReturnParcels",
+        "WorkBoundaries",
+        "ServiceOffice"
+      ],
+      "title": "The Customer Queue Outside Her Front Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-12T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42370880330"
+  },
+  "youtube_video_id": "oyjHzA4Y-TM"
+}
