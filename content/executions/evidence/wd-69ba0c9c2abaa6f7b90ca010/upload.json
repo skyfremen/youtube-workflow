@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-69ba0c9c2abaa6f7b90ca010",
+  "evidence_version": 2,
+  "execution_id": "ex-1080ab53b91723d440e24835",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "100db54bd162c604a2b6a8002bae15b2523100ba",
+  "record_type": "upload",
+  "recorded_at": "2026-11-08T12:14:34.448028Z",
+  "request_blob_sha": "e43c5d0211173536d6df656804892b2b31bd84a2",
+  "request_id": "rq-ae6cc0c4a58454fa45d838c3",
+  "request_path": "content/requests/rq-ae6cc0c4a58454fa45d838c3.json",
+  "request_source_sha": "51791c4b34380ef9d9d37cbdd7901c83a632a3e0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A cafe sells customers five-dollar silence buttons and docks the waitress's wages if she speaks before their timer ends.\n\n#WackyDramas #Shorts #CafeDrama #WaitressStory #SilenceButton #WageDeduction #ToxicManager #TipJar #ServiceWorkers #WorkplaceDignity",
+      "tags": [
+        "wd-id-289a46b5e5c12f4fd47e",
+        "wacky dramas",
+        "shorts",
+        "cafe drama",
+        "waitress story",
+        "silence button",
+        "wage deduction",
+        "toxic manager",
+        "tip jar",
+        "service workers",
+        "workplace dignity",
+        "WackyDramas",
+        "CafeDrama",
+        "WaitressStory",
+        "SilenceButton",
+        "WageDeduction",
+        "ToxicManager",
+        "TipJar",
+        "ServiceWorkers",
+        "WorkplaceDignity"
+      ],
+      "title": "The Five-Dollar Button Beside Her Tip Jar"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-14T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42478861246"
+  },
+  "youtube_video_id": "6CL6TnHRTGo"
+}
