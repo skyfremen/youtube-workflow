@@ -1,0 +1,52 @@
+{
+  "content_id": "wd-b35003532fd107fcbe24edbb",
+  "created_at": "2026-11-08T00:17:56.205749Z",
+  "evidence_version": 2,
+  "execution_id": "ex-fd1848581280a49208918b63",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1de25f8978963bb60f229680550940f0fb68e447",
+  "record_type": "intent",
+  "request_blob_sha": "2ab5d3d7cb824a0ff5ab68d6299400402d044a4e",
+  "request_id": "rq-bb1c111aaa4908a7172317e5",
+  "request_path": "content/requests/rq-bb1c111aaa4908a7172317e5.json",
+  "request_source_sha": "b4464935a10b8d998821cac7c0ff96c6ef635afa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A festival turns a wheelchair musician's stage ramp into a VIP bar and asks him to be carried onto the stage.\n\n#WackyDramas #Shorts #FestivalDrama #WheelchairAccess #StageRamp #LiveMusic #VIPBar #AccessibleStage #BandSolidarity #MusicianStory",
+      "tags": [
+        "wd-id-97f9d015106d17ac5a55",
+        "wacky dramas",
+        "shorts",
+        "festival drama",
+        "wheelchair access",
+        "stage ramp",
+        "live music",
+        "vipbar",
+        "accessible stage",
+        "band solidarity",
+        "musician story",
+        "WackyDramas",
+        "FestivalDrama",
+        "WheelchairAccess",
+        "StageRamp",
+        "LiveMusic",
+        "AccessibleStage",
+        "BandSolidarity",
+        "MusicianStory"
+      ],
+      "title": "The VIP Bar Built Across His Stage Ramp"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-13T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42428712661"
+  }
+}
