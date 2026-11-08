@@ -100,11 +100,11 @@
     "soft_evidence_only": true,
     "supported_patterns": [
       {
-        "average_view_percentage": 59.85,
+        "average_view_percentage": 60.39,
         "dimension": "story_tone",
-        "evidence_median_views": 56.0,
-        "mature_sample": 18,
-        "sample_size": 24,
+        "evidence_median_views": 63.0,
+        "mature_sample": 17,
+        "sample_size": 23,
         "value": "warm"
       },
       {
@@ -184,8 +184,8 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-08T11:30:29Z",
-    "videos_analyzed": 170
+    "latest_realtime_snapshot": "2026-11-08T17:30:30Z",
+    "videos_analyzed": 169
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -200,8 +200,8 @@
         "window": "16-19"
       },
       {
-        "evidence_median_views": 29.5,
-        "sample_size": 40,
+        "evidence_median_views": 28.0,
+        "sample_size": 39,
         "window": "00-03"
       }
     ],
@@ -218,21 +218,20 @@
       }
     ]
   },
-  "generated_at": "2026-11-08T11:30:29Z",
+  "generated_at": "2026-11-08T17:30:30Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 165,
-      "2h": 90,
+      "24h": 166,
+      "2h": 89,
       "6h": 169,
       "72h": 157,
-      "7d": 140
+      "7d": 139
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional Reporting reports for b3d4580d-6230-425e-96eb-efb6f46d8ae0 unavailable: HTTPError",
-    "Optional retention returned empty curves for 17 due checkpoints; will retry"
+    "Optional retention returned empty curves for 18 due checkpoints; will retry"
   ]
 }
