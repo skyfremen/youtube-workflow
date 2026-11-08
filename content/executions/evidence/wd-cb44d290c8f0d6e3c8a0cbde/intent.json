@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-cb44d290c8f0d6e3c8a0cbde",
+  "created_at": "2026-11-08T12:15:22.606996Z",
+  "evidence_version": 2,
+  "execution_id": "ex-257bf5df7b60b084bf6811a8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c35031c9f600cd813d40687e0c883952b132c9d5",
+  "record_type": "intent",
+  "request_blob_sha": "e43c5d0211173536d6df656804892b2b31bd84a2",
+  "request_id": "rq-ae6cc0c4a58454fa45d838c3",
+  "request_path": "content/requests/rq-ae6cc0c4a58454fa45d838c3.json",
+  "request_source_sha": "51791c4b34380ef9d9d37cbdd7901c83a632a3e0",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bank employee calls a woman's ex-husband to approve a withdrawal from an account held only in her name.\n\n#WackyDramas #Shorts #BankDrama #FinancialIndependence #PersonalAccount #ExHusband #BankWithdrawal #EmergencyContact #BakeryDream #MoneyChoice",
+      "tags": [
+        "wd-id-c61b9b9aecd6602526ea",
+        "wacky dramas",
+        "shorts",
+        "bank drama",
+        "financial independence",
+        "personal account",
+        "ex husband",
+        "bank withdrawal",
+        "emergency contact",
+        "bakery dream",
+        "money choice",
+        "WackyDramas",
+        "BankDrama",
+        "FinancialIndependence",
+        "PersonalAccount",
+        "ExHusband",
+        "BankWithdrawal",
+        "EmergencyContact",
+        "BakeryDream",
+        "MoneyChoice"
+      ],
+      "title": "The Approval Call to Her Ex-Husband"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-14T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42478859605"
+  }
+}
