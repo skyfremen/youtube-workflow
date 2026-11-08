@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ff73aef04fd65d18480f57ae",
+  "evidence_version": 2,
+  "execution_id": "ex-207626903932bd3c1cbb2ce2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0d76a364efcb10659565dab1551da1bfce97fcf6",
+  "record_type": "upload",
+  "recorded_at": "2026-11-08T00:19:24.813549Z",
+  "request_blob_sha": "2ab5d3d7cb824a0ff5ab68d6299400402d044a4e",
+  "request_id": "rq-bb1c111aaa4908a7172317e5",
+  "request_path": "content/requests/rq-bb1c111aaa4908a7172317e5.json",
+  "request_source_sha": "b4464935a10b8d998821cac7c0ff96c6ef635afa",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman learns that her sister canceled her reunion with her birth mother by falsely reporting her death.\n\n#WackyDramas #Shorts #FamilyDrama #BirthMother #AdoptionReunion #SisterBetrayal #AdoptiveMother #FamilySecrets #ReunionStory #FoldingChair",
+      "tags": [
+        "wd-id-4b75a42f80a0036bc2d4",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "birth mother",
+        "adoption reunion",
+        "sister betrayal",
+        "adoptive mother",
+        "family secrets",
+        "reunion story",
+        "folding chair",
+        "WackyDramas",
+        "FamilyDrama",
+        "BirthMother",
+        "AdoptionReunion",
+        "SisterBetrayal",
+        "AdoptiveMother",
+        "FamilySecrets",
+        "ReunionStory",
+        "FoldingChair"
+      ],
+      "title": "The Funeral Her Sister Invented Before Their Reunion"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-13T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42428711139"
+  },
+  "youtube_video_id": "lpEbgnMosH4"
+}
