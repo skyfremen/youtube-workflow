@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-d7e13675fd6951da7da90073",
+  "created_at": "2026-11-09T12:17:01.772650Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2a14580c6bd53b5ca85ed3f8",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9498bf1919c6fd9c77a2e8e9659be50653b340e5",
+  "record_type": "intent",
+  "request_blob_sha": "2fc45b9a5490729cecc65bd9702b7c90dc059ed4",
+  "request_id": "rq-5f15285bfcfbebb007e83fad",
+  "request_path": "content/requests/rq-5f15285bfcfbebb007e83fad.json",
+  "request_source_sha": "422bcec7c5b24324f2f865a6e81310526c587f8c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Marcus questions a gym's cash-prize challenge when its owner refuses to swap barbells.\n\n#WackyDramas #Shorts #RiggedContest #GymChallenge #HollowWeights #CashPrize #FatherAndSon #FairCompetition #GymOwner #EntryFee",
+      "tags": [
+        "wd-id-1991f80d2aa3ed8d7689",
+        "wacky dramas",
+        "shorts",
+        "rigged gym strength contest",
+        "hollow weights challenge",
+        "gym cash prize drama",
+        "father and son gym story",
+        "unfair strength competition",
+        "gym owner refuses bar swap",
+        "entry fee dispute",
+        "assistant reveals cheating",
+        "WackyDramas",
+        "RiggedContest",
+        "GymChallenge",
+        "HollowWeights",
+        "CashPrize",
+        "FatherAndSon",
+        "FairCompetition",
+        "GymOwner",
+        "EntryFee"
+      ],
+      "title": "The Hollow Weights Behind His Prize"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-15T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42614595228"
+  }
+}
