@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7dfd40e344e66fb049af2286",
+  "evidence_version": 2,
+  "execution_id": "ex-294291613be5fd60b99f2a03",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9c667855ed4c639f07b87791ed04fe8fd8962140",
+  "record_type": "upload",
+  "recorded_at": "2026-11-09T00:13:37.856939Z",
+  "request_blob_sha": "e5b0acff24543a56d1b0ea29129960f0e1449691",
+  "request_id": "rq-2d2ce2f9c415cabe26d423e5",
+  "request_path": "content/requests/rq-2d2ce2f9c415cabe26d423e5.json",
+  "request_source_sha": "517040c2841bff9ef5d9eca240abb7643cd41b3f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Tanya arrives for promised groceries and finds that the charity expects her family to compete for them in public.\n\n#WackyDramas #Shorts #CharityEvent #GroceryDonation #FamilyDignity #FoodSupport #PublicPressure #MotherAndSon #CommunitySupport #DonorDrama",
+      "tags": [
+        "wd-id-7507d2dfe39a0a0b9a6f",
+        "wacky dramas",
+        "shorts",
+        "charity event drama",
+        "families compete for groceries",
+        "mother protects her son",
+        "food donation story",
+        "public humiliation",
+        "donor discovers truth",
+        "help without judgment",
+        "community support",
+        "WackyDramas",
+        "CharityEvent",
+        "GroceryDonation",
+        "FamilyDignity",
+        "FoodSupport",
+        "PublicPressure",
+        "MotherAndSon",
+        "CommunitySupport",
+        "DonorDrama"
+      ],
+      "title": "Four Grocery Bags and One Microphone"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-14T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42538331574"
+  },
+  "youtube_video_id": "X2GR9ae_O9E"
+}
