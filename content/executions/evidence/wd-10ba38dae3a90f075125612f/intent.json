@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-10ba38dae3a90f075125612f",
+  "created_at": "2026-11-09T00:11:26.950420Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0fe062a500b25e3b47b13464",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "601d27acf16dd9a9b5404ec5f766485dc673102e",
+  "record_type": "intent",
+  "request_blob_sha": "e5b0acff24543a56d1b0ea29129960f0e1449691",
+  "request_id": "rq-2d2ce2f9c415cabe26d423e5",
+  "request_path": "content/requests/rq-2d2ce2f9c415cabe26d423e5.json",
+  "request_source_sha": "517040c2841bff9ef5d9eca240abb7643cd41b3f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Leon accepts a landlord's offer before discovering who the fake haunting is meant to drive out.\n\n#WackyDramas #Shorts #LandlordDrama #FakeHaunting #ApartmentNeighbors #RentCredit #HousingPressure #TenantSolidarity #LongTermTenant #ApartmentViewing",
+      "tags": [
+        "wd-id-427e4b9cb5ec53bb670d",
+        "wacky dramas",
+        "shorts",
+        "landlord fake haunting",
+        "tenant paid to scare neighbor",
+        "apartment viewing drama",
+        "rent credit scheme",
+        "neighbor helps father",
+        "tenant solidarity",
+        "housing pressure story",
+        "landlord caught lying",
+        "WackyDramas",
+        "LandlordDrama",
+        "FakeHaunting",
+        "ApartmentNeighbors",
+        "RentCredit",
+        "HousingPressure",
+        "TenantSolidarity",
+        "LongTermTenant",
+        "ApartmentViewing"
+      ],
+      "title": "Two Hundred Dollars to Haunt Next Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-15T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42538333486"
+  }
+}
