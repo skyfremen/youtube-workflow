@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-245b97514082376797f250a1",
+  "created_at": "2026-11-09T12:14:26.858546Z",
+  "evidence_version": 2,
+  "execution_id": "ex-12d386f5565bc61b4283c0c6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "87c3f850e7dba42a2e7788b101f571cd97d1e811",
+  "record_type": "intent",
+  "request_blob_sha": "2fc45b9a5490729cecc65bd9702b7c90dc059ed4",
+  "request_id": "rq-5f15285bfcfbebb007e83fad",
+  "request_path": "content/requests/rq-5f15285bfcfbebb007e83fad.json",
+  "request_source_sha": "422bcec7c5b24324f2f865a6e81310526c587f8c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Denise confronts her son over his college fund and learns who has really been paying the household bills.\n\n#WackyDramas #Shorts #FamilyFinances #CollegeSavings #UnpaidWages #MotherAndSon #HouseholdBills #HiddenSacrifice #FamilyTrust #FinancialPressure",
+      "tags": [
+        "wd-id-b14cdec75439df6125bd",
+        "wacky dramas",
+        "shorts",
+        "mother and son money conflict",
+        "college savings sacrifice",
+        "unpaid factory wages",
+        "family household bills",
+        "son helps mother",
+        "hidden financial sacrifice",
+        "family trust story",
+        "enrollment deposit",
+        "WackyDramas",
+        "FamilyFinances",
+        "CollegeSavings",
+        "UnpaidWages",
+        "MotherAndSon",
+        "HouseholdBills",
+        "HiddenSacrifice",
+        "FamilyTrust",
+        "FinancialPressure"
+      ],
+      "title": "The Back Pay Inside Her Son's Envelope"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-15T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42614584680"
+  }
+}
