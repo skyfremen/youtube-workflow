@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-48fc342847aa406ed2e6e226",
+  "created_at": "2026-11-09T00:10:11.101533Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9adcf6e61a2d0d7f533ada8f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a73181427279195868274d6ba5eb02e774b3170a",
+  "record_type": "intent",
+  "request_blob_sha": "e5b0acff24543a56d1b0ea29129960f0e1449691",
+  "request_id": "rq-2d2ce2f9c415cabe26d423e5",
+  "request_path": "content/requests/rq-2d2ce2f9c415cabe26d423e5.json",
+  "request_source_sha": "517040c2841bff9ef5d9eca240abb7643cd41b3f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Owen treats his kidney donation as a debt when Mara refuses to guarantee his car payments.\n\n#WackyDramas #Shorts #SiblingConflict #KidneyDonation #CarLoan #FamilyDinner #FinancialBoundaries #BrotherAndSister #FamilyPressure #Gratitude",
+      "tags": [
+        "wd-id-73a491daec463764cc03",
+        "wacky dramas",
+        "shorts",
+        "kidney donation family conflict",
+        "brother demands repayment",
+        "sister refuses car loan",
+        "family dinner argument",
+        "co-signing a loan",
+        "financial boundaries",
+        "gratitude and obligation",
+        "sibling drama",
+        "WackyDramas",
+        "SiblingConflict",
+        "KidneyDonation",
+        "CarLoan",
+        "FamilyDinner",
+        "FinancialBoundaries",
+        "BrotherAndSister",
+        "FamilyPressure",
+        "Gratitude"
+      ],
+      "title": "The Kidney He Wanted Back"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-14T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42538329667"
+  }
+}
