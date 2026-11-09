@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-fe538aebb745698609b4f12e",
+  "created_at": "2026-11-09T00:12:03.019713Z",
+  "evidence_version": 2,
+  "execution_id": "ex-fbd1b831bbf9ea9cac815d1e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "45802a8dec6850a81933dc7a6fbfe7885ff7e3ab",
+  "record_type": "intent",
+  "request_blob_sha": "e5b0acff24543a56d1b0ea29129960f0e1449691",
+  "request_id": "rq-2d2ce2f9c415cabe26d423e5",
+  "request_path": "content/requests/rq-2d2ce2f9c415cabe26d423e5.json",
+  "request_source_sha": "517040c2841bff9ef5d9eca240abb7643cd41b3f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Beth learns that her wedding ring has another owner, and her husband expects her to keep smiling.\n\n#WackyDramas #Shorts #WeddingRing #BorrowedRing #WeddingDinner #BrideAndGroom #BestMan #BrokenTrust #WeddingVows #MarriageDrama",
+      "tags": [
+        "wd-id-ef265cfd45c842f8f540",
+        "wacky dramas",
+        "shorts",
+        "borrowed wedding ring",
+        "bride learns the truth",
+        "groom hides ring secret",
+        "best man's wife",
+        "wedding dinner drama",
+        "marriage and trust",
+        "something borrowed",
+        "wedding vows",
+        "WackyDramas",
+        "WeddingRing",
+        "BorrowedRing",
+        "WeddingDinner",
+        "BrideAndGroom",
+        "BestMan",
+        "BrokenTrust",
+        "WeddingVows",
+        "MarriageDrama"
+      ],
+      "title": "The Ring Due Back After Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-14T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42538327719"
+  }
+}
