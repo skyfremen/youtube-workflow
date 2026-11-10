@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-eefecffa89773df55236b0f1",
+  "evidence_version": 2,
+  "execution_id": "ex-c84536e2f63842f04b4d5f4c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a9839b5686a90f7550583c1649ef88b0e69b7a95",
+  "record_type": "upload",
+  "recorded_at": "2026-11-10T00:15:05.188970Z",
+  "request_blob_sha": "c622a4577b56d54c74935dbb4e90f7e194aad36d",
+  "request_id": "rq-ac186d5e3d462bd71d0ce5ac",
+  "request_path": "content/requests/rq-ac186d5e3d462bd71d0ce5ac.json",
+  "request_source_sha": "5aa214bbf8d05c36d579807f8a81fb4c06849895",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Daniel learns that his wife's public accusation was paid publicity, and the theater expects them to repeat it.\n\n#WackyDramas #Shorts #TheaterDrama #StageKiss #MarriageTrust #FalseAccusation #PublicityStunt #ActorAndWife #OpeningNight #PrivateBoundaries",
+      "tags": [
+        "wd-id-4f11ec98bd976c327c8a",
+        "wacky dramas",
+        "shorts",
+        "actor wife publicity stunt",
+        "false cheating accusation onstage",
+        "scripted stage kiss",
+        "theater promotion drama",
+        "marriage used for publicity",
+        "actor sets boundaries",
+        "opening night confrontation",
+        "trust in marriage",
+        "WackyDramas",
+        "TheaterDrama",
+        "StageKiss",
+        "MarriageTrust",
+        "FalseAccusation",
+        "PublicityStunt",
+        "ActorAndWife",
+        "OpeningNight",
+        "PrivateBoundaries"
+      ],
+      "title": "The Scene His Wife Was Paid to Start"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-16T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42725721038"
+  },
+  "youtube_video_id": "j9OMeCbQtLQ"
+}
