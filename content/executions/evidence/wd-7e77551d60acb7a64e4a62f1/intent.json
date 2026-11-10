@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-7e77551d60acb7a64e4a62f1",
+  "created_at": "2026-11-10T00:13:59.633545Z",
+  "evidence_version": 2,
+  "execution_id": "ex-9617b4b76a217694824c92a2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a06b941d9585020b07a2049ccf1fe0e6d110588e",
+  "record_type": "intent",
+  "request_blob_sha": "c622a4577b56d54c74935dbb4e90f7e194aad36d",
+  "request_id": "rq-ac186d5e3d462bd71d0ce5ac",
+  "request_path": "content/requests/rq-ac186d5e3d462bd71d0ce5ac.json",
+  "request_source_sha": "5aa214bbf8d05c36d579807f8a81fb4c06849895",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Evelyn tries to protect her grandson after a theft, then faces pressure to make the lie permanent.\n\n#WackyDramas #Shorts #GrandmotherAndGrandson #FamilyLoyalty #Shoplifting #FalseConfession #GraduationWeek #ParentingChoices #StolenNecklace #FamilyResponsibility",
+      "tags": [
+        "wd-id-d10e40a016e02d9b382c",
+        "wacky dramas",
+        "shorts",
+        "grandmother takes blame",
+        "grandson steals necklace",
+        "family loyalty and truth",
+        "false confession story",
+        "graduation week conflict",
+        "father protects son",
+        "grandmother sets boundary",
+        "shoplifting family drama",
+        "WackyDramas",
+        "GrandmotherAndGrandson",
+        "FamilyLoyalty",
+        "Shoplifting",
+        "FalseConfession",
+        "GraduationWeek",
+        "ParentingChoices",
+        "StolenNecklace",
+        "FamilyResponsibility"
+      ],
+      "title": "What Grandma Told the Security Guard"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-16T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42725714198"
+  }
+}
