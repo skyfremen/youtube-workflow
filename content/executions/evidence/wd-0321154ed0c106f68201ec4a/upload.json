@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0321154ed0c106f68201ec4a",
+  "evidence_version": 2,
+  "execution_id": "ex-53af31615d45ca8617813835",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8be747d2fa39a975783401a81f167c82c0d85ef8",
+  "record_type": "upload",
+  "recorded_at": "2026-11-10T12:12:25.972791Z",
+  "request_blob_sha": "8db955ea6f24497bcac74519c79251b1caefdd71",
+  "request_id": "rq-f027c175743d4582f582f761",
+  "request_path": "content/requests/rq-f027c175743d4582f582f761.json",
+  "request_source_sha": "a83382d6a5ddcb1a36f0af6a282313685bb2ecd8",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Lena discovers that her groom has sent her adoptive father a test designed to exclude him from the wedding.\n\n#WackyDramas #Shorts #AdoptiveFather #WeddingFamily #PaternityTest #FatherAndDaughter #WeddingReception #FamilyBelonging #AdoptionStory #WeddingConflict",
+      "tags": [
+        "wd-id-b1642bdd0867e01f9432",
+        "wacky dramas",
+        "shorts",
+        "groom demands paternity test",
+        "adoptive father wedding conflict",
+        "bride defends her father",
+        "father walks bride down aisle",
+        "adoption and family belonging",
+        "wedding reception payment",
+        "father and daughter story",
+        "wedding family drama",
+        "WackyDramas",
+        "AdoptiveFather",
+        "WeddingFamily",
+        "PaternityTest",
+        "FatherAndDaughter",
+        "WeddingReception",
+        "FamilyBelonging",
+        "AdoptionStory",
+        "WeddingConflict"
+      ],
+      "title": "The DNA Kit Beside Her Father's Tie"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-16T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42813008821"
+  },
+  "youtube_video_id": "SOCA2ysKhus"
+}
