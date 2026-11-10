@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3e215c7ee03d7a983800144e",
+  "evidence_version": 2,
+  "execution_id": "ex-235bcbc119c457d28a8a1507",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0a142094122762d6c38c973f493fb2189ba91890",
+  "record_type": "upload",
+  "recorded_at": "2026-11-10T00:10:25.991637Z",
+  "request_blob_sha": "c622a4577b56d54c74935dbb4e90f7e194aad36d",
+  "request_id": "rq-ac186d5e3d462bd71d0ce5ac",
+  "request_path": "content/requests/rq-ac186d5e3d462bd71d0ce5ac.json",
+  "request_source_sha": "5aa214bbf8d05c36d579807f8a81fb4c06849895",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Nina finds a stranger inspecting her bedroom and discovers that her husband approved his mother's marriage assessment.\n\n#WackyDramas #Shorts #MotherInLaw #MarriagePrivacy #BedroomPrivacy #HouseholdInspection #FamilyBoundaries #DownPayment #HusbandAndWife #UnwantedVisitor",
+      "tags": [
+        "wd-id-13b5bf50287fcb319906",
+        "wacky dramas",
+        "shorts",
+        "mother in law marriage inspection",
+        "husband gives away bedroom key",
+        "marriage privacy conflict",
+        "family help with down payment",
+        "wife refuses inspection",
+        "household scorecard",
+        "family boundaries story",
+        "unwanted home visitor",
+        "WackyDramas",
+        "MotherInLaw",
+        "MarriagePrivacy",
+        "BedroomPrivacy",
+        "HouseholdInspection",
+        "FamilyBoundaries",
+        "DownPayment",
+        "HusbandAndWife",
+        "UnwantedVisitor"
+      ],
+      "title": "The Marriage Scorecard in Her Kitchen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-16T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42725717288"
+  },
+  "youtube_video_id": "360LQ8GQSVY"
+}
