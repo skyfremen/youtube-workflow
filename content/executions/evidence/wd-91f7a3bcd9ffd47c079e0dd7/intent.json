@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-91f7a3bcd9ffd47c079e0dd7",
+  "created_at": "2026-11-11T00:09:36.866060Z",
+  "evidence_version": 2,
+  "execution_id": "ex-b309387ad970a8febda74e52",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "56ecca43887e3e7097b0de83ec84b6c4b66e6256",
+  "record_type": "intent",
+  "request_blob_sha": "287583c8861f9ef3948058aa31b730b13373a73d",
+  "request_id": "rq-40c96fb6591aa50702fe5593",
+  "request_path": "content/requests/rq-40c96fb6591aa50702fe5593.json",
+  "request_source_sha": "8053080d9551b1858aa6328d01b90e87398002a9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Owen books a break from restaurant work and arrives to find the retreat host has assigned him the kitchen.\n\n#WackyDramas #Shorts #RetreatDrama #ChefOnHoliday #UnpaidWork #KitchenDuty #VacationBoundaries #FortyGuests #HostResponsibility #IncludedMeals",
+      "tags": [
+        "wd-id-8281b904a111aa19ac40",
+        "wacky dramas",
+        "shorts",
+        "chef assigned unpaid kitchen duty",
+        "retreat guest expected to cook",
+        "paid holiday becomes unpaid work",
+        "chef refuses retreat kitchen job",
+        "host cancels paid cook",
+        "vacation boundaries story",
+        "retreat meals included",
+        "chef finally takes a break",
+        "WackyDramas",
+        "RetreatDrama",
+        "ChefOnHoliday",
+        "UnpaidWork",
+        "KitchenDuty",
+        "VacationBoundaries",
+        "FortyGuests",
+        "HostResponsibility",
+        "IncludedMeals"
+      ],
+      "title": "Two Thousand Dollars for Kitchen Duty"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-18T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42928535485"
+  }
+}
