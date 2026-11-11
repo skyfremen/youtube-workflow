@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-072e5256cbbed4d40e0a155e",
+  "created_at": "2026-11-11T12:17:44.940022Z",
+  "evidence_version": 2,
+  "execution_id": "ex-4f6b346224761a8ba9ac37fc",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8b61464e39eb4af491ec082ec716d925b67e093e",
+  "record_type": "intent",
+  "request_blob_sha": "4670b956d69d36c65a0af6c53541d03137b4e0d2",
+  "request_id": "rq-3d5eab539f915635182dde57",
+  "request_path": "content/requests/rq-3d5eab539f915635182dde57.json",
+  "request_source_sha": "2188ad94947607eaff063aef27e53582b818f25e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Sam learns that the boarding arrangement he trusted his bride to make was something entirely different.\n\n#WackyDramas #Shorts #WeddingBetrayal #GroomAndDog #FalseBiteClaim #PetBoarding #BrokenTrust #HoneymoonPlans #MiloTheDog #PetResponsibility",
+      "tags": [
+        "wd-id-ec8887460595fcc06523",
+        "wacky dramas",
+        "shorts",
+        "bride lies about groom's dog",
+        "false dog bite claim",
+        "wedding pet boarding betrayal",
+        "groom protects his dog",
+        "honeymoon boarding booking",
+        "trust before marriage",
+        "dog owner discovers deception",
+        "wedding ultimatum story",
+        "WackyDramas",
+        "WeddingBetrayal",
+        "GroomAndDog",
+        "FalseBiteClaim",
+        "PetBoarding",
+        "BrokenTrust",
+        "HoneymoonPlans",
+        "MiloTheDog",
+        "PetResponsibility"
+      ],
+      "title": "The Boarding Booking Before Their Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-18T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43018332880"
+  }
+}
