@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4766a18430009d07c92a1b02",
+  "evidence_version": 2,
+  "execution_id": "ex-2057d2e9535d527428bf8652",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b7e03e07d3e8c2e66ab2aeb033cae9e9b25ced25",
+  "record_type": "upload",
+  "recorded_at": "2026-11-11T00:10:15.301318Z",
+  "request_blob_sha": "287583c8861f9ef3948058aa31b730b13373a73d",
+  "request_id": "rq-40c96fb6591aa50702fe5593",
+  "request_path": "content/requests/rq-40c96fb6591aa50702fe5593.json",
+  "request_source_sha": "8053080d9551b1858aa6328d01b90e87398002a9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Maya's groom wants the wedding photographs finished before anyone notices the injury he caused.\n\n#WackyDramas #Shorts #WeddingBoundary #BrideAndGroom #HiddenBruise #MakeupArtist #FamilySupport #WeddingPhotographs #ControllingPartner #ChoosingSafety",
+      "tags": [
+        "wd-id-1acb9bda7f6359921ad6",
+        "wacky dramas",
+        "shorts",
+        "groom asks makeup artist to hide bruise",
+        "bride refuses wedding photographs",
+        "makeup artist supports bride",
+        "controlling partner wedding story",
+        "bride calls her father",
+        "wedding day boundaries",
+        "woman chooses safety",
+        "wedding trust broken",
+        "WackyDramas",
+        "WeddingBoundary",
+        "BrideAndGroom",
+        "HiddenBruise",
+        "MakeupArtist",
+        "FamilySupport",
+        "WeddingPhotographs",
+        "ControllingPartner",
+        "ChoosingSafety"
+      ],
+      "title": "The Concealer Beside Her Wedding Dress"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-17T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42928522155"
+  },
+  "youtube_video_id": "Wbr10tXYse8"
+}
