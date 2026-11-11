@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5b8fa85de900ac767871a5ae",
+  "evidence_version": 2,
+  "execution_id": "ex-010f8d8d1432ceb0e2db505e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "53a5a692db66c8b94348c5984c1a46efc63124ce",
+  "record_type": "upload",
+  "recorded_at": "2026-11-11T12:21:30.989845Z",
+  "request_blob_sha": "4670b956d69d36c65a0af6c53541d03137b4e0d2",
+  "request_id": "rq-3d5eab539f915635182dde57",
+  "request_path": "content/requests/rq-3d5eab539f915635182dde57.json",
+  "request_source_sha": "2188ad94947607eaff063aef27e53582b818f25e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Ruth arrives with a birthday speech and discovers that her son wants his deaf daughter's celebration to exclude sign language.\n\n#WackyDramas #Shorts #DeafDaughter #SignLanguage #BirthdaySpeech #GrandmotherAndGranddaughter #FamilyCommunication #BirthdayParty #LearningTogether #FamilyInclusion",
+      "tags": [
+        "wd-id-3c78770f5514d2f07f40",
+        "wacky dramas",
+        "shorts",
+        "father bans sign language at party",
+        "deaf daughter's birthday story",
+        "grandmother gives signed speech",
+        "family learns to communicate",
+        "child asks father to learn",
+        "birthday party inclusion",
+        "grandmother supports granddaughter",
+        "sign language family conflict",
+        "WackyDramas",
+        "DeafDaughter",
+        "SignLanguage",
+        "BirthdaySpeech",
+        "GrandmotherAndGranddaughter",
+        "FamilyCommunication",
+        "BirthdayParty",
+        "LearningTogether",
+        "FamilyInclusion"
+      ],
+      "title": "The Birthday Speech Her Grandmother Brought"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-18T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43018336676"
+  },
+  "youtube_video_id": "INO_DPP5DI0"
+}
