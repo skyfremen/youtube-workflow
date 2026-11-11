@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-57b4d9a9e5b94ef625cab80b",
+  "created_at": "2026-11-11T12:18:34.408446Z",
+  "evidence_version": 2,
+  "execution_id": "ex-03d1719418d22a36b682b752",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9cb6818c7e407a1dd8cdedf5571f5dded97ee9fa",
+  "record_type": "intent",
+  "request_blob_sha": "4670b956d69d36c65a0af6c53541d03137b4e0d2",
+  "request_id": "rq-3d5eab539f915635182dde57",
+  "request_path": "content/requests/rq-3d5eab539f915635182dde57.json",
+  "request_source_sha": "2188ad94947607eaff063aef27e53582b818f25e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Adrian arrives at an investigator's office with his girlfriend and asks for a version of events neither woman will support.\n\n#WackyDramas #Shorts #PrivateInvestigator #FalseIdentity #HusbandAndGirlfriend #SuspectedAffair #MisleadingReport #MarriageDeception #RealName #UncomfortableQuestions",
+      "tags": [
+        "wd-id-4266ad8fbd40603cddc2",
+        "wacky dramas",
+        "shorts",
+        "husband brings girlfriend to investigator",
+        "girlfriend introduced as sister",
+        "private investigator refuses false report",
+        "wife suspected of affair",
+        "girlfriend questions married boyfriend",
+        "false identity at case meeting",
+        "marriage investigation irony",
+        "investigator client deception",
+        "WackyDramas",
+        "PrivateInvestigator",
+        "FalseIdentity",
+        "HusbandAndGirlfriend",
+        "SuspectedAffair",
+        "MisleadingReport",
+        "MarriageDeception",
+        "RealName",
+        "UncomfortableQuestions"
+      ],
+      "title": "The Sister at His Investigator's Desk"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-19T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43018344750"
+  }
+}
