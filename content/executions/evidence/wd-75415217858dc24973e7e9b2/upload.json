@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-75415217858dc24973e7e9b2",
+  "evidence_version": 2,
+  "execution_id": "ex-6e670673f1dc3bd1056b24fb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "37f5e22ea682480ae35062712bbd095bee0738af",
+  "record_type": "upload",
+  "recorded_at": "2026-11-11T00:14:39.454796Z",
+  "request_blob_sha": "287583c8861f9ef3948058aa31b730b13373a73d",
+  "request_id": "rq-40c96fb6591aa50702fe5593",
+  "request_path": "content/requests/rq-40c96fb6591aa50702fe5593.json",
+  "request_source_sha": "8053080d9551b1858aa6328d01b90e87398002a9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Nadia learns that the company leave offered after her mother's death has been taken from her coworkers.\n\n#WackyDramas #Shorts #BereavementLeave #VacationDays #WorkplaceFairness #SympathyCard #CoworkerSupport #CompanyGift #EarnedBenefits #ManagementAccountability",
+      "tags": [
+        "wd-id-01833d49fa29ffcdcf32",
+        "wacky dramas",
+        "shorts",
+        "boss takes coworker vacation days",
+        "bereavement leave company gift",
+        "employee blamed for missing leave",
+        "coworkers support grieving colleague",
+        "forced leave donation",
+        "workplace benefits fairness",
+        "boss claims company generosity",
+        "sympathy card office drama",
+        "WackyDramas",
+        "BereavementLeave",
+        "VacationDays",
+        "WorkplaceFairness",
+        "SympathyCard",
+        "CoworkerSupport",
+        "CompanyGift",
+        "EarnedBenefits",
+        "ManagementAccountability"
+      ],
+      "title": "The Vacation Days Behind Her Sympathy Card"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-18T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42928531548"
+  },
+  "youtube_video_id": "UJK4TrndFPg"
+}
