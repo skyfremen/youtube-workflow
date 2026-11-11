@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-a28d79b429c6306d87e17287",
+  "created_at": "2026-11-11T00:10:38.855130Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c77013468b72917586b3a80d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c5025629c9b373457ef7c43a6fdc5ae34898c5a0",
+  "record_type": "intent",
+  "request_blob_sha": "287583c8861f9ef3948058aa31b730b13373a73d",
+  "request_id": "rq-40c96fb6591aa50702fe5593",
+  "request_path": "content/requests/rq-40c96fb6591aa50702fe5593.json",
+  "request_source_sha": "8053080d9551b1858aa6328d01b90e87398002a9",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Claire arrives for couples therapy and discovers that her husband has arranged a reunion she never requested.\n\n#WackyDramas #Shorts #EstrangedFather #CouplesTherapy #FamilyReunion #MarriageBoundaries #UnwantedReunion #FatherAndDaughter #Forgiveness #BrokenTrust",
+      "tags": [
+        "wd-id-9b9e7291529e32640bb9",
+        "wacky dramas",
+        "shorts",
+        "husband arranges unwanted family reunion",
+        "estranged father at couples therapy",
+        "wife sets boundaries with husband",
+        "forgiveness cannot be arranged",
+        "father respects daughter's choice",
+        "family reunion deception",
+        "couples therapy trust",
+        "father and daughter conflict",
+        "WackyDramas",
+        "EstrangedFather",
+        "CouplesTherapy",
+        "FamilyReunion",
+        "MarriageBoundaries",
+        "UnwantedReunion",
+        "FatherAndDaughter",
+        "Forgiveness",
+        "BrokenTrust"
+      ],
+      "title": "The Third Chair at Their Therapy Session"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-17T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7147ef67b8b90bf6a354706400a5574a416fa81c",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "42928525842"
+  }
+}
