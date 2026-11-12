@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0bdac402ea1b39be4a17be18",
+  "evidence_version": 2,
+  "execution_id": "ex-03878d633fe6f6a856b3c475",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9c9f923378144760db38bae8ddc6ed9c09a22bd1",
+  "record_type": "upload",
+  "recorded_at": "2026-11-12T00:21:25.814778Z",
+  "request_blob_sha": "8beb80aa964809927316a9ce5940628dd15cf294",
+  "request_id": "rq-3782759c8b7d666fdce6f23a",
+  "request_path": "content/requests/rq-3782759c8b7d666fdce6f23a.json",
+  "request_source_sha": "261ffee3b15090a164afe9df2d952e3c54930c66",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Leila is threatened with a deposit deduction after rescuing her landlord's daughter, who refuses to let him dismiss what happened.\n\n#WackyDramas #Shorts #TenantRescue #LandlordDispute #BrokenWindow #RentalDeposit #AdultDaughter #NeighborSupport #FireRescue #PropertyPriorities",
+      "tags": [
+        "wd-id-52ea6a0d4def3408b8ae",
+        "wacky dramas",
+        "shorts",
+        "landlord charges tenant after rescue",
+        "tenant breaks window to save daughter",
+        "rental deposit repair dispute",
+        "daughter challenges landlord father",
+        "neighbor supports fire survivor",
+        "three hundred dollar window demand",
+        "gratitude after rescue",
+        "tenant refuses deposit deduction",
+        "WackyDramas",
+        "TenantRescue",
+        "LandlordDispute",
+        "BrokenWindow",
+        "RentalDeposit",
+        "AdultDaughter",
+        "NeighborSupport",
+        "FireRescue",
+        "PropertyPriorities"
+      ],
+      "title": "The Window He Wanted Taken from Her Deposit"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-19T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43126032405"
+  },
+  "youtube_video_id": "v8duVNeb6NA"
+}
