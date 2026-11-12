@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-eaa24b4277580e8ca9716e01",
+  "created_at": "2026-11-12T00:21:39.484856Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2f99c3221d97a98ebccf8882",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ae2be193a78bec2357c8136d28a93c8ba4645342",
+  "record_type": "intent",
+  "request_blob_sha": "8beb80aa964809927316a9ce5940628dd15cf294",
+  "request_id": "rq-3782759c8b7d666fdce6f23a",
+  "request_path": "content/requests/rq-3782759c8b7d666fdce6f23a.json",
+  "request_source_sha": "261ffee3b15090a164afe9df2d952e3c54930c66",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Mara follows her brother's translation of their mother's will and hears him give himself a house the document names them both in.\n\n#WackyDramas #Shorts #MothersWill #InheritanceConflict #FalseTranslation #BrotherAndSister #FamilyHouse #LearningALanguage #FamilyRecipes #SiblingTrust",
+      "tags": [
+        "wd-id-7caac860153554f5d4f4",
+        "wacky dramas",
+        "shorts",
+        "brother lies translating mother's will",
+        "sister understands original language",
+        "family inheritance house conflict",
+        "false will translation",
+        "siblings discuss house repairs",
+        "mother's words about sharing",
+        "family recipes language lessons",
+        "sister confronts brother",
+        "WackyDramas",
+        "MothersWill",
+        "InheritanceConflict",
+        "FalseTranslation",
+        "BrotherAndSister",
+        "FamilyHouse",
+        "LearningALanguage",
+        "FamilyRecipes",
+        "SiblingTrust"
+      ],
+      "title": "The House Inside Her Brother's Translation"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-19T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43126025574"
+  }
+}
