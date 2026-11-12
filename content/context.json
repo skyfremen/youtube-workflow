@@ -117,11 +117,11 @@
           "value": "warm"
         },
         {
-          "average_view_percentage": 44.91,
+          "average_view_percentage": 45.54,
           "dimension": "category",
-          "evidence_median_views": 23.5,
-          "mature_sample": 28,
-          "sample_size": 33,
+          "evidence_median_views": 27.0,
+          "mature_sample": 27,
+          "sample_size": 32,
           "value": "wedding"
         },
         {
@@ -141,21 +141,21 @@
           "value": "family"
         },
         {
-          "average_view_percentage": 44.73,
-          "dimension": "trend_lane",
-          "evidence_median_views": 17.0,
-          "mature_sample": 127,
-          "sample_size": 159,
-          "value": "evergreen"
+          "average_view_percentage": 43.01,
+          "dimension": "hook_type",
+          "evidence_median_views": 18.0,
+          "mature_sample": 33,
+          "sample_size": 40,
+          "value": "social_exposure"
         }
       ],
       "weak_patterns": [
         {
-          "average_view_percentage": 0.0,
+          "average_view_percentage": 3.23,
           "dimension": "category",
-          "evidence_median_views": 2.0,
-          "mature_sample": 11,
-          "sample_size": 15,
+          "evidence_median_views": 2.5,
+          "mature_sample": 10,
+          "sample_size": 14,
           "value": "workplace"
         },
         {
@@ -185,8 +185,8 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-12T11:30:32Z",
-      "videos_analyzed": 159
+      "latest_realtime_snapshot": "2026-11-12T17:30:36Z",
+      "videos_analyzed": 157
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
@@ -196,44 +196,44 @@
           "window": "04-07"
         },
         {
-          "evidence_median_views": 16.5,
-          "sample_size": 36,
+          "evidence_median_views": 18.0,
+          "sample_size": 35,
           "window": "00-03"
         },
         {
-          "evidence_median_views": 13.0,
+          "evidence_median_views": 12.0,
           "sample_size": 50,
           "window": "12-15"
         }
       ],
       "weak_publish_windows_sgt": [
         {
-          "evidence_median_views": 2.5,
-          "sample_size": 12,
-          "window": "20-23"
-        },
-        {
           "evidence_median_views": 8.5,
           "sample_size": 25,
           "window": "16-19"
+        },
+        {
+          "evidence_median_views": 11.5,
+          "sample_size": 12,
+          "window": "08-11"
         }
       ]
     },
-    "generated_at": "2026-11-12T11:30:32Z",
+    "generated_at": "2026-11-12T17:30:36Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 154,
-        "2h": 86,
-        "6h": 158,
-        "72h": 146,
-        "7d": 129
+        "2h": 85,
+        "6h": 157,
+        "72h": 145,
+        "7d": 127
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional retention returned empty curves for 23 due checkpoints; will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
