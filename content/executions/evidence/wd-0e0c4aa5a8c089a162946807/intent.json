@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-0e0c4aa5a8c089a162946807",
+  "created_at": "2026-11-12T12:19:21.992647Z",
+  "evidence_version": 2,
+  "execution_id": "ex-d3acf4849e37daff7d0def52",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cbeb7c15d300ecce62cb4bfa4a136c63674f8b4d",
+  "record_type": "intent",
+  "request_blob_sha": "dfff89846b60e9a63a482d38a1699ffa448525a4",
+  "request_id": "rq-df8a6afc6a4fea2ccfd79b27",
+  "request_path": "content/requests/rq-df8a6afc6a4fea2ccfd79b27.json",
+  "request_source_sha": "84bd79d32fe50a3847995bc72ed9fc8e28992224",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Arthur agrees to sell his medal, then discovers his son has promised a presentation he never approved.\n\n#WackyDramas #Shorts #BraveryMedal #FatherAndSon #FalseHonor #MedalBuyer #FamilyPressure #PersonalHistory #HonestSale #DisplayCase",
+      "tags": [
+        "wd-id-cf809d30cea60dd394c5",
+        "wacky dramas",
+        "shorts",
+        "son sells father's bravery medal",
+        "veteran asked to honor medal buyer",
+        "father refuses false hero speech",
+        "medal sold with honest history",
+        "family financial pressure",
+        "buyer discovers presentation deception",
+        "personal honor and money",
+        "medal display case story",
+        "WackyDramas",
+        "BraveryMedal",
+        "FatherAndSon",
+        "FalseHonor",
+        "MedalBuyer",
+        "FamilyPressure",
+        "PersonalHistory",
+        "HonestSale",
+        "DisplayCase"
+      ],
+      "title": "The Medal His Father Was Asked to Present"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-20T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43215967278"
+  }
+}
