@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0327e7b483d8c231f57ee040",
+  "evidence_version": 2,
+  "execution_id": "ex-19f3150ac1abfed3c4c0d9c4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bce0242dc33c5e8c59f86a3eed71dd272060efee",
+  "record_type": "upload",
+  "recorded_at": "2026-11-13T00:23:11.416238Z",
+  "request_blob_sha": "52fb70159c04e63bb5103bca05bc7e01d3805b9c",
+  "request_id": "rq-b61c32c1e5d5117e76d2196c",
+  "request_path": "content/requests/rq-b61c32c1e5d5117e76d2196c.json",
+  "request_source_sha": "6b6f88f0b51eecd8394039991063008f80c54fc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A discounted room comes with a request to make a birthday call in someone else's voice.\n\n#WackyDramas #Shorts #Landlady #Tenant #RentDiscount #BirthdayCall #FamilyGrief #MotherAndDaughter #HiddenTruth #BirthdayCard",
+      "tags": [
+        "wd-id-7f2df9140b90a21052d1",
+        "wacky dramas",
+        "shorts",
+        "landlady and tenant",
+        "rent discount condition",
+        "birthday phone call",
+        "family grief story",
+        "mother and daughter",
+        "messages after loss",
+        "affordable room",
+        "birthday card story",
+        "WackyDramas",
+        "Landlady",
+        "Tenant",
+        "RentDiscount",
+        "BirthdayCall",
+        "FamilyGrief",
+        "MotherAndDaughter",
+        "HiddenTruth",
+        "BirthdayCard"
+      ],
+      "title": "The Birthday Card That Came With Cheaper Rent"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-21T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43335609852"
+  },
+  "youtube_video_id": "I4TMxbK3j3s"
+}
