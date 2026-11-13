@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-00e1a29b5b307b0319a252ba",
+  "created_at": "2026-11-13T12:20:11.527063Z",
+  "evidence_version": 2,
+  "execution_id": "ex-d252db3d324b7250c7d52d8a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e49b213c31e44a7dcf23b70b26afaa80a1db7f5a",
+  "record_type": "intent",
+  "request_blob_sha": "e8c80b288ea15cabc4d1b1bad3bec03f585c7203",
+  "request_id": "rq-3021e9ce466f8e2f2ffb1fd0",
+  "request_path": "content/requests/rq-3021e9ce466f8e2f2ffb1fd0.json",
+  "request_source_sha": "a92007ccdc108726c96e6b588c8778950ed6ab89",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A promotion offer forces a daughter to confront the decision her boss wants her to claim as her own.\n\n#WackyDramas #Shorts #WorkplaceDrama #PromotionOffer #MotherAndDaughter #WarehouseWorker #JobLoss #ManagementPressure #WorkplaceIntegrity #FamilyLoyalty",
+      "tags": [
+        "wd-id-eed04e8749f8ec18c331",
+        "wacky dramas",
+        "shorts",
+        "workplace promotion drama",
+        "mother and daughter coworkers",
+        "warehouse job loss",
+        "boss pressures employee",
+        "management integrity",
+        "family loyalty at work",
+        "promotion condition",
+        "congratulations card",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "PromotionOffer",
+        "MotherAndDaughter",
+        "WarehouseWorker",
+        "JobLoss",
+        "ManagementPressure",
+        "WorkplaceIntegrity",
+        "FamilyLoyalty"
+      ],
+      "title": "The Congratulations Card Outside His Office"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-22T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43423249661"
+  }
+}
