@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-3609b4998fa26370e31e02eb",
+  "created_at": "2026-11-13T12:18:57.372049Z",
+  "evidence_version": 2,
+  "execution_id": "ex-54e4591c432938f4f8b30545",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "596b1e0dce2ec710505e3d57caad487f7c17d1f0",
+  "record_type": "intent",
+  "request_blob_sha": "e8c80b288ea15cabc4d1b1bad3bec03f585c7203",
+  "request_id": "rq-3021e9ce466f8e2f2ffb1fd0",
+  "request_path": "content/requests/rq-3021e9ce466f8e2f2ffb1fd0.json",
+  "request_source_sha": "a92007ccdc108726c96e6b588c8778950ed6ab89",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A missing wedding ring turns up at a pawnshop, and the promised reward exposes a second betrayal.\n\n#WackyDramas #Shorts #WeddingRing #Pawnshop #MarriageTrust #MissingRing #HiddenDebt #RewardMoney #HusbandAndWife #FinancialBetrayal",
+      "tags": [
+        "wd-id-697a6f289bb79e01c809",
+        "wacky dramas",
+        "shorts",
+        "missing wedding ring",
+        "pawnshop discovery",
+        "husband pawns ring",
+        "marriage trust",
+        "reward money dispute",
+        "financial betrayal",
+        "husband and wife drama",
+        "secret weekend trip",
+        "WackyDramas",
+        "WeddingRing",
+        "Pawnshop",
+        "MarriageTrust",
+        "MissingRing",
+        "HiddenDebt",
+        "RewardMoney",
+        "HusbandAndWife",
+        "FinancialBetrayal"
+      ],
+      "title": "The Reward Beside Her Wedding Ring"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-21T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43423243018"
+  }
+}
