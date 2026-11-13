@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-86a4368a520f7a1b3205a6e2",
+  "evidence_version": 2,
+  "execution_id": "ex-1d5788e802fa0dd5595188ab",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6c07150b0a80842b9bd1a331736537aab9ea1f04",
+  "record_type": "upload",
+  "recorded_at": "2026-11-13T00:24:17.601616Z",
+  "request_blob_sha": "52fb70159c04e63bb5103bca05bc7e01d3805b9c",
+  "request_id": "rq-b61c32c1e5d5117e76d2196c",
+  "request_path": "content/requests/rq-b61c32c1e5d5117e76d2196c.json",
+  "request_source_sha": "6b6f88f0b51eecd8394039991063008f80c54fc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A test drive leaves two customers fighting over one car until they discover who created the problem.\n\n#WackyDramas #Shorts #CarDealership #TestDrive #CarSale #TradeIn #SalesPressure #ConsumerDrama #ChildSeat #CustomerSolidarity",
+      "tags": [
+        "wd-id-9e4849a17d826aa5288a",
+        "wacky dramas",
+        "shorts",
+        "car dealership drama",
+        "test drive gone wrong",
+        "car sold without permission",
+        "trade in dispute",
+        "dishonest car salesman",
+        "customer solidarity",
+        "child seat in car",
+        "sales pressure",
+        "WackyDramas",
+        "CarDealership",
+        "TestDrive",
+        "CarSale",
+        "TradeIn",
+        "SalesPressure",
+        "ConsumerDrama",
+        "ChildSeat",
+        "CustomerSolidarity"
+      ],
+      "title": "The Child Seat in His Unsold Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-21T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43335606386"
+  },
+  "youtube_video_id": "T1hTXN7-a88"
+}
