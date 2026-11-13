@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-37a10bd46e2fb04b1ce38aa4",
+  "evidence_version": 2,
+  "execution_id": "ex-abdc99ff5ef31b655a7ac420",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a0ad9427fd3d321304b4e3f333328bd08409f67e",
+  "record_type": "upload",
+  "recorded_at": "2026-11-13T12:19:05.657678Z",
+  "request_blob_sha": "e8c80b288ea15cabc4d1b1bad3bec03f585c7203",
+  "request_id": "rq-3021e9ce466f8e2f2ffb1fd0",
+  "request_path": "content/requests/rq-3021e9ce466f8e2f2ffb1fd0.json",
+  "request_source_sha": "a92007ccdc108726c96e6b588c8778950ed6ab89",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A woman discovers that the introductions arranged by her son came with a price she never agreed to.\n\n#WackyDramas #Shorts #FamilyDrama #MotherAndSon #DatingDeception #PaidCompanionship #KitchenConversation #FamilyBoundaries #HiddenFees #PersonalChoice",
+      "tags": [
+        "wd-id-4fd0628ba353c8ad8077",
+        "wacky dramas",
+        "shorts",
+        "mother and son drama",
+        "dating deception",
+        "paid companionship",
+        "son sells introductions",
+        "family boundaries",
+        "tea with a stranger",
+        "hidden dating fees",
+        "personal choice",
+        "WackyDramas",
+        "FamilyDrama",
+        "MotherAndSon",
+        "DatingDeception",
+        "PaidCompanionship",
+        "KitchenConversation",
+        "FamilyBoundaries",
+        "HiddenFees",
+        "PersonalChoice"
+      ],
+      "title": "Two Hundred Dollars for Tea With His Mother"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-21T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43423246257"
+  },
+  "youtube_video_id": "l7pbDOm4opA"
+}
