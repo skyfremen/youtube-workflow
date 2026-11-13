@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-dd7cde50fd37cc881c81b59f",
+  "created_at": "2026-11-13T00:24:45.444130Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a3891ec53e7113221ca9e7db",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "70490a16618a89c4c6015012f6bbf13332b57cfe",
+  "record_type": "intent",
+  "request_blob_sha": "52fb70159c04e63bb5103bca05bc7e01d3805b9c",
+  "request_id": "rq-b61c32c1e5d5117e76d2196c",
+  "request_path": "content/requests/rq-b61c32c1e5d5117e76d2196c.json",
+  "request_source_sha": "6b6f88f0b51eecd8394039991063008f80c54fc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom's interview runs into his wedding, and his identical twin is asked to cover more than the photographs.\n\n#WackyDramas #Shorts #WeddingDrama #TwinBrothers #WeddingVows #AbsentGroom #WeddingDelay #PromotionInterview #BrideAndGroom #MarriagePromises",
+      "tags": [
+        "wd-id-b040c41086406c07f254",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "identical twin groom",
+        "wedding ceremony delay",
+        "groom job interview",
+        "brother at the altar",
+        "bride and groom conflict",
+        "marriage promises",
+        "wedding photographs",
+        "WackyDramas",
+        "WeddingDrama",
+        "TwinBrothers",
+        "WeddingVows",
+        "AbsentGroom",
+        "WeddingDelay",
+        "PromotionInterview",
+        "BrideAndGroom",
+        "MarriagePromises"
+      ],
+      "title": "The Brother Wearing the Groom's Watch"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-21T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43335603117"
+  }
+}
