@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-b039dc62474c4f4369292e97",
+  "created_at": "2026-11-14T00:33:23.573765Z",
+  "evidence_version": 2,
+  "execution_id": "ex-ea32484776571b646b5c9e73",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8b620cd9a34341ec4bfec9393a8b3ec87772cad1",
+  "record_type": "intent",
+  "request_blob_sha": "6e854efa0703384b3ceb4a60588dc0c4730f627a",
+  "request_id": "rq-d197c82eb3694e35be79ec04",
+  "request_path": "content/requests/rq-d197c82eb3694e35be79ec04.json",
+  "request_source_sha": "ae0b330474faaea75139f16973e709d085043b5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A baker receives a birthday message intended to expose a family secret in front of a child's classmates.\n\n#WackyDramas #Shorts #BirthdayCake #BakeryStory #FatherAndSon #PaternitySecret #ClassroomBirthday #EightCandles #FamilyConflict #ProtectingChildren",
+      "tags": [
+        "wd-id-af7e4d78e154a3dc71a7",
+        "wacky dramas",
+        "shorts",
+        "birthday cake order",
+        "baker refuses cruel message",
+        "father and son conflict",
+        "paternity revelation",
+        "classroom birthday party",
+        "eight birthday candles",
+        "family secret",
+        "protecting a child",
+        "WackyDramas",
+        "BirthdayCake",
+        "BakeryStory",
+        "FatherAndSon",
+        "PaternitySecret",
+        "ClassroomBirthday",
+        "EightCandles",
+        "FamilyConflict",
+        "ProtectingChildren"
+      ],
+      "title": "Eight Candles and One Cake Order"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-22T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43534225738"
+  }
+}
