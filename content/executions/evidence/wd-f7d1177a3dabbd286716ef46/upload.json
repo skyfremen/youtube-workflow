@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f7d1177a3dabbd286716ef46",
+  "evidence_version": 2,
+  "execution_id": "ex-c7655ae96a31117531870234",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fe62d2ce6c52515c5f318e80eec40ce56c4a4886",
+  "record_type": "upload",
+  "recorded_at": "2026-11-14T12:20:37.253185Z",
+  "request_blob_sha": "79b04b8b4e259e874fd07b6ca29f52edf326a9b7",
+  "request_id": "rq-0ba8f9eb86be54bb4c941030",
+  "request_path": "content/requests/rq-0ba8f9eb86be54bb4c941030.json",
+  "request_source_sha": "2b238c81bc8fd0745d5efd24d1bb7ebb06fc3d03",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An engagement photograph exposes the history behind a treasured family necklace.\n\n#WackyDramas #Shorts #FamilyHeirloom #StolenNecklace #WeddingGift #EngagementPhoto #MotherAndDaughter #FamilyHistory #HiddenTruth #ReturningJewelry",
+      "tags": [
+        "wd-id-66b681bfd13e120f9008",
+        "wacky dramas",
+        "shorts",
+        "stolen family heirloom",
+        "wedding necklace",
+        "engagement photo discovery",
+        "mother and daughter drama",
+        "family history revealed",
+        "stolen jewelry returned",
+        "sentimental wedding gift",
+        "hidden family truth",
+        "WackyDramas",
+        "FamilyHeirloom",
+        "StolenNecklace",
+        "WeddingGift",
+        "EngagementPhoto",
+        "MotherAndDaughter",
+        "FamilyHistory",
+        "HiddenTruth",
+        "ReturningJewelry"
+      ],
+      "title": "Thirty Years Around Her Mother's Neck"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-23T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43593829650"
+  },
+  "youtube_video_id": "Rt-FJGOMrNI"
+}
