@@ -93,7 +93,7 @@
         {
           "average_view_percentage": 46.91,
           "dimension": "story_tone",
-          "evidence_median_views": 26.0,
+          "evidence_median_views": 22.5,
           "mature_sample": 18,
           "sample_size": 19,
           "value": "natural"
@@ -101,23 +101,23 @@
         {
           "average_view_percentage": 43.65,
           "dimension": "category",
-          "evidence_median_views": 23.5,
+          "evidence_median_views": 20.0,
           "mature_sample": 28,
           "sample_size": 32,
           "value": "wedding"
         },
         {
-          "average_view_percentage": 51.55,
+          "average_view_percentage": 54.07,
           "dimension": "story_tone",
           "evidence_median_views": 20.0,
-          "mature_sample": 16,
-          "sample_size": 25,
+          "mature_sample": 15,
+          "sample_size": 24,
           "value": "warm"
         },
         {
           "average_view_percentage": 53.13,
           "dimension": "category",
-          "evidence_median_views": 19.5,
+          "evidence_median_views": 19.0,
           "mature_sample": 29,
           "sample_size": 33,
           "value": "family"
@@ -131,11 +131,11 @@
           "value": "dramatic_comedy"
         },
         {
-          "average_view_percentage": 40.77,
+          "average_view_percentage": 41.46,
           "dimension": "hook_type",
           "evidence_median_views": 16.0,
-          "mature_sample": 25,
-          "sample_size": 28,
+          "mature_sample": 24,
+          "sample_size": 27,
           "value": "discovery"
         }
       ],
@@ -165,28 +165,28 @@
           "value": "consumer"
         },
         {
-          "average_view_percentage": 43.05,
-          "dimension": "hook_type",
+          "average_view_percentage": 32.81,
+          "dimension": "story_tone",
           "evidence_median_views": 10.0,
-          "mature_sample": 32,
-          "sample_size": 38,
-          "value": "contradiction"
+          "mature_sample": 46,
+          "sample_size": 56,
+          "value": "dramatic"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-14T05:30:31Z",
+      "latest_realtime_snapshot": "2026-11-14T11:30:35Z",
       "videos_analyzed": 151
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 20.0,
+          "evidence_median_views": 19.5,
           "sample_size": 23,
           "window": "04-07"
         },
         {
-          "evidence_median_views": 16.0,
+          "evidence_median_views": 15.5,
           "sample_size": 33,
           "window": "00-03"
         },
@@ -209,11 +209,11 @@
         }
       ]
     },
-    "generated_at": "2026-11-14T05:30:31Z",
+    "generated_at": "2026-11-14T11:30:35Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 150,
+        "24h": 148,
         "2h": 83,
         "6h": 150,
         "72h": 140,
@@ -223,6 +223,7 @@
       "stage": "established"
     },
     "warnings": [
+      "Optional Reporting reports for fffff543-4f76-4134-b59b-0a248a0d2d16 unavailable: HTTPError",
       "Optional retention returned empty curves for 23 due checkpoints; will retry"
     ]
   },
