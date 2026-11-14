@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-ff5bf05d4df9aea0cbd50526",
+  "evidence_version": 2,
+  "execution_id": "ex-5cd7d8081d801d1200e187ab",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5419a29968e4c1ee47fe927e53da8e205ff9b940",
+  "record_type": "upload",
+  "recorded_at": "2026-11-14T12:22:19.073969Z",
+  "request_blob_sha": "79b04b8b4e259e874fd07b6ca29f52edf326a9b7",
+  "request_id": "rq-0ba8f9eb86be54bb4c941030",
+  "request_path": "content/requests/rq-0ba8f9eb86be54bb4c941030.json",
+  "request_source_sha": "2b238c81bc8fd0745d5efd24d1bb7ebb06fc3d03",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An employee's final assignment reveals that her replacement has been misled about the job too.\n\n#WackyDramas #Shorts #WorkplaceDrama #JobReplacement #Translation #UnpaidTraining #JobOffer #FinalShift #WorkerSolidarity #HonestHandover",
+      "tags": [
+        "wd-id-927b30f9534f2136185c",
+        "wacky dramas",
+        "shorts",
+        "employee translates own firing",
+        "cheaper job replacement",
+        "unpaid training offer",
+        "workplace language barrier",
+        "honest job handover",
+        "last shift at work",
+        "worker solidarity",
+        "misleading job offer",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "JobReplacement",
+        "Translation",
+        "UnpaidTraining",
+        "JobOffer",
+        "FinalShift",
+        "WorkerSolidarity",
+        "HonestHandover"
+      ],
+      "title": "The Last Translation on Her Last Shift"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-23T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43593831622"
+  },
+  "youtube_video_id": "J0NDxEw_Als"
+}
