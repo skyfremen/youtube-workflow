@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-91e11513dcd36f89b7987c13",
+  "created_at": "2026-11-14T00:36:42.745779Z",
+  "evidence_version": 2,
+  "execution_id": "ex-119ba6493049542fffa03e08",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f8d85507523bdff608903d7955364ab292fe8624",
+  "record_type": "intent",
+  "request_blob_sha": "6e854efa0703384b3ceb4a60588dc0c4730f627a",
+  "request_id": "rq-d197c82eb3694e35be79ec04",
+  "request_path": "content/requests/rq-d197c82eb3694e35be79ec04.json",
+  "request_source_sha": "ae0b330474faaea75139f16973e709d085043b5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A son introduces a charge for his mother's stairlift, forgetting who pays for the rest of the house.\n\n#WackyDramas #Shorts #FamilyDrama #Stairlift #MotherAndSon #CaregivingConflict #HouseKeys #FamilyMoney #IndependentLiving #AdultChildren",
+      "tags": [
+        "wd-id-0f683482321f48bf756f",
+        "wacky dramas",
+        "shorts",
+        "mother and son conflict",
+        "stairlift fee",
+        "family caregiving drama",
+        "mother owns the house",
+        "adult children boundaries",
+        "independent living",
+        "family money dispute",
+        "house keys",
+        "WackyDramas",
+        "FamilyDrama",
+        "Stairlift",
+        "MotherAndSon",
+        "CaregivingConflict",
+        "HouseKeys",
+        "FamilyMoney",
+        "IndependentLiving",
+        "AdultChildren"
+      ],
+      "title": "Five Dollars to Go Upstairs"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-22T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43534220796"
+  }
+}
