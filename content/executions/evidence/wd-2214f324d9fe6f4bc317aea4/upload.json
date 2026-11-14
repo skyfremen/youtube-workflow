@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2214f324d9fe6f4bc317aea4",
+  "evidence_version": 2,
+  "execution_id": "ex-c2b688e892510fd589130a1b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "6893af39fc86263bca3b89e25a14c27775fcf3b6",
+  "record_type": "upload",
+  "recorded_at": "2026-11-14T12:20:19.034850Z",
+  "request_blob_sha": "79b04b8b4e259e874fd07b6ca29f52edf326a9b7",
+  "request_id": "rq-0ba8f9eb86be54bb4c941030",
+  "request_path": "content/requests/rq-0ba8f9eb86be54bb4c941030.json",
+  "request_source_sha": "2b238c81bc8fd0745d5efd24d1bb7ebb06fc3d03",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's invented money crisis costs his daughter the wedding dress she chose.\n\n#WackyDramas #Shorts #FamilyDrama #FatherAndDaughter #WeddingDress #LoyaltyTest #FamilyMoney #MortgageScare #WeddingPlans #BrokenTrust",
+      "tags": [
+        "wd-id-b860b9dea77511519170",
+        "wacky dramas",
+        "shorts",
+        "father tests his children",
+        "daughter sells wedding dress",
+        "family loyalty test",
+        "fake debt crisis",
+        "family money drama",
+        "wedding plans",
+        "father and daughter conflict",
+        "broken family trust",
+        "WackyDramas",
+        "FamilyDrama",
+        "FatherAndDaughter",
+        "WeddingDress",
+        "LoyaltyTest",
+        "FamilyMoney",
+        "MortgageScare",
+        "WeddingPlans",
+        "BrokenTrust"
+      ],
+      "title": "Eighteen Hundred Dollars and an Empty Envelope"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-23T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43593827878"
+  },
+  "youtube_video_id": "-s6P7b1yd1o"
+}
