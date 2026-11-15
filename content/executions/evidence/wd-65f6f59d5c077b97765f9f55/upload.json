@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-65f6f59d5c077b97765f9f55",
+  "evidence_version": 2,
+  "execution_id": "ex-f8e07b264479360e68b0f6b1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5004a3309eca0ea060bd7e7e0586aa1746b78ae8",
+  "record_type": "upload",
+  "recorded_at": "2026-11-15T00:24:55.455706Z",
+  "request_blob_sha": "b18afde40cec816c2386b27f9482f2b98d94f1c3",
+  "request_id": "rq-e9452d57c22d278a352ba45e",
+  "request_path": "content/requests/rq-e9452d57c22d278a352ba45e.json",
+  "request_source_sha": "714fd4213b28e889caa6f6809f2cff21f42a8270",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A novelist's sister is asked to protect a book that has already exposed her private life.\n\n#WackyDramas #Shorts #SisterConflict #DivorceStory #NovelLaunch #PrivateConversation #FamilyPrivacy #AuthorDrama #BookReading #PublicDenial",
+      "tags": [
+        "wd-id-e2dcc9d665d12b025f8b",
+        "wacky dramas",
+        "shorts",
+        "sister publishes private divorce",
+        "novel launch drama",
+        "family privacy conflict",
+        "private conversation in book",
+        "author and sister dispute",
+        "public denial request",
+        "divorce story exposed",
+        "book reading refusal",
+        "WackyDramas",
+        "SisterConflict",
+        "DivorceStory",
+        "NovelLaunch",
+        "PrivateConversation",
+        "FamilyPrivacy",
+        "AuthorDrama",
+        "BookReading",
+        "PublicDenial"
+      ],
+      "title": "The Novel With Her Divorce Inside"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-24T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43657290608"
+  },
+  "youtube_video_id": "qZrdH6YQTMU"
+}
