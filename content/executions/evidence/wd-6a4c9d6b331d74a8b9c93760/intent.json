@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-6a4c9d6b331d74a8b9c93760",
+  "created_at": "2026-11-15T00:21:03.636350Z",
+  "evidence_version": 2,
+  "execution_id": "ex-ef349dc047cef8966c267e3f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "f00f676217b7c08997346d6ad66787a1a2403640",
+  "record_type": "intent",
+  "request_blob_sha": "b18afde40cec816c2386b27f9482f2b98d94f1c3",
+  "request_id": "rq-e9452d57c22d278a352ba45e",
+  "request_path": "content/requests/rq-e9452d57c22d278a352ba45e.json",
+  "request_source_sha": "714fd4213b28e889caa6f6809f2cff21f42a8270",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A scholarship winner discovers that her father has accepted money for a decision only she can make.\n\n#WackyDramas #Shorts #Scholarship #FatherAndDaughter #EducationOpportunity #FamilyPressure #BossAndEmployee #WithdrawalDemand #EarnedAchievement #ScholarshipPresentation",
+      "tags": [
+        "wd-id-ba4ea02203f994c12724",
+        "wacky dramas",
+        "shorts",
+        "father sells scholarship withdrawal",
+        "daughter wins scholarship",
+        "boss pressures employee",
+        "education opportunity",
+        "family money pressure",
+        "scholarship waiting list",
+        "earned achievement",
+        "refusing to withdraw",
+        "WackyDramas",
+        "Scholarship",
+        "FatherAndDaughter",
+        "EducationOpportunity",
+        "FamilyPressure",
+        "BossAndEmployee",
+        "WithdrawalDemand",
+        "EarnedAchievement",
+        "ScholarshipPresentation"
+      ],
+      "title": "The Withdrawal Her Father Was Paid to Obtain"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-24T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43657294266"
+  }
+}
