@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-92e748d5314727bdab3da8fe",
+  "created_at": "2026-11-15T00:22:35.606297Z",
+  "evidence_version": 2,
+  "execution_id": "ex-76acaf3e4851c9e04665f0ad",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3513720544aa747e6bbdfdf86deb00b9f258c596",
+  "record_type": "intent",
+  "request_blob_sha": "b18afde40cec816c2386b27f9482f2b98d94f1c3",
+  "request_id": "rq-e9452d57c22d278a352ba45e",
+  "request_path": "content/requests/rq-e9452d57c22d278a352ba45e.json",
+  "request_source_sha": "714fd4213b28e889caa6f6809f2cff21f42a8270",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A family introduction becomes a demand for the victim of an earlier financial betrayal to take another risk.\n\n#WackyDramas #Shorts #FamilyDrama #LoanGuarantee #MotherAndDaughter #StolenSavings #FamilyLoyalty #NewFiance #FinancialPressure #UnsignedForm",
+      "tags": [
+        "wd-id-c03b33c355352c955794",
+        "wacky dramas",
+        "shorts",
+        "mother and daughter conflict",
+        "loan guarantee pressure",
+        "stolen savings",
+        "mother's new fiance",
+        "family financial betrayal",
+        "refusing another loan",
+        "family loyalty dispute",
+        "unsigned loan form",
+        "WackyDramas",
+        "FamilyDrama",
+        "LoanGuarantee",
+        "MotherAndDaughter",
+        "StolenSavings",
+        "FamilyLoyalty",
+        "NewFiance",
+        "FinancialPressure",
+        "UnsignedForm"
+      ],
+      "title": "The Loan He Wanted Her to Guarantee"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-24T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43657288913"
+  }
+}
