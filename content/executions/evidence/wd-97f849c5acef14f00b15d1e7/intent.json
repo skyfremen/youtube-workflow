@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-97f849c5acef14f00b15d1e7",
+  "created_at": "2026-11-15T12:26:46.958025Z",
+  "evidence_version": 2,
+  "execution_id": "ex-0e540d1d1c7d654e1f11582c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "27d24566b473410bcb480103b85860f819790f97",
+  "record_type": "intent",
+  "request_blob_sha": "b0574ec0a66c9dc2254743183e949ded634d33f3",
+  "request_id": "rq-9a94f50f6048d202408bbbf9",
+  "request_path": "content/requests/rq-9a94f50f6048d202408bbbf9.json",
+  "request_source_sha": "ce7b86c937010839bff864ff053b5e875f5e6424",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A lottery win turns a small gift into a test of what one worker is willing to take back.\n\n#WackyDramas #Shorts #LotteryTicket #WorkplaceDrama #Cleaner #DeliveryDriver #StaffPartyGift #WinningTicket #JobThreat #KeepingAPromise",
+      "tags": [
+        "wd-id-f7123ddc0fdbebb84145",
+        "wacky dramas",
+        "shorts",
+        "cleaner gives lottery ticket away",
+        "delivery driver wins lottery",
+        "boss demands gift back",
+        "winning staff party ticket",
+        "workplace integrity",
+        "keeping a promise",
+        "lottery tip story",
+        "worker loses job",
+        "WackyDramas",
+        "LotteryTicket",
+        "WorkplaceDrama",
+        "Cleaner",
+        "DeliveryDriver",
+        "StaffPartyGift",
+        "WinningTicket",
+        "JobThreat",
+        "KeepingAPromise"
+      ],
+      "title": "The Tip in the Delivery Driver's Pocket"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-25T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43713308825"
+  }
+}
