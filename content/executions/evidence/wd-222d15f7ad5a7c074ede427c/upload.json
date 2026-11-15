@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-222d15f7ad5a7c074ede427c",
+  "evidence_version": 2,
+  "execution_id": "ex-96d131b0f5d880ea471c41e9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "9a0303419e525356d1b6c2b1231d8c6f8e7e70f3",
+  "record_type": "upload",
+  "recorded_at": "2026-11-15T12:24:37.636544Z",
+  "request_blob_sha": "b0574ec0a66c9dc2254743183e949ded634d33f3",
+  "request_id": "rq-9a94f50f6048d202408bbbf9",
+  "request_path": "content/requests/rq-9a94f50f6048d202408bbbf9.json",
+  "request_source_sha": "ce7b86c937010839bff864ff053b5e875f5e6424",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A canceled engagement leaves one woman paying for a reception with a different bride.\n\n#WackyDramas #Shorts #WeddingDrama #CancelledEngagement #WeddingReception #ExFiancee #WeddingBill #HiddenWeddingCosts #NewBride #FinancialBetrayal",
+      "tags": [
+        "wd-id-0f61db5f636f03f871b1",
+        "wacky dramas",
+        "shorts",
+        "groom replaces bride",
+        "ex fiancee pays for wedding",
+        "wedding reception bill",
+        "cancelled engagement",
+        "hidden wedding costs",
+        "new bride learns truth",
+        "unsigned wedding invoice",
+        "financial betrayal",
+        "WackyDramas",
+        "WeddingDrama",
+        "CancelledEngagement",
+        "WeddingReception",
+        "ExFiancee",
+        "WeddingBill",
+        "HiddenWeddingCosts",
+        "NewBride",
+        "FinancialBetrayal"
+      ],
+      "title": "The Bride Changed. Her Name Stayed on the Bill."
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-24T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43713304195"
+  },
+  "youtube_video_id": "IwG88NxoW3E"
+}
