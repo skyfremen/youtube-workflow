@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-659e9ea29210c2245b328af5",
+  "created_at": "2026-11-15T12:26:30.739781Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6677e271e36e76268c88940d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2923fbfc3af65cba0c6df5476cc919ec73cfc059",
+  "record_type": "intent",
+  "request_blob_sha": "b0574ec0a66c9dc2254743183e949ded634d33f3",
+  "request_id": "rq-9a94f50f6048d202408bbbf9",
+  "request_path": "content/requests/rq-9a94f50f6048d202408bbbf9.json",
+  "request_source_sha": "ce7b86c937010839bff864ff053b5e875f5e6424",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A locksmith takes a second payment that defeats the reason he was hired.\n\n#WackyDramas #Shorts #Locksmith #SpareKey #ExGirlfriend #HomePrivacy #NewLock #ServiceBetrayal #TrustedNeighbor #PersonalBoundaries",
+      "tags": [
+        "wd-id-dbcccb5b01ba8345a08d",
+        "wacky dramas",
+        "shorts",
+        "locksmith sells spare key",
+        "ex girlfriend gets new key",
+        "home privacy betrayal",
+        "changing the house lock",
+        "trusted neighbor",
+        "service provider conflict",
+        "personal boundaries",
+        "unauthorized key copy",
+        "WackyDramas",
+        "Locksmith",
+        "SpareKey",
+        "ExGirlfriend",
+        "HomePrivacy",
+        "NewLock",
+        "ServiceBetrayal",
+        "TrustedNeighbor",
+        "PersonalBoundaries"
+      ],
+      "title": "Who Bought His New House Key?"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-25T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43713310817"
+  }
+}
