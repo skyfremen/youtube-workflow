@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-fc5a3e0d747e10041fc1b79f",
+  "evidence_version": 2,
+  "execution_id": "ex-01d90141dea8a6e519436317",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ddbd2d2812311a20279f78c06e96cb37b4fa22c5",
+  "record_type": "upload",
+  "recorded_at": "2026-11-15T12:26:33.671421Z",
+  "request_blob_sha": "b0574ec0a66c9dc2254743183e949ded634d33f3",
+  "request_id": "rq-9a94f50f6048d202408bbbf9",
+  "request_path": "content/requests/rq-9a94f50f6048d202408bbbf9.json",
+  "request_source_sha": "ce7b86c937010839bff864ff053b5e875f5e6424",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An unexpected meeting forces a father to explain the death story he told his child.\n\n#WackyDramas #Shorts #GrandmotherAndGrandson #FamilyEstrangement #FamilyLie #Grandparents #SupermarketMeeting #ChildhoodGrief #FamilyDivorce #HonestConversation",
+      "tags": [
+        "wd-id-45a1c6547923bca6bb43",
+        "wacky dramas",
+        "shorts",
+        "grandmother told she was dead",
+        "grandson meets living grandma",
+        "family estrangement",
+        "father lies to child",
+        "supermarket family meeting",
+        "grandparents and divorce",
+        "childhood grief",
+        "family truth revealed",
+        "WackyDramas",
+        "GrandmotherAndGrandson",
+        "FamilyEstrangement",
+        "FamilyLie",
+        "Grandparents",
+        "SupermarketMeeting",
+        "ChildhoodGrief",
+        "FamilyDivorce",
+        "HonestConversation"
+      ],
+      "title": "Grandma Wasn't in Heaven"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-25T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43713306402"
+  },
+  "youtube_video_id": "Zwgrkk2MOfc"
+}
