@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1686e0d41a6c81e555a58a58",
+  "evidence_version": 2,
+  "execution_id": "ex-66e156685abda18fddecbc10",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "78ae65a6ff0b912897f9ea08161db77f13d6067b",
+  "record_type": "upload",
+  "recorded_at": "2026-11-16T12:31:57.079086Z",
+  "request_blob_sha": "9a1afea37cbbbb15ba57c48f58336baf253386df",
+  "request_id": "rq-d3c34c1966da3338b2ba12a1",
+  "request_path": "content/requests/rq-d3c34c1966da3338b2ba12a1.json",
+  "request_source_sha": "b23dc70178980d63698e690c5fbf976a7417f174",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mother comes home from hospital to an estate sale she never authorized, and must choose what moving on means for herself.\n\n#WackyDramas #Shorts #FamilyDrama #EstateSale #MothersChoice #AdultChildren #HospitalHomecoming #FamilyBelongings #MovingHouse #HusbandsChair",
+      "tags": [
+        "wd-id-0ce721864083d05da71c",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "estate sale",
+        "mother and adult sons",
+        "hospital homecoming",
+        "selling family belongings",
+        "moving to a smaller home",
+        "husband's chair",
+        "family boundaries",
+        "WackyDramas",
+        "FamilyDrama",
+        "EstateSale",
+        "MothersChoice",
+        "AdultChildren",
+        "HospitalHomecoming",
+        "FamilyBelongings",
+        "MovingHouse",
+        "HusbandsChair"
+      ],
+      "title": "Twenty Dollars for Her Husband's Chair"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-26T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43866706272"
+  },
+  "youtube_video_id": "Ib5ECWdhXoQ"
+}
