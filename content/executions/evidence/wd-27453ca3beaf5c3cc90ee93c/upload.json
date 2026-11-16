@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-27453ca3beaf5c3cc90ee93c",
+  "evidence_version": 2,
+  "execution_id": "ex-ac8e67d947030faf903bf079",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "347a1f98837fdda9020989171fc4bc98570c4433",
+  "record_type": "upload",
+  "recorded_at": "2026-11-16T12:32:16.736878Z",
+  "request_blob_sha": "9a1afea37cbbbb15ba57c48f58336baf253386df",
+  "request_id": "rq-d3c34c1966da3338b2ba12a1",
+  "request_path": "content/requests/rq-d3c34c1966da3338b2ba12a1.json",
+  "request_source_sha": "b23dc70178980d63698e690c5fbf976a7417f174",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss calls a layoff vote fair and anonymous, until one employee has to face the colleague she chose.\n\n#WackyDramas #Shorts #WorkplaceDrama #LayoffVote #CoworkerBetrayal #AnonymousBallot #NewEmployee #JobLoss #OfficePressure #WorkplaceGuilt",
+      "tags": [
+        "wd-id-406135e4c5526f8a4d51",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "layoff vote",
+        "coworker betrayal",
+        "anonymous workplace vote",
+        "new employee",
+        "boss pressures staff",
+        "losing a job",
+        "coworker guilt",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "LayoffVote",
+        "CoworkerBetrayal",
+        "AnonymousBallot",
+        "NewEmployee",
+        "JobLoss",
+        "OfficePressure",
+        "WorkplaceGuilt"
+      ],
+      "title": "The Pencil Beside the Layoff Ballot"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-26T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43866710007"
+  },
+  "youtube_video_id": "2hJkJuuRFsc"
+}
