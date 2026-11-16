@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-05b4e609a03681275bfbc902",
+  "evidence_version": 2,
+  "execution_id": "ex-60860cde855e2a3d52d2e7d1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4bb62de34772304bca6e1c93b60df829a7a0fd6d",
+  "record_type": "upload",
+  "recorded_at": "2026-11-16T00:43:29.682260Z",
+  "request_blob_sha": "e18ed8f6e573e2a71e826586790829068f31830d",
+  "request_id": "rq-6551665c18c892d2b508eb07",
+  "request_path": "content/requests/rq-6551665c18c892d2b508eb07.json",
+  "request_source_sha": "74cb8dc7a318293f630531c18858de11c987f601",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A chef loses her mother's handwritten recipes when an owner decides he can keep the knowledge without keeping her.\n\n#WackyDramas #Shorts #ChefStory #FamilyRecipes #RecipeBook #RestaurantOwner #HandwrittenRecipes #RedMeasuringCup #GrandmasSoup #WorkplaceBetrayal",
+      "tags": [
+        "wd-id-d2524b7d08fbde951136",
+        "wacky dramas",
+        "shorts",
+        "chef's family recipe book burned",
+        "restaurant owner fires chef",
+        "handwritten family recipes",
+        "mother's red cup",
+        "grandmother's soup",
+        "workplace betrayal",
+        "cooking from memory",
+        "family cooking knowledge",
+        "WackyDramas",
+        "ChefStory",
+        "FamilyRecipes",
+        "RecipeBook",
+        "RestaurantOwner",
+        "HandwrittenRecipes",
+        "RedMeasuringCup",
+        "GrandmasSoup",
+        "WorkplaceBetrayal"
+      ],
+      "title": "The Red Cup in Her Mother's Recipe"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-26T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43781547075"
+  },
+  "youtube_video_id": "zDeSIVxIUYM"
+}
