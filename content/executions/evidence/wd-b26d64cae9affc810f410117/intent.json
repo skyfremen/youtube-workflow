@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-b26d64cae9affc810f410117",
+  "created_at": "2026-11-16T12:32:40.732944Z",
+  "evidence_version": 2,
+  "execution_id": "ex-25810217fbdffb2b357c9cc9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "925627064e99aa8c17a1cae6614a9cec4ac6227d",
+  "record_type": "intent",
+  "request_blob_sha": "9a1afea37cbbbb15ba57c48f58336baf253386df",
+  "request_id": "rq-d3c34c1966da3338b2ba12a1",
+  "request_path": "content/requests/rq-d3c34c1966da3338b2ba12a1.json",
+  "request_source_sha": "b23dc70178980d63698e690c5fbf976a7417f174",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom cuts his deaf bride's interpreter from the wedding budget, then expects her to accept the ceremony on his terms.\n\n#WackyDramas #Shorts #WeddingDrama #DeafBride #WeddingVows #SignLanguage #WeddingBudget #Groom #SisterSupport #WeddingInterpreter",
+      "tags": [
+        "wd-id-3fd1cbe8ce591296f1e3",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "deaf bride",
+        "wedding interpreter",
+        "sign language",
+        "wedding vows",
+        "groom cancels interpreter",
+        "sister supports bride",
+        "wedding budget conflict",
+        "WackyDramas",
+        "WeddingDrama",
+        "DeafBride",
+        "WeddingVows",
+        "SignLanguage",
+        "WeddingBudget",
+        "Groom",
+        "SisterSupport",
+        "WeddingInterpreter"
+      ],
+      "title": "The Vows She Was Supposed to Read Later"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-26T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43866701488"
+  }
+}
