@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-d628cdf22a537255f357568a",
+  "created_at": "2026-11-16T12:33:34.094208Z",
+  "evidence_version": 2,
+  "execution_id": "ex-dd1c1a3cacd2468cc997932e",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e14e90389a3314fd7b4abc4f6ca8fac488a1a523",
+  "record_type": "intent",
+  "request_blob_sha": "9a1afea37cbbbb15ba57c48f58336baf253386df",
+  "request_id": "rq-d3c34c1966da3338b2ba12a1",
+  "request_path": "content/requests/rq-d3c34c1966da3338b2ba12a1.json",
+  "request_source_sha": "b23dc70178980d63698e690c5fbf976a7417f174",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Dinner guests think a cleaner is performing a comedy act, until she explains what her employer actually told her.\n\n#WackyDramas #Shorts #WorkplaceDrama #HouseCleaner #DinnerGuests #ComedyShow #ExploitedWorker #SilverBell #AudienceReaction #EmployerBetrayal",
+      "tags": [
+        "wd-id-e63b2d6b8abeb05c48cd",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "house cleaner",
+        "dinner party drama",
+        "employer exploits cleaner",
+        "fake comedy show",
+        "guests stop laughing",
+        "cleaning shift",
+        "silver bell",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "HouseCleaner",
+        "DinnerGuests",
+        "ComedyShow",
+        "ExploitedWorker",
+        "SilverBell",
+        "AudienceReaction",
+        "EmployerBetrayal"
+      ],
+      "title": "Fifty Dollars to Watch Her Clean"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-27T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43866713828"
+  }
+}
