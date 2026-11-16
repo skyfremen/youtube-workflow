@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-cc804c7b931bcde46cee65f3",
+  "evidence_version": 2,
+  "execution_id": "ex-062a268bd22c29da897acb75",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "138e4ae808a21633dd7a81bec431e6f8b674c767",
+  "record_type": "upload",
+  "recorded_at": "2026-11-16T00:44:17.678512Z",
+  "request_blob_sha": "e18ed8f6e573e2a71e826586790829068f31830d",
+  "request_id": "rq-6551665c18c892d2b508eb07",
+  "request_path": "content/requests/rq-6551665c18c892d2b508eb07.json",
+  "request_source_sha": "74cb8dc7a318293f630531c18858de11c987f601",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's explanation of repeat business changes what his son is willing to inherit.\n\n#WackyDramas #Shorts #PestControl #FamilyBusiness #FatherAndSon #CustomerTrust #DishonestBusiness #FirstDayAtWork #MiceInfestation #WorkplaceIntegrity",
+      "tags": [
+        "wd-id-b6424db2a98336734610",
+        "wacky dramas",
+        "shorts",
+        "pest controller releases mice",
+        "father and son business",
+        "first day in family business",
+        "customer trust betrayed",
+        "dishonest pest treatment",
+        "son refuses to deceive customer",
+        "workplace integrity",
+        "repeat business scam",
+        "WackyDramas",
+        "PestControl",
+        "FamilyBusiness",
+        "FatherAndSon",
+        "CustomerTrust",
+        "DishonestBusiness",
+        "FirstDayAtWork",
+        "MiceInfestation",
+        "WorkplaceIntegrity"
+      ],
+      "title": "The First Lesson in the Family Business"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-26T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43781549779"
+  },
+  "youtube_video_id": "ugLpXSahmDU"
+}
