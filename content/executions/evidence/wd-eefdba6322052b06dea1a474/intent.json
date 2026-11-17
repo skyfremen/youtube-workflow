@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-eefdba6322052b06dea1a474",
+  "created_at": "2026-11-17T12:15:52.571162Z",
+  "evidence_version": 2,
+  "execution_id": "ex-71dec281bab0f703969d3126",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ce4754240099f519561011d6051ffdd135f27e0c",
+  "record_type": "intent",
+  "request_blob_sha": "955cdb18f3918be454b90dd5d7019a00bd6be314",
+  "request_id": "rq-4959ae974ecb499bc47e0a4a",
+  "request_path": "content/requests/rq-4959ae974ecb499bc47e0a4a.json",
+  "request_source_sha": "b82490a71a2e50bd9d0bd0506c4e8d1970ab3ce4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A house buyer arrives to find the sellers demanding rent, with their son offered as the reason they cannot leave.\n\n#WackyDramas #Shorts #HouseBuyer #MovingDay #SellerDispute #GarageRent #NewHome #FamilyPressure #MovingVan #HomeOwnership",
+      "tags": [
+        "wd-id-69c8be483a666250024e",
+        "wacky dramas",
+        "shorts",
+        "house buyer drama",
+        "sellers refuse to move",
+        "garage rent",
+        "moving day conflict",
+        "new homeowner",
+        "family pressure",
+        "moving van",
+        "buyer's own house",
+        "WackyDramas",
+        "HouseBuyer",
+        "MovingDay",
+        "SellerDispute",
+        "GarageRent",
+        "NewHome",
+        "FamilyPressure",
+        "MovingVan",
+        "HomeOwnership"
+      ],
+      "title": "Two Hundred a Week for Her Own Garage"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-28T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44080395172"
+  }
+}
