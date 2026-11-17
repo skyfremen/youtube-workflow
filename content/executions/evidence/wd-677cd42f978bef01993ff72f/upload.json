@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-677cd42f978bef01993ff72f",
+  "evidence_version": 2,
+  "execution_id": "ex-fe80d5fcf9c272914db36212",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "18df936b64ee50a020f15fdd479f0e74f7bd2558",
+  "record_type": "upload",
+  "recorded_at": "2026-11-17T12:14:36.362651Z",
+  "request_blob_sha": "955cdb18f3918be454b90dd5d7019a00bd6be314",
+  "request_id": "rq-4959ae974ecb499bc47e0a4a",
+  "request_path": "content/requests/rq-4959ae974ecb499bc47e0a4a.json",
+  "request_source_sha": "b82490a71a2e50bd9d0bd0506c4e8d1970ab3ce4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An adult son discovers his mother's public search is an attempt to bring him back to the home he chose to leave.\n\n#WackyDramas #Shorts #FamilyDrama #MissingPersonPoster #AdultSon #MotherAndSon #MovingOut #FamilyBoundaries #IndependentLiving #MothersPressure",
+      "tags": [
+        "wd-id-ac5ccb057d5724dccfa4",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "missing person poster",
+        "adult son moves out",
+        "mother and son conflict",
+        "family boundaries",
+        "independent living",
+        "mother pressures son",
+        "moving into own flat",
+        "WackyDramas",
+        "FamilyDrama",
+        "MissingPersonPoster",
+        "AdultSon",
+        "MotherAndSon",
+        "MovingOut",
+        "FamilyBoundaries",
+        "IndependentLiving",
+        "MothersPressure"
+      ],
+      "title": "The Missing Son in His Own Kitchen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-28T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44080388184"
+  },
+  "youtube_video_id": "0_Nh5INNwXE"
+}
