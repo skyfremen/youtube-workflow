@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-ed929b8a8d2c98fec53d1939",
+  "created_at": "2026-11-17T12:14:54.672352Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6d2c4ff6ee7e1d80b926569c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d43676b36a851fc0af6b0d5ac634fca25ae94d85",
+  "record_type": "intent",
+  "request_blob_sha": "955cdb18f3918be454b90dd5d7019a00bd6be314",
+  "request_id": "rq-4959ae974ecb499bc47e0a4a",
+  "request_path": "content/requests/rq-4959ae974ecb499bc47e0a4a.json",
+  "request_source_sha": "b82490a71a2e50bd9d0bd0506c4e8d1970ab3ce4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride is told to leave her own wedding when the groom's wife arrives, exposing two very different stories about his marriage.\n\n#WackyDramas #Shorts #WeddingDrama #MarriedGroom #WeddingGuest #MarriageBetrayal #BrideAndWife #HiddenMarriage #WeddingFlowers #BrokenTrust",
+      "tags": [
+        "wd-id-311d7b1de6a86bdcbd2e",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "groom already married",
+        "wife arrives at wedding",
+        "bride discovers wife",
+        "hidden marriage",
+        "marriage betrayal",
+        "groom lies about divorce",
+        "wedding confrontation",
+        "WackyDramas",
+        "WeddingDrama",
+        "MarriedGroom",
+        "WeddingGuest",
+        "MarriageBetrayal",
+        "BrideAndWife",
+        "HiddenMarriage",
+        "WeddingFlowers",
+        "BrokenTrust"
+      ],
+      "title": "The Wife at the Wedding Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-28T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44080384253"
+  }
+}
