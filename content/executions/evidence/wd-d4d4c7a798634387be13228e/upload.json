@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d4d4c7a798634387be13228e",
+  "evidence_version": 2,
+  "execution_id": "ex-1d533c2dc26134f20b593c16",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a9d7516894837ca6310da05c5482661d95f24f32",
+  "record_type": "upload",
+  "recorded_at": "2026-11-17T00:20:19.514024Z",
+  "request_blob_sha": "744b05e6b0b23ce6f6ba5d40bd60b3f919b06608",
+  "request_id": "rq-bb91c1de0f12f8964ff6203d",
+  "request_path": "content/requests/rq-bb91c1de0f12f8964ff6203d.json",
+  "request_source_sha": "3ac1ff20b1dac7c87df39f1afe69c5545f57bd54",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride's inherited wedding dress becomes family keepsakes without her consent, leaving two sisters to confront a loss that cannot be copied away.\n\n#WackyDramas #Shorts #FamilyDrama #SisterConflict #WeddingDress #MothersMemory #InheritedDress #MemorialBears #FamilyKeepsakes #GriefAndTrust",
+      "tags": [
+        "wd-id-4cda17af003dff9042ff",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "sister cuts wedding dress",
+        "inherited wedding dress",
+        "memorial teddy bears",
+        "mother's memory",
+        "grieving sisters",
+        "family keepsakes",
+        "broken trust",
+        "WackyDramas",
+        "FamilyDrama",
+        "SisterConflict",
+        "WeddingDress",
+        "MothersMemory",
+        "InheritedDress",
+        "MemorialBears",
+        "FamilyKeepsakes",
+        "GriefAndTrust"
+      ],
+      "title": "The Spare Button in Her Mother's Dress"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-27T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43985929753"
+  },
+  "youtube_video_id": "9gmhLyxKnOE"
+}
