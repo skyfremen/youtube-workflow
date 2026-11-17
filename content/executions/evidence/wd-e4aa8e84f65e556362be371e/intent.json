@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-e4aa8e84f65e556362be371e",
+  "created_at": "2026-11-17T00:22:35.046877Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2dfaf9390c37cb173d03533a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8c4ce7bb708d03d20e1e127cd2364b82c276b8b7",
+  "record_type": "intent",
+  "request_blob_sha": "744b05e6b0b23ce6f6ba5d40bd60b3f919b06608",
+  "request_id": "rq-bb91c1de0f12f8964ff6203d",
+  "request_path": "content/requests/rq-bb91c1de0f12f8964ff6203d.json",
+  "request_source_sha": "3ac1ff20b1dac7c87df39f1afe69c5545f57bd54",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss wants a rescued employee in his award photograph, but the rescue happened the other way around.\n\n#WackyDramas #Shorts #WorkplaceDrama #BraveryAward #WarehouseFire #StolenCredit #RescueStory #BossAndEmployee #FatherAndSon #TellingTheTruth",
+      "tags": [
+        "wd-id-80e9643ef5e0c7547485",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "boss takes credit",
+        "bravery award",
+        "warehouse rescue",
+        "employee saves boss",
+        "father and son",
+        "false hero story",
+        "telling the truth",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "BraveryAward",
+        "WarehouseFire",
+        "StolenCredit",
+        "RescueStory",
+        "BossAndEmployee",
+        "FatherAndSon",
+        "TellingTheTruth"
+      ],
+      "title": "The Woman Beside His Bravery Medal"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-27T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "43985933664"
+  }
+}
