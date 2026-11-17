@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9ca21c34c7bf504733a087c4",
+  "evidence_version": 2,
+  "execution_id": "ex-925aaf6f6b826958c6fe4065",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3c88a1ed7078a0bfbdbd0efb6cbc402038e5c085",
+  "record_type": "upload",
+  "recorded_at": "2026-11-17T12:16:26.869292Z",
+  "request_blob_sha": "955cdb18f3918be454b90dd5d7019a00bd6be314",
+  "request_id": "rq-4959ae974ecb499bc47e0a4a",
+  "request_path": "content/requests/rq-4959ae974ecb499bc47e0a4a.json",
+  "request_source_sha": "b82490a71a2e50bd9d0bd0506c4e8d1970ab3ce4",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss sends sympathy flowers to a funeral while refusing the grieving daughter time to attend it.\n\n#WackyDramas #Shorts #WorkplaceDrama #FuneralLeave #GrievingDaughter #SympathyFlowers #DeliveryDriver #UnpaidLeave #FamilySupport #WorkplaceHypocrisy",
+      "tags": [
+        "wd-id-2ca37d8c6c86d3053b07",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "funeral leave denied",
+        "grieving daughter",
+        "sympathy flowers",
+        "delivery driver",
+        "boss refuses leave",
+        "father's funeral",
+        "family before work",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "FuneralLeave",
+        "GrievingDaughter",
+        "SympathyFlowers",
+        "DeliveryDriver",
+        "UnpaidLeave",
+        "FamilySupport",
+        "WorkplaceHypocrisy"
+      ],
+      "title": "With Deepest Sympathy, Ten Minutes Only"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-28T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44080391995"
+  },
+  "youtube_video_id": "NWeO1adK7LA"
+}
