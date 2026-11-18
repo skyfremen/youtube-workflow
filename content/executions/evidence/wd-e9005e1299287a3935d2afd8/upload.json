@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e9005e1299287a3935d2afd8",
+  "evidence_version": 2,
+  "execution_id": "ex-9d6432e0f0a9bab1e951e3c4",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a4fd75c75231a358b167f3396a16b9a14ecc4203",
+  "record_type": "upload",
+  "recorded_at": "2026-11-18T00:11:31.075272Z",
+  "request_blob_sha": "4a4dbfc8a86f8ea1ce39084cccdb2bdc8a6c2d27",
+  "request_id": "rq-7a5d37fcd36267cff15eb301",
+  "request_path": "content/requests/rq-7a5d37fcd36267cff15eb301.json",
+  "request_source_sha": "b8987f46bb66581704f745973ae20da1123a57ae",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's missing car turns up at a charity auction, where his son's generous gesture depends on permission he never had.\n\n#WackyDramas #Shorts #CharityAuction #MissingCar #FamilyDonation #FatherAndSon #GrandmothersCare #StolenProperty #CharityRibbons #FamilyResponsibility",
+      "tags": [
+        "wd-id-0b18ac53b3e6739e27ce",
+        "wacky dramas",
+        "shorts",
+        "charity auction drama",
+        "missing car",
+        "son donates father's car",
+        "donation without permission",
+        "father and son",
+        "grandmother's appointments",
+        "family responsibility",
+        "police auction volunteer",
+        "WackyDramas",
+        "CharityAuction",
+        "MissingCar",
+        "FamilyDonation",
+        "FatherAndSon",
+        "GrandmothersCare",
+        "StolenProperty",
+        "CharityRibbons",
+        "FamilyResponsibility"
+      ],
+      "title": "The Charity Ribbons on His Missing Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-29T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44205013798"
+  },
+  "youtube_video_id": "LhoYWq7KQEQ"
+}
