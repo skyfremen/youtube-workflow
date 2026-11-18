@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-d64be49b862c66c79f4661e0",
+  "evidence_version": 2,
+  "execution_id": "ex-b5b80dd82e5f1e855a845d51",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1c6b0416ec9f55934b2628c175603ce4ea750451",
+  "record_type": "upload",
+  "recorded_at": "2026-11-18T12:24:16.232602Z",
+  "request_blob_sha": "c01b16f33ed00c2248485f7f28608b99bee0f637",
+  "request_id": "rq-75ed4f1fe53203174efe5649",
+  "request_path": "content/requests/rq-75ed4f1fe53203174efe5649.json",
+  "request_source_sha": "2eb9d666f910ecc01bdad1de1fa1aa028453c9eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride catches her mother borrowing wedding cash without permission, then learns why she was afraid to ask.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingCash #GiftEnvelopes #MotherAndDaughter #OverdueRent #FamilyBoundaries #BorrowingWithoutAsking #WeddingPhotographs",
+      "tags": [
+        "wd-id-94192475859131c2b982",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "mother takes wedding cash",
+        "wedding gift envelopes",
+        "IOU notes",
+        "mother and daughter",
+        "overdue rent",
+        "family boundaries",
+        "borrowing without permission",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingCash",
+        "GiftEnvelopes",
+        "MotherAndDaughter",
+        "OverdueRent",
+        "FamilyBoundaries",
+        "BorrowingWithoutAsking",
+        "WeddingPhotographs"
+      ],
+      "title": "The IOUs Behind the Wedding Gift Table"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-29T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44302437702"
+  },
+  "youtube_video_id": "sff-v3bTgJc"
+}
