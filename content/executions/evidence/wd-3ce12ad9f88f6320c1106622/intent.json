@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-3ce12ad9f88f6320c1106622",
+  "created_at": "2026-11-18T12:25:31.452998Z",
+  "evidence_version": 2,
+  "execution_id": "ex-359b419889178b3efe7660a9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8bd805dfce4be439a2bd39363cd8484b5628ed6a",
+  "record_type": "intent",
+  "request_blob_sha": "c01b16f33ed00c2248485f7f28608b99bee0f637",
+  "request_id": "rq-75ed4f1fe53203174efe5649",
+  "request_path": "content/requests/rq-75ed4f1fe53203174efe5649.json",
+  "request_source_sha": "2eb9d666f910ecc01bdad1de1fa1aa028453c9eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A designer discovers her brother has claimed her portfolio and wants her to confirm that he supervised her work.\n\n#WackyDramas #Shorts #FamilyDrama #StolenPortfolio #DesignJob #BrotherAndSister #FakeReference #BakeryLogo #JobApplication #CreativeWork",
+      "tags": [
+        "wd-id-cd7b25da7ac3cc195615",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "brother steals portfolio",
+        "design job interview",
+        "sister's design work",
+        "fake job reference",
+        "bakery logo",
+        "job application lie",
+        "family pressure",
+        "WackyDramas",
+        "FamilyDrama",
+        "StolenPortfolio",
+        "DesignJob",
+        "BrotherAndSister",
+        "FakeReference",
+        "BakeryLogo",
+        "JobApplication",
+        "CreativeWork"
+      ],
+      "title": "The Assistant He Named on His Application"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-29T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44302432997"
+  }
+}
