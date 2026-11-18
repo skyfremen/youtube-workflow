@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2f250c3d1994db49836430af",
+  "evidence_version": 2,
+  "execution_id": "ex-896404a03cd1c8458cc1baee",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "462d76869ad79bc5028280b06ebcf7c025497807",
+  "record_type": "upload",
+  "recorded_at": "2026-11-18T00:13:38.328485Z",
+  "request_blob_sha": "4a4dbfc8a86f8ea1ce39084cccdb2bdc8a6c2d27",
+  "request_id": "rq-7a5d37fcd36267cff15eb301",
+  "request_path": "content/requests/rq-7a5d37fcd36267cff15eb301.json",
+  "request_source_sha": "b8987f46bb66581704f745973ae20da1123a57ae",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A father's wedding envelope contains a bill for raising his daughter, with repayment expected from the newlyweds.\n\n#WackyDramas #Shorts #WeddingDrama #FatherAndDaughter #ChildhoodBill #WeddingToast #FamilyPressure #NewlywedFinances #ParentsAndMoney #WeddingEnvelope",
+      "tags": [
+        "wd-id-1303b32d6505819ed8a5",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "father bills daughter",
+        "cost of raising a child",
+        "wedding toast",
+        "newlywed finances",
+        "father and daughter conflict",
+        "family pressure",
+        "wedding envelope",
+        "WackyDramas",
+        "WeddingDrama",
+        "FatherAndDaughter",
+        "ChildhoodBill",
+        "WeddingToast",
+        "FamilyPressure",
+        "NewlywedFinances",
+        "ParentsAndMoney",
+        "WeddingEnvelope"
+      ],
+      "title": "The Invoice in Her Father's Wedding Envelope"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-28T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44205002436"
+  },
+  "youtube_video_id": "Z9UMiuicsho"
+}
