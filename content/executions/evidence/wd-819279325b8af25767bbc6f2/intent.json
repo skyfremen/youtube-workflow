@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-819279325b8af25767bbc6f2",
+  "created_at": "2026-11-18T00:10:37.571045Z",
+  "evidence_version": 2,
+  "execution_id": "ex-a797f91149f7d3cfe93315a9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "38aec0dbd5cf6bac6ad969283a2d0af323ab5541",
+  "record_type": "intent",
+  "request_blob_sha": "4a4dbfc8a86f8ea1ce39084cccdb2bdc8a6c2d27",
+  "request_id": "rq-7a5d37fcd36267cff15eb301",
+  "request_path": "content/requests/rq-7a5d37fcd36267cff15eb301.json",
+  "request_source_sha": "b8987f46bb66581704f745973ae20da1123a57ae",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A groom discovers his daughter alone has been excluded from the wedding, forcing him to confront what his bride means by a new family.\n\n#WackyDramas #Shorts #FamilyDrama #BlendedFamily #GroomsDaughter #FlowerGirl #WeddingExclusion #FatherAndDaughter #ParentingPromise #FamilyPriorities",
+      "tags": [
+        "wd-id-2cec002b49f7a51b1a9e",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "bride excludes daughter",
+        "groom's daughter",
+        "flower girl dress",
+        "blended family conflict",
+        "father and daughter",
+        "wedding exclusion",
+        "parenting promise",
+        "WackyDramas",
+        "FamilyDrama",
+        "BlendedFamily",
+        "GroomsDaughter",
+        "FlowerGirl",
+        "WeddingExclusion",
+        "FatherAndDaughter",
+        "ParentingPromise",
+        "FamilyPriorities"
+      ],
+      "title": "The Flower-Girl Dress She Didn't Need to Wear"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-29T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44205006398"
+  }
+}
