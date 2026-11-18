@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-d54757dfcf703b331bbdfcf6",
+  "created_at": "2026-11-18T12:24:00.295872Z",
+  "evidence_version": 2,
+  "execution_id": "ex-1a7d7828a038d31135ba9471",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "701de213f18357bca50272ad63b37a896af91cc9",
+  "record_type": "intent",
+  "request_blob_sha": "c01b16f33ed00c2248485f7f28608b99bee0f637",
+  "request_id": "rq-75ed4f1fe53203174efe5649",
+  "request_path": "content/requests/rq-75ed4f1fe53203174efe5649.json",
+  "request_source_sha": "2eb9d666f910ecc01bdad1de1fa1aa028453c9eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A boss demands a resignation fee from the employee he just fired, with her final wages sitting on his desk.\n\n#WackyDramas #Shorts #WorkplaceDrama #FinalWages #ResignationFee #FiredEmployee #UnpaidShift #CoworkerWitness #ForcedResignation #PayEnvelope",
+      "tags": [
+        "wd-id-7e4cb7f8bdde9c9f65cf",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "boss fires employee",
+        "resignation fee",
+        "withheld final wages",
+        "unpaid Sunday shift",
+        "forced resignation",
+        "coworker witness",
+        "pay envelope",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "FinalWages",
+        "ResignationFee",
+        "FiredEmployee",
+        "UnpaidShift",
+        "CoworkerWitness",
+        "ForcedResignation",
+        "PayEnvelope"
+      ],
+      "title": "Five Hundred Dollars for the Job He Ended"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-30T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44302442287"
+  }
+}
