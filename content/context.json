@@ -16,20 +16,20 @@
       ],
       "dominant_traffic_sources": [
         {
-          "engaged_view_rate_percentage": 37.06,
-          "engaged_views": 1088,
+          "engaged_view_rate_percentage": 37.05,
+          "engaged_views": 1087,
           "estimated_minutes_watched": 600,
           "insightTrafficSourceType": "SHORTS",
-          "view_share_percentage": 72.21,
-          "views": 2936
+          "view_share_percentage": 72.16,
+          "views": 2934
         },
         {
-          "engaged_view_rate_percentage": 18.66,
+          "engaged_view_rate_percentage": 18.64,
           "engaged_views": 197,
           "estimated_minutes_watched": 67,
           "insightTrafficSourceType": "YT_SEARCH",
-          "view_share_percentage": 25.97,
-          "views": 1056
+          "view_share_percentage": 26.0,
+          "views": 1057
         },
         {
           "engaged_view_rate_percentage": 43.33,
@@ -48,12 +48,12 @@
           "views": 17
         },
         {
-          "engaged_view_rate_percentage": 50.0,
-          "engaged_views": 5,
-          "estimated_minutes_watched": 3,
+          "engaged_view_rate_percentage": 54.55,
+          "engaged_views": 6,
+          "estimated_minutes_watched": 4,
           "insightTrafficSourceType": "HASHTAGS",
-          "view_share_percentage": 0.25,
-          "views": 10
+          "view_share_percentage": 0.27,
+          "views": 11
         }
       ]
     },
@@ -85,6 +85,14 @@
           "value": "natural"
         },
         {
+          "average_view_percentage": 31.0,
+          "dimension": "hook_type",
+          "evidence_median_views": 14.0,
+          "mature_sample": 11,
+          "sample_size": 15,
+          "value": "confession"
+        },
+        {
           "average_view_percentage": 28.45,
           "dimension": "hook_type",
           "evidence_median_views": 11.0,
@@ -99,17 +107,17 @@
           "mature_sample": 30,
           "sample_size": 38,
           "value": "contradiction"
-        },
-        {
-          "average_view_percentage": 38.09,
-          "dimension": "category",
-          "evidence_median_views": 9.0,
-          "mature_sample": 25,
-          "sample_size": 32,
-          "value": "family"
         }
       ],
       "weak_patterns": [
+        {
+          "average_view_percentage": 0.0,
+          "dimension": "hook_type",
+          "evidence_median_views": 1.0,
+          "mature_sample": 8,
+          "sample_size": 13,
+          "value": "accusation"
+        },
         {
           "average_view_percentage": 31.76,
           "dimension": "hook_type",
@@ -117,14 +125,6 @@
           "mature_sample": 7,
           "sample_size": 13,
           "value": "money_stakes"
-        },
-        {
-          "average_view_percentage": 0.0,
-          "dimension": "hook_type",
-          "evidence_median_views": 1.5,
-          "mature_sample": 9,
-          "sample_size": 14,
-          "value": "accusation"
         },
         {
           "average_view_percentage": 44.72,
@@ -145,18 +145,18 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-18T11:30:31Z",
-      "videos_analyzed": 139
+      "latest_realtime_snapshot": "2026-11-18T17:30:36Z",
+      "videos_analyzed": 137
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 12.0,
-          "sample_size": 29,
+          "evidence_median_views": 13.5,
+          "sample_size": 28,
           "window": "00-03"
         },
         {
-          "evidence_median_views": 7.5,
+          "evidence_median_views": 7.0,
           "sample_size": 50,
           "window": "12-15"
         },
@@ -179,15 +179,15 @@
         }
       ]
     },
-    "generated_at": "2026-11-18T11:30:31Z",
+    "generated_at": "2026-11-18T17:30:36Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 134,
-        "2h": 78,
-        "6h": 136,
-        "72h": 126,
-        "7d": 111
+        "2h": 77,
+        "6h": 135,
+        "72h": 125,
+        "7d": 109
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
