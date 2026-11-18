@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f94a6e380230d09f17263962",
+  "evidence_version": 2,
+  "execution_id": "ex-3915e74f039b40ad5a86510d",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5f867b708b66426bb6bd948d93ca8f7916748753",
+  "record_type": "upload",
+  "recorded_at": "2026-11-18T12:24:12.796690Z",
+  "request_blob_sha": "c01b16f33ed00c2248485f7f28608b99bee0f637",
+  "request_id": "rq-75ed4f1fe53203174efe5649",
+  "request_path": "content/requests/rq-75ed4f1fe53203174efe5649.json",
+  "request_source_sha": "2eb9d666f910ecc01bdad1de1fa1aa028453c9eb",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A staff reward cruise becomes an unpaid shift after sailing, until the workers insist that a promised holiday is not permission to use their labor.\n\n#WackyDramas #Shorts #WorkplaceDrama #StaffReward #CruiseDinner #UnpaidShift #RestaurantStaff #PayingPassengers #WorkplaceBoundaries #DinnerService",
+      "tags": [
+        "wd-id-12606dc5acaddc7fa5a1",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "staff reward cruise",
+        "unpaid catering shift",
+        "restaurant staff",
+        "cruise dinner service",
+        "paying passengers",
+        "workplace boundaries",
+        "boss hides work shift",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "StaffReward",
+        "CruiseDinner",
+        "UnpaidShift",
+        "RestaurantStaff",
+        "PayingPassengers",
+        "WorkplaceBoundaries",
+        "DinnerService"
+      ],
+      "title": "The Aprons on the Staff Reward Cruise"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-30T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44302445181"
+  },
+  "youtube_video_id": "0cFERlhr3es"
+}
