@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-30d0f5ec642b3a1853ba4ca8",
+  "created_at": "2026-11-18T00:13:05.078558Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2ef591da1d718a40fbbf4637",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e8413aac2c764eb954782b9030528df69c582204",
+  "record_type": "intent",
+  "request_blob_sha": "4a4dbfc8a86f8ea1ce39084cccdb2bdc8a6c2d27",
+  "request_id": "rq-7a5d37fcd36267cff15eb301",
+  "request_path": "content/requests/rq-7a5d37fcd36267cff15eb301.json",
+  "request_source_sha": "b8987f46bb66581704f745973ae20da1123a57ae",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An employee prepares for a rent negotiation, then learns her boss expects flirting rather than a professional proposal.\n\n#WackyDramas #Shorts #WorkplaceDrama #OfficeRent #BossPressure #WorkplaceBoundaries #RentNegotiation #ProfessionalSkills #WorkDinner #JobPressure",
+      "tags": [
+        "wd-id-47c13450d3aaeb2d5b17",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "boss pressures employee",
+        "flirting for rent discount",
+        "office rent negotiation",
+        "workplace boundaries",
+        "professional skills",
+        "work dinner",
+        "job pressure",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "OfficeRent",
+        "BossPressure",
+        "WorkplaceBoundaries",
+        "RentNegotiation",
+        "ProfessionalSkills",
+        "WorkDinner",
+        "JobPressure"
+      ],
+      "title": "The Folder She Was Told to Leave Behind"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-29T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44205009965"
+  }
+}
