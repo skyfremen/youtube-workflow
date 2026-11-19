@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-250c874e2371e4653679f4cc",
+  "evidence_version": 2,
+  "execution_id": "ex-6e9ea1009951a8faf06e6b55",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "51c789d046ccea54cd218b8c795fe490d52cdaf6",
+  "record_type": "upload",
+  "recorded_at": "2026-11-19T12:26:16.359247Z",
+  "request_blob_sha": "fc602ae49fa1f8159a1ddafd186f3c8120c3d22d",
+  "request_id": "rq-e07feaab55a2428e0444600e",
+  "request_path": "content/requests/rq-e07feaab55a2428e0444600e.json",
+  "request_source_sha": "cf1a20d5693eedbd1befa0bd064524ff8d05c15e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wife learns that the woman advising her to stop suspecting an affair has been involved with her husband all along.\n\n#WackyDramas #Shorts #MarriageBetrayal #AffairPartner #MarriageCounselor #HiddenAffair #BrokenTrust #CounselingNotebook #HusbandAndWife #SixSessions",
+      "tags": [
+        "wd-id-6452b49f5b931545e035",
+        "wacky dramas",
+        "shorts",
+        "marriage betrayal",
+        "counselor is affair partner",
+        "husband admits affair",
+        "wife's suspicions",
+        "hidden relationship",
+        "broken trust",
+        "counseling notebook",
+        "six counseling sessions",
+        "WackyDramas",
+        "MarriageBetrayal",
+        "AffairPartner",
+        "MarriageCounselor",
+        "HiddenAffair",
+        "BrokenTrust",
+        "CounselingNotebook",
+        "HusbandAndWife",
+        "SixSessions"
+      ],
+      "title": "The First Page of Her Counseling Notebook"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-01T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44522611128"
+  },
+  "youtube_video_id": "FhwMOjo1FAY"
+}
