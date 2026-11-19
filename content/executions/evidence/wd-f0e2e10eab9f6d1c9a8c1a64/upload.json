@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f0e2e10eab9f6d1c9a8c1a64",
+  "evidence_version": 2,
+  "execution_id": "ex-ff4bd35e032c3b14493bc6b5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e2c248389984f1bf3e5dd400e8334d4463b8bb4a",
+  "record_type": "upload",
+  "recorded_at": "2026-11-19T00:19:30.403017Z",
+  "request_blob_sha": "d7017494b7558d2a28dab140dac00d5d8581ab9f",
+  "request_id": "rq-96ccf0eadc7e9a602c0c92fc",
+  "request_path": "content/requests/rq-96ccf0eadc7e9a602c0c92fc.json",
+  "request_source_sha": "651ec4d7ef248dadc2f9d31300af870e76cf16d7",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An aunt discovers that a weekend visit was really her sister's plan to move abroad without the children or anyone else's agreement.\n\n#WackyDramas #Shorts #FamilyDrama #AuntAndChildren #OneWayTicket #UnexpectedChildcare #SchoolUniforms #ParentingResponsibility #FatherAndChildren #FamilyBoundaries",
+      "tags": [
+        "wd-id-cd4e05e7527bf0199b4b",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "sister leaves children",
+        "unexpected childcare",
+        "mother moves abroad",
+        "one way ticket",
+        "aunt and children",
+        "father takes responsibility",
+        "family boundaries",
+        "WackyDramas",
+        "FamilyDrama",
+        "AuntAndChildren",
+        "OneWayTicket",
+        "UnexpectedChildcare",
+        "SchoolUniforms",
+        "ParentingResponsibility",
+        "FatherAndChildren",
+        "FamilyBoundaries"
+      ],
+      "title": "School Uniforms Under the Weekend Pajamas"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-11-30T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44426822926"
+  },
+  "youtube_video_id": "EkMGA99LTEE"
+}
