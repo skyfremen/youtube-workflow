@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-6ea0db85afaa5ef026d66785",
+  "created_at": "2026-11-19T12:23:21.358637Z",
+  "evidence_version": 2,
+  "execution_id": "ex-372b0e1d19ea0d55a032b17f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8f5f17250fc5b068f7bc12f081e34c5491333c73",
+  "record_type": "intent",
+  "request_blob_sha": "fc602ae49fa1f8159a1ddafd186f3c8120c3d22d",
+  "request_id": "rq-e07feaab55a2428e0444600e",
+  "request_path": "content/requests/rq-e07feaab55a2428e0444600e.json",
+  "request_source_sha": "cf1a20d5693eedbd1befa0bd064524ff8d05c15e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "An employee returns from a fake conference to find his employer hosting clients in his private home.\n\n#WackyDramas #Shorts #WorkplaceDrama #FakeConference #CompanyRetreat #PrivateHome #BossOverreach #HouseKey #ClientVisit #WorkLifeBoundaries",
+      "tags": [
+        "wd-id-818f670b6bafcbc48be4",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "boss uses employee's house",
+        "fake business conference",
+        "company retreat",
+        "private home",
+        "spare house key",
+        "client visit",
+        "work life boundaries",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "FakeConference",
+        "CompanyRetreat",
+        "PrivateHome",
+        "BossOverreach",
+        "HouseKey",
+        "ClientVisit",
+        "WorkLifeBoundaries"
+      ],
+      "title": "The Conference That Emptied His House"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-01T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44522619007"
+  }
+}
