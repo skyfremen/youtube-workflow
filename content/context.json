@@ -16,20 +16,20 @@
       ],
       "dominant_traffic_sources": [
         {
-          "engaged_view_rate_percentage": 36.28,
+          "engaged_view_rate_percentage": 36.33,
           "engaged_views": 1048,
           "estimated_minutes_watched": 570,
           "insightTrafficSourceType": "SHORTS",
-          "view_share_percentage": 72.19,
-          "views": 2889
+          "view_share_percentage": 72.14,
+          "views": 2885
         },
         {
-          "engaged_view_rate_percentage": 18.2,
+          "engaged_view_rate_percentage": 18.18,
           "engaged_views": 190,
           "estimated_minutes_watched": 65,
           "insightTrafficSourceType": "YT_SEARCH",
-          "view_share_percentage": 26.09,
-          "views": 1044
+          "view_share_percentage": 26.13,
+          "views": 1045
         },
         {
           "engaged_view_rate_percentage": 43.33,
@@ -52,7 +52,7 @@
           "engaged_views": 6,
           "estimated_minutes_watched": 4,
           "insightTrafficSourceType": "HASHTAGS",
-          "view_share_percentage": 0.27,
+          "view_share_percentage": 0.28,
           "views": 11
         }
       ]
@@ -93,11 +93,11 @@
           "value": "confession"
         },
         {
-          "average_view_percentage": 38.15,
+          "average_view_percentage": 36.38,
           "dimension": "hook_type",
-          "evidence_median_views": 10.0,
-          "mature_sample": 31,
-          "sample_size": 39,
+          "evidence_median_views": 9.5,
+          "mature_sample": 30,
+          "sample_size": 38,
           "value": "contradiction"
         },
         {
@@ -111,11 +111,11 @@
       ],
       "weak_patterns": [
         {
-          "average_view_percentage": 41.8,
+          "average_view_percentage": 34.24,
           "dimension": "category",
           "evidence_median_views": 1.0,
-          "mature_sample": 9,
-          "sample_size": 13,
+          "mature_sample": 8,
+          "sample_size": 12,
           "value": "consumer"
         },
         {
@@ -127,11 +127,11 @@
           "value": "money_stakes"
         },
         {
-          "average_view_percentage": 28.45,
+          "average_view_percentage": 33.88,
           "dimension": "story_tone",
           "evidence_median_views": 3.0,
-          "mature_sample": 17,
-          "sample_size": 22,
+          "mature_sample": 16,
+          "sample_size": 21,
           "value": "conversational"
         },
         {
@@ -145,18 +145,18 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-19T11:30:36Z",
-      "videos_analyzed": 136
+      "latest_realtime_snapshot": "2026-11-19T17:30:37Z",
+      "videos_analyzed": 134
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
-          "evidence_median_views": 11.0,
-          "sample_size": 28,
+          "evidence_median_views": 12.0,
+          "sample_size": 27,
           "window": "00-03"
         },
         {
-          "evidence_median_views": 6.5,
+          "evidence_median_views": 7.0,
           "sample_size": 50,
           "window": "12-15"
         },
@@ -179,24 +179,21 @@
         }
       ]
     },
-    "generated_at": "2026-11-19T11:30:36Z",
+    "generated_at": "2026-11-19T17:30:37Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 131,
-        "2h": 77,
-        "6h": 133,
-        "72h": 123,
-        "7d": 108
+        "2h": 76,
+        "6h": 132,
+        "72h": 122,
+        "7d": 106
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
     },
     "warnings": [
-      "Optional Reporting reports for 9887be52-0fc6-4704-993c-7004ebb2c607 unavailable: HTTPError",
-      "Optional Reporting download 17817532624 unavailable: HTTPError",
-      "Optional retention returned empty curves for 21 due checkpoints; will retry",
-      "Optional retention unavailable for 2 due checkpoints (HTTPError); will retry"
+      "Optional retention returned empty curves for 24 due checkpoints; will retry"
     ]
   },
   "background_categories": [
