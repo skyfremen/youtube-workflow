@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4fbf905cafd48f35da990d7b",
+  "evidence_version": 2,
+  "execution_id": "ex-e1ca360e74bf11e0eb9082f9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "2c84b2cf47e54709191577769a3d0358b0feca91",
+  "record_type": "upload",
+  "recorded_at": "2026-11-20T00:15:41.501512Z",
+  "request_blob_sha": "113437ba2f1e7ff733908621bd5d0b7ebbbd45f6",
+  "request_id": "rq-ceeb3579ea6bebd24456c6bb",
+  "request_path": "content/requests/rq-ceeb3579ea6bebd24456c6bb.json",
+  "request_source_sha": "bce702bca5c7d2ce04f1b94df781172c14abc877",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A hotel's honeymoon upgrade comes with a stranger in the spare bed and a manager arguing that only the couple's bed was promised as private.\n\n#WackyDramas #Shorts #HoneymoonSuite #HotelOverbooking #PrivateRoom #NewlywedDrama #SpareBed #HotelManager #RoomKey #WeddingNight",
+      "tags": [
+        "wd-id-636c6080ccdcc459ded5",
+        "wacky dramas",
+        "shorts",
+        "honeymoon suite drama",
+        "hotel books spare bed",
+        "private hotel room",
+        "newlywed couple",
+        "stranger has room key",
+        "hotel manager dispute",
+        "wedding night hotel",
+        "double booked suite",
+        "WackyDramas",
+        "HoneymoonSuite",
+        "HotelOverbooking",
+        "PrivateRoom",
+        "NewlywedDrama",
+        "SpareBed",
+        "HotelManager",
+        "RoomKey",
+        "WeddingNight"
+      ],
+      "title": "The Other Booking in the Honeymoon Suite"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-02T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44643897161"
+  },
+  "youtube_video_id": "mV891qHtIfM"
+}
