@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-4be9763ed62ec92b8344c0a8",
+  "created_at": "2026-11-20T12:22:42.671115Z",
+  "evidence_version": 2,
+  "execution_id": "ex-63279104498de0113e17c74a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7c4015d5c01e34d80faef8cf55f43511c209f0a4",
+  "record_type": "intent",
+  "request_blob_sha": "e337a76f7ae319068c7de69fd8eefe43385135e8",
+  "request_id": "rq-df488a7a21466cfbecb5a77a",
+  "request_path": "content/requests/rq-df488a7a21466cfbecb5a77a.json",
+  "request_source_sha": "9c6d141383535c969cb6e954eade85e7f8fc4d7c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A worker learns her former boss has poisoned her references, then hears his cheaper offer to take her back.\n\n#WackyDramas #Shorts #WorkplaceDrama #FalseReference #TheftAllegation #JobApplications #FormerBoss #LowerWage #HonestReference #CoworkerSupport",
+      "tags": [
+        "wd-id-cf9c11588ab9f9b83070",
+        "wacky dramas",
+        "shorts",
+        "workplace drama",
+        "false job reference",
+        "boss lies about theft",
+        "former employee",
+        "lower wage offer",
+        "job applications blocked",
+        "honest coworker reference",
+        "former boss pressure",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "FalseReference",
+        "TheftAllegation",
+        "JobApplications",
+        "FormerBoss",
+        "LowerWage",
+        "HonestReference",
+        "CoworkerSupport"
+      ],
+      "title": "The Empty Chair at Twenty Percent Less"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-03T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44734540726"
+  }
+}
