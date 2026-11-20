@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-7190272fbb7a474f6d7c8c98",
+  "created_at": "2026-11-20T00:19:01.404213Z",
+  "evidence_version": 2,
+  "execution_id": "ex-f60604defa4e48a5ddd8bfff",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "afc07528e80267c9ca24b54de5e2034cf282705f",
+  "record_type": "intent",
+  "request_blob_sha": "113437ba2f1e7ff733908621bd5d0b7ebbbd45f6",
+  "request_id": "rq-ceeb3579ea6bebd24456c6bb",
+  "request_path": "content/requests/rq-ceeb3579ea6bebd24456c6bb.json",
+  "request_source_sha": "bce702bca5c7d2ce04f1b94df781172c14abc877",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A mechanic asks a customer to cover for his son after an accident, but the son wants a different kind of second chance.\n\n#WackyDramas #Shorts #MechanicDrama #DamagedCar #ApprenticeMechanic #FatherAndSon #FalseBlame #WorkshopAccident #SecondChance #TakingResponsibility",
+      "tags": [
+        "wd-id-5f76febefb359050b0b5",
+        "wacky dramas",
+        "shorts",
+        "mechanic drama",
+        "customer's car damaged",
+        "apprentice mechanic",
+        "father covers for son",
+        "false blame",
+        "workshop accident",
+        "second chance",
+        "taking responsibility",
+        "WackyDramas",
+        "MechanicDrama",
+        "DamagedCar",
+        "ApprenticeMechanic",
+        "FatherAndSon",
+        "FalseBlame",
+        "WorkshopAccident",
+        "SecondChance",
+        "TakingResponsibility"
+      ],
+      "title": "The Name Under the Broken Headlight"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-02T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44643894313"
+  }
+}
