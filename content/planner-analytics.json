@@ -62,17 +62,17 @@
       {
         "average_view_percentage": 41.42,
         "dimension": "category",
-        "evidence_median_views": 20.0,
+        "evidence_median_views": 18.5,
         "mature_sample": 25,
         "sample_size": 30,
         "value": "wedding"
       },
       {
-        "average_view_percentage": 19.41,
+        "average_view_percentage": 18.37,
         "dimension": "story_tone",
         "evidence_median_views": 16.0,
-        "mature_sample": 16,
-        "sample_size": 23,
+        "mature_sample": 17,
+        "sample_size": 24,
         "value": "natural"
       },
       {
@@ -82,6 +82,14 @@
         "mature_sample": 11,
         "sample_size": 14,
         "value": "confession"
+      },
+      {
+        "average_view_percentage": 23.45,
+        "dimension": "hook_type",
+        "evidence_median_views": 11.0,
+        "mature_sample": 32,
+        "sample_size": 36,
+        "value": "social_exposure"
       },
       {
         "average_view_percentage": 43.73,
@@ -96,27 +104,11 @@
         "dimension": "category",
         "evidence_median_views": 9.0,
         "mature_sample": 25,
-        "sample_size": 32,
+        "sample_size": 33,
         "value": "family"
-      },
-      {
-        "average_view_percentage": 34.41,
-        "dimension": "hook_type",
-        "evidence_median_views": 9.0,
-        "mature_sample": 30,
-        "sample_size": 36,
-        "value": "contradiction"
       }
     ],
     "weak_patterns": [
-      {
-        "average_view_percentage": 34.24,
-        "dimension": "category",
-        "evidence_median_views": 1.0,
-        "mature_sample": 8,
-        "sample_size": 12,
-        "value": "consumer"
-      },
       {
         "average_view_percentage": 36.46,
         "dimension": "hook_type",
@@ -126,63 +118,71 @@
         "value": "money_stakes"
       },
       {
-        "average_view_percentage": 39.32,
-        "dimension": "story_tone",
-        "evidence_median_views": 4.5,
-        "mature_sample": 15,
-        "sample_size": 20,
-        "value": "conversational"
-      },
-      {
         "average_view_percentage": 32.61,
         "dimension": "story_tone",
         "evidence_median_views": 6.0,
         "mature_sample": 14,
-        "sample_size": 24,
+        "sample_size": 25,
         "value": "warm"
+      },
+      {
+        "average_view_percentage": 26.44,
+        "dimension": "story_tone",
+        "evidence_median_views": 6.0,
+        "mature_sample": 45,
+        "sample_size": 50,
+        "value": "dramatic"
+      },
+      {
+        "average_view_percentage": 39.32,
+        "dimension": "story_tone",
+        "evidence_median_views": 6.0,
+        "mature_sample": 15,
+        "sample_size": 19,
+        "value": "conversational"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-20T05:30:33Z",
+    "latest_realtime_snapshot": "2026-11-20T11:30:33Z",
     "videos_analyzed": 133
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 9.0,
+        "evidence_median_views": 12.0,
         "sample_size": 27,
         "window": "00-03"
       },
       {
-        "evidence_median_views": 6.0,
+        "evidence_median_views": 6.5,
         "sample_size": 50,
         "window": "12-15"
       },
       {
-        "evidence_median_views": 4.5,
+        "evidence_median_views": 4.0,
         "sample_size": 23,
         "window": "04-07"
       }
     ],
     "weak_publish_windows_sgt": [
       {
-        "evidence_median_views": 2.0,
+        "evidence_median_views": 3.0,
         "sample_size": 25,
         "window": "16-19"
       },
       {
-        "evidence_median_views": 4.5,
+        "evidence_median_views": 4.0,
         "sample_size": 23,
         "window": "04-07"
       }
     ]
   },
-  "generated_at": "2026-11-20T05:30:33Z",
+  "generated_at": "2026-11-20T11:30:33Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 130,
+      "24h": 128,
       "2h": 76,
       "6h": 130,
       "72h": 120,
