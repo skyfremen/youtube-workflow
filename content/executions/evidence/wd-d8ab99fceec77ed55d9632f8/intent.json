@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-d8ab99fceec77ed55d9632f8",
+  "created_at": "2026-11-20T12:23:33.157287Z",
+  "evidence_version": 2,
+  "execution_id": "ex-2cba0a5b6094606d668bc5b0",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d0b29352d884f246dfc453e2862f3f91b999fb56",
+  "record_type": "intent",
+  "request_blob_sha": "e337a76f7ae319068c7de69fd8eefe43385135e8",
+  "request_id": "rq-df488a7a21466cfbecb5a77a",
+  "request_path": "content/requests/rq-df488a7a21466cfbecb5a77a.json",
+  "request_source_sha": "9c6d141383535c969cb6e954eade85e7f8fc4d7c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A man discovers that his ex-wife has been paying his girlfriend to make their relationship fail.\n\n#WackyDramas #Shorts #RelationshipDrama #PaidSabotage #ExWife #CanceledDates #RentMoney #PrivateArguments #BrokenTrust #DinnerReservation",
+      "tags": [
+        "wd-id-03a9447007fe5c60d24e",
+        "wacky dramas",
+        "shorts",
+        "relationship drama",
+        "ex wife pays girlfriend",
+        "dating sabotage",
+        "canceled dinner dates",
+        "rent money",
+        "private arguments shared",
+        "broken trust",
+        "dinner reservation",
+        "WackyDramas",
+        "RelationshipDrama",
+        "PaidSabotage",
+        "ExWife",
+        "CanceledDates",
+        "RentMoney",
+        "PrivateArguments",
+        "BrokenTrust",
+        "DinnerReservation"
+      ],
+      "title": "The Dinner She Was Paid to Cancel"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-03T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44734544226"
+  }
+}
