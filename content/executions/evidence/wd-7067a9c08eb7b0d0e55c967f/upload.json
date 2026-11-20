@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7067a9c08eb7b0d0e55c967f",
+  "evidence_version": 2,
+  "execution_id": "ex-6a298618436b88bbfe242367",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "753cab9f15931f862c7ecf79a5664a64704a7389",
+  "record_type": "upload",
+  "recorded_at": "2026-11-20T00:19:18.755628Z",
+  "request_blob_sha": "113437ba2f1e7ff733908621bd5d0b7ebbbd45f6",
+  "request_id": "rq-ceeb3579ea6bebd24456c6bb",
+  "request_path": "content/requests/rq-ceeb3579ea6bebd24456c6bb.json",
+  "request_source_sha": "bce702bca5c7d2ce04f1b94df781172c14abc877",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wife learns that her husband's celebrated new salary was coming from her own emergency savings.\n\n#WackyDramas #Shorts #FamilyDrama #FakeSalary #EmergencySavings #UnemployedHusband #HusbandAndWife #HouseholdBills #HiddenWithdrawals #JobSearch",
+      "tags": [
+        "wd-id-8069199b0a125298be5e",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "husband fakes new job",
+        "salary from wife's savings",
+        "emergency fund",
+        "unemployed husband",
+        "household bills",
+        "broken financial trust",
+        "job search",
+        "WackyDramas",
+        "FamilyDrama",
+        "FakeSalary",
+        "EmergencySavings",
+        "UnemployedHusband",
+        "HusbandAndWife",
+        "HouseholdBills",
+        "HiddenWithdrawals",
+        "JobSearch"
+      ],
+      "title": "The Lunchbox From the Job He Didn't Have"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-02T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44643887717"
+  },
+  "youtube_video_id": "7FTadoFo5GA"
+}
