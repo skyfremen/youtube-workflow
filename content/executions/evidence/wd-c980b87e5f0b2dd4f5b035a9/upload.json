@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-c980b87e5f0b2dd4f5b035a9",
+  "evidence_version": 2,
+  "execution_id": "ex-498f41e10727b6b1bfba9144",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0431829b0b58eefc8a11c128a0d23fa7943c7ee9",
+  "record_type": "upload",
+  "recorded_at": "2026-11-20T12:26:29.367631Z",
+  "request_blob_sha": "e337a76f7ae319068c7de69fd8eefe43385135e8",
+  "request_id": "rq-df488a7a21466cfbecb5a77a",
+  "request_path": "content/requests/rq-df488a7a21466cfbecb5a77a.json",
+  "request_source_sha": "9c6d141383535c969cb6e954eade85e7f8fc4d7c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A sister recognizes her own washing machine in her brother's shop after paying him to repair it and being told it was beyond saving.\n\n#WackyDramas #Shorts #FamilyDrama #WashingMachine #BrotherAndSister #RepairDispute #RefurbishedWasher #FamilyDiscount #BlueStar #PaidRepair",
+      "tags": [
+        "wd-id-8021b41c6429eed0ac95",
+        "wacky dramas",
+        "shorts",
+        "family drama",
+        "brother sells sister's washer",
+        "washing machine repair",
+        "refurbished washing machine",
+        "family discount",
+        "paid repair dispute",
+        "brother and sister conflict",
+        "blue star under lid",
+        "WackyDramas",
+        "FamilyDrama",
+        "WashingMachine",
+        "BrotherAndSister",
+        "RepairDispute",
+        "RefurbishedWasher",
+        "FamilyDiscount",
+        "BlueStar",
+        "PaidRepair"
+      ],
+      "title": "The Blue Star in His Refurbished Stock"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-03T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44734537201"
+  },
+  "youtube_video_id": "bgyCCbO9cy0"
+}
