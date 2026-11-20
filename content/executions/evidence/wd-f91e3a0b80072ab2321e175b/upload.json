@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-f91e3a0b80072ab2321e175b",
+  "evidence_version": 2,
+  "execution_id": "ex-192553494986257c9ab7d65b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "5ab9d57a5951eacc4df2597a00ca272caa5d6e73",
+  "record_type": "upload",
+  "recorded_at": "2026-11-20T12:23:51.383575Z",
+  "request_blob_sha": "e337a76f7ae319068c7de69fd8eefe43385135e8",
+  "request_id": "rq-df488a7a21466cfbecb5a77a",
+  "request_path": "content/requests/rq-df488a7a21466cfbecb5a77a.json",
+  "request_source_sha": "9c6d141383535c969cb6e954eade85e7f8fc4d7c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A bride learns that her groom paid her father to miss the wedding, and that her father accepted the deal.\n\n#WackyDramas #Shorts #WeddingDrama #FatherAndDaughter #PaidToStayAway #WeddingPromise #GroomDeception #HiddenDeal #BrokenTrust #WeddingOnHold",
+      "tags": [
+        "wd-id-1bdf45a8d60ce4403e31",
+        "wacky dramas",
+        "shorts",
+        "wedding drama",
+        "groom pays bride's father",
+        "father misses wedding",
+        "walk down the aisle",
+        "hidden family deal",
+        "broken wedding promise",
+        "father and daughter",
+        "bride chooses for herself",
+        "WackyDramas",
+        "WeddingDrama",
+        "FatherAndDaughter",
+        "PaidToStayAway",
+        "WeddingPromise",
+        "GroomDeception",
+        "HiddenDeal",
+        "BrokenTrust",
+        "WeddingOnHold"
+      ],
+      "title": "The Shoes He Was Paid Not to Wear"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-02T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44734533960"
+  },
+  "youtube_video_id": "CevnDWWXRFQ"
+}
