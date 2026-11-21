@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-61cb570e8df79427d902da45",
+  "created_at": "2026-11-21T12:13:26.232531Z",
+  "evidence_version": 2,
+  "execution_id": "ex-3e0c91d8749b9c43ea242acb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7a47100eac9c25a48b0a8e2c8146a4db5f7b62b7",
+  "record_type": "intent",
+  "request_blob_sha": "6a3fd596a32f5a207dee3b5c12755b20ee8aaff8",
+  "request_id": "rq-5fbddffbaebe2de989b5dd16",
+  "request_path": "content/requests/rq-5fbddffbaebe2de989b5dd16.json",
+  "request_source_sha": "984e14461595c52c96270ade74cfd8da4e3b86ad",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She asks for a trim before an anniversary dinner. Her husband has secretly given the hairdresser different instructions.\n\n#WackyDramas #Shorts #HaircutWithoutConsent #AnniversaryDinner #ControllingHusband #Hairdresser #LongHair #PersonalChoice #SisterSupport #MarriageConflict",
+      "tags": [
+        "wd-id-675628af6298f8c657ac",
+        "wacky dramas",
+        "shorts",
+        "haircut without consent",
+        "husband controls haircut",
+        "anniversary dinner drama",
+        "hairdresser ignores client",
+        "long hair cut short",
+        "personal appearance choice",
+        "sister support",
+        "marriage boundaries",
+        "WackyDramas",
+        "HaircutWithoutConsent",
+        "AnniversaryDinner",
+        "ControllingHusband",
+        "Hairdresser",
+        "LongHair",
+        "PersonalChoice",
+        "SisterSupport",
+        "MarriageConflict"
+      ],
+      "title": "The Anniversary Haircut He Had Already Chosen"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-04T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44902322120"
+  }
+}
