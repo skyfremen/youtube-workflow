@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-7d72af21a9576c0be3b93253",
+  "created_at": "2026-11-21T12:14:00.994074Z",
+  "evidence_version": 2,
+  "execution_id": "ex-c13713c15cb93168da680e32",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bd491fb8219a448b2eaef852632f9c71d3e538f1",
+  "record_type": "intent",
+  "request_blob_sha": "6a3fd596a32f5a207dee3b5c12755b20ee8aaff8",
+  "request_id": "rq-5fbddffbaebe2de989b5dd16",
+  "request_path": "content/requests/rq-5fbddffbaebe2de989b5dd16.json",
+  "request_source_sha": "984e14461595c52c96270ade74cfd8da4e3b86ad",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Customers can pay more to escape the AI support queue. The worker answering them knows exactly why that upgrade changes so little.\n\n#WackyDramas #Shorts #CustomerSupport #FakeAI #HumanSupport #PriorityQueue #SupportWorker #WorkplaceDeception #CustomerService #EmployeeIdentity",
+      "tags": [
+        "wd-id-67b9b483c9f5426eedea",
+        "wacky dramas",
+        "shorts",
+        "fake AI support",
+        "human customer service",
+        "priority support queue",
+        "boss hides employee",
+        "customer service deception",
+        "AI assistant claim",
+        "support worker identity",
+        "human upgrade",
+        "WackyDramas",
+        "CustomerSupport",
+        "FakeAI",
+        "HumanSupport",
+        "PriorityQueue",
+        "SupportWorker",
+        "WorkplaceDeception",
+        "CustomerService",
+        "EmployeeIdentity"
+      ],
+      "title": "The Human Upgrade at the Same Desk"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-04T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44902320234"
+  }
+}
