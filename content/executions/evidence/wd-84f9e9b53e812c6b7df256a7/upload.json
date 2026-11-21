@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-84f9e9b53e812c6b7df256a7",
+  "evidence_version": 2,
+  "execution_id": "ex-7e79ddb721d560735b4a6e60",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "09cc46ed138e73fbc277e165d51814ebdf45d158",
+  "record_type": "upload",
+  "recorded_at": "2026-11-21T00:17:31.703403Z",
+  "request_blob_sha": "916ba6f99f6b7c20d6cb862c7a256d764b89f7e6",
+  "request_id": "rq-622c494a7f6b76f6361348a1",
+  "request_path": "content/requests/rq-622c494a7f6b76f6361348a1.json",
+  "request_source_sha": "aa9000e2ba5222e7691fa0de28b5068c828b648e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Her parents think six childhood diaries will help her groom decide what he is getting. She has a different idea about what a wedding gift means.\n\n#WackyDramas #Shorts #WeddingRehearsal #PrivateDiaries #ChildhoodDiaries #WeddingGift #BrideAndGroom #FamilyBoundaries #WeddingVows #ParentalPressure",
+      "tags": [
+        "wd-id-60b3519d1260170874c9",
+        "wacky dramas",
+        "shorts",
+        "wedding rehearsal drama",
+        "parents give away diaries",
+        "bride privacy",
+        "childhood diaries",
+        "groom wedding gift",
+        "family boundaries",
+        "private thoughts",
+        "wedding vows",
+        "WackyDramas",
+        "WeddingRehearsal",
+        "PrivateDiaries",
+        "ChildhoodDiaries",
+        "WeddingGift",
+        "BrideAndGroom",
+        "FamilyBoundaries",
+        "WeddingVows",
+        "ParentalPressure"
+      ],
+      "title": "The Blue Ribbon Around Six Private Diaries"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-03T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44841825792"
+  },
+  "youtube_video_id": "ihWcKPyFazM"
+}
