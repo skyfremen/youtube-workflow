@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-e0e32cd97ad583597c580b41",
+  "created_at": "2026-11-21T00:16:04.876596Z",
+  "evidence_version": 2,
+  "execution_id": "ex-cb5161dd3416a6cd9f3c03c6",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "451eae06d9df7357eda55cd09d2151abd7b5ac2e",
+  "record_type": "intent",
+  "request_blob_sha": "916ba6f99f6b7c20d6cb862c7a256d764b89f7e6",
+  "request_id": "rq-622c494a7f6b76f6361348a1",
+  "request_path": "content/requests/rq-622c494a7f6b76f6361348a1.json",
+  "request_source_sha": "aa9000e2ba5222e7691fa0de28b5068c828b648e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She gets the supervisor badge and the extra duties. Her boss decides someone else needs the pay rise more.\n\n#WackyDramas #Shorts #WorkplaceDrama #SupervisorPromotion #PayRise #ExtraDuties #ShiftPlanning #WorkplaceBias #CoworkerConflict #UnpaidResponsibility",
+      "tags": [
+        "wd-id-468b5be03af77be29df6",
+        "wacky dramas",
+        "shorts",
+        "supervisor promotion",
+        "pay rise dispute",
+        "workplace bias",
+        "extra responsibility",
+        "shift planning",
+        "boss unfair pay",
+        "coworker pay conflict",
+        "promotion without pay",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "SupervisorPromotion",
+        "PayRise",
+        "ExtraDuties",
+        "ShiftPlanning",
+        "WorkplaceBias",
+        "CoworkerConflict",
+        "UnpaidResponsibility"
+      ],
+      "title": "The Pay Rise Attached to Her Supervisor Badge"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-04T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44841831390"
+  }
+}
