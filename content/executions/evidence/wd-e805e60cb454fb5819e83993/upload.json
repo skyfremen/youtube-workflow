@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e805e60cb454fb5819e83993",
+  "evidence_version": 2,
+  "execution_id": "ex-5110f23d8e5475285a71fc68",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "49b59fc7e4e22b9be6fa303293363277ab504462",
+  "record_type": "upload",
+  "recorded_at": "2026-11-21T12:12:52.949962Z",
+  "request_blob_sha": "6a3fd596a32f5a207dee3b5c12755b20ee8aaff8",
+  "request_id": "rq-5fbddffbaebe2de989b5dd16",
+  "request_path": "content/requests/rq-5fbddffbaebe2de989b5dd16.json",
+  "request_source_sha": "984e14461595c52c96270ade74cfd8da4e3b86ad",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A learner books parking practice and gets pulled into her instructor's marriage dispute. The next instruction asks far too much.\n\n#WackyDramas #Shorts #DrivingLesson #DrivingInstructor #LearnerDriver #ParkingPractice #MarriageDispute #BlueCar #WrongInstruction #PersonalBoundaries",
+      "tags": [
+        "wd-id-1070b8081f001c40b2ef",
+        "wacky dramas",
+        "shorts",
+        "driving instructor drama",
+        "learner parking lesson",
+        "instructor follows husband",
+        "marriage dispute",
+        "learner refuses instruction",
+        "blue car follow",
+        "parking practice",
+        "driving lesson boundaries",
+        "WackyDramas",
+        "DrivingLesson",
+        "DrivingInstructor",
+        "LearnerDriver",
+        "ParkingPractice",
+        "MarriageDispute",
+        "BlueCar",
+        "WrongInstruction",
+        "PersonalBoundaries"
+      ],
+      "title": "The Parking Lesson Behind the Blue Car"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-05T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44902324039"
+  },
+  "youtube_video_id": "7H1QMgQHWhg"
+}
