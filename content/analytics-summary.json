@@ -46,12 +46,12 @@
       "median_engaged_views_per_view_percentage": 23.53,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 1.0,
+      "median_views_24h": 1.5,
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": 1.0,
       "median_views_7d": 1.0,
-      "sample_24h": 9,
+      "sample_24h": 10,
       "sample_2h": 5,
       "sample_6h": 10,
       "sample_72h": 9,
@@ -135,23 +135,23 @@
       "sample_size": 5
     },
     "family": {
-      "mature_engaged_sample": 24,
-      "mature_sample": 25,
-      "median_average_view_percentage": 34.2,
-      "median_engaged_views_per_view_percentage": 26.99,
+      "mature_engaged_sample": 23,
+      "mature_sample": 24,
+      "median_average_view_percentage": 31.58,
+      "median_engaged_views_per_view_percentage": 27.66,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 4.5,
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
-      "median_views_72h": 7.0,
+      "median_views_72h": 6.5,
       "median_views_7d": 9.0,
       "sample_24h": 32,
       "sample_2h": 16,
       "sample_6h": 32,
-      "sample_72h": 29,
-      "sample_7d": 24,
-      "sample_size": 34
+      "sample_72h": 28,
+      "sample_7d": 23,
+      "sample_size": 33
     },
     "finance": {
       "mature_engaged_sample": 1,
@@ -183,12 +183,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": null,
       "median_views_72h": 0.0,
-      "median_views_7d": null,
+      "median_views_7d": 0.0,
       "sample_24h": 1,
       "sample_2h": 1,
       "sample_6h": 0,
       "sample_72h": 1,
-      "sample_7d": 0,
+      "sample_7d": 1,
       "sample_size": 1
     },
     "identity": {
@@ -271,7 +271,7 @@
       "mature_engaged_sample": 8,
       "mature_sample": 8,
       "median_average_view_percentage": 12.23,
-      "median_engaged_views_per_view_percentage": 14.81,
+      "median_engaged_views_per_view_percentage": 14.82,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.0,
@@ -356,11 +356,11 @@
       "median_views_72h": 12.5,
       "median_views_7d": 17.0,
       "sample_24h": 29,
-      "sample_2h": 18,
+      "sample_2h": 19,
       "sample_6h": 29,
       "sample_72h": 28,
       "sample_7d": 23,
-      "sample_size": 29
+      "sample_size": 30
     },
     "wellness": {
       "mature_engaged_sample": 1,
@@ -407,17 +407,17 @@
       "median_engaged_views_per_view_percentage": 0.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 0.5,
+      "median_views_24h": 1.0,
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": 1.0,
-      "median_views_7d": 1.5,
-      "sample_24h": 8,
-      "sample_2h": 5,
-      "sample_6h": 9,
-      "sample_72h": 8,
-      "sample_7d": 6,
-      "sample_size": 9
+      "median_views_7d": 1.0,
+      "sample_24h": 7,
+      "sample_2h": 4,
+      "sample_6h": 8,
+      "sample_72h": 7,
+      "sample_7d": 5,
+      "sample_size": 8
     }
   },
   "creator_content_type_analysis": {
@@ -425,16 +425,16 @@
     "top": [
       {
         "average_view_duration": 27,
-        "average_view_percentage": 50.49,
+        "average_view_percentage": 50.629999999999995,
         "creatorContentType": "shorts",
-        "engaged_view_rate_percentage": 30.63,
-        "engaged_views": 1210,
-        "estimated_minutes_watched": 608,
+        "engaged_view_rate_percentage": 31.47,
+        "engaged_views": 1137,
+        "estimated_minutes_watched": 572,
         "view_share_percentage": 100.0,
-        "views": 3950
+        "views": 3613
       }
     ],
-    "views_total": 3950
+    "views_total": 3613
   },
   "demographics_analysis": {
     "sample_rows": 4,
@@ -468,75 +468,75 @@
     "top": [
       {
         "deviceType": "MOBILE",
-        "engaged_view_rate_percentage": 26.53,
-        "engaged_views": 613,
-        "estimated_minutes_watched": 313,
+        "engaged_view_rate_percentage": 27.25,
+        "engaged_views": 581,
+        "estimated_minutes_watched": 292,
         "operatingSystem": "ANDROID",
-        "view_share_percentage": 58.7,
-        "views": 2311
+        "view_share_percentage": 59.47,
+        "views": 2132
       },
       {
         "deviceType": "MOBILE",
-        "engaged_view_rate_percentage": 33.02,
-        "engaged_views": 277,
-        "estimated_minutes_watched": 152,
+        "engaged_view_rate_percentage": 34.67,
+        "engaged_views": 259,
+        "estimated_minutes_watched": 144,
         "operatingSystem": "IOS",
-        "view_share_percentage": 21.31,
-        "views": 839
+        "view_share_percentage": 20.84,
+        "views": 747
       },
       {
         "deviceType": "TABLET",
-        "engaged_view_rate_percentage": 41.03,
-        "engaged_views": 96,
-        "estimated_minutes_watched": 44,
-        "operatingSystem": "IOS",
-        "view_share_percentage": 5.94,
-        "views": 234
-      },
-      {
-        "deviceType": "TABLET",
-        "engaged_view_rate_percentage": 40.99,
+        "engaged_view_rate_percentage": 42.92,
         "engaged_views": 91,
-        "estimated_minutes_watched": 41,
+        "estimated_minutes_watched": 42,
+        "operatingSystem": "IOS",
+        "view_share_percentage": 5.91,
+        "views": 212
+      },
+      {
+        "deviceType": "TABLET",
+        "engaged_view_rate_percentage": 43.07,
+        "engaged_views": 87,
+        "estimated_minutes_watched": 40,
         "operatingSystem": "ANDROID",
-        "view_share_percentage": 5.64,
-        "views": 222
+        "view_share_percentage": 5.63,
+        "views": 202
       },
       {
         "deviceType": "DESKTOP",
-        "engaged_view_rate_percentage": 31.35,
-        "engaged_views": 58,
-        "estimated_minutes_watched": 27,
+        "engaged_view_rate_percentage": 32.7,
+        "engaged_views": 52,
+        "estimated_minutes_watched": 26,
         "operatingSystem": "WINDOWS",
-        "view_share_percentage": 4.7,
-        "views": 185
+        "view_share_percentage": 4.44,
+        "views": 159
       },
       {
         "deviceType": "DESKTOP",
-        "engaged_view_rate_percentage": 22.41,
-        "engaged_views": 13,
-        "estimated_minutes_watched": 4,
-        "operatingSystem": "MACINTOSH",
-        "view_share_percentage": 1.47,
-        "views": 58
-      },
-      {
-        "deviceType": "DESKTOP",
-        "engaged_view_rate_percentage": 40.0,
+        "engaged_view_rate_percentage": 19.61,
         "engaged_views": 10,
+        "estimated_minutes_watched": 3,
+        "operatingSystem": "MACINTOSH",
+        "view_share_percentage": 1.42,
+        "views": 51
+      },
+      {
+        "deviceType": "DESKTOP",
+        "engaged_view_rate_percentage": 42.86,
+        "engaged_views": 9,
         "estimated_minutes_watched": 5,
         "operatingSystem": "CHROME_OS",
-        "view_share_percentage": 0.64,
-        "views": 25
+        "view_share_percentage": 0.59,
+        "views": 21
       },
       {
         "deviceType": "TV",
-        "engaged_view_rate_percentage": 80.0,
-        "engaged_views": 12,
+        "engaged_view_rate_percentage": 78.57,
+        "engaged_views": 11,
         "estimated_minutes_watched": 4,
         "operatingSystem": "ROKUOS",
-        "view_share_percentage": 0.38,
-        "views": 15
+        "view_share_percentage": 0.39,
+        "views": 14
       },
       {
         "deviceType": "TV",
@@ -544,7 +544,7 @@
         "engaged_views": 7,
         "estimated_minutes_watched": 2,
         "operatingSystem": "ANDROID",
-        "view_share_percentage": 0.3,
+        "view_share_percentage": 0.33,
         "views": 12
       },
       {
@@ -553,17 +553,17 @@
         "engaged_views": 8,
         "estimated_minutes_watched": 4,
         "operatingSystem": "SMART_TV",
-        "view_share_percentage": 0.3,
+        "view_share_percentage": 0.33,
         "views": 12
       },
       {
         "deviceType": "TV",
-        "engaged_view_rate_percentage": 85.71,
-        "engaged_views": 6,
+        "engaged_view_rate_percentage": 83.33,
+        "engaged_views": 5,
         "estimated_minutes_watched": 1,
         "operatingSystem": "AMAZON_FIREOS",
-        "view_share_percentage": 0.18,
-        "views": 7
+        "view_share_percentage": 0.17,
+        "views": 6
       },
       {
         "deviceType": "TV",
@@ -571,7 +571,7 @@
         "engaged_views": 2,
         "estimated_minutes_watched": 0,
         "operatingSystem": "PLAYSTATION",
-        "view_share_percentage": 0.1,
+        "view_share_percentage": 0.11,
         "views": 4
       },
       {
@@ -580,7 +580,7 @@
         "engaged_views": 3,
         "estimated_minutes_watched": 0,
         "operatingSystem": "APPLE_TVOS",
-        "view_share_percentage": 0.1,
+        "view_share_percentage": 0.11,
         "views": 4
       },
       {
@@ -589,7 +589,7 @@
         "engaged_views": 3,
         "estimated_minutes_watched": 1,
         "operatingSystem": "WEBOS",
-        "view_share_percentage": 0.1,
+        "view_share_percentage": 0.11,
         "views": 4
       },
       {
@@ -607,31 +607,31 @@
         "engaged_views": 2,
         "estimated_minutes_watched": 0,
         "operatingSystem": "VIDAA",
-        "view_share_percentage": 0.05,
+        "view_share_percentage": 0.06,
         "views": 2
       }
     ],
-    "views_total": 3937
+    "views_total": 3585
   },
   "duration_performance": {
     "45_54": {
-      "mature_engaged_sample": 71,
-      "mature_sample": 71,
-      "median_average_view_percentage": 31.0,
-      "median_engaged_views_per_view_percentage": 24.07,
+      "mature_engaged_sample": 70,
+      "mature_sample": 70,
+      "median_average_view_percentage": 30.56,
+      "median_engaged_views_per_view_percentage": 24.27,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.5,
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 6.0,
-      "median_views_7d": 8.0,
+      "median_views_7d": 7.0,
       "sample_24h": 92,
       "sample_2h": 55,
-      "sample_6h": 93,
-      "sample_72h": 84,
-      "sample_7d": 68,
-      "sample_size": 96
+      "sample_6h": 92,
+      "sample_72h": 82,
+      "sample_7d": 67,
+      "sample_size": 95
     },
     "55_64": {
       "mature_engaged_sample": 30,
@@ -672,22 +672,22 @@
       "sample_size": 1
     }
   },
-  "generated_at": "2026-11-20T23:30:34Z",
+  "generated_at": "2026-11-21T05:30:34Z",
   "geography_analysis": {
     "sample_rows": 1,
     "top": [
       {
-        "average_view_duration": 29,
-        "average_view_percentage": 55.92,
+        "average_view_duration": 30,
+        "average_view_percentage": 56.00000000000001,
         "country": "US",
-        "engaged_view_rate_percentage": 41.83,
-        "engaged_views": 865,
-        "estimated_minutes_watched": 461,
+        "engaged_view_rate_percentage": 43.39,
+        "engaged_views": 810,
+        "estimated_minutes_watched": 433,
         "view_share_percentage": 100.0,
-        "views": 2068
+        "views": 1867
       }
     ],
-    "views_total": 2068
+    "views_total": 1867
   },
   "hook_type_performance": {
     "accusation": {
@@ -702,12 +702,12 @@
       "median_views_6h": 0.0,
       "median_views_72h": 1.0,
       "median_views_7d": 1.0,
-      "sample_24h": 10,
-      "sample_2h": 6,
-      "sample_6h": 9,
-      "sample_72h": 9,
-      "sample_7d": 7,
-      "sample_size": 10
+      "sample_24h": 9,
+      "sample_2h": 5,
+      "sample_6h": 8,
+      "sample_72h": 8,
+      "sample_7d": 6,
+      "sample_size": 9
     },
     "confession": {
       "mature_engaged_sample": 13,
@@ -741,30 +741,30 @@
       "median_views_72h": 7.0,
       "median_views_7d": 9.0,
       "sample_24h": 34,
-      "sample_2h": 16,
+      "sample_2h": 17,
       "sample_6h": 35,
       "sample_72h": 32,
       "sample_7d": 27,
-      "sample_size": 35
+      "sample_size": 36
     },
     "discovery": {
-      "mature_engaged_sample": 17,
-      "mature_sample": 17,
-      "median_average_view_percentage": 38.09,
+      "mature_engaged_sample": 16,
+      "mature_sample": 16,
+      "median_average_view_percentage": 36.81,
       "median_engaged_views_per_view_percentage": 33.33,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 5.5,
+      "median_views_24h": 5.0,
       "median_views_2h": 0.0,
       "median_views_6h": 2.0,
-      "median_views_72h": 6.5,
-      "median_views_7d": 7.0,
+      "median_views_72h": 6.0,
+      "median_views_7d": 6.5,
       "sample_24h": 20,
       "sample_2h": 14,
-      "sample_6h": 21,
-      "sample_72h": 18,
-      "sample_7d": 17,
-      "sample_size": 21
+      "sample_6h": 20,
+      "sample_72h": 17,
+      "sample_7d": 16,
+      "sample_size": 20
     },
     "money_stakes": {
       "mature_engaged_sample": 7,
@@ -777,12 +777,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 0.0,
       "median_views_72h": 2.0,
-      "median_views_7d": 4.0,
+      "median_views_7d": 3.5,
       "sample_24h": 15,
       "sample_2h": 11,
-      "sample_6h": 14,
+      "sample_6h": 15,
       "sample_72h": 12,
-      "sample_7d": 9,
+      "sample_7d": 10,
       "sample_size": 16
     },
     "social_exposure": {
@@ -797,7 +797,7 @@
       "median_views_6h": 1.0,
       "median_views_72h": 4.0,
       "median_views_7d": 6.0,
-      "sample_24h": 34,
+      "sample_24h": 35,
       "sample_2h": 20,
       "sample_6h": 35,
       "sample_72h": 34,
@@ -807,10 +807,10 @@
   },
   "lead_gender_performance": {
     "female": {
-      "mature_engaged_sample": 96,
-      "mature_sample": 97,
-      "median_average_view_percentage": 26.44,
-      "median_engaged_views_per_view_percentage": 24.54,
+      "mature_engaged_sample": 95,
+      "mature_sample": 96,
+      "median_average_view_percentage": 25.94,
+      "median_engaged_views_per_view_percentage": 25.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.0,
@@ -820,10 +820,10 @@
       "median_views_7d": 6.5,
       "sample_24h": 116,
       "sample_2h": 69,
-      "sample_6h": 118,
-      "sample_72h": 110,
-      "sample_7d": 98,
-      "sample_size": 120
+      "sample_6h": 117,
+      "sample_72h": 108,
+      "sample_7d": 96,
+      "sample_size": 119
     },
     "male": {
       "mature_engaged_sample": 5,
@@ -836,12 +836,12 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 2.0,
-      "median_views_7d": 17.0,
+      "median_views_7d": 9.0,
       "sample_24h": 11,
       "sample_2h": 6,
       "sample_6h": 10,
       "sample_72h": 9,
-      "sample_7d": 3,
+      "sample_7d": 4,
       "sample_size": 11
     }
   },
@@ -850,9 +850,9 @@
     "checkpoint_samples": {
       "24h": 127,
       "2h": 75,
-      "6h": 128,
-      "72h": 119,
-      "7d": 101
+      "6h": 127,
+      "72h": 117,
+      "7d": 100
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
@@ -915,38 +915,38 @@
     "sample_rows": 3,
     "top": [
       {
-        "engaged_view_rate_percentage": 37.7,
-        "engaged_views": 1176,
-        "estimated_minutes_watched": 577,
+        "engaged_view_rate_percentage": 39.65,
+        "engaged_views": 1103,
+        "estimated_minutes_watched": 542,
         "insightPlaybackLocationType": "SHORTS_FEED",
-        "view_share_percentage": 78.9,
-        "views": 3119
+        "view_share_percentage": 77.34,
+        "views": 2782
       },
       {
-        "engaged_view_rate_percentage": 4.11,
+        "engaged_view_rate_percentage": 4.21,
         "engaged_views": 34,
-        "estimated_minutes_watched": 30,
+        "estimated_minutes_watched": 29,
         "insightPlaybackLocationType": "WATCH",
-        "view_share_percentage": 20.92,
-        "views": 827
+        "view_share_percentage": 22.46,
+        "views": 808
       },
       {
         "engaged_view_rate_percentage": 0.0,
         "engaged_views": 0,
         "estimated_minutes_watched": 0,
         "insightPlaybackLocationType": "BROWSE",
-        "view_share_percentage": 0.18,
+        "view_share_percentage": 0.19,
         "views": 7
       }
     ],
-    "views_total": 3953
+    "views_total": 3597
   },
   "publication_spacing_performance": {
     "bucket_performance": {
       "over_60m": {
-        "mature_engaged_sample": 100,
-        "mature_sample": 101,
-        "median_average_view_percentage": 25.44,
+        "mature_engaged_sample": 99,
+        "mature_sample": 100,
+        "median_average_view_percentage": 23.13,
         "median_engaged_views_per_view_percentage": 25.0,
         "median_shares": 0.0,
         "median_subscribers_gained": 0.0,
@@ -954,19 +954,19 @@
         "median_views_2h": 0.0,
         "median_views_6h": 1.0,
         "median_views_72h": 5.0,
-        "median_views_7d": 6.5,
+        "median_views_7d": 6.0,
         "sample_24h": 126,
         "sample_2h": 75,
-        "sample_6h": 127,
-        "sample_72h": 118,
-        "sample_7d": 100,
-        "sample_size": 130
+        "sample_6h": 126,
+        "sample_72h": 116,
+        "sample_7d": 99,
+        "sample_size": 129
       }
     },
     "exact_gap_minute_samples": {
       "1080": 1,
-      "180": 89,
-      "360": 19,
+      "180": 87,
+      "360": 20,
       "540": 20,
       "8280": 1
     },
@@ -1026,29 +1026,29 @@
       "median_views_7d": 6.0,
       "sample_24h": 22,
       "sample_2h": 23,
-      "sample_6h": 22,
+      "sample_6h": 23,
       "sample_72h": 20,
       "sample_7d": 17,
       "sample_size": 23
     },
     "09": {
-      "mature_engaged_sample": 4,
-      "mature_sample": 4,
-      "median_average_view_percentage": 46.23,
-      "median_engaged_views_per_view_percentage": 43.33,
+      "mature_engaged_sample": 3,
+      "mature_sample": 3,
+      "median_average_view_percentage": 53.13,
+      "median_engaged_views_per_view_percentage": 53.33,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 6.5,
+      "median_views_24h": 3.0,
       "median_views_2h": null,
-      "median_views_6h": 2.5,
-      "median_views_72h": 9.0,
-      "median_views_7d": 10.5,
-      "sample_24h": 4,
+      "median_views_6h": 1.0,
+      "median_views_72h": 4.0,
+      "median_views_7d": 6.0,
+      "sample_24h": 3,
       "sample_2h": 0,
-      "sample_6h": 4,
-      "sample_72h": 4,
-      "sample_7d": 4,
-      "sample_size": 4
+      "sample_6h": 3,
+      "sample_72h": 3,
+      "sample_7d": 3,
+      "sample_size": 3
     },
     "12": {
       "mature_engaged_sample": 20,
@@ -1059,13 +1059,13 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 2.5,
+      "median_views_6h": 3.0,
       "median_views_72h": 9.0,
       "median_views_7d": 9.0,
-      "sample_24h": 25,
+      "sample_24h": 24,
       "sample_2h": 25,
-      "sample_6h": 24,
-      "sample_72h": 23,
+      "sample_6h": 23,
+      "sample_72h": 22,
       "sample_7d": 19,
       "sample_size": 25
     },
@@ -1076,12 +1076,12 @@
       "median_engaged_views_per_view_percentage": 20.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 2.5,
+      "median_views_24h": 3.0,
       "median_views_2h": null,
       "median_views_6h": 0.0,
       "median_views_72h": 5.0,
       "median_views_7d": 5.0,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 0,
       "sample_6h": 24,
       "sample_72h": 23,
@@ -1100,7 +1100,7 @@
       "median_views_6h": 0.0,
       "median_views_72h": 2.0,
       "median_views_7d": 7.0,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 24,
       "sample_6h": 25,
       "sample_72h": 23,
@@ -1180,29 +1180,29 @@
       "median_views_7d": 6.0,
       "sample_24h": 22,
       "sample_2h": 23,
-      "sample_6h": 22,
+      "sample_6h": 23,
       "sample_72h": 20,
       "sample_7d": 17,
       "sample_size": 23
     },
     "09:00": {
-      "mature_engaged_sample": 4,
-      "mature_sample": 4,
-      "median_average_view_percentage": 46.23,
-      "median_engaged_views_per_view_percentage": 43.33,
+      "mature_engaged_sample": 3,
+      "mature_sample": 3,
+      "median_average_view_percentage": 53.13,
+      "median_engaged_views_per_view_percentage": 53.33,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 6.5,
+      "median_views_24h": 3.0,
       "median_views_2h": null,
-      "median_views_6h": 2.5,
-      "median_views_72h": 9.0,
-      "median_views_7d": 10.5,
-      "sample_24h": 4,
+      "median_views_6h": 1.0,
+      "median_views_72h": 4.0,
+      "median_views_7d": 6.0,
+      "sample_24h": 3,
       "sample_2h": 0,
-      "sample_6h": 4,
-      "sample_72h": 4,
-      "sample_7d": 4,
-      "sample_size": 4
+      "sample_6h": 3,
+      "sample_72h": 3,
+      "sample_7d": 3,
+      "sample_size": 3
     },
     "12:00": {
       "mature_engaged_sample": 20,
@@ -1213,13 +1213,13 @@
       "median_subscribers_gained": 0.0,
       "median_views_24h": 5.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 2.5,
+      "median_views_6h": 3.0,
       "median_views_72h": 9.0,
       "median_views_7d": 9.0,
-      "sample_24h": 25,
+      "sample_24h": 24,
       "sample_2h": 25,
-      "sample_6h": 24,
-      "sample_72h": 23,
+      "sample_6h": 23,
+      "sample_72h": 22,
       "sample_7d": 19,
       "sample_size": 25
     },
@@ -1230,12 +1230,12 @@
       "median_engaged_views_per_view_percentage": 20.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 2.5,
+      "median_views_24h": 3.0,
       "median_views_2h": null,
       "median_views_6h": 0.0,
       "median_views_72h": 5.0,
       "median_views_7d": 5.0,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 0,
       "sample_6h": 24,
       "sample_72h": 23,
@@ -1254,7 +1254,7 @@
       "median_views_6h": 0.0,
       "median_views_72h": 2.0,
       "median_views_7d": 7.0,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 24,
       "sample_6h": 25,
       "sample_72h": 23,
@@ -1315,29 +1315,29 @@
       "median_views_7d": 6.0,
       "sample_24h": 22,
       "sample_2h": 23,
-      "sample_6h": 22,
+      "sample_6h": 23,
       "sample_72h": 20,
       "sample_7d": 17,
       "sample_size": 23
     },
     "08-11": {
-      "mature_engaged_sample": 4,
-      "mature_sample": 4,
-      "median_average_view_percentage": 46.23,
-      "median_engaged_views_per_view_percentage": 43.33,
+      "mature_engaged_sample": 3,
+      "mature_sample": 3,
+      "median_average_view_percentage": 53.13,
+      "median_engaged_views_per_view_percentage": 53.33,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 6.5,
+      "median_views_24h": 3.0,
       "median_views_2h": null,
-      "median_views_6h": 2.5,
-      "median_views_72h": 9.0,
-      "median_views_7d": 10.5,
-      "sample_24h": 4,
+      "median_views_6h": 1.0,
+      "median_views_72h": 4.0,
+      "median_views_7d": 6.0,
+      "sample_24h": 3,
       "sample_2h": 0,
-      "sample_6h": 4,
-      "sample_72h": 4,
-      "sample_7d": 4,
-      "sample_size": 4
+      "sample_6h": 3,
+      "sample_72h": 3,
+      "sample_7d": 3,
+      "sample_size": 3
     },
     "12-15": {
       "mature_engaged_sample": 41,
@@ -1346,15 +1346,15 @@
       "median_engaged_views_per_view_percentage": 20.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 4.0,
+      "median_views_24h": 5.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 1.5,
+      "median_views_6h": 2.0,
       "median_views_72h": 6.0,
       "median_views_7d": 9.0,
       "sample_24h": 49,
       "sample_2h": 25,
-      "sample_6h": 48,
-      "sample_72h": 46,
+      "sample_6h": 47,
+      "sample_72h": 45,
       "sample_7d": 38,
       "sample_size": 50
     },
@@ -1370,7 +1370,7 @@
       "median_views_6h": 0.0,
       "median_views_72h": 2.0,
       "median_views_7d": 7.0,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 24,
       "sample_6h": 25,
       "sample_72h": 23,
@@ -1705,33 +1705,13 @@
   },
   "shorts_feed_diagnostics": {
     "classification_counts": {
-      "insufficient_evidence": 97,
-      "strong_distribution_strong_response": 18,
+      "insufficient_evidence": 95,
+      "strong_distribution_strong_response": 19,
       "strong_distribution_weak_response": 16
     },
     "distribution_checkpoint": "2h",
     "distribution_median_views": 0.0,
     "examples": [
-      {
-        "average_view_percentage": 0,
-        "checkpoint_views": 0,
-        "classification": "insufficient_evidence",
-        "content_id": "wd-80571fd7d503e057599a57dc",
-        "distribution_checkpoint": "2h",
-        "shorts_source_engaged_view_rate_percentage": null,
-        "shorts_source_views": null,
-        "title": "The Black Gloves in the Stockroom"
-      },
-      {
-        "average_view_percentage": 39.32,
-        "checkpoint_views": null,
-        "classification": "insufficient_evidence",
-        "content_id": "wd-f96b0ac30169c6f6640891f0",
-        "distribution_checkpoint": "2h",
-        "shorts_source_engaged_view_rate_percentage": 24.0,
-        "shorts_source_views": 100,
-        "title": "The Cake That Said Our Boy"
-      },
       {
         "average_view_percentage": 265.65,
         "checkpoint_views": null,
@@ -1975,11 +1955,11 @@
       {
         "average_view_percentage": 63.77,
         "checkpoint_views": 0,
-        "classification": "insufficient_evidence",
+        "classification": "strong_distribution_strong_response",
         "content_id": "wd-cdc5dcec97239ec8b828ae0d",
         "distribution_checkpoint": "2h",
-        "shorts_source_engaged_view_rate_percentage": null,
-        "shorts_source_views": null,
+        "shorts_source_engaged_view_rate_percentage": 36.67,
+        "shorts_source_views": 30,
         "title": "The Portrait Mom Called a Backup"
       },
       {
@@ -2011,6 +1991,26 @@
         "shorts_source_engaged_view_rate_percentage": 28.57,
         "shorts_source_views": 14,
         "title": "The Assistant Named in Dad's Care Award"
+      },
+      {
+        "average_view_percentage": 50.96000000000001,
+        "checkpoint_views": 6,
+        "classification": "strong_distribution_strong_response",
+        "content_id": "wd-bf8ff455d2a7130e92001398",
+        "distribution_checkpoint": "2h",
+        "shorts_source_engaged_view_rate_percentage": 45.54,
+        "shorts_source_views": 112,
+        "title": "The Housekeeper Included with the Apartment"
+      },
+      {
+        "average_view_percentage": 52.28,
+        "checkpoint_views": null,
+        "classification": "insufficient_evidence",
+        "content_id": "wd-312f575dd48cddda7c4f84fe",
+        "distribution_checkpoint": "2h",
+        "shorts_source_engaged_view_rate_percentage": 45.45,
+        "shorts_source_views": 11,
+        "title": "The DNA Kits Beside Dad's Birthday Cake"
       }
     ],
     "response_median_percentage": 33.33,
@@ -2021,16 +2021,16 @@
     "top": [
       {
         "average_view_duration": 26,
-        "average_view_percentage": 49.46,
+        "average_view_percentage": 49.54,
         "dislikes": 0,
-        "engaged_view_rate_percentage": 30.62,
-        "engaged_views": 1198,
-        "estimated_minutes_watched": 591,
-        "likes": 18,
+        "engaged_view_rate_percentage": 31.63,
+        "engaged_views": 1125,
+        "estimated_minutes_watched": 555,
+        "likes": 17,
         "shares": 3,
         "subscribedStatus": "UNSUBSCRIBED",
-        "view_share_percentage": 98.99,
-        "views": 3913
+        "view_share_percentage": 98.89,
+        "views": 3557
       },
       {
         "average_view_duration": 82,
@@ -2042,50 +2042,50 @@
         "likes": 9,
         "shares": 6,
         "subscribedStatus": "SUBSCRIBED",
-        "view_share_percentage": 1.01,
+        "view_share_percentage": 1.11,
         "views": 40
       }
     ],
-    "views_total": 3953
+    "views_total": 3597
   },
   "tone_performance": {
     "conversational": {
-      "mature_engaged_sample": 12,
-      "mature_sample": 12,
-      "median_average_view_percentage": 24.76,
-      "median_engaged_views_per_view_percentage": 28.7,
+      "mature_engaged_sample": 11,
+      "mature_sample": 11,
+      "median_average_view_percentage": 10.2,
+      "median_engaged_views_per_view_percentage": 33.33,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 3.0,
+      "median_views_24h": 2.0,
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 3.0,
       "median_views_7d": 3.0,
-      "sample_24h": 15,
+      "sample_24h": 14,
       "sample_2h": 6,
-      "sample_6h": 15,
-      "sample_72h": 15,
-      "sample_7d": 15,
-      "sample_size": 15
+      "sample_6h": 14,
+      "sample_72h": 14,
+      "sample_7d": 14,
+      "sample_size": 14
     },
     "dramatic": {
-      "mature_engaged_sample": 45,
-      "mature_sample": 46,
-      "median_average_view_percentage": 23.63,
+      "mature_engaged_sample": 44,
+      "mature_sample": 45,
+      "median_average_view_percentage": 26.44,
       "median_engaged_views_per_view_percentage": 20.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 3.0,
       "median_views_2h": 0.0,
-      "median_views_6h": 0.5,
+      "median_views_6h": 1.0,
       "median_views_72h": 5.0,
       "median_views_7d": 6.0,
-      "sample_24h": 50,
-      "sample_2h": 31,
-      "sample_6h": 50,
-      "sample_72h": 50,
-      "sample_7d": 48,
-      "sample_size": 50
+      "sample_24h": 49,
+      "sample_2h": 30,
+      "sample_6h": 49,
+      "sample_72h": 49,
+      "sample_7d": 47,
+      "sample_size": 49
     },
     "dramatic_comedy": {
       "mature_engaged_sample": 10,
@@ -2098,12 +2098,12 @@
       "median_views_2h": 0.5,
       "median_views_6h": 5.5,
       "median_views_72h": 21.5,
-      "median_views_7d": 38.0,
+      "median_views_7d": 36.0,
       "sample_24h": 14,
       "sample_2h": 8,
       "sample_6h": 14,
       "sample_72h": 12,
-      "sample_7d": 9,
+      "sample_7d": 10,
       "sample_size": 15
     },
     "natural": {
@@ -2113,17 +2113,17 @@
       "median_engaged_views_per_view_percentage": 41.88,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
-      "median_views_24h": 3.0,
+      "median_views_24h": 3.5,
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 5.0,
       "median_views_7d": 10.0,
-      "sample_24h": 23,
-      "sample_2h": 12,
+      "sample_24h": 24,
+      "sample_2h": 13,
       "sample_6h": 24,
       "sample_72h": 21,
       "sample_7d": 14,
-      "sample_size": 24
+      "sample_size": 25
     },
     "sarcastic": {
       "mature_engaged_sample": 1,
@@ -2145,10 +2145,10 @@
       "sample_size": 1
     },
     "warm": {
-      "mature_engaged_sample": 15,
-      "mature_sample": 15,
-      "median_average_view_percentage": 31.02,
-      "median_engaged_views_per_view_percentage": 18.18,
+      "mature_engaged_sample": 16,
+      "mature_sample": 16,
+      "median_average_view_percentage": 30.57,
+      "median_engaged_views_per_view_percentage": 17.43,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
       "median_views_24h": 2.0,
@@ -2156,9 +2156,9 @@
       "median_views_6h": 0.0,
       "median_views_72h": 3.5,
       "median_views_7d": 7.5,
-      "sample_24h": 24,
+      "sample_24h": 25,
       "sample_2h": 17,
-      "sample_6h": 24,
+      "sample_6h": 25,
       "sample_72h": 20,
       "sample_7d": 14,
       "sample_size": 26
@@ -2380,43 +2380,43 @@
     "sample_rows": 8,
     "top": [
       {
-        "engaged_view_rate_percentage": 36.24,
-        "engaged_views": 976,
-        "estimated_minutes_watched": 522,
+        "engaged_view_rate_percentage": 38.36,
+        "engaged_views": 913,
+        "estimated_minutes_watched": 489,
         "insightTrafficSourceType": "SHORTS",
-        "view_share_percentage": 68.13,
-        "views": 2693
+        "view_share_percentage": 66.17,
+        "views": 2380
       },
       {
-        "engaged_view_rate_percentage": 17.35,
-        "engaged_views": 207,
-        "estimated_minutes_watched": 69,
+        "engaged_view_rate_percentage": 17.3,
+        "engaged_views": 200,
+        "estimated_minutes_watched": 66,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 30.18,
-        "views": 1193
+        "view_share_percentage": 32.14,
+        "views": 1156
       },
       {
-        "engaged_view_rate_percentage": 43.33,
-        "engaged_views": 13,
+        "engaged_view_rate_percentage": 44.0,
+        "engaged_views": 11,
         "estimated_minutes_watched": 4,
         "insightTrafficSourceType": "YT_OTHER_PAGE",
-        "view_share_percentage": 0.76,
-        "views": 30
+        "view_share_percentage": 0.7,
+        "views": 25
       },
       {
-        "engaged_view_rate_percentage": 25.0,
-        "engaged_views": 4,
+        "engaged_view_rate_percentage": 20.0,
+        "engaged_views": 3,
         "estimated_minutes_watched": 6,
         "insightTrafficSourceType": "SUBSCRIBER",
-        "view_share_percentage": 0.4,
-        "views": 16
+        "view_share_percentage": 0.42,
+        "views": 15
       },
       {
         "engaged_view_rate_percentage": 54.55,
         "engaged_views": 6,
         "estimated_minutes_watched": 4,
         "insightTrafficSourceType": "HASHTAGS",
-        "view_share_percentage": 0.28,
+        "view_share_percentage": 0.31,
         "views": 11
       },
       {
@@ -2424,7 +2424,7 @@
         "engaged_views": 2,
         "estimated_minutes_watched": 0,
         "insightTrafficSourceType": "EXT_URL",
-        "view_share_percentage": 0.13,
+        "view_share_percentage": 0.14,
         "views": 5
       },
       {
@@ -2432,7 +2432,7 @@
         "engaged_views": 1,
         "estimated_minutes_watched": 0,
         "insightTrafficSourceType": "YT_CHANNEL",
-        "view_share_percentage": 0.1,
+        "view_share_percentage": 0.11,
         "views": 4
       },
       {
@@ -2444,13 +2444,13 @@
         "views": 1
       }
     ],
-    "views_total": 3953
+    "views_total": 3597
   },
   "trend_performance": {
     "evergreen": {
-      "mature_engaged_sample": 101,
-      "mature_sample": 102,
-      "median_average_view_percentage": 25.94,
+      "mature_engaged_sample": 100,
+      "mature_sample": 101,
+      "median_average_view_percentage": 25.44,
       "median_engaged_views_per_view_percentage": 25.0,
       "median_shares": 0.0,
       "median_subscribers_gained": 0.0,
@@ -2458,63 +2458,21 @@
       "median_views_2h": 0.0,
       "median_views_6h": 1.0,
       "median_views_72h": 5.0,
-      "median_views_7d": 7.0,
+      "median_views_7d": 6.5,
       "sample_24h": 127,
       "sample_2h": 75,
-      "sample_6h": 128,
-      "sample_72h": 119,
-      "sample_7d": 101,
-      "sample_size": 131
+      "sample_6h": 127,
+      "sample_72h": 117,
+      "sample_7d": 100,
+      "sample_size": 130
     }
   },
   "trend_topic_performance": {},
-  "videos_analyzed": 131,
+  "videos_analyzed": 130,
   "warnings": [
-    "Optional retention returned empty curves for 24 due checkpoints; will retry"
+    "Optional retention returned empty curves for 23 due checkpoints; will retry"
   ],
   "weak_retention_examples": [
-    {
-      "average_view_percentage": 0,
-      "category": "workplace",
-      "checkpoint_observations": {
-        "24h": {
-          "actual_age_hours": 25.51,
-          "views": 0
-        },
-        "2h": {
-          "actual_age_hours": 1.51,
-          "views": 0
-        },
-        "6h": {
-          "actual_age_hours": 7.51,
-          "views": 0
-        },
-        "72h": {
-          "actual_age_hours": 73.51,
-          "views": 1
-        },
-        "7d": {
-          "actual_age_hours": 169.51,
-          "views": 2
-        }
-      },
-      "content_id": "wd-80571fd7d503e057599a57dc",
-      "duration_seconds": 51.0,
-      "hook": "My boss called me disloyal for reporting a robbery. The man who'd threatened me was his nephew, acting out a test.",
-      "hook_type": "accusation",
-      "premise": "A shop owner calls a cashier disloyal for reporting a robbery secretly staged by his nephew as an employee test.",
-      "shorts_source_engaged_view_rate_percentage": null,
-      "shorts_source_views": null,
-      "story_tone": "dramatic",
-      "title": "The Black Gloves in the Stockroom",
-      "trend_lane": "evergreen",
-      "trend_topic": null,
-      "views_24h": 0,
-      "views_2h": 0,
-      "views_6h": 0,
-      "views_72h": 1,
-      "views_7d": 2
-    },
     {
       "average_view_percentage": 0,
       "category": "sports",
@@ -2663,6 +2621,48 @@
       "trend_topic": null,
       "views_24h": 1,
       "views_2h": null,
+      "views_6h": 0,
+      "views_72h": 1,
+      "views_7d": 1
+    },
+    {
+      "average_view_percentage": 0,
+      "category": "relationship",
+      "checkpoint_observations": {
+        "24h": {
+          "actual_age_hours": 25.51,
+          "views": 1
+        },
+        "2h": {
+          "actual_age_hours": 1.51,
+          "views": 0
+        },
+        "6h": {
+          "actual_age_hours": 7.51,
+          "views": 0
+        },
+        "72h": {
+          "actual_age_hours": 73.51,
+          "views": 1
+        },
+        "7d": {
+          "actual_age_hours": 169.51,
+          "views": 1
+        }
+      },
+      "content_id": "wd-f7429dfb736a97907b1551a5",
+      "duration_seconds": 54.0,
+      "hook": "My husband unveiled his dating profile at our anniversary party. He told our friends I had agreed to a one-year separation while I was still holding the cake knife.",
+      "hook_type": "social_exposure",
+      "premise": "A husband reveals a completed dating profile at the couple's anniversary party and announces a one-year separation his wife never accepted.",
+      "shorts_source_engaged_view_rate_percentage": null,
+      "shorts_source_views": null,
+      "story_tone": "dramatic",
+      "title": "The Dating Profile at Our Anniversary",
+      "trend_lane": "evergreen",
+      "trend_topic": null,
+      "views_24h": 1,
+      "views_2h": 0,
       "views_6h": 0,
       "views_72h": 1,
       "views_7d": 1
