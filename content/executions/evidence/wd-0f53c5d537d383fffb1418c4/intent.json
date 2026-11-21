@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-0f53c5d537d383fffb1418c4",
+  "created_at": "2026-11-21T00:15:19.559365Z",
+  "evidence_version": 2,
+  "execution_id": "ex-72dd37c866b046724d43a72f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "95cf22f4be8eb8a62c011abee56c9f15edd1559a",
+  "record_type": "intent",
+  "request_blob_sha": "916ba6f99f6b7c20d6cb862c7a256d764b89f7e6",
+  "request_id": "rq-622c494a7f6b76f6361348a1",
+  "request_path": "content/requests/rq-622c494a7f6b76f6361348a1.json",
+  "request_source_sha": "aa9000e2ba5222e7691fa0de28b5068c828b648e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Three women believe they are helping their exclusive boyfriend care for his mother. His mother has been told an entirely different story.\n\n#WackyDramas #Shorts #RelationshipDeception #ThreeGirlfriends #EveningCare #FamilyCare #UnpaidCare #ExclusiveRelationship #BoyfriendLies #DinnerVisit",
+      "tags": [
+        "wd-id-c6063d6a798aabb38741",
+        "wacky dramas",
+        "shorts",
+        "boyfriend three girlfriends",
+        "relationship deception",
+        "unpaid evening care",
+        "mother and son conflict",
+        "exclusive relationship lie",
+        "family caregiving",
+        "girlfriends meet",
+        "care arrangement",
+        "WackyDramas",
+        "RelationshipDeception",
+        "ThreeGirlfriends",
+        "EveningCare",
+        "FamilyCare",
+        "UnpaidCare",
+        "ExclusiveRelationship",
+        "BoyfriendLies",
+        "DinnerVisit"
+      ],
+      "title": "The Evening Carers Who Were All His Girlfriends"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-04T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44841834304"
+  }
+}
