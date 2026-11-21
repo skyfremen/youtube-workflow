@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-14ad9b640093db3b6eaa0a3d",
+  "evidence_version": 2,
+  "execution_id": "ex-bb4c7f559b98426fedb70f34",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e353cf276066df625bd819c7a73668e3a5bb935f",
+  "record_type": "upload",
+  "recorded_at": "2026-11-21T12:14:31.513536Z",
+  "request_blob_sha": "6a3fd596a32f5a207dee3b5c12755b20ee8aaff8",
+  "request_id": "rq-5fbddffbaebe2de989b5dd16",
+  "request_path": "content/requests/rq-5fbddffbaebe2de989b5dd16.json",
+  "request_source_sha": "984e14461595c52c96270ade74cfd8da4e3b86ad",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A wedding interruption is supposed to test the bride's loyalty. Her groom has planned the accusation, the audience, and the reaction he expects.\n\n#WackyDramas #Shorts #WeddingDrama #WeddingVows #LoyaltyTest #FakePregnancyClaim #WeddingInterruption #BestMan #BrideAndGroom #StagedObjection",
+      "tags": [
+        "wd-id-e51ca564d21872baf339",
+        "wacky dramas",
+        "shorts",
+        "wedding loyalty test",
+        "groom hires objector",
+        "fake pregnancy claim",
+        "wedding interruption",
+        "best man recording",
+        "bride refuses vows",
+        "staged wedding objection",
+        "relationship trust",
+        "WackyDramas",
+        "WeddingDrama",
+        "WeddingVows",
+        "LoyaltyTest",
+        "FakePregnancyClaim",
+        "WeddingInterruption",
+        "BestMan",
+        "BrideAndGroom",
+        "StagedObjection"
+      ],
+      "title": "The Second Phone Beside the Wedding Aisle"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-04T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44902318359"
+  },
+  "youtube_video_id": "tECaaWpxE5Y"
+}
