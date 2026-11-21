@@ -12,10 +12,11 @@
     "retention": true,
     "traffic_source": true
   },
-  "generated_at": "2026-11-21T05:30:34Z",
-  "latest_realtime_snapshot": "realtime/2026-11-21/analytics-20261121T053034Z.json",
+  "generated_at": "2026-11-21T11:30:36Z",
+  "latest_realtime_snapshot": "realtime/2026-11-21/analytics-20261121T113036Z.json",
   "latest_reporting_date": "2026-11-20T08:00:00Z",
   "warnings": [
-    "Optional retention returned empty curves for 23 due checkpoints; will retry"
+    "Optional retention returned empty curves for 22 due checkpoints; will retry",
+    "Optional retention unavailable for 1 due checkpoints (HTTPError); will retry"
   ]
 }
