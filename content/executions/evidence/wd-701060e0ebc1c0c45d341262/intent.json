@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-701060e0ebc1c0c45d341262",
+  "created_at": "2026-11-21T00:17:05.924027Z",
+  "evidence_version": 2,
+  "execution_id": "ex-969f4d25bce17872490a9c3c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "10e0d24b98454b5b319758ed683ad7ae3700c46e",
+  "record_type": "intent",
+  "request_blob_sha": "916ba6f99f6b7c20d6cb862c7a256d764b89f7e6",
+  "request_id": "rq-622c494a7f6b76f6361348a1",
+  "request_path": "content/requests/rq-622c494a7f6b76f6361348a1.json",
+  "request_source_sha": "aa9000e2ba5222e7691fa0de28b5068c828b648e",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "His brother handles bedtime while he works nights. Then childcare turns into a demand to change what his son calls him.\n\n#WackyDramas #Shorts #FathersDayCard #FatherAndSon #UncleAndNephew #NightShiftDad #Childcare #FamilyRoles #BrotherConflict #Bedtime",
+      "tags": [
+        "wd-id-a674557bd371ad46ad31",
+        "wacky dramas",
+        "shorts",
+        "father and son drama",
+        "uncle and nephew",
+        "night shift dad",
+        "childcare conflict",
+        "brother family boundaries",
+        "Fathers Day card",
+        "bedtime care",
+        "parental role",
+        "WackyDramas",
+        "FathersDayCard",
+        "FatherAndSon",
+        "UncleAndNephew",
+        "NightShiftDad",
+        "Childcare",
+        "FamilyRoles",
+        "BrotherConflict",
+        "Bedtime"
+      ],
+      "title": "The Name Rubbed Off the Father's Day Card"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-03T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44841828633"
+  }
+}
