@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-955ac1e5948af1898c5e7b51",
+  "evidence_version": 2,
+  "execution_id": "ex-5cfeaddcb85732037719d57f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e5a2809e0e71b35397e2e5927c7167178f43ebc0",
+  "record_type": "upload",
+  "recorded_at": "2026-11-22T00:10:53.295137Z",
+  "request_blob_sha": "6e4e66750e7d61fa00ded8a98a10bc1ca5f2ed31",
+  "request_id": "rq-b1b1283ed08c59d99127fe58",
+  "request_path": "content/requests/rq-b1b1283ed08c59d99127fe58.json",
+  "request_source_sha": "868ec8ab8d3849f5916ef2d51348b7490bfa3830",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The workshop's emergency exit is chained to prevent unofficial breaks. When the alarm sounds, the boss still expects obedience.\n\n#WackyDramas #Shorts #ChainedFireExit #FireAlarm #WorkshopSafety #WorkplacePressure #EmployeeSafety #SmokeInWorkshop #EmergencyExit #BossWithTheKey",
+      "tags": [
+        "wd-id-9f1d26d132f2697f70c1",
+        "wacky dramas",
+        "shorts",
+        "chained fire exit",
+        "workshop fire alarm",
+        "boss blocks emergency exit",
+        "workplace safety drama",
+        "workers leave workshop",
+        "boss key lanyard",
+        "employee refuses silence",
+        "smoke in workshop",
+        "WackyDramas",
+        "ChainedFireExit",
+        "FireAlarm",
+        "WorkshopSafety",
+        "WorkplacePressure",
+        "EmployeeSafety",
+        "SmokeInWorkshop",
+        "EmergencyExit",
+        "BossWithTheKey"
+      ],
+      "title": "The Fire-Exit Key on His Lanyard"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-05T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44964897060"
+  },
+  "youtube_video_id": "d1gR2k8svZM"
+}
