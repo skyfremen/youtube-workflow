@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-3ad5241e7139583c95d13a21",
+  "evidence_version": 2,
+  "execution_id": "ex-f819eb278c9933cd00ecb2d5",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "e1bc63e41a318a16194cb682093068f0d503c68b",
+  "record_type": "upload",
+  "recorded_at": "2026-11-22T00:11:24.036385Z",
+  "request_blob_sha": "6e4e66750e7d61fa00ded8a98a10bc1ca5f2ed31",
+  "request_id": "rq-b1b1283ed08c59d99127fe58",
+  "request_path": "content/requests/rq-b1b1283ed08c59d99127fe58.json",
+  "request_source_sha": "868ec8ab8d3849f5916ef2d51348b7490bfa3830",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Her landlord wants buyers to believe the apartment is empty. The tenant paying next month's rent is expected to disappear for the viewing.\n\n#WackyDramas #Shorts #LandlordDeception #TenantAtHome #ApartmentViewing #Wardrobe #RentalHome #NextMonthsRent #BuyerViewing #TenantIdentity",
+      "tags": [
+        "wd-id-495b07d265458dbe99fa",
+        "wacky dramas",
+        "shorts",
+        "landlord asks tenant to hide",
+        "wardrobe during viewing",
+        "occupied apartment sale",
+        "tenant called cleaner",
+        "rent already paid",
+        "landlord lies to buyers",
+        "rental home drama",
+        "tenant refuses to disappear",
+        "WackyDramas",
+        "LandlordDeception",
+        "TenantAtHome",
+        "ApartmentViewing",
+        "Wardrobe",
+        "RentalHome",
+        "NextMonthsRent",
+        "BuyerViewing",
+        "TenantIdentity"
+      ],
+      "title": "Ten Minutes Inside Her Own Wardrobe"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-05T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44964899655"
+  },
+  "youtube_video_id": "jo8y14nuZII"
+}
