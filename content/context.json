@@ -77,11 +77,11 @@
           "value": "confession"
         },
         {
-          "average_view_percentage": 34.2,
+          "average_view_percentage": 32.16,
           "dimension": "hook_type",
           "evidence_median_views": 9.0,
-          "mature_sample": 29,
-          "sample_size": 34,
+          "mature_sample": 28,
+          "sample_size": 33,
           "value": "contradiction"
         },
         {
@@ -93,31 +93,23 @@
           "value": "dramatic_comedy"
         },
         {
-          "average_view_percentage": 31.58,
+          "average_view_percentage": 28.95,
           "dimension": "category",
-          "evidence_median_views": 8.0,
-          "mature_sample": 26,
-          "sample_size": 34,
+          "evidence_median_views": 7.0,
+          "mature_sample": 25,
+          "sample_size": 33,
           "value": "family"
         },
         {
-          "average_view_percentage": 35.52,
+          "average_view_percentage": 33.27,
           "dimension": "hook_type",
-          "evidence_median_views": 6.0,
-          "mature_sample": 17,
-          "sample_size": 21,
+          "evidence_median_views": 6.5,
+          "mature_sample": 16,
+          "sample_size": 20,
           "value": "discovery"
         }
       ],
       "weak_patterns": [
-        {
-          "average_view_percentage": 36.46,
-          "dimension": "hook_type",
-          "evidence_median_views": 2.0,
-          "mature_sample": 9,
-          "sample_size": 16,
-          "value": "money_stakes"
-        },
         {
           "average_view_percentage": 20.46,
           "dimension": "story_tone",
@@ -135,6 +127,14 @@
           "value": "social_exposure"
         },
         {
+          "average_view_percentage": 36.46,
+          "dimension": "hook_type",
+          "evidence_median_views": 4.0,
+          "mature_sample": 9,
+          "sample_size": 16,
+          "value": "money_stakes"
+        },
+        {
           "average_view_percentage": 25.44,
           "dimension": "story_tone",
           "evidence_median_views": 5.0,
@@ -145,14 +145,14 @@
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-22T11:30:32Z",
-      "videos_analyzed": 127
+      "latest_realtime_snapshot": "2026-11-22T17:30:32Z",
+      "videos_analyzed": 125
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
           "evidence_median_views": 6.0,
-          "sample_size": 25,
+          "sample_size": 24,
           "window": "00-03"
         },
         {
@@ -179,15 +179,15 @@
         }
       ]
     },
-    "generated_at": "2026-11-22T11:30:32Z",
+    "generated_at": "2026-11-22T17:30:32Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
         "24h": 122,
-        "2h": 74,
-        "6h": 124,
-        "72h": 114,
-        "7d": 97
+        "2h": 73,
+        "6h": 123,
+        "72h": 113,
+        "7d": 95
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
