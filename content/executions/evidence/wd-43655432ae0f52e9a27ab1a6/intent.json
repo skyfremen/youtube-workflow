@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-43655432ae0f52e9a27ab1a6",
+  "created_at": "2026-11-22T12:20:41.211189Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6aea610c1c1a5cc4a85e3ccf",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a83779213a8ca2aaa7d61bf58c0b2752ef2d4ea7",
+  "record_type": "intent",
+  "request_blob_sha": "3f555e102a52e587ee23e64a893838f6283f43db",
+  "request_id": "rq-7dbf256a8a5a488a715a1992",
+  "request_path": "content/requests/rq-7dbf256a8a5a488a715a1992.json",
+  "request_source_sha": "ac5679dd6f948c208f1bed9a739f51aaadd540d1",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A pregnancy scan appears on the sister's baby-shower invitation. The expectant mother has never agreed to the story being told about her child.\n\n#WackyDramas #Shorts #BabyShowerInvitation #PregnancyScan #SisterConflict #FalseSurrogacyClaim #ExpectantMother #YellowBlanket #FamilyPressure #ParenthoodBoundaries",
+      "tags": [
+        "wd-id-94f604ebd2f2f8ffa1f1",
+        "wacky dramas",
+        "shorts",
+        "sister false surrogacy claim",
+        "baby shower invitation",
+        "pregnancy scan shared",
+        "expectant mother boundaries",
+        "sister claims baby",
+        "family pressure",
+        "yellow knitted blanket",
+        "canceling baby shower",
+        "WackyDramas",
+        "BabyShowerInvitation",
+        "PregnancyScan",
+        "SisterConflict",
+        "FalseSurrogacyClaim",
+        "ExpectantMother",
+        "YellowBlanket",
+        "FamilyPressure",
+        "ParenthoodBoundaries"
+      ],
+      "title": "The Yellow Blanket Beside Her Baby-Shower Invitations"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-06T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45021279155"
+  }
+}
