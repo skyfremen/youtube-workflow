@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-42aed26df9b40fa2dc74ddfe",
+  "evidence_version": 2,
+  "execution_id": "ex-0a9220b6dc77642909105cf2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cd687fb39f398280e7fb6318abc1501f79a58e2a",
+  "record_type": "upload",
+  "recorded_at": "2026-11-22T00:13:16.335108Z",
+  "request_blob_sha": "6e4e66750e7d61fa00ded8a98a10bc1ca5f2ed31",
+  "request_id": "rq-b1b1283ed08c59d99127fe58",
+  "request_path": "content/requests/rq-b1b1283ed08c59d99127fe58.json",
+  "request_source_sha": "868ec8ab8d3849f5916ef2d51348b7490bfa3830",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Her brother reads their mother's supposed final wish at the funeral. The request puts a family reunion above the truth of who actually wrote it.\n\n#WackyDramas #Shorts #FamilyGrief #ForgedLetter #MothersFuneral #BrotherAndSister #FamilyReunion #ForgivenessPressure #EstrangedFather #FuneralLetter",
+      "tags": [
+        "wd-id-cdf218b2c0a0f9be353b",
+        "wacky dramas",
+        "shorts",
+        "forged funeral letter",
+        "mother final wish",
+        "brother and sister conflict",
+        "family grief",
+        "pressure to forgive father",
+        "estranged dad",
+        "family reunion pressure",
+        "truth at the wake",
+        "WackyDramas",
+        "FamilyGrief",
+        "ForgedLetter",
+        "MothersFuneral",
+        "BrotherAndSister",
+        "FamilyReunion",
+        "ForgivenessPressure",
+        "EstrangedFather",
+        "FuneralLetter"
+      ],
+      "title": "The Folded Letter Beside Mum's Photograph"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-05T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "44964893054"
+  },
+  "youtube_video_id": "vSrVx1dJaUw"
+}
