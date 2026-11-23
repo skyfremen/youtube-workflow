@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-b4b51f74505e1519b07bbe8b",
+  "created_at": "2026-11-23T12:14:44.831785Z",
+  "evidence_version": 2,
+  "execution_id": "ex-99aedc76b2fba231289f90e1",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7fd451f5f7ff643e8eb3c702d8a3f3c083cd7509",
+  "record_type": "intent",
+  "request_blob_sha": "6e557df6e7aa870c625588a1b7c2a93074458e05",
+  "request_id": "rq-ea77522fc02e6bfa1aa5bc9d",
+  "request_path": "content/requests/rq-ea77522fc02e6bfa1aa5bc9d.json",
+  "request_source_sha": "c9b9441e5253af08ffe9a283ed7345940855fdc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He charges his wife for childcare during her hospital stay. The grandmother who actually looked after their son has not charged anyone.\n\n#WackyDramas #Shorts #ParentingCosts #BabysittingBill #HospitalStay #GrandmotherCare #SharedParenting #FatherAndSon #YellowBag #FamilyResponsibilities",
+      "tags": [
+        "wd-id-bcdaeed1eae4f2d449e4",
+        "wacky dramas",
+        "shorts",
+        "husband babysitting bill",
+        "grandmother provides childcare",
+        "wife hospital stay",
+        "shared parenting responsibility",
+        "three hundred dollars childcare",
+        "father learns routine",
+        "grandmother needs rest",
+        "family childcare costs",
+        "WackyDramas",
+        "ParentingCosts",
+        "BabysittingBill",
+        "HospitalStay",
+        "GrandmotherCare",
+        "SharedParenting",
+        "FatherAndSon",
+        "YellowBag",
+        "FamilyResponsibilities"
+      ],
+      "title": "Three Hundred Dollars for Dad's Babysitting"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-07T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45171478472"
+  }
+}
