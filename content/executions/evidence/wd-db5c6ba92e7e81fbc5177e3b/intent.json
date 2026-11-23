@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-db5c6ba92e7e81fbc5177e3b",
+  "created_at": "2026-11-23T12:15:23.088712Z",
+  "evidence_version": 2,
+  "execution_id": "ex-8e7b7648553d49909864068b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1022c59b805cf5fbb60645ade3d1f4904b05568c",
+  "record_type": "intent",
+  "request_blob_sha": "6e557df6e7aa870c625588a1b7c2a93074458e05",
+  "request_id": "rq-ea77522fc02e6bfa1aa5bc9d",
+  "request_path": "content/requests/rq-ea77522fc02e6bfa1aa5bc9d.json",
+  "request_source_sha": "c9b9441e5253af08ffe9a283ed7345940855fdc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The photographer calls the edited portrait an upgrade. The girl in the picture wants to know why the details she chose have disappeared.\n\n#WackyDramas #Shorts #SchoolPortrait #ProstheticArm #PhotoRetouching #ChildSelfImage #ButterflyStickers #GrandmaAndGranddaughter #OriginalPhoto #DaughtersChoice",
+      "tags": [
+        "wd-id-656c4e26cfbe83c182dc",
+        "wacky dramas",
+        "shorts",
+        "prosthetic arm school photo",
+        "unwanted photo retouching",
+        "child chooses original portrait",
+        "butterfly prosthetic cover",
+        "grandmother butterfly stickers",
+        "school photographer dispute",
+        "daughter self image",
+        "original school portrait",
+        "WackyDramas",
+        "SchoolPortrait",
+        "ProstheticArm",
+        "PhotoRetouching",
+        "ChildSelfImage",
+        "ButterflyStickers",
+        "GrandmaAndGranddaughter",
+        "OriginalPhoto",
+        "DaughtersChoice"
+      ],
+      "title": "Seven Butterflies in Her School Portrait"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-07T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45171481911"
+  }
+}
