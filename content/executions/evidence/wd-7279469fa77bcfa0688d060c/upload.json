@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7279469fa77bcfa0688d060c",
+  "evidence_version": 2,
+  "execution_id": "ex-ccbab09ffb499e96e66f47bc",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cd35c5ed055cdde4b5e9c067ae47e99f37c2e983",
+  "record_type": "upload",
+  "recorded_at": "2026-11-23T00:15:37.190407Z",
+  "request_blob_sha": "073076a21048dcdd298d85f62fe3d61893ffed92",
+  "request_id": "rq-05a828df315c823aec3b2ca4",
+  "request_path": "content/requests/rq-05a828df315c823aec3b2ca4.json",
+  "request_source_sha": "020477120428b14c87d6d6de6739b4da8cea949b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The officiant reads a different name in the wedding script. The groom has agreed to the change on behalf of the woman he plans to marry.\n\n#WackyDramas #Shorts #WeddingRehearsal #WeddingVows #LateWife #NameCard #BrideAndGroom #WeddingPostponed #GriefAndLove #ConsentMatters",
+      "tags": [
+        "wd-id-cb4ddc659b44349f8e9c",
+        "wacky dramas",
+        "shorts",
+        "wrong name in wedding vows",
+        "groom late wife name",
+        "wedding rehearsal conflict",
+        "bride name card",
+        "grief and remarriage",
+        "officiant wedding script",
+        "wedding postponed",
+        "relationship consent",
+        "WackyDramas",
+        "WeddingRehearsal",
+        "WeddingVows",
+        "LateWife",
+        "NameCard",
+        "BrideAndGroom",
+        "WeddingPostponed",
+        "GriefAndLove",
+        "ConsentMatters"
+      ],
+      "title": "The Name Card Beside Their Wedding Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-06T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45087136961"
+  },
+  "youtube_video_id": "XYy9GJz7qVo"
+}
