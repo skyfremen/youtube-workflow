@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9e4f52abaa2cd243145996d3",
+  "evidence_version": 2,
+  "execution_id": "ex-497e58942fb57f3761176b2c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "8e76ad1c4abdde94ddebb32a959aa4a25ab01943",
+  "record_type": "upload",
+  "recorded_at": "2026-11-23T12:17:14.569538Z",
+  "request_blob_sha": "6e557df6e7aa870c625588a1b7c2a93074458e05",
+  "request_id": "rq-ea77522fc02e6bfa1aa5bc9d",
+  "request_path": "content/requests/rq-ea77522fc02e6bfa1aa5bc9d.json",
+  "request_source_sha": "c9b9441e5253af08ffe9a283ed7345940855fdc2",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "A new glass door gives the landlord the view he wants. His tenant has a different idea about what access to her home should mean.\n\n#WackyDramas #Shorts #GlassFrontDoor #TenantPrivacy #LandlordIntrusion #LivingRoom #PrivacyScreen #CurtainDispute #RentalHome #KnockFirst",
+      "tags": [
+        "wd-id-e582d53e3317adadd33e",
+        "wacky dramas",
+        "shorts",
+        "landlord glass front door",
+        "tenant privacy screen",
+        "clear door living room",
+        "landlord forbids curtain",
+        "rental home privacy",
+        "freestanding room divider",
+        "landlord watches visitors",
+        "knock before entering",
+        "WackyDramas",
+        "GlassFrontDoor",
+        "TenantPrivacy",
+        "LandlordIntrusion",
+        "LivingRoom",
+        "PrivacyScreen",
+        "CurtainDispute",
+        "RentalHome",
+        "KnockFirst"
+      ],
+      "title": "The View Through Her Front Door"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-08T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45171490435"
+  },
+  "youtube_video_id": "vkEPvu_-9jI"
+}
