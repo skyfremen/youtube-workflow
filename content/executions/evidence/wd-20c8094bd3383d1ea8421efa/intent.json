@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-20c8094bd3383d1ea8421efa",
+  "created_at": "2026-11-23T00:16:22.555418Z",
+  "evidence_version": 2,
+  "execution_id": "ex-26c03627617c01ad96985a55",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "cc079e5101ad1ec609b98008becc5da34943ba30",
+  "record_type": "intent",
+  "request_blob_sha": "073076a21048dcdd298d85f62fe3d61893ffed92",
+  "request_id": "rq-05a828df315c823aec3b2ca4",
+  "request_path": "content/requests/rq-05a828df315c823aec3b2ca4.json",
+  "request_source_sha": "020477120428b14c87d6d6de6739b4da8cea949b",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The boss calls his daughter the manager when she rejects an employee's leave. She has not been told what her pretend job is actually deciding.\n\n#WackyDramas #Shorts #WorkplaceDrama #LeaveRequest #ChildManager #SchoolPlay #BirthdayParty #FlowerStamp #BossResponsibility #ApprovedDayOff",
+      "tags": [
+        "wd-id-d656930d1028b7c52d44",
+        "wacky dramas",
+        "shorts",
+        "boss child approves leave",
+        "six year old manager",
+        "approved day off canceled",
+        "son school play",
+        "boss daughter birthday",
+        "flower stamp leave form",
+        "work and family conflict",
+        "boss responsibility",
+        "WackyDramas",
+        "WorkplaceDrama",
+        "LeaveRequest",
+        "ChildManager",
+        "SchoolPlay",
+        "BirthdayParty",
+        "FlowerStamp",
+        "BossResponsibility",
+        "ApprovedDayOff"
+      ],
+      "title": "The Flower Stamp on His Leave Form"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-07T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45087144466"
+  }
+}
