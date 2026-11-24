@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-2354c350467782abdf4a3f03",
+  "created_at": "2026-11-24T12:22:24.425859Z",
+  "evidence_version": 2,
+  "execution_id": "ex-6b3cfc24c4f04924aabd81a2",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "463e942107f7b0a6252c37cb684d66461e03eb56",
+  "record_type": "intent",
+  "request_blob_sha": "7928f1edbaad98feb169ad36cc32f0e336d81ec7",
+  "request_id": "rq-f9cf8c569e41f7b892f1292e",
+  "request_path": "content/requests/rq-f9cf8c569e41f7b892f1292e.json",
+  "request_source_sha": "4cd654e256d6a2cee52abfd739c0e958ecd154bd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The tenant discovers who has been making noises in her flat. Removing the costume leaves a much more ordinary reason to be frightened.\n\n#WackyDramas #Shorts #LandlordDisguise #GhostCostume #SpareKey #TenantAtNight #WhiteSheet #HousingPressure #LandlordIntrusion #SisterSupport",
+      "tags": [
+        "wd-id-d3eb9e2c20b8f637ee55",
+        "wacky dramas",
+        "shorts",
+        "landlord ghost disguise",
+        "landlord enters flat at night",
+        "spare key intrusion",
+        "fake haunted rental",
+        "white sheet costume",
+        "tenant pressured to leave",
+        "new tenant promise",
+        "sister overnight stay",
+        "WackyDramas",
+        "LandlordDisguise",
+        "GhostCostume",
+        "SpareKey",
+        "TenantAtNight",
+        "WhiteSheet",
+        "HousingPressure",
+        "LandlordIntrusion",
+        "SisterSupport"
+      ],
+      "title": "The Spare Key Under the Ghost Costume"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-09T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45391806115"
+  }
+}
