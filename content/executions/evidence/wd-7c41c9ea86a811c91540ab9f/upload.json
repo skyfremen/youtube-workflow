@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-7c41c9ea86a811c91540ab9f",
+  "evidence_version": 2,
+  "execution_id": "ex-5efdfdf9dc52c86eef848e99",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ecd7454cda0aab5d7e61ea17727095d6c6df0c86",
+  "record_type": "upload",
+  "recorded_at": "2026-11-24T12:21:30.647512Z",
+  "request_blob_sha": "7928f1edbaad98feb169ad36cc32f0e336d81ec7",
+  "request_id": "rq-f9cf8c569e41f7b892f1292e",
+  "request_path": "content/requests/rq-f9cf8c569e41f7b892f1292e.json",
+  "request_source_sha": "4cd654e256d6a2cee52abfd739c0e958ecd154bd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The owner says meal vouchers are worth the same as cash. His answer changes when the employee asks to exchange them at the register.\n\n#WackyDramas #Shorts #RestaurantWorker #WagesInVouchers #WageEnvelope #RestaurantOwner #RentMoney #CashWages #TemporaryWork #BusTicket",
+      "tags": [
+        "wd-id-85c27e2e52c9af40d400",
+        "wacky dramas",
+        "shorts",
+        "restaurant wages in vouchers",
+        "boss refuses cash wages",
+        "meal vouchers instead of pay",
+        "worker rent money",
+        "wage envelope dispute",
+        "temporary paid shift",
+        "restaurant cash bills",
+        "bus ticket home",
+        "WackyDramas",
+        "RestaurantWorker",
+        "WagesInVouchers",
+        "WageEnvelope",
+        "RestaurantOwner",
+        "RentMoney",
+        "CashWages",
+        "TemporaryWork",
+        "BusTicket"
+      ],
+      "title": "The Wage Envelope Full of Restaurant Vouchers"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-09T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45391796893"
+  },
+  "youtube_video_id": "Jui46CFm2R0"
+}
