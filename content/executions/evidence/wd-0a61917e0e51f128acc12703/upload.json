@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-0a61917e0e51f128acc12703",
+  "evidence_version": 2,
+  "execution_id": "ex-a37d6e024039c0ae3da587a3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "c21d330d6dfbd40edd9bf560a1a2e8ea5814c7b1",
+  "record_type": "upload",
+  "recorded_at": "2026-11-24T12:21:17.553317Z",
+  "request_blob_sha": "7928f1edbaad98feb169ad36cc32f0e336d81ec7",
+  "request_id": "rq-f9cf8c569e41f7b892f1292e",
+  "request_path": "content/requests/rq-f9cf8c569e41f7b892f1292e.json",
+  "request_source_sha": "4cd654e256d6a2cee52abfd739c0e958ecd154bd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The new jackets come with a condition the athlete never agreed to. His coach expects him to give away his result for the team's funding.\n\n#WackyDramas #Shorts #RunningCoach #RaceFixingPressure #TeamSponsor #TeamJacket #HonestRace #FourthPlace #TrainingFunding #SponsorSon",
+      "tags": [
+        "wd-id-4735f9ac4b135e03dfe3",
+        "wacky dramas",
+        "shorts",
+        "coach promises race result",
+        "sponsor son race pressure",
+        "runner refuses fake injury",
+        "team jacket sponsorship",
+        "honest fourth place",
+        "winter training funding",
+        "coach threatens athlete",
+        "running final",
+        "WackyDramas",
+        "RunningCoach",
+        "RaceFixingPressure",
+        "TeamSponsor",
+        "TeamJacket",
+        "HonestRace",
+        "FourthPlace",
+        "TrainingFunding",
+        "SponsorSon"
+      ],
+      "title": "The Sponsor's Name on the Team Jacket"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-09T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45391801580"
+  },
+  "youtube_video_id": "JXAobSAk8z4"
+}
