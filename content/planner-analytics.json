@@ -110,20 +110,20 @@
     ],
     "weak_patterns": [
       {
+        "average_view_percentage": 15.55,
+        "dimension": "story_tone",
+        "evidence_median_views": 5.0,
+        "mature_sample": 13,
+        "sample_size": 17,
+        "value": "dramatic_comedy"
+      },
+      {
         "average_view_percentage": 11.52,
         "dimension": "story_tone",
         "evidence_median_views": 5.5,
         "mature_sample": 26,
         "sample_size": 33,
         "value": "warm"
-      },
-      {
-        "average_view_percentage": 15.55,
-        "dimension": "story_tone",
-        "evidence_median_views": 6.0,
-        "mature_sample": 13,
-        "sample_size": 17,
-        "value": "dramatic_comedy"
       },
       {
         "average_view_percentage": 17.09,
@@ -144,20 +144,20 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-25T11:30:33Z",
+    "latest_realtime_snapshot": "2026-11-25T17:30:34Z",
     "videos_analyzed": 126
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
-        "evidence_median_views": 6.5,
-        "sample_size": 52,
-        "window": "12-15"
-      },
-      {
         "evidence_median_views": 6.0,
         "sample_size": 24,
         "window": "00-03"
+      },
+      {
+        "evidence_median_views": 6.0,
+        "sample_size": 52,
+        "window": "12-15"
       },
       {
         "evidence_median_views": 4.5,
@@ -178,20 +178,20 @@
       }
     ]
   },
-  "generated_at": "2026-11-25T11:30:33Z",
+  "generated_at": "2026-11-25T17:30:34Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 121,
+      "24h": 123,
       "2h": 75,
-      "6h": 123,
-      "72h": 113,
+      "6h": 124,
+      "72h": 114,
       "7d": 96
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 23 due checkpoints; will retry"
+    "Optional retention returned empty curves for 24 due checkpoints; will retry"
   ]
 }
