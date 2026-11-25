@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-a4bf3ce2aa216f5d156df174",
+  "evidence_version": 2,
+  "execution_id": "ex-d0755c26bdff7b4f9856c77f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "fa275bb60f1f2e5afa5c33c09d9141547f3843c9",
+  "record_type": "upload",
+  "recorded_at": "2026-11-25T00:23:38.736796Z",
+  "request_blob_sha": "31a64c41c7173e2b9b675337f0cc4a617dc51527",
+  "request_id": "rq-e81653b1448f91625a48d13a",
+  "request_path": "content/requests/rq-e81653b1448f91625a48d13a.json",
+  "request_source_sha": "40356aeadc73da7578e679e743e628be7709888c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The tenant has already paid for independent access. The landlord removes it and offers a different service at a daily price.\n\n#WackyDramas #Shorts #WheelchairRamp #LandlordDispute #IndependentAccess #TenantRights #MissingRamp #DailyFee #HomeAccess #DisabilityAccess",
+      "tags": [
+        "wd-id-ed9ca6d01b0662090af4",
+        "wacky dramas",
+        "shorts",
+        "landlord removes ramp",
+        "wheelchair access",
+        "tenant landlord dispute",
+        "independent living",
+        "paid wheelchair ramp",
+        "daily help fee",
+        "home accessibility",
+        "reclaiming independence",
+        "WackyDramas",
+        "WheelchairRamp",
+        "LandlordDispute",
+        "IndependentAccess",
+        "TenantRights",
+        "MissingRamp",
+        "DailyFee",
+        "HomeAccess",
+        "DisabilityAccess"
+      ],
+      "title": "The Ramp Inside His Landlord's Garage"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-10T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45517077555"
+  },
+  "youtube_video_id": "LA1QYZeDQRY"
+}
