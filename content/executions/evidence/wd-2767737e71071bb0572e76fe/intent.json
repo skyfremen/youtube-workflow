@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-2767737e71071bb0572e76fe",
+  "created_at": "2026-11-25T12:15:30.742696Z",
+  "evidence_version": 2,
+  "execution_id": "ex-86a83fe04e47b90b313c6c99",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "385358b8ed510bdb3e2cf7d58019f6b96fd574d9",
+  "record_type": "intent",
+  "request_blob_sha": "76e62b5c7b68fc1b8cf2d1c195e13ea77b56dfe0",
+  "request_id": "rq-7251b0ca8c2ec62244a1cc6d",
+  "request_path": "content/requests/rq-7251b0ca8c2ec62244a1cc6d.json",
+  "request_source_sha": "4e472921c3c4dbc05457fe8e95739af2e8075fe3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The patient asks the dentist to correct his work. He insists the veneers must be returned before discussing a refund.\n\n#WackyDramas #Shorts #DentalVeneers #DentistDispute #RefundCondition #PatientChoice #DentalAppointment #VeneerShade #PatientRefusal #SecondOpinion",
+      "tags": [
+        "wd-id-636288fcfedfdb8dc486",
+        "wacky dramas",
+        "shorts",
+        "dentist refund dispute",
+        "dental veneers story",
+        "returning fitted veneers",
+        "patient refuses demand",
+        "wrong veneer shade",
+        "dental appointment",
+        "second opinion",
+        "patient choice",
+        "WackyDramas",
+        "DentalVeneers",
+        "DentistDispute",
+        "RefundCondition",
+        "PatientChoice",
+        "DentalAppointment",
+        "VeneerShade",
+        "PatientRefusal",
+        "SecondOpinion"
+      ],
+      "title": "The Veneers He Wanted Back Loose"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-11T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45611037046"
+  }
+}
