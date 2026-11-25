@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-9d83e27dbc63bfd02b1c8644",
+  "evidence_version": 2,
+  "execution_id": "ex-941003c499708588c631cec0",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "a6d2c67fdc9478370b5770435b71f9212a83514c",
+  "record_type": "upload",
+  "recorded_at": "2026-11-25T12:15:41.788942Z",
+  "request_blob_sha": "76e62b5c7b68fc1b8cf2d1c195e13ea77b56dfe0",
+  "request_id": "rq-7251b0ca8c2ec62244a1cc6d",
+  "request_path": "content/requests/rq-7251b0ca8c2ec62244a1cc6d.json",
+  "request_source_sha": "4e472921c3c4dbc05457fe8e95739af2e8075fe3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Customers recognize the employee from a theft video. His boss knows exactly how that scene was made.\n\n#WackyDramas #Shorts #TrainingVideo #FalseAccusation #ShopEmployee #SecurityCameras #StagedTheft #WorkplaceReputation #MisleadingAdvertising #EmployeeSpeaksUp",
+      "tags": [
+        "wd-id-51c67a2c0db33de1b45d",
+        "wacky dramas",
+        "shorts",
+        "staged theft training video",
+        "employee falsely accused",
+        "shop security cameras",
+        "misleading camera advertisement",
+        "employee reputation",
+        "boss blames worker",
+        "retail workplace drama",
+        "worker tells the truth",
+        "WackyDramas",
+        "TrainingVideo",
+        "FalseAccusation",
+        "ShopEmployee",
+        "SecurityCameras",
+        "StagedTheft",
+        "WorkplaceReputation",
+        "MisleadingAdvertising",
+        "EmployeeSpeaksUp"
+      ],
+      "title": "The Training Clip Above His Checkout"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-11T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45611033336"
+  },
+  "youtube_video_id": "bL-roG7pMro"
+}
