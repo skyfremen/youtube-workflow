@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-9dec8bb67f5bf0d0a407a464",
+  "created_at": "2026-11-25T12:13:28.893311Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5f05354cce6cf8c94a04caf9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b3d28c78defd6a56a0b53838b7a0c56d3ec14881",
+  "record_type": "intent",
+  "request_blob_sha": "76e62b5c7b68fc1b8cf2d1c195e13ea77b56dfe0",
+  "request_id": "rq-7251b0ca8c2ec62244a1cc6d",
+  "request_path": "content/requests/rq-7251b0ca8c2ec62244a1cc6d.json",
+  "request_source_sha": "4e472921c3c4dbc05457fe8e95739af2e8075fe3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He says he is proud of his wife's opportunity. Then he pays someone to give her a reason to stay home.\n\n#WackyDramas #Shorts #StagedAttack #HusbandAndWife #WorkTrip #MarriageControl #PackedSuitcase #CareerOpportunity #FalseEmergency #BrokenTrust",
+      "tags": [
+        "wd-id-cc792c7e479a443a45c0",
+        "wacky dramas",
+        "shorts",
+        "husband stages attack",
+        "wife work trip",
+        "marriage control",
+        "false emergency",
+        "packed suitcase",
+        "career opportunity",
+        "husband confession",
+        "broken trust in marriage",
+        "WackyDramas",
+        "StagedAttack",
+        "HusbandAndWife",
+        "WorkTrip",
+        "MarriageControl",
+        "PackedSuitcase",
+        "CareerOpportunity",
+        "FalseEmergency",
+        "BrokenTrust"
+      ],
+      "title": "The Suitcase He Wanted Unpacked"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-11T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45611026426"
+  }
+}
