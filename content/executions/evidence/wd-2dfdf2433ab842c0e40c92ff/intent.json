@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-2dfdf2433ab842c0e40c92ff",
+  "created_at": "2026-11-25T12:15:08.851025Z",
+  "evidence_version": 2,
+  "execution_id": "ex-327c3e0f666adead90151358",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "180d6d6199a22fa34a0b3fabb9d2871024c1ec58",
+  "record_type": "intent",
+  "request_blob_sha": "76e62b5c7b68fc1b8cf2d1c195e13ea77b56dfe0",
+  "request_id": "rq-7251b0ca8c2ec62244a1cc6d",
+  "request_path": "content/requests/rq-7251b0ca8c2ec62244a1cc6d.json",
+  "request_source_sha": "4e472921c3c4dbc05457fe8e95739af2e8075fe3",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The client thinks the bride agreed to the arrangement. Her groom has already accepted the money.\n\n#WackyDramas #Shorts #FirstDance #WeddingAuction #BrideAndGroom #WeddingClient #WeddingDebt #DancePartner #WeddingBetrayal #MotherDaughterDance",
+      "tags": [
+        "wd-id-dd8c6479d6d4838646e5",
+        "wacky dramas",
+        "shorts",
+        "first dance auction",
+        "groom sells wedding dance",
+        "bride refuses dance",
+        "wedding business client",
+        "wedding debt",
+        "mother daughter dance",
+        "wedding betrayal",
+        "choice of dance partner",
+        "WackyDramas",
+        "FirstDance",
+        "WeddingAuction",
+        "BrideAndGroom",
+        "WeddingClient",
+        "WeddingDebt",
+        "DancePartner",
+        "WeddingBetrayal",
+        "MotherDaughterDance"
+      ],
+      "title": "The Client Waiting for Their First Dance"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-10T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45611022233"
+  }
+}
