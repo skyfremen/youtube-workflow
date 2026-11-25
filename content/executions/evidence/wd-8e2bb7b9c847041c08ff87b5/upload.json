@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-8e2bb7b9c847041c08ff87b5",
+  "evidence_version": 2,
+  "execution_id": "ex-c3349b43d8a81917a8365f75",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d288017d4d639c4d10ea0aac18e25a9720af1bcd",
+  "record_type": "upload",
+  "recorded_at": "2026-11-25T00:23:06.046059Z",
+  "request_blob_sha": "31a64c41c7173e2b9b675337f0cc4a617dc51527",
+  "request_id": "rq-e81653b1448f91625a48d13a",
+  "request_path": "content/requests/rq-e81653b1448f91625a48d13a.json",
+  "request_source_sha": "40356aeadc73da7578e679e743e628be7709888c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The wife expects an anniversary dinner. The employee is asked to hide another woman's meal on her bill.\n\n#WackyDramas #Shorts #RestaurantBoss #AnniversaryDinner #HiddenGirlfriend #DinnerBill #WorkplaceBetrayal #UnopenedGift #MarriageSecret #RestaurantEmployee",
+      "tags": [
+        "wd-id-61a73b6485ab30a0957d",
+        "wacky dramas",
+        "shorts",
+        "restaurant boss affair",
+        "anniversary dinner",
+        "hidden girlfriend",
+        "wife pays dinner bill",
+        "workplace betrayal",
+        "unopened anniversary gift",
+        "restaurant employee",
+        "marriage secret",
+        "WackyDramas",
+        "RestaurantBoss",
+        "AnniversaryDinner",
+        "HiddenGirlfriend",
+        "DinnerBill",
+        "WorkplaceBetrayal",
+        "UnopenedGift",
+        "MarriageSecret",
+        "RestaurantEmployee"
+      ],
+      "title": "The Gift Box at Table Seven"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-10T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45517072767"
+  },
+  "youtube_video_id": "7mV_75jMUqo"
+}
