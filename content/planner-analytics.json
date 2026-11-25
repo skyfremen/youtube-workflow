@@ -62,7 +62,7 @@
       {
         "average_view_percentage": 35.07,
         "dimension": "category",
-        "evidence_median_views": 15.0,
+        "evidence_median_views": 15.5,
         "mature_sample": 24,
         "sample_size": 27,
         "value": "wedding"
@@ -76,12 +76,20 @@
         "value": "confession"
       },
       {
-        "average_view_percentage": 20.46,
+        "average_view_percentage": 17.97,
         "dimension": "category",
-        "evidence_median_views": 7.5,
-        "mature_sample": 29,
+        "evidence_median_views": 9.0,
+        "mature_sample": 30,
         "sample_size": 37,
         "value": "family"
+      },
+      {
+        "average_view_percentage": 25.6,
+        "dimension": "hook_type",
+        "evidence_median_views": 9.0,
+        "mature_sample": 16,
+        "sample_size": 22,
+        "value": "discovery"
       },
       {
         "average_view_percentage": 18.37,
@@ -92,36 +100,28 @@
         "value": "contradiction"
       },
       {
-        "average_view_percentage": 25.6,
-        "dimension": "hook_type",
+        "average_view_percentage": 18.37,
+        "dimension": "story_tone",
         "evidence_median_views": 7.0,
-        "mature_sample": 16,
-        "sample_size": 21,
-        "value": "discovery"
-      },
-      {
-        "average_view_percentage": 5.92,
-        "dimension": "hook_type",
-        "evidence_median_views": 7.0,
-        "mature_sample": 13,
-        "sample_size": 21,
-        "value": "money_stakes"
+        "mature_sample": 25,
+        "sample_size": 36,
+        "value": "natural"
       }
     ],
     "weak_patterns": [
       {
         "average_view_percentage": 11.52,
         "dimension": "story_tone",
-        "evidence_median_views": 5.0,
+        "evidence_median_views": 5.5,
         "mature_sample": 26,
-        "sample_size": 32,
+        "sample_size": 33,
         "value": "warm"
       },
       {
-        "average_view_percentage": 16.08,
+        "average_view_percentage": 15.55,
         "dimension": "story_tone",
         "evidence_median_views": 6.0,
-        "mature_sample": 12,
+        "mature_sample": 13,
         "sample_size": 17,
         "value": "dramatic_comedy"
       },
@@ -134,24 +134,24 @@
         "value": "dramatic"
       },
       {
-        "average_view_percentage": 20.46,
+        "average_view_percentage": 17.97,
         "dimension": "hook_type",
         "evidence_median_views": 6.0,
-        "mature_sample": 27,
+        "mature_sample": 28,
         "sample_size": 29,
         "value": "social_exposure"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-25T05:30:31Z",
-    "videos_analyzed": 124
+    "latest_realtime_snapshot": "2026-11-25T11:30:33Z",
+    "videos_analyzed": 126
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
       {
         "evidence_median_views": 6.5,
-        "sample_size": 51,
+        "sample_size": 52,
         "window": "12-15"
       },
       {
@@ -160,7 +160,7 @@
         "window": "00-03"
       },
       {
-        "evidence_median_views": 5.0,
+        "evidence_median_views": 4.5,
         "sample_size": 24,
         "window": "04-07"
       }
@@ -168,30 +168,30 @@
     "weak_publish_windows_sgt": [
       {
         "evidence_median_views": 2.0,
-        "sample_size": 25,
+        "sample_size": 26,
         "window": "16-19"
       },
       {
-        "evidence_median_views": 5.0,
+        "evidence_median_views": 4.5,
         "sample_size": 24,
         "window": "04-07"
       }
     ]
   },
-  "generated_at": "2026-11-25T05:30:31Z",
+  "generated_at": "2026-11-25T11:30:33Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
       "24h": 121,
-      "2h": 74,
-      "6h": 121,
-      "72h": 111,
-      "7d": 94
+      "2h": 75,
+      "6h": 123,
+      "72h": 113,
+      "7d": 96
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
   },
   "warnings": [
-    "Optional retention returned empty curves for 24 due checkpoints; will retry"
+    "Optional retention returned empty curves for 23 due checkpoints; will retry"
   ]
 }
