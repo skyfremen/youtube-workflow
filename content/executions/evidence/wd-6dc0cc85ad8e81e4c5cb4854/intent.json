@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-6dc0cc85ad8e81e4c5cb4854",
+  "created_at": "2026-11-25T00:25:46.307895Z",
+  "evidence_version": 2,
+  "execution_id": "ex-5f65d530c8c4fa10994effb3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b208566b5d63754a7a2f1ad00de4da7b80fc65ba",
+  "record_type": "intent",
+  "request_blob_sha": "31a64c41c7173e2b9b675337f0cc4a617dc51527",
+  "request_id": "rq-e81653b1448f91625a48d13a",
+  "request_path": "content/requests/rq-e81653b1448f91625a48d13a.json",
+  "request_source_sha": "40356aeadc73da7578e679e743e628be7709888c",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The bride's ring returns from the trick without its initials. Then the magician opens a proposal box for someone else.\n\n#WackyDramas #Shorts #WeddingMagician #EngagementRing #FakeRing #RingInitials #BorrowedRing #WeddingProposal #WeddingReception #FirstDance",
+      "tags": [
+        "wd-id-46ba46519c96562be354",
+        "wacky dramas",
+        "shorts",
+        "wedding magician",
+        "borrowed engagement ring",
+        "fake ring swap",
+        "proposal at wedding",
+        "initials inside ring",
+        "girlfriend deceived",
+        "wedding reception drama",
+        "first dance",
+        "WackyDramas",
+        "WeddingMagician",
+        "EngagementRing",
+        "FakeRing",
+        "RingInitials",
+        "BorrowedRing",
+        "WeddingProposal",
+        "WeddingReception",
+        "FirstDance"
+      ],
+      "title": "The Initials Inside the Magician's Proposal"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-10T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45517080199"
+  }
+}
