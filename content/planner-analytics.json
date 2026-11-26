@@ -15,27 +15,27 @@
     ],
     "dominant_traffic_sources": [
       {
-        "engaged_view_rate_percentage": 38.74,
-        "engaged_views": 852,
-        "estimated_minutes_watched": 448,
+        "engaged_view_rate_percentage": 38.73,
+        "engaged_views": 851,
+        "estimated_minutes_watched": 447,
         "insightTrafficSourceType": "SHORTS",
-        "view_share_percentage": 60.98,
-        "views": 2199
+        "view_share_percentage": 61.35,
+        "views": 2197
       },
       {
-        "engaged_view_rate_percentage": 16.41,
-        "engaged_views": 222,
-        "estimated_minutes_watched": 74,
+        "engaged_view_rate_percentage": 16.39,
+        "engaged_views": 218,
+        "estimated_minutes_watched": 73,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 37.52,
-        "views": 1353
+        "view_share_percentage": 37.14,
+        "views": 1330
       },
       {
         "engaged_view_rate_percentage": 45.0,
         "engaged_views": 9,
         "estimated_minutes_watched": 3,
         "insightTrafficSourceType": "YT_OTHER_PAGE",
-        "view_share_percentage": 0.55,
+        "view_share_percentage": 0.56,
         "views": 20
       },
       {
@@ -86,7 +86,7 @@
       {
         "average_view_percentage": 20.46,
         "dimension": "category",
-        "evidence_median_views": 9.0,
+        "evidence_median_views": 10.0,
         "mature_sample": 31,
         "sample_size": 38,
         "value": "family"
@@ -96,7 +96,7 @@
         "dimension": "hook_type",
         "evidence_median_views": 9.0,
         "mature_sample": 16,
-        "sample_size": 22,
+        "sample_size": 23,
         "value": "discovery"
       },
       {
@@ -110,19 +110,11 @@
     ],
     "weak_patterns": [
       {
-        "average_view_percentage": 19.6,
-        "dimension": "hook_type",
-        "evidence_median_views": 4.0,
-        "mature_sample": 14,
-        "sample_size": 22,
-        "value": "money_stakes"
-      },
-      {
         "average_view_percentage": 7.92,
         "dimension": "story_tone",
-        "evidence_median_views": 5.0,
+        "evidence_median_views": 5.5,
         "mature_sample": 28,
-        "sample_size": 33,
+        "sample_size": 34,
         "value": "warm"
       },
       {
@@ -140,12 +132,20 @@
         "mature_sample": 29,
         "sample_size": 30,
         "value": "social_exposure"
+      },
+      {
+        "average_view_percentage": 19.6,
+        "dimension": "hook_type",
+        "evidence_median_views": 6.5,
+        "mature_sample": 14,
+        "sample_size": 22,
+        "value": "money_stakes"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-25T23:30:33Z",
-    "videos_analyzed": 128
+    "latest_realtime_snapshot": "2026-11-26T05:30:33Z",
+    "videos_analyzed": 129
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -156,7 +156,7 @@
       },
       {
         "evidence_median_views": 6.0,
-        "sample_size": 52,
+        "sample_size": 53,
         "window": "12-15"
       },
       {
@@ -178,15 +178,15 @@
       }
     ]
   },
-  "generated_at": "2026-11-25T23:30:33Z",
+  "generated_at": "2026-11-26T05:30:33Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 124,
-      "2h": 76,
-      "6h": 125,
+      "24h": 126,
+      "2h": 77,
+      "6h": 126,
       "72h": 116,
-      "7d": 98
+      "7d": 99
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
