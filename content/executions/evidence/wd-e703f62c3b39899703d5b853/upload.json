@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-e703f62c3b39899703d5b853",
+  "evidence_version": 2,
+  "execution_id": "ex-bf3e99ab2586c2b367100b76",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "d1012ae3d3bb6f77d7e2c9ac60e349ca628da117",
+  "record_type": "upload",
+  "recorded_at": "2026-11-26T12:14:06.963199Z",
+  "request_blob_sha": "3014e00916825253bba331315865a8b5da53283b",
+  "request_id": "rq-f22c314949745925e0c18729",
+  "request_path": "content/requests/rq-f22c314949745925e0c18729.json",
+  "request_source_sha": "a460ccbe85ffc3caadfe3b2adbc01ccfb171995f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The bride has already explained her allergy. Her new family decides the wedding cake should settle whether they believe her.\n\n#WackyDramas #Shorts #PeanutAllergy #WeddingCake #MotherInLaw #BrideAndGroom #NutFreeCake #WeddingMenu #FamilyTrust #FirstSlice",
+      "tags": [
+        "wd-id-350701db1e2a3942d427",
+        "wacky dramas",
+        "shorts",
+        "peanuts in wedding cake",
+        "bride peanut allergy",
+        "mother in law tests allergy",
+        "groom keeps the peace",
+        "nut free wedding cake",
+        "first slice refused",
+        "family trust",
+        "wedding menu disagreement",
+        "WackyDramas",
+        "PeanutAllergy",
+        "WeddingCake",
+        "MotherInLaw",
+        "BrideAndGroom",
+        "NutFreeCake",
+        "WeddingMenu",
+        "FamilyTrust",
+        "FirstSlice"
+      ],
+      "title": "The First Slice She Wouldn't Eat"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-12T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45816949311"
+  },
+  "youtube_video_id": "Xav1vkwEdGI"
+}
