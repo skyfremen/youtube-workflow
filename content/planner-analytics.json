@@ -144,7 +144,7 @@
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-26T11:30:33Z",
+    "latest_realtime_snapshot": "2026-11-26T17:30:34Z",
     "videos_analyzed": 131
   },
   "distribution_signals": {
@@ -178,14 +178,14 @@
       }
     ]
   },
-  "generated_at": "2026-11-26T11:30:33Z",
+  "generated_at": "2026-11-26T17:30:34Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 126,
+      "24h": 128,
       "2h": 78,
-      "6h": 128,
-      "72h": 118,
+      "6h": 129,
+      "72h": 119,
       "7d": 101
     },
     "minimum_pattern_sample": 12,
