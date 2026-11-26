@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-efd7f8605e0f99150ae4b75c",
+  "created_at": "2026-11-26T00:09:05.550867Z",
+  "evidence_version": 2,
+  "execution_id": "ex-bfb314d011ade60142d1f626",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "1e83b7ddcad9912cdb833a2db5a5930208f72a26",
+  "record_type": "intent",
+  "request_blob_sha": "23b42a48c8f1a811849d15c91cc4e715168a73ea",
+  "request_id": "rq-8dcd1e410810178c573b6ef6",
+  "request_path": "content/requests/rq-8dcd1e410810178c573b6ef6.json",
+  "request_source_sha": "85494a012abacde202937c1263b5cec912111455",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The uncle believes his nephew has offered to help. The mother who made that promise has not asked her son.\n\n#WackyDramas #Shorts #DonationConsent #FamilyPressure #UncleAndNephew #DinnerTable #FalsePromise #PersonalChoice #MotherAndSon #OrganDonation",
+      "tags": [
+        "wd-id-ffa585f546d6fc04603e",
+        "wacky dramas",
+        "shorts",
+        "mother volunteers son's kidney",
+        "organ donation consent",
+        "uncle and nephew",
+        "family pressure",
+        "false family promise",
+        "mother and adult son",
+        "dinner table argument",
+        "personal choice",
+        "WackyDramas",
+        "DonationConsent",
+        "FamilyPressure",
+        "UncleAndNephew",
+        "DinnerTable",
+        "FalsePromise",
+        "PersonalChoice",
+        "MotherAndSon",
+        "OrganDonation"
+      ],
+      "title": "The Promise Made Over His Dinner Plate"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-11T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45725960894"
+  }
+}
