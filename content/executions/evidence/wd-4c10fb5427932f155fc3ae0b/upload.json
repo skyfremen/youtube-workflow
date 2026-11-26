@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4c10fb5427932f155fc3ae0b",
+  "evidence_version": 2,
+  "execution_id": "ex-9874347b4f52c6e29f9f8225",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7871a8c92323893dbc1d30b7fb66b5c75d451d98",
+  "record_type": "upload",
+  "recorded_at": "2026-11-26T00:09:45.924925Z",
+  "request_blob_sha": "23b42a48c8f1a811849d15c91cc4e715168a73ea",
+  "request_id": "rq-8dcd1e410810178c573b6ef6",
+  "request_path": "content/requests/rq-8dcd1e410810178c573b6ef6.json",
+  "request_source_sha": "85494a012abacde202937c1263b5cec912111455",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "Dad thinks the party marks the end of his working life. His son has arranged another change without telling him.\n\n#WackyDramas #Shorts #RetirementParty #MovingTruck #CareHome #FamilyDecision #FatherAndSon #RetirementGift #AdultIndependence #UnwantedMove",
+      "tags": [
+        "wd-id-2825204e2f679354d516",
+        "wacky dramas",
+        "shorts",
+        "retirement party surprise",
+        "son moves father without asking",
+        "care home decision",
+        "moving truck at home",
+        "retirement watch",
+        "family care disagreement",
+        "father wants a say",
+        "independent retirement",
+        "WackyDramas",
+        "RetirementParty",
+        "MovingTruck",
+        "CareHome",
+        "FamilyDecision",
+        "FatherAndSon",
+        "RetirementGift",
+        "AdultIndependence",
+        "UnwantedMove"
+      ],
+      "title": "The Moving Truck After Dad's Retirement Party"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-11T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45725957853"
+  },
+  "youtube_video_id": "_m8q5T0wc_Q"
+}
