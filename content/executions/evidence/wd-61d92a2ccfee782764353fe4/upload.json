@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-61d92a2ccfee782764353fe4",
+  "evidence_version": 2,
+  "execution_id": "ex-31b18ffaaa228eb4534486fd",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "7d56a19fd5a88d651c93083cb6b54b953e497a2c",
+  "record_type": "upload",
+  "recorded_at": "2026-11-26T12:13:44.259562Z",
+  "request_blob_sha": "3014e00916825253bba331315865a8b5da53283b",
+  "request_id": "rq-f22c314949745925e0c18729",
+  "request_path": "content/requests/rq-f22c314949745925e0c18729.json",
+  "request_source_sha": "a460ccbe85ffc3caadfe3b2adbc01ccfb171995f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The employee shared a private recording to explain her leave. Her boss puts it in a presentation about her promotion.\n\n#WackyDramas #Shorts #PrivateRecording #TherapyPrivacy #StaffDinner #PromotionVote #VotingCards #WorkplaceBullying #EmployeePrivacy #TeamLeadership",
+      "tags": [
+        "wd-id-2af87f78cd0562927d99",
+        "wacky dramas",
+        "shorts",
+        "boss plays therapy recording",
+        "employee privacy",
+        "staff dinner slideshow",
+        "promotion vote",
+        "coworkers refuse to vote",
+        "voting cards",
+        "workplace bullying",
+        "leadership test",
+        "WackyDramas",
+        "PrivateRecording",
+        "TherapyPrivacy",
+        "StaffDinner",
+        "PromotionVote",
+        "VotingCards",
+        "WorkplaceBullying",
+        "EmployeePrivacy",
+        "TeamLeadership"
+      ],
+      "title": "The Voting Cards at the Staff Dinner"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-12T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45816957565"
+  },
+  "youtube_video_id": "a6ff7UtY_Ec"
+}
