@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-c2a4e55ee279d22e4dc7b644",
+  "created_at": "2026-11-26T12:16:46.572217Z",
+  "evidence_version": 2,
+  "execution_id": "ex-f3f36f912606c50d28e8df9f",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "61450bc21702faeca69c34ee24bc662e9e22b35f",
+  "record_type": "intent",
+  "request_blob_sha": "3014e00916825253bba331315865a8b5da53283b",
+  "request_id": "rq-f22c314949745925e0c18729",
+  "request_path": "content/requests/rq-f22c314949745925e0c18729.json",
+  "request_source_sha": "a460ccbe85ffc3caadfe3b2adbc01ccfb171995f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The charity celebrates his mother's generosity. She has not agreed to spend the money that paid for the award.\n\n#WackyDramas #Shorts #RetirementSavings #CharityDonation #UnauthorizedDonation #MotherAndSon #CharityAward #RentMoney #BankCard #BrokenTrust",
+      "tags": [
+        "wd-id-4c64d6b2cfaa67825a53",
+        "wacky dramas",
+        "shorts",
+        "son donates mother's savings",
+        "unauthorized charity donation",
+        "retirement money",
+        "charity award plaque",
+        "mother and son argument",
+        "rent money missing",
+        "bank card returned",
+        "partial repayment",
+        "WackyDramas",
+        "RetirementSavings",
+        "CharityDonation",
+        "UnauthorizedDonation",
+        "MotherAndSon",
+        "CharityAward",
+        "RentMoney",
+        "BankCard",
+        "BrokenTrust"
+      ],
+      "title": "The Plaque Beside Mum's Missing Savings"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-12T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45816953740"
+  }
+}
