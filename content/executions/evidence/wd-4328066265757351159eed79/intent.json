@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-4328066265757351159eed79",
+  "created_at": "2026-11-26T12:13:59.943492Z",
+  "evidence_version": 2,
+  "execution_id": "ex-691c7b4f403e075118d885fc",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "4cb9e02d4ce22227469665b71003bba1c3c1f6a5",
+  "record_type": "intent",
+  "request_blob_sha": "3014e00916825253bba331315865a8b5da53283b",
+  "request_id": "rq-f22c314949745925e0c18729",
+  "request_path": "content/requests/rq-f22c314949745925e0c18729.json",
+  "request_source_sha": "a460ccbe85ffc3caadfe3b2adbc01ccfb171995f",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "She brings evidence of three months running the department. Her boss brings a different plan for her future.\n\n#WackyDramas #Shorts #PromotionInterview #FamilyBusiness #MarriageCondition #WeddingBrochure #BossAndEmployee #ManagementRole #WorkplaceLoyalty #CareerChoice",
+      "tags": [
+        "wd-id-937152098108b0358ca3",
+        "wacky dramas",
+        "shorts",
+        "boss conditions promotion",
+        "marry boss's son",
+        "family business drama",
+        "wedding brochure",
+        "promotion interview",
+        "employee covers manager role",
+        "workplace loyalty",
+        "career choice",
+        "WackyDramas",
+        "PromotionInterview",
+        "FamilyBusiness",
+        "MarriageCondition",
+        "WeddingBrochure",
+        "BossAndEmployee",
+        "ManagementRole",
+        "WorkplaceLoyalty",
+        "CareerChoice"
+      ],
+      "title": "The Wedding Brochure in Her Promotion Folder"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-13T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45816961284"
+  }
+}
