@@ -16,44 +16,44 @@
       ],
       "dominant_traffic_sources": [
         {
-          "engaged_view_rate_percentage": 38.73,
-          "engaged_views": 851,
-          "estimated_minutes_watched": 447,
+          "engaged_view_rate_percentage": 38.43,
+          "engaged_views": 852,
+          "estimated_minutes_watched": 448,
           "insightTrafficSourceType": "SHORTS",
-          "view_share_percentage": 61.35,
-          "views": 2197
+          "view_share_percentage": 60.64,
+          "views": 2217
         },
         {
-          "engaged_view_rate_percentage": 16.39,
-          "engaged_views": 218,
-          "estimated_minutes_watched": 73,
+          "engaged_view_rate_percentage": 16.57,
+          "engaged_views": 229,
+          "estimated_minutes_watched": 77,
           "insightTrafficSourceType": "YT_SEARCH",
-          "view_share_percentage": 37.14,
-          "views": 1330
+          "view_share_percentage": 37.8,
+          "views": 1382
         },
         {
-          "engaged_view_rate_percentage": 45.0,
+          "engaged_view_rate_percentage": 42.86,
           "engaged_views": 9,
           "estimated_minutes_watched": 3,
           "insightTrafficSourceType": "YT_OTHER_PAGE",
-          "view_share_percentage": 0.56,
-          "views": 20
+          "view_share_percentage": 0.57,
+          "views": 21
         },
         {
           "engaged_view_rate_percentage": 21.43,
           "engaged_views": 3,
           "estimated_minutes_watched": 6,
           "insightTrafficSourceType": "SUBSCRIBER",
-          "view_share_percentage": 0.39,
+          "view_share_percentage": 0.38,
           "views": 14
         },
         {
-          "engaged_view_rate_percentage": 54.55,
+          "engaged_view_rate_percentage": 46.15,
           "engaged_views": 6,
           "estimated_minutes_watched": 4,
           "insightTrafficSourceType": "HASHTAGS",
-          "view_share_percentage": 0.31,
-          "views": 11
+          "view_share_percentage": 0.36,
+          "views": 13
         }
       ]
     },
@@ -79,45 +79,37 @@
         {
           "average_view_percentage": 17.97,
           "dimension": "category",
-          "evidence_median_views": 11.0,
+          "evidence_median_views": 11.5,
           "mature_sample": 32,
-          "sample_size": 38,
+          "sample_size": 39,
           "value": "family"
         },
         {
-          "average_view_percentage": 25.6,
+          "average_view_percentage": 20.18,
           "dimension": "hook_type",
           "evidence_median_views": 11.0,
-          "mature_sample": 16,
+          "mature_sample": 17,
           "sample_size": 23,
           "value": "discovery"
         },
         {
-          "average_view_percentage": 15.55,
-          "dimension": "story_tone",
-          "evidence_median_views": 10.5,
-          "mature_sample": 13,
-          "sample_size": 17,
-          "value": "dramatic_comedy"
+          "average_view_percentage": 5.92,
+          "dimension": "hook_type",
+          "evidence_median_views": 9.0,
+          "mature_sample": 15,
+          "sample_size": 22,
+          "value": "money_stakes"
         },
         {
-          "average_view_percentage": 18.37,
+          "average_view_percentage": 14.03,
           "dimension": "story_tone",
           "evidence_median_views": 9.0,
-          "mature_sample": 27,
-          "sample_size": 40,
-          "value": "natural"
+          "mature_sample": 14,
+          "sample_size": 17,
+          "value": "dramatic_comedy"
         }
       ],
       "weak_patterns": [
-        {
-          "average_view_percentage": 6.65,
-          "dimension": "story_tone",
-          "evidence_median_views": 6.0,
-          "mature_sample": 29,
-          "sample_size": 34,
-          "value": "warm"
-        },
         {
           "average_view_percentage": 17.09,
           "dimension": "story_tone",
@@ -131,28 +123,36 @@
           "dimension": "hook_type",
           "evidence_median_views": 6.0,
           "mature_sample": 29,
-          "sample_size": 30,
+          "sample_size": 31,
           "value": "social_exposure"
         },
         {
-          "average_view_percentage": 5.92,
-          "dimension": "hook_type",
+          "average_view_percentage": 9.2,
+          "dimension": "story_tone",
           "evidence_median_views": 6.5,
-          "mature_sample": 15,
-          "sample_size": 22,
-          "value": "money_stakes"
+          "mature_sample": 29,
+          "sample_size": 34,
+          "value": "warm"
+        },
+        {
+          "average_view_percentage": 15.48,
+          "dimension": "trend_lane",
+          "evidence_median_views": 7.0,
+          "mature_sample": 109,
+          "sample_size": 133,
+          "value": "evergreen"
         }
       ]
     },
     "data_freshness": {
-      "latest_realtime_snapshot": "2026-11-26T17:30:34Z",
-      "videos_analyzed": 131
+      "latest_realtime_snapshot": "2026-11-26T23:30:32Z",
+      "videos_analyzed": 133
     },
     "distribution_signals": {
       "strong_publish_windows_sgt": [
         {
           "evidence_median_views": 6.0,
-          "sample_size": 25,
+          "sample_size": 26,
           "window": "00-03"
         },
         {
@@ -162,7 +162,7 @@
         },
         {
           "evidence_median_views": 5.0,
-          "sample_size": 25,
+          "sample_size": 26,
           "window": "04-07"
         }
       ],
@@ -174,20 +174,20 @@
         },
         {
           "evidence_median_views": 5.0,
-          "sample_size": 25,
+          "sample_size": 26,
           "window": "04-07"
         }
       ]
     },
-    "generated_at": "2026-11-26T17:30:34Z",
+    "generated_at": "2026-11-26T23:30:32Z",
     "learning": {
       "analytics_weight": "normal",
       "checkpoint_samples": {
-        "24h": 128,
-        "2h": 78,
-        "6h": 129,
-        "72h": 119,
-        "7d": 101
+        "24h": 129,
+        "2h": 79,
+        "6h": 130,
+        "72h": 121,
+        "7d": 103
       },
       "minimum_pattern_sample": 12,
       "stage": "established"
