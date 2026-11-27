@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5e2145947502573535bb4976",
+  "evidence_version": 2,
+  "execution_id": "ex-22de97f253e52539034f89b3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "0cafc3bac4617c6ae355e420830ac622ca9cbf11",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T12:14:55.405941Z",
+  "request_blob_sha": "ec0b8fdf6aa028d33e9460e63c07b8dbde198c80",
+  "request_id": "rq-f59622fd1af4ddace2b8b5e6",
+  "request_path": "content/requests/rq-f59622fd1af4ddace2b8b5e6.json",
+  "request_source_sha": "a12784d4fc677640ab78cacf97e7e3d08bf46c5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The homeowner returns to fishing rods around her pool. The neighbor entrusted with the plants is collecting admission money.\n\n#WackyDramas #Shorts #SwimmingPool #FishingTickets #NeighborDispute #SpareKey #WateringPlants #GardenGate #PrivateProperty #UnauthorizedBusiness",
+      "tags": [
+        "wd-id-8956ced58fa35cdaf28e",
+        "wacky dramas",
+        "shorts",
+        "neighbor stocks swimming pool",
+        "strangers fishing in pool",
+        "fishing admission tickets",
+        "spare key misuse",
+        "neighbor waters plants",
+        "private garden business",
+        "pool drained for repairs",
+        "homeowner returns",
+        "WackyDramas",
+        "SwimmingPool",
+        "FishingTickets",
+        "NeighborDispute",
+        "SpareKey",
+        "WateringPlants",
+        "GardenGate",
+        "PrivateProperty",
+        "UnauthorizedBusiness"
+      ],
+      "title": "The Fishing Tickets at Her Garden Gate"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-14T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45996472226"
+  },
+  "youtube_video_id": "8LuTanDl5ks"
+}
