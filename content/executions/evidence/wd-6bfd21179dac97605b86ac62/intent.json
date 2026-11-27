@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-6bfd21179dac97605b86ac62",
+  "created_at": "2026-11-27T00:18:45.962986Z",
+  "evidence_version": 2,
+  "execution_id": "ex-41612f91a80e818e64161f21",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "ea28326fcc41ae5f47b63c6a338f1c10bc15e08d",
+  "record_type": "intent",
+  "request_blob_sha": "2dd1fbc03200546e9d8b77ca124334b77554b380",
+  "request_id": "rq-128248d824832e4e65df979a",
+  "request_path": "content/requests/rq-128248d824832e4e65df979a.json",
+  "request_source_sha": "835dfeba76e8c99fba3529f534b90c94ecae3acd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "His daughter has blamed a phone call for her mother's death. His offer of driving lessons brings out the truth he withheld.\n\n#WackyDramas #Shorts #DrunkDriving #FatalCrash #FatherAndDaughter #HiddenTruth #MisplacedGuilt #DrivingLessons #BrokenTrust #FamilyConfession",
+      "tags": [
+        "wd-id-413eb8ec5ca155fb9902",
+        "wacky dramas",
+        "shorts",
+        "father hides drunk driving",
+        "daughter blames phone call",
+        "mother's fatal crash",
+        "father daughter confession",
+        "driving lesson offer",
+        "misplaced childhood guilt",
+        "family trust",
+        "truth about the crash",
+        "WackyDramas",
+        "DrunkDriving",
+        "FatalCrash",
+        "FatherAndDaughter",
+        "HiddenTruth",
+        "MisplacedGuilt",
+        "DrivingLessons",
+        "BrokenTrust",
+        "FamilyConfession"
+      ],
+      "title": "The Keys She Pushed Back Across the Table"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-13T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45915491709"
+  }
+}
