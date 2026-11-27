@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-1a64499618eebfedff43c794",
+  "evidence_version": 2,
+  "execution_id": "ex-e31ff12e1427a6936688da96",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "91e08167a4263b43e40b47c2bf174de59cde6416",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T12:18:49.702332Z",
+  "request_blob_sha": "ec0b8fdf6aa028d33e9460e63c07b8dbde198c80",
+  "request_id": "rq-f59622fd1af4ddace2b8b5e6",
+  "request_path": "content/requests/rq-f59622fd1af4ddace2b8b5e6.json",
+  "request_source_sha": "a12784d4fc677640ab78cacf97e7e3d08bf46c5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The daughter has saved every message she believes came from her mum. Her father knows who actually wrote them.\n\n#WackyDramas #Shorts #BirthdayCards #FatherAndDaughter #AbsentMother #FalseSignature #FamilySecret #ChildhoodMemories #CardMessages #TruthAndLove",
+      "tags": [
+        "wd-id-66ff6bab48451c1eef3f",
+        "wacky dramas",
+        "shorts",
+        "father writes mother's cards",
+        "birthday card secret",
+        "daughter keeps birthday cards",
+        "absent mother",
+        "false signature",
+        "family confession",
+        "childhood memories",
+        "truth behind the messages",
+        "WackyDramas",
+        "BirthdayCards",
+        "FatherAndDaughter",
+        "AbsentMother",
+        "FalseSignature",
+        "FamilySecret",
+        "ChildhoodMemories",
+        "CardMessages",
+        "TruthAndLove"
+      ],
+      "title": "The Name on Her Birthday-Card Box"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-14T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45996468661"
+  },
+  "youtube_video_id": "e7QGJWq6Yzw"
+}
