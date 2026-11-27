@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-651ba68c5c2772a51f20e657",
+  "evidence_version": 2,
+  "execution_id": "ex-c6d64fa14d2e8b8e875f8ed9",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "b493380c5170326490d16049e6d24fe03ed932d6",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T00:19:13.632649Z",
+  "request_blob_sha": "2dd1fbc03200546e9d8b77ca124334b77554b380",
+  "request_id": "rq-128248d824832e4e65df979a",
+  "request_path": "content/requests/rq-128248d824832e4e65df979a.json",
+  "request_source_sha": "835dfeba76e8c99fba3529f534b90c94ecae3acd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The officiant adds a condition after the guests are seated. The couple have to decide whether the ceremony can continue with him.\n\n#WackyDramas #Shorts #WeddingOfficiant #KissDemand #WeddingVows #BrideAndGroom #ConsentMatters #CeremonyStopped #WeddingGuests #FirstKiss",
+      "tags": [
+        "wd-id-d1f9f8ee64e37db102dd",
+        "wacky dramas",
+        "shorts",
+        "officiant demands a kiss",
+        "wedding ceremony stopped",
+        "bride refuses kiss",
+        "groom supports bride",
+        "wedding vows interrupted",
+        "consent at a wedding",
+        "guests hear the truth",
+        "unfinished ceremony",
+        "WackyDramas",
+        "WeddingOfficiant",
+        "KissDemand",
+        "WeddingVows",
+        "BrideAndGroom",
+        "ConsentMatters",
+        "CeremonyStopped",
+        "WeddingGuests",
+        "FirstKiss"
+      ],
+      "title": "The Kiss Before the Vows"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-13T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45915496059"
+  },
+  "youtube_video_id": "6A0GRfRWtLc"
+}
