@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-a42431f4c4b06b4c32a228d5",
+  "created_at": "2026-11-27T12:16:28.081539Z",
+  "evidence_version": 2,
+  "execution_id": "ex-401b6dd2bbc6425ef8694235",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "02c2b1375f5bfb1b8fd436054c7bd2e19589e58c",
+  "record_type": "intent",
+  "request_blob_sha": "ec0b8fdf6aa028d33e9460e63c07b8dbde198c80",
+  "request_id": "rq-f59622fd1af4ddace2b8b5e6",
+  "request_path": "content/requests/rq-f59622fd1af4ddace2b8b5e6.json",
+  "request_source_sha": "a12784d4fc677640ab78cacf97e7e3d08bf46c5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The bride hears about the wager at the rehearsal dinner. Her fiancé says it protects him if their marriage fails.\n\n#WackyDramas #Shorts #DivorceBet #RehearsalDinner #BrideAndGroom #FirstAnniversary #MarriageCommitment #WeddingPhoto #CashWager #RelationshipTrust",
+      "tags": [
+        "wd-id-3983fcefea02c5bc11e1",
+        "wacky dramas",
+        "shorts",
+        "fiance bets on divorce",
+        "rehearsal dinner argument",
+        "first anniversary bet",
+        "cash wager with friends",
+        "marriage commitment",
+        "bride questions groom",
+        "wedding photograph",
+        "relationship trust",
+        "WackyDramas",
+        "DivorceBet",
+        "RehearsalDinner",
+        "BrideAndGroom",
+        "FirstAnniversary",
+        "MarriageCommitment",
+        "WeddingPhoto",
+        "CashWager",
+        "RelationshipTrust"
+      ],
+      "title": "The Bet Before Their First Anniversary"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-14T04:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45996464823"
+  }
+}
