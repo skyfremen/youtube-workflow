@@ -15,27 +15,27 @@
     ],
     "dominant_traffic_sources": [
       {
-        "engaged_view_rate_percentage": 38.43,
-        "engaged_views": 852,
-        "estimated_minutes_watched": 448,
+        "engaged_view_rate_percentage": 38.42,
+        "engaged_views": 849,
+        "estimated_minutes_watched": 444,
         "insightTrafficSourceType": "SHORTS",
-        "view_share_percentage": 60.64,
-        "views": 2217
+        "view_share_percentage": 60.83,
+        "views": 2210
       },
       {
-        "engaged_view_rate_percentage": 16.57,
-        "engaged_views": 229,
+        "engaged_view_rate_percentage": 16.54,
+        "engaged_views": 226,
         "estimated_minutes_watched": 77,
         "insightTrafficSourceType": "YT_SEARCH",
-        "view_share_percentage": 37.8,
-        "views": 1382
+        "view_share_percentage": 37.6,
+        "views": 1366
       },
       {
         "engaged_view_rate_percentage": 42.86,
         "engaged_views": 9,
         "estimated_minutes_watched": 3,
         "insightTrafficSourceType": "YT_OTHER_PAGE",
-        "view_share_percentage": 0.57,
+        "view_share_percentage": 0.58,
         "views": 21
       },
       {
@@ -43,7 +43,7 @@
         "engaged_views": 3,
         "estimated_minutes_watched": 6,
         "insightTrafficSourceType": "SUBSCRIBER",
-        "view_share_percentage": 0.38,
+        "view_share_percentage": 0.39,
         "views": 14
       },
       {
@@ -62,7 +62,7 @@
       {
         "average_view_percentage": 34.62,
         "dimension": "category",
-        "evidence_median_views": 15.5,
+        "evidence_median_views": 15.0,
         "mature_sample": 25,
         "sample_size": 29,
         "value": "wedding"
@@ -88,7 +88,7 @@
         "dimension": "hook_type",
         "evidence_median_views": 11.0,
         "mature_sample": 17,
-        "sample_size": 23,
+        "sample_size": 24,
         "value": "discovery"
       },
       {
@@ -134,18 +134,18 @@
         "value": "warm"
       },
       {
-        "average_view_percentage": 15.48,
-        "dimension": "trend_lane",
-        "evidence_median_views": 7.0,
-        "mature_sample": 109,
-        "sample_size": 133,
-        "value": "evergreen"
+        "average_view_percentage": 18.37,
+        "dimension": "hook_type",
+        "evidence_median_views": 6.5,
+        "mature_sample": 29,
+        "sample_size": 35,
+        "value": "contradiction"
       }
     ]
   },
   "data_freshness": {
-    "latest_realtime_snapshot": "2026-11-26T23:30:32Z",
-    "videos_analyzed": 133
+    "latest_realtime_snapshot": "2026-11-27T05:30:34Z",
+    "videos_analyzed": 134
   },
   "distribution_signals": {
     "strong_publish_windows_sgt": [
@@ -156,7 +156,7 @@
       },
       {
         "evidence_median_views": 6.0,
-        "sample_size": 54,
+        "sample_size": 55,
         "window": "12-15"
       },
       {
@@ -178,15 +178,15 @@
       }
     ]
   },
-  "generated_at": "2026-11-26T23:30:32Z",
+  "generated_at": "2026-11-27T05:30:34Z",
   "learning": {
     "analytics_weight": "normal",
     "checkpoint_samples": {
-      "24h": 129,
-      "2h": 79,
-      "6h": 130,
+      "24h": 131,
+      "2h": 80,
+      "6h": 131,
       "72h": 121,
-      "7d": 103
+      "7d": 104
     },
     "minimum_pattern_sample": 12,
     "stage": "established"
