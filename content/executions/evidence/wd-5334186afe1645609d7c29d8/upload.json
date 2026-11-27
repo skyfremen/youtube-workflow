@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5334186afe1645609d7c29d8",
+  "evidence_version": 2,
+  "execution_id": "ex-95b7f2adf4dba16345b8071b",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "3bdf5056d8f7f5808743d6a96b5a98087ada0a98",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T00:20:05.616662Z",
+  "request_blob_sha": "2dd1fbc03200546e9d8b77ca124334b77554b380",
+  "request_id": "rq-128248d824832e4e65df979a",
+  "request_path": "content/requests/rq-128248d824832e4e65df979a.json",
+  "request_source_sha": "835dfeba76e8c99fba3529f534b90c94ecae3acd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The assistant has done the studying. Her boss has decided whose name should receive the qualification.\n\n#WackyDramas #Shorts #ExamRegistration #QualificationCredit #AssistantAndBoss #ProfessionalExam #StudyNotes #TrainingFee #EarnedQualification #WorkplacePressure",
+      "tags": [
+        "wd-id-caadadb7c760ba1779e3",
+        "wacky dramas",
+        "shorts",
+        "boss asks assistant to take exam",
+        "exam impersonation request",
+        "professional qualification",
+        "photograph on exam registration",
+        "assistant studies for exam",
+        "holiday savings pay exam fee",
+        "credit for studying",
+        "workplace pressure",
+        "WackyDramas",
+        "ExamRegistration",
+        "QualificationCredit",
+        "AssistantAndBoss",
+        "ProfessionalExam",
+        "StudyNotes",
+        "TrainingFee",
+        "EarnedQualification",
+        "WorkplacePressure"
+      ],
+      "title": "Her Photograph Under His Name"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-13T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45915493972"
+  },
+  "youtube_video_id": "VHIIVM0S9NM"
+}
