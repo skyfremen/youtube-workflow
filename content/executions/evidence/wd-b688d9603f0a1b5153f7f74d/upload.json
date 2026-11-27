@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-b688d9603f0a1b5153f7f74d",
+  "evidence_version": 2,
+  "execution_id": "ex-c2ef561e513eefe32a8b365a",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "14267feab3cc548f64434e847a29d110c227c46c",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T12:17:35.425484Z",
+  "request_blob_sha": "ec0b8fdf6aa028d33e9460e63c07b8dbde198c80",
+  "request_id": "rq-f59622fd1af4ddace2b8b5e6",
+  "request_path": "content/requests/rq-f59622fd1af4ddace2b8b5e6.json",
+  "request_source_sha": "a12784d4fc677640ab78cacf97e7e3d08bf46c5d",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The guests think the divorce party is a mutual celebration. The husband learns about the separation when he arrives.\n\n#WackyDramas #Shorts #DivorceParty #SurpriseSeparation #DivorceCake #HusbandAndWife #PublicAnnouncement #PartyGuests #PrivateConversation #ForcedCelebration",
+      "tags": [
+        "wd-id-ece9149d8c57b368d547",
+        "wacky dramas",
+        "shorts",
+        "surprise divorce party",
+        "wife announces separation",
+        "divorce cake",
+        "husband refuses photograph",
+        "guests think divorce is mutual",
+        "private marriage conversation",
+        "public celebration pressure",
+        "couple separation",
+        "WackyDramas",
+        "DivorceParty",
+        "SurpriseSeparation",
+        "DivorceCake",
+        "HusbandAndWife",
+        "PublicAnnouncement",
+        "PartyGuests",
+        "PrivateConversation",
+        "ForcedCelebration"
+      ],
+      "title": "The Cake for Their Next Chapter"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-14T19:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45996475709"
+  },
+  "youtube_video_id": "tgDi93yJ6oo"
+}
