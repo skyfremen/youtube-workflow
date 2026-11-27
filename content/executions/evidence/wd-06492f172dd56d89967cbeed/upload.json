@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-06492f172dd56d89967cbeed",
+  "evidence_version": 2,
+  "execution_id": "ex-67eee4b62ac373a3679cfa35",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "19a0a94caa43fe0d553508228f0917d67545a6db",
+  "record_type": "upload",
+  "recorded_at": "2026-11-27T00:21:45.030912Z",
+  "request_blob_sha": "2dd1fbc03200546e9d8b77ca124334b77554b380",
+  "request_id": "rq-128248d824832e4e65df979a",
+  "request_path": "content/requests/rq-128248d824832e4e65df979a.json",
+  "request_source_sha": "835dfeba76e8c99fba3529f534b90c94ecae3acd",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The groom's son arrives in the suit they chose together. The bride has given the door staff different instructions.\n\n#WackyDramas #Shorts #BlendedFamily #WeddingGuestList #FatherAndSon #WeddingDoor #Bouncer #ExcludedChild #WeddingSuit #FamilyBelonging",
+      "tags": [
+        "wd-id-8ca6a317f01adf95bd69",
+        "wacky dramas",
+        "shorts",
+        "bride excludes groom's son",
+        "blended family wedding",
+        "wedding guest list",
+        "son stopped at wedding door",
+        "father chooses his son",
+        "wedding bouncer",
+        "wedding suit",
+        "family belonging",
+        "WackyDramas",
+        "BlendedFamily",
+        "WeddingGuestList",
+        "FatherAndSon",
+        "WeddingDoor",
+        "Bouncer",
+        "ExcludedChild",
+        "WeddingSuit",
+        "FamilyBelonging"
+      ],
+      "title": "The Seat Missing From Their Wedding"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-13T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "45915489388"
+  },
+  "youtube_video_id": "vmdvp_6Lkq4"
+}
