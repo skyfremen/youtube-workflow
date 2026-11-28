@@ -1,0 +1,53 @@
+{
+  "content_id": "wd-88bb64b2adddd1841e46a7e2",
+  "created_at": "2026-11-28T00:19:33.232477Z",
+  "evidence_version": 2,
+  "execution_id": "ex-45face8ccc934fccc62be447",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "997aa16e1f53a621b108df6601f550633986195e",
+  "record_type": "intent",
+  "request_blob_sha": "8a1187e232c55b1c54e6e666d912dbe378d07753",
+  "request_id": "rq-44f1b4486b47dc5c120dfef3",
+  "request_path": "content/requests/rq-44f1b4486b47dc5c120dfef3.json",
+  "request_source_sha": "8190005aa3acbf084ccee979a3b979d2e65cc419",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The wife wants a start in a new field. The offer describes the job her husband has just lost.\n\n#WackyDramas #Shorts #UnpaidInternship #JobEliminated #CareerChange #TrainingQuestions #HusbandAndWife #JobDescription #FreeLabor #CareerSupport",
+      "tags": [
+        "wd-id-2e3c25d991e5acc678cb",
+        "wacky dramas",
+        "shorts",
+        "wife offered husband's old job",
+        "unpaid internship",
+        "position eliminated",
+        "same duties without salary",
+        "questions about training",
+        "couple supports career change",
+        "unpaid work offer",
+        "job application",
+        "WackyDramas",
+        "UnpaidInternship",
+        "JobEliminated",
+        "CareerChange",
+        "TrainingQuestions",
+        "HusbandAndWife",
+        "JobDescription",
+        "FreeLabor",
+        "CareerSupport"
+      ],
+      "title": "The Unpaid Offer With His Old Duties"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-15T07:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "46086763629"
+  }
+}
