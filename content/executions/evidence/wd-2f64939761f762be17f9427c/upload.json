@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-2f64939761f762be17f9427c",
+  "evidence_version": 2,
+  "execution_id": "ex-c09ee23b8e78d9ed95526c2c",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "bbd8f115bfb3232127d2aafccd1a820a36ac0307",
+  "record_type": "upload",
+  "recorded_at": "2026-11-28T00:22:26.763831Z",
+  "request_blob_sha": "8a1187e232c55b1c54e6e666d912dbe378d07753",
+  "request_id": "rq-44f1b4486b47dc5c120dfef3",
+  "request_path": "content/requests/rq-44f1b4486b47dc5c120dfef3.json",
+  "request_source_sha": "8190005aa3acbf084ccee979a3b979d2e65cc419",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The father offers the groom money to leave. Refusing it does not satisfy the test he has set.\n\n#WackyDramas #Shorts #WeddingBudget #MarriageBribe #BrideAndGroom #FatherOfTheBride #WeddingFunding #FamilyPressure #InheritanceAccusation #SmallerWedding",
+      "tags": [
+        "wd-id-944dfa2d949416a6566a",
+        "wacky dramas",
+        "shorts",
+        "father offers groom money to leave",
+        "wedding budget argument",
+        "marriage bribe",
+        "inheritance accusation",
+        "bride chooses her future",
+        "family wedding funding",
+        "smaller wedding plans",
+        "cheque to cancel engagement",
+        "WackyDramas",
+        "WeddingBudget",
+        "MarriageBribe",
+        "BrideAndGroom",
+        "FatherOfTheBride",
+        "WeddingFunding",
+        "FamilyPressure",
+        "InheritanceAccusation",
+        "SmallerWedding"
+      ],
+      "title": "The Cheque Beside Their Wedding Budget"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-14T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "46086759358"
+  },
+  "youtube_video_id": "sWwgfLBlZnM"
+}
