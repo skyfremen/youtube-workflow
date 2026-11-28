@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-5350059bfcaa41c14d50398b",
+  "evidence_version": 2,
+  "execution_id": "ex-4ef4d908c5fbe3e43f547ea3",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "89f3c85912a14b311efd7a428a2d1163c4b0489d",
+  "record_type": "upload",
+  "recorded_at": "2026-11-28T00:22:18.933153Z",
+  "request_blob_sha": "8a1187e232c55b1c54e6e666d912dbe378d07753",
+  "request_id": "rq-44f1b4486b47dc5c120dfef3",
+  "request_path": "content/requests/rq-44f1b4486b47dc5c120dfef3.json",
+  "request_source_sha": "8190005aa3acbf084ccee979a3b979d2e65cc419",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "The wedding couple hear a funeral speech through the curtain. The other family was promised a private room as well.\n\n#WackyDramas #Shorts #WeddingReception #FuneralWake #DoubleBookedVenue #ReceptionCurtain #PrivateRoom #WeddingDJ #FirstDance #RespectForGrief",
+      "tags": [
+        "wd-id-f975248f834ea978d3d1",
+        "wacky dramas",
+        "shorts",
+        "wedding and funeral in same room",
+        "double booked venue",
+        "funeral wake behind curtain",
+        "private wedding reception",
+        "manager asks DJ to turn music up",
+        "smaller reception lounge",
+        "respect for mourners",
+        "first dance",
+        "WackyDramas",
+        "WeddingReception",
+        "FuneralWake",
+        "DoubleBookedVenue",
+        "ReceptionCurtain",
+        "PrivateRoom",
+        "WeddingDJ",
+        "FirstDance",
+        "RespectForGrief"
+      ],
+      "title": "The Curtain in Their Reception Room"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-15T10:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "46086765860"
+  },
+  "youtube_video_id": "plLZ5XZ-Rsw"
+}
