@@ -1,0 +1,55 @@
+{
+  "association": "videos.insert",
+  "content_id": "wd-4ebcf8debabf39e96575a42e",
+  "evidence_version": 2,
+  "execution_id": "ex-42a6026873d46d1b621d7ffb",
+  "expected_channel_id": "UCvrq2m9G4yrwPfL_X-QPzMA",
+  "item_blob_sha": "96a9da9c096350ece7994942d8b9a9a63e431c50",
+  "record_type": "upload",
+  "recorded_at": "2026-11-28T12:14:51.091362Z",
+  "request_blob_sha": "6df5b69b48dfc72876745beb9311b820e58f3c4c",
+  "request_id": "rq-a3be37dea6ef1b48d1779df7",
+  "request_path": "content/requests/rq-a3be37dea6ef1b48d1779df7.json",
+  "request_source_sha": "2ad4761ed057d4ac1384f974bd55f825d1ac21a1",
+  "upload_body": {
+    "snippet": {
+      "categoryId": "24",
+      "description": "He plans a gift for their daughter's musical future. His wife comes home to find the instrument they already use missing.\n\n#WackyDramas #Shorts #PianoSold #MusicLessons #MotherAndDaughter #PianoBench #LessonBook #FamilyDecision #PermissionMatters #MusicalGift",
+      "tags": [
+        "wd-id-5a817045445d3bccf661",
+        "wacky dramas",
+        "shorts",
+        "husband sells wife's piano",
+        "daughter piano lessons",
+        "mother teaches daughter music",
+        "piano bench left behind",
+        "lesson book handwriting",
+        "family gift without permission",
+        "buyer asked to return piano",
+        "missing instrument",
+        "WackyDramas",
+        "PianoSold",
+        "MusicLessons",
+        "MotherAndDaughter",
+        "PianoBench",
+        "LessonBook",
+        "FamilyDecision",
+        "PermissionMatters",
+        "MusicalGift"
+      ],
+      "title": "The Piano Bench He Left Behind"
+    },
+    "status": {
+      "privacyStatus": "private",
+      "publishAt": "2026-12-15T22:00:00Z",
+      "selfDeclaredMadeForKids": false
+    }
+  },
+  "workflow": {
+    "code_commit_sha": "7bef7a5d44d1da19585649509f6c84b3c2d75344",
+    "name": "Production",
+    "run_attempt": "1",
+    "run_id": "46143236443"
+  },
+  "youtube_video_id": "C-2gJRPYLBI"
+}
